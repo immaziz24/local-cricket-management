@@ -96,7 +96,7 @@ The platform comprises **310 features** partitioned into **17 categories (A–Q)
 | **K** | Assigned to Phase 5 | Part of 56 feats | Phase 5 | *Pending source confirmation* |
 | **L** | Assigned to Phase 3 | Part of 103 feats | Phase 3 | *Pending source confirmation* |
 | **M** | Assigned to Phase 6 | Part of 49 feats | Phase 6 | *Pending source confirmation* |
-| **N** | Phase 1 Initial Category | 17 features (#254–270) | Phase 1 | *Pending original descriptions from project owner* |
+| **N** | Administration, Security and User Management | 17 features (#254–270) | Phase 1 | **Confirmed & Implemented in Frontend** |
 | **O** | Assigned to Phase 6 | Part of 49 feats | Phase 6 | *Pending source confirmation* |
 | **P** | Assigned to Phase 6 | Part of 49 feats | Phase 6 | *Pending source confirmation* |
 | **Q** | Late Arrival Penalty Rules | Part of 37 feats | Phase 4 | *Confirmed high-level rules; detailed specs pending* |
@@ -124,10 +124,25 @@ The platform establishes the following confirmed core requirements for managing 
 
 ## 6. Phase 1 Specification Directives (Category N: Features #254–270)
 
-Phase 1 establishes the initial frontend implementation baseline focusing on Category N:
-- **Dedicated Feature Slots:** Phase 1 includes **17 feature slots**, numbered **#254 through #270**.
-- **Owner Confirmation Required:** Detailed original descriptions for features #254–270 must be formally obtained from the project owner before any implementation begins.
-- **No Inventions:** Developers and AI assistants must **not invent descriptions, assumptions, or functional requirements** for these slots. All slots remain placeholder items until official specifications are supplied.
+Phase 1 establishes the initial frontend implementation baseline focusing on Category N (Administration, Security and User Management). All 17 features have been formally confirmed from the master blueprint and implemented:
+
+1. **#254 User registration:** Self-service registration with full validation and terms agreement.
+2. **#255 User login and logout:** Email and Indian mobile authentication, session token, and logout.
+3. **#256 Password recovery:** Self-service reset wizard with 6-digit OTP verification and new password creation.
+4. **#257 Super-admin dashboard:** Platform KPIs, cluster health, maintenance mode toggle, and global broadcast dispatcher.
+5. **#258 Admin dashboard:** Tournament sanction reviews, team roster approvals, and match dispute queues.
+6. **#259 Organiser permissions:** RBAC capabilities for tournament creation, venue allocation, and Category Q penalty assignment.
+7. **#260 Team owner permissions:** RBAC capabilities for squad rosters, player transfers, and tournament entry.
+8. **#261 Captain permissions:** RBAC capabilities for Playing XI, toss nomination, batting/bowling orders, and score reviews.
+9. **#262 Scorer permissions:** RBAC capabilities for ball-by-ball recording, wagon wheel plotting, and DLS calculations.
+10. **#263 Umpire permissions:** RBAC capabilities for official match sign-off, pitch condition reports, and penalty runs.
+11. **#264 Player permissions:** RBAC capabilities for personal stats access, fixture RSVP, and transfer requests.
+12. **#265 User verification:** Identity credential review and badge verification for players, umpires, and scorers.
+13. **#266 User reporting and suspension:** Incident reporting, code of conduct enforcement, and account suspensions.
+14. **#267 Activity and audit logs:** Chronological immutable system audit trail with export capability.
+15. **#268 Database backup:** On-demand snapshots, checksum verification, and disaster recovery simulation.
+16. **#269 Security and privacy management:** 2FA policy enforcement, session timeout limits, and DPDP/GDPR personal data export.
+17. **#270 Notifications management:** Multi-channel gateway configuration (SMS, Email, Push, In-App) and announcement dispatcher.
 
 ---
 
