@@ -4,6 +4,7 @@ import { Badge } from '../components/common/Badge.jsx';
 import { Button } from '../components/common/Button.jsx';
 import { LoadingSpinner } from '../components/common/LoadingSpinner.jsx';
 import { dataService } from '../services/dataService.js';
+import { TournamentLogo } from './tournaments/TournamentBranding.jsx';
 import { Trophy, Calendar, Users, MapPin, PlusCircle, Sparkles } from 'lucide-react';
 
 export function TournamentsView(props) {
@@ -92,6 +93,8 @@ export function TournamentsView(props) {
                   </span>
                 </div>
 
+                <div style={{ display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                  <TournamentLogo tournament={trn} size={44} />
                 <div>
                   <h3
                     onClick={() => onNavigate && onNavigate('tournament-details', trn.id)}
@@ -108,6 +111,7 @@ export function TournamentsView(props) {
                   <div style={{ fontSize: '0.78rem', color: 'var(--color-primary-dark)', fontWeight: 600, marginTop: '0.2rem' }}>
                     {trn.format} {trn.ball_type ? '• ' + trn.ball_type : ''}
                   </div>
+                </div>
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--color-text-muted)', padding: '0.5rem 0' }}>

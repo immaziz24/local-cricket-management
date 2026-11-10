@@ -81,7 +81,7 @@
 | :---: | :--- | :---: | :--- |
 | 31 | Create a tournament | 🟨 | **connected 2026-11-10** – CreateTournamentView.jsx on real database; creator becomes Organiser of that tournament. Awaiting owner check |
 | 32 | Tournament name and branding | 🟨 | **connected 2026-11-10** – name + short code + colour theme (logo/banner #33 later). Awaiting owner check |
-| 33 | Tournament logo and banner | ⬜ |  |
+| 33 | Tournament logo and banner | 🟨 | **connected 2026-11-10** – organiser uploads logo and banner (JPG/PNG/WEBP ≤ 2 MB) and picks the colour on the tournament page; logo shown on tournament cards; outsiders blocked (tested). Awaiting owner check |
 | 34 | Tournament start and end dates | 🟨 | **connected 2026-11-10** – start/end dates. Awaiting owner check |
 | 35 | Tournament location | 🟨 | **connected 2026-11-10** – venue (+ city). Awaiting owner check |
 | 36 | Tournament registration | 🟨 | **connected 2026-11-10** – registration open/closed per tournament. Awaiting owner check |

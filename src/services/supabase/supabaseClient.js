@@ -721,6 +721,21 @@ export const supabaseClient = {
     return { data: { logo_url: up.data.url }, error: null };
   },
 
+  // #33 tournament logo / banner / colour
+  async setTournamentImage({ tournamentId, kind, file }) {
+    const up = await this.uploadImage('tournaments', tournamentId, file);
+    if (up.error) return up;
+    const { data, error } = await supabase.rpc('set_tournament_image', { p_tournament_id: tournamentId, p_kind: kind, p_url: up.data.url });
+    if (error) return { data: null, error: friendlyError(error, 'tournament image') };
+    return { data, error: null };
+  },
+
+  async updateTournamentImage({ tournamentId, kind, value }) {
+    const { data, error } = await supabase.rpc('set_tournament_image', { p_tournament_id: tournamentId, p_kind: kind, p_url: value || '' });
+    if (error) return { data: null, error: friendlyError(error, 'tournament image') };
+    return { data, error: null };
+  },
+
   async updateMyBirthDate(date) {
     const { data, error } = await supabase.rpc('update_my_birth_date', { p_date: date || null });
     if (error) return { data: null, error: friendlyError(error, 'date of birth') };

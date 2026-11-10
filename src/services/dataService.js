@@ -480,6 +480,28 @@ export const dataService = {
     return res.data;
   },
 
+  // #33 tournament logo and banner (organiser only)
+  async setTournamentImage(tournamentId, kind, file) {
+    requireDatabase();
+    const res = await supabaseClient.setTournamentImage({ tournamentId, kind, file });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async removeTournamentImage(tournamentId, kind) {
+    requireDatabase();
+    const res = await supabaseClient.updateTournamentImage({ tournamentId, kind, value: '' });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setTournamentColor(tournamentId, color) {
+    requireDatabase();
+    const res = await supabaseClient.updateTournamentImage({ tournamentId, kind: 'color', value: color });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   // #53 #54 #55 points table with NRR and qualification
   async fetchPointsTable(tournamentId) {
     requireDatabase();

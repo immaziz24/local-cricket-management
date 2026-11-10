@@ -7,6 +7,7 @@ import { dataService } from '../services/dataService.js';
 import { TeamRegistrationPanel } from './tournaments/TeamRegistrationPanel.jsx';
 import { FixturesPanel } from './tournaments/FixturesPanel.jsx';
 import { StandingsPanel } from './tournaments/StandingsPanel.jsx';
+import { BannerStrip, TournamentLogo, BrandingControls } from './tournaments/TournamentBranding.jsx';
 import {
   Trophy,
   Calendar,
@@ -207,6 +208,14 @@ export function TournamentDetailsView(props) {
           gap: '1.25rem'
         }}
       >
+        {/* #33 banner and logo */}
+        <BannerStrip tournament={tournament} />
+        {isOrganiser && (
+          <BrandingControls
+            tournament={tournament}
+            onChanged={async () => setTournament(await dataService.fetchTournamentById(tournament.id))}
+          />
+        )}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
@@ -214,10 +223,11 @@ export function TournamentDetailsView(props) {
           flexWrap: 'wrap',
           gap: '1rem'
         }}>
+          <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+          <TournamentLogo tournament={tournament} size={72} />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
-              <Badge variant="primary">CATEGORY B • FEATURE #32</Badge>
-              <Badge variant={tournament.status === 'ongoing' ? 'primary' : 'upcoming'}>
+                            <Badge variant={tournament.status === 'ongoing' ? 'primary' : 'upcoming'}>
                 {tournament.status}
               </Badge>
               <span style={{
@@ -266,6 +276,7 @@ export function TournamentDetailsView(props) {
                 </div>
               )}
             </div>
+          </div>
           </div>
 
           {/* Action Buttons */}
