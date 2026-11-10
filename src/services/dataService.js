@@ -274,6 +274,86 @@ export const dataService = {
     return res.data;
   },
 
+  // ==========================================
+  // Phase 2 – Category C: players and teams (real database only)
+  // ==========================================
+  async fetchMyPlayer() {
+    requireDatabase();
+    const res = await supabaseClient.getMyPlayer();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveMyPlayer(details) {
+    requireDatabase();
+    const res = await supabaseClient.updateMyPlayer(details);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchMyTeams() {
+    requireDatabase();
+    const res = await supabaseClient.getMyTeams();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchTeam(teamId) {
+    requireDatabase();
+    const res = await supabaseClient.getTeam(teamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async createTeam(team) {
+    requireDatabase();
+    const res = await supabaseClient.createTeam(team);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async updateTeam(team) {
+    requireDatabase();
+    const res = await supabaseClient.updateTeam(team);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async findPlayerByMobile(mobile) {
+    requireDatabase();
+    const res = await supabaseClient.findPlayerByMobile(mobile);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async addPlayerToTeam(teamId, playerId) {
+    requireDatabase();
+    const res = await supabaseClient.addPlayerToTeam({ teamId, playerId });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async addNewPlayerToTeam(details) {
+    requireDatabase();
+    const res = await supabaseClient.addNewPlayerToTeam(details);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async removePlayerFromTeam(teamId, playerId) {
+    requireDatabase();
+    const res = await supabaseClient.removePlayerFromTeam({ teamId, playerId });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setTeamLeadership(leadership) {
+    requireDatabase();
+    const res = await supabaseClient.setTeamLeadership(leadership);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   /** Maintenance flag + active announcement, shown to every visitor (#257). */
   async fetchPlatformSettings() {
     if (isSupabaseConfigured) {

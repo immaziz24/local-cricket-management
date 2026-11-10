@@ -16,6 +16,7 @@ import { createClient } from '@supabase/supabase-js';
  *   #265 User verification (badge requests and admin review)
  *   #266 User reporting and suspension
  *   #267–#270 Audit logs, backup export, privacy, notifications
+ *   Phase 2 Category C: players and teams (add by mobile, unregistered players, captain/vice/icon)
  *
  * Configuration comes from .env (never commit real secrets):
  *   VITE_SUPABASE_URL
@@ -561,6 +562,118 @@ export const supabaseClient = {
   async sendAnnouncement({ title, body }) {
     const { data, error } = await supabase.rpc('send_announcement', { p_title: title, p_body: body || null });
     if (error) return { data: null, error: friendlyError(error, 'announcement') };
+    return { data, error: null };
+  },
+
+  // ==========================================
+  // Phase 2 – Category C: players and teams
+  // ==========================================
+  async getMyPlayer() {
+    const { data, error } = await supabase.rpc('get_my_player');
+    if (error) return { data: null, error: friendlyError(error, 'player profile') };
+    return { data, error: null };
+  },
+
+  async updateMyPlayer({ player_role, batting_style, bowling_style }) {
+    const { data, error } = await supabase.rpc('update_my_player', {
+      p_player_role: player_role || '', p_batting_style: batting_style || '', p_bowling_style: bowling_style || ''
+    });
+    if (error) return { data: null, error: friendlyError(error, 'player profile') };
+    return { data, error: null };
+  },
+
+  async getMyTeams() {
+    const { data: s } = await supabase.auth.getSession();
+    const uid = s.session?.user?.id;
+    if (!uid) return { data: [], error: null };
+    const me = await supabase.rpc('get_my_player');
+    const playerId = me.data?.id;
+    const [owned, member] = await Promise.all([
+      supabase.from('teams').select('id, name, short_name, city, owner_id, created_at').eq('owner_id', uid),
+      playerId
+        ? supabase.from('team_members').select('team_id, teams(id, name, short_name, city, owner_id, created_at)').eq('player_id', playerId)
+        : Promise.resolve({ data: [] })
+    ]);
+    if (owned.error) return { data: null, error: friendlyError(owned.error, 'teams') };
+    const map = new Map();
+    (owned.data || []).forEach((t) => map.set(t.id, { ...t, i_own: true }));
+    (member.data || []).forEach((m) => { if (m.teams && !map.has(m.teams.id)) map.set(m.teams.id, { ...m.teams, i_own: false }); });
+    const teams = Array.from(map.values());
+    if (teams.length) {
+      const { data: counts } = await supabase.from('team_members').select('team_id').in('team_id', teams.map((t) => t.id));
+      teams.forEach((t) => { t.squad_size = (counts || []).filter((c) => c.team_id === t.id).length; });
+    }
+    teams.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+    return { data: teams, error: null };
+  },
+
+  async getTeam(teamId) {
+    const { data: s } = await supabase.auth.getSession();
+    const uid = s.session?.user?.id;
+    const [teamRes, squadRes] = await Promise.all([
+      supabase.from('teams').select('id, name, short_name, city, owner_id, created_at').eq('id', teamId).maybeSingle(),
+      supabase.from('team_members')
+        .select('player_id, is_captain, is_vice_captain, is_icon, jersey_number, joined_at, players(id, display_name, player_role, batting_style, bowling_style, profile_id)')
+        .eq('team_id', teamId)
+    ]);
+    if (teamRes.error) return { data: null, error: friendlyError(teamRes.error, 'team') };
+    if (!teamRes.data) return { data: null, error: 'Team not found.' };
+    const squad = (squadRes.data || []).map((m) => ({
+      ...m.players,
+      is_registered: !!m.players?.profile_id,
+      is_captain: m.is_captain,
+      is_vice_captain: m.is_vice_captain,
+      is_icon: m.is_icon,
+      jersey_number: m.jersey_number,
+      joined_at: m.joined_at
+    })).sort((a, b) => (b.is_captain - a.is_captain) || (b.is_vice_captain - a.is_vice_captain) || a.display_name.localeCompare(b.display_name));
+    return { data: { ...teamRes.data, i_own: !!uid && teamRes.data.owner_id === uid, squad }, error: null };
+  },
+
+  async createTeam({ name, short_name, city }) {
+    const { data, error } = await supabase.rpc('create_team', { p_name: name, p_short_name: short_name || null, p_city: city || null });
+    if (error) return { data: null, error: friendlyError(error, 'create team') };
+    return { data, error: null };
+  },
+
+  async updateTeam({ teamId, name, short_name, city }) {
+    const { data, error } = await supabase.rpc('update_team', { p_team_id: teamId, p_name: name, p_short_name: short_name || '', p_city: city || '' });
+    if (error) return { data: null, error: friendlyError(error, 'update team') };
+    return { data, error: null };
+  },
+
+  async findPlayerByMobile(mobile) {
+    const { data, error } = await supabase.rpc('find_player_by_mobile', { p_mobile: mobile });
+    if (error) return { data: null, error: friendlyError(error, 'player search') };
+    return { data, error: null };
+  },
+
+  async addPlayerToTeam({ teamId, playerId }) {
+    const { data, error } = await supabase.rpc('add_player_to_team', { p_team_id: teamId, p_player_id: playerId });
+    if (error) return { data: null, error: friendlyError(error, 'add player') };
+    return { data, error: null };
+  },
+
+  async addNewPlayerToTeam({ teamId, name, mobile, player_role, batting_style, bowling_style }) {
+    const { data, error } = await supabase.rpc('add_new_player_to_team', {
+      p_team_id: teamId, p_name: name, p_mobile: mobile || null,
+      p_player_role: player_role || null, p_batting_style: batting_style || null, p_bowling_style: bowling_style || null
+    });
+    if (error) return { data: null, error: friendlyError(error, 'add player') };
+    return { data, error: null };
+  },
+
+  async removePlayerFromTeam({ teamId, playerId }) {
+    const { data, error } = await supabase.rpc('remove_player_from_team', { p_team_id: teamId, p_player_id: playerId });
+    if (error) return { data: null, error: friendlyError(error, 'remove player') };
+    return { data, error: null };
+  },
+
+  async setTeamLeadership({ teamId, captainId, viceCaptainId, iconId }) {
+    const { data, error } = await supabase.rpc('set_team_leadership', {
+      p_team_id: teamId, p_captain: captainId || null, p_vice_captain: viceCaptainId || null, p_icon: iconId || null
+    });
+    if (error) return { data: null, error: friendlyError(error, 'team leadership') };
     return { data, error: null };
   },
 

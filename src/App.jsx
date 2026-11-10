@@ -10,6 +10,8 @@ import { RegisterView } from './views/RegisterView.jsx';
 import { LoginView } from './views/LoginView.jsx';
 import { PasswordRecoveryView } from './views/auth/PasswordRecoveryView.jsx';
 import { CategoryNView } from './views/CategoryNView.jsx';
+import { TeamsView } from './views/teams/TeamsView.jsx';
+import { TeamDetailView } from './views/teams/TeamDetailView.jsx';
 import { useDashboardData } from './hooks/useDashboardData.js';
 import { dataService, onAuthChange } from './services/dataService.js';
 
@@ -17,6 +19,7 @@ export function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedTournamentId, setSelectedTournamentId] = useState('trn-001');
   const [currentUser, setCurrentUser] = useState(null);
+  const [selectedTeamId, setSelectedTeamId] = useState(null);
 
   // Keep the signed-in user in sync across the whole app (#255).
   useEffect(() => {
@@ -40,6 +43,9 @@ export function App() {
   const handleNavigate = (tab, param = null) => {
     if (tab === 'tournament-details' && param) {
       setSelectedTournamentId(param);
+    }
+    if (tab === 'team-details' && param) {
+      setSelectedTeamId(param);
     }
     setActiveTab(tab);
   };
@@ -80,6 +86,12 @@ export function App() {
       {activeTab === 'create-tournament' && <CreateTournamentView onNavigate={handleNavigate} />}
 
       {activeTab === 'penalties' && <PenaltyRulesView />}
+
+      {activeTab === 'teams' && <TeamsView key={currentUser ? currentUser.id : 'guest'} onNavigate={handleNavigate} />}
+
+      {activeTab === 'team-details' && selectedTeamId && (
+        <TeamDetailView key={selectedTeamId} teamId={selectedTeamId} onNavigate={handleNavigate} />
+      )}
 
       {activeTab === 'category-n' && <CategoryNView onNavigate={handleNavigate} />}
 

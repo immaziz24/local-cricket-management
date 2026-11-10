@@ -112,19 +112,19 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 59 | Player registration | ⬜ |  |
-| 60 | Player profile | ⬜ |  |
+| 59 | Player registration | 🟨 | **connected 2026-11-10** – teams/TeamDetailView.jsx — every user is a player automatically; team owners add players by mobile number, or by name if not registered; claim on sign-up with same mobile. Awaiting owner check |
+| 60 | Player profile | 🟨 | **connected 2026-11-10** – teams/TeamsView.jsx — 'My player profile' (name, role, styles). Photo, DOB, contact privacy later. Awaiting owner check |
 | 61 | Player profile photograph | ⬜ |  |
 | 62 | Player ID | ⬜ |  |
-| 63 | Batting style | ⬜ |  |
-| 64 | Bowling style | ⬜ |  |
-| 65 | Player role | ⬜ |  |
+| 63 | Batting style | 🟨 | **connected 2026-11-10** – My player profile + add-player form. Awaiting owner check |
+| 64 | Bowling style | 🟨 | **connected 2026-11-10** – My player profile + add-player form. Awaiting owner check |
+| 65 | Player role | 🟨 | **connected 2026-11-10** – My player profile + add-player form. Awaiting owner check |
 | 66 | Age and date of birth | ⬜ |  |
 | 67 | Contact information and privacy settings | ⬜ |  |
-| 68 | Team profile | ⬜ |  |
+| 68 | Team profile | 🟨 | **connected 2026-11-10** – teams/TeamsView.jsx + TeamDetailView.jsx — create team (name, short name, city); creator becomes team owner. Logo later (#69). Awaiting owner check |
 | 69 | Team logo | ⬜ |  |
-| 70 | Captain and vice-captain assignment | ⬜ |  |
-| 71 | Squad management | ⬜ |  |
+| 70 | Captain and vice-captain assignment | 🟨 | **connected 2026-11-10** – teams/TeamDetailView.jsx — captain, vice-captain and icon player; registered captain gets Captain role for that team. Awaiting owner check |
+| 71 | Squad management | 🟨 | **connected 2026-11-10** – teams/TeamDetailView.jsx — squad list, add by mobile / by name, remove (max 40). Awaiting owner check |
 | 72 | Playing XI management | ⬜ |  |
 | 73 | Substitute management | ⬜ |  |
 | 74 | Player replacements | ⬜ |  |

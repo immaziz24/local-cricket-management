@@ -12,7 +12,8 @@ import {
   LogIn,
   KeyRound,
   ShieldCheck,
-  PlusCircle
+  PlusCircle,
+  Users
 } from 'lucide-react';
 
 export function MobileNav(props) {
@@ -30,6 +31,7 @@ export function MobileNav(props) {
     { id: 'register', label: 'User Registration', icon: UserPlus, tag: '#254' },
     { id: 'login', label: 'User Login & Logout', icon: LogIn, tag: '#255' },
     { id: 'password-recovery', label: 'Password Recovery', icon: KeyRound, tag: '#256' },
+    { id: 'teams', label: 'My Teams', icon: Users, tag: 'New' },
     { id: 'matches', label: 'Live & Match Center', icon: Activity, badge: '2 Live' },
     { id: 'tournaments', label: 'Tournaments', icon: Trophy, count: '4' },
     { id: 'create-tournament', label: 'Create Tournament', icon: PlusCircle, tag: '#31' },
