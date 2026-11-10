@@ -81,7 +81,7 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 31 | Create a tournament | 🟨 | **connected 2026-11-10** – CreateTournamentView.jsx on real database; creator becomes Organiser of that tournament. Awaiting owner check |
+| 31 | Create a tournament | 🟨 | **connected 2026-11-10** – CreateTournamentView.jsx on real database; creator becomes Organiser of that tournament. Awaiting owner check Reworked 2026-11-10 for local cricket (owner feedback, CricHeroes reference): overs as a number, match type, ball, pitch, category, players a side; no made-up defaults. |
 | 32 | Tournament name and branding | 🟨 | **connected 2026-11-10** – name + short code + colour theme (logo/banner #33 later). Awaiting owner check |
 | 33 | Tournament logo and banner | 🟨 | **connected 2026-11-10** – organiser uploads logo and banner (JPG/PNG/WEBP ≤ 2 MB) and picks the colour on the tournament page; logo shown on tournament cards; outsiders blocked (tested). Awaiting owner check |
 | 34 | Tournament start and end dates | 🟨 | **connected 2026-11-10** – start/end dates. Awaiting owner check |
@@ -90,7 +90,7 @@
 | 37 | Registration fees | 🟨 | **connected 2026-11-10** – entry fee shown (paid offline; online payments in Phase 6). Awaiting owner check |
 | 38 | Prize money details | 🟨 | **connected 2026-11-10** – prize money text. Awaiting owner check |
 | 39 | Tournament rules and regulations | 🟨 | **connected 2026-11-10** – rules & regulations text. Awaiting owner check |
-| 40 | Team registration | 🟨 | **connected 2026-11-10** – tournament page → Teams tab: team owner applies with their team; organiser notified. Awaiting owner check |
+| 40 | Team registration | 🟨 | **connected 2026-11-10** – tournament page → Teams tab: team owner applies with their team; organiser notified. Awaiting owner check Organiser can also add an existing team directly or create a new team on the spot (2026-11-10). |
 | 41 | Team approval and rejection | 🟨 | **connected 2026-11-10** – organiser approves / rejects with reason; team owner notified; capacity enforced. Awaiting owner check |
 | 42 | Group creation | 🟨 | **connected 2026-11-10** – tournament → Fixtures tab: create 2–8 groups (random draw), move teams between groups. Awaiting owner check |
 | 43 | League format | 🟨 | **connected 2026-11-10** – league: everyone plays everyone once. Awaiting owner check |

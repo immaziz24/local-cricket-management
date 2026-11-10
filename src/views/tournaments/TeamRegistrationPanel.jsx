@@ -3,11 +3,13 @@ import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
-import { CheckCircle, XCircle, AlertCircle, Send, LogOut } from 'lucide-react';
+import { CheckCircle, XCircle, AlertCircle, Send, LogOut, Search, Plus, UserPlus, Trash2 } from 'lucide-react';
 import { Avatar } from '../teams/Avatar.jsx';
 
 /**
  * #40 Team registration and #41 Team approval and rejection.
+ * - The organiser can also add teams directly: pick an existing team, or create a new one on the spot
+ *   (like CricHeroes). The organiser owns teams they create and can add their players.
  * - Team owners pick one of their teams and apply.
  * - The tournament organiser approves or rejects (with a reason). Both sides get notified.
  */
@@ -28,7 +30,13 @@ function Notice({ msg }) {
   );
 }
 
-export function TeamRegistrationPanel({ tournament, onChanged }) {
+const fieldS = { padding: '0.5rem 0.6rem', border: '1px solid #cbd5e1', borderRadius: '0.45rem', fontSize: '0.85rem' };
+
+export function TeamRegistrationPanel({ tournament, onChanged, onTournamentChanged, onNavigate }) {
+  const [query, setQuery] = useState('');
+  const [found, setFound] = useState(null);
+  const [newTeam, setNewTeam] = useState({ name: '', short_name: '', city: '' });
+  const [maxTeams, setMaxTeams] = useState(tournament.teams_count);
   const [data, setData] = useState({ is_organiser: false, teams: [] });
   const [myTeams, setMyTeams] = useState([]);
   const [pick, setPick] = useState('');
@@ -61,6 +69,16 @@ export function TeamRegistrationPanel({ tournament, onChanged }) {
   };
 
   const approvedCount = data.teams.filter((t) => t.status === 'approved').length;
+  const finished = ['completed', 'cancelled'].includes(tournament.status);
+  const inIds = new Set(data.teams.filter((t) => t.status === 'approved').map((t) => t.team_id));
+  const findTeams = async () => {
+    setMsg(null);
+    try { setFound(await dataService.searchTeams(query)); } catch (err) { setMsg({ ok: false, text: err.message }); }
+  };
+  const saveMax = () => act(async () => {
+    await dataService.updateTournament(tournament.id, { teams_count: Number(maxTeams) });
+    onTournamentChanged && (await onTournamentChanged());
+  }, `Number of teams set to ${maxTeams}.`);
   const registeredIds = new Set(data.teams.filter((t) => ['pending', 'approved'].includes(t.status)).map((t) => t.team_id));
   const canApply = myTeams.filter((t) => !registeredIds.has(t.id));
   const open = tournament.registration_open !== false && ['registration', 'upcoming'].includes(tournament.status);
@@ -69,6 +87,59 @@ export function TeamRegistrationPanel({ tournament, onChanged }) {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <Notice msg={msg} />
+
+      {/* Organiser adds teams directly */}
+      {data.is_organiser && !finished && (
+        <Card title={`Add teams (organiser) · ${approvedCount} / ${tournament.teams_count} added`}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>Add a team that is already on the website</div>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                <input value={query} onChange={(e) => setQuery(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && query.trim().length >= 2 && findTeams()} placeholder="Team name (at least 2 letters)" style={{ ...fieldS, flex: 1, minWidth: 200 }} />
+                <Button variant="secondary" disabled={query.trim().length < 2} onClick={findTeams} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}><Search size={14} /> Find</Button>
+              </div>
+              {found && (
+                found.length === 0 ? (
+                  <p style={{ margin: '0.4rem 0 0', fontSize: '0.8rem', color: '#64748b' }}>No team found. Create it below.</p>
+                ) : (
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', marginTop: '0.45rem' }}>
+                    {found.map((t) => (
+                      <div key={t.id} style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.85rem' }}>
+                        <Avatar url={t.logo_url} name={t.name} size={28} square dark />
+                        <span style={{ flex: 1 }}>{t.name}{t.city ? <span style={{ color: '#64748b' }}> · {t.city}</span> : null}</span>
+                        {inIds.has(t.id) ? <Badge variant="success">Added</Badge> : (
+                          <Button variant="primary" size="sm" disabled={busy} onClick={() => act(() => dataService.organiserAddTeam(tournament.id, t.id), `${t.name} added. Its owner was told.`)}>
+                            <Plus size={13} /> Add
+                          </Button>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )
+              )}
+            </div>
+            <div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>Or create a new team</div>
+              <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                <input value={newTeam.name} onChange={(e) => setNewTeam({ ...newTeam, name: e.target.value })} placeholder="Team name" style={{ ...fieldS, flex: 2, minWidth: 180 }} />
+                <input value={newTeam.short_name} onChange={(e) => setNewTeam({ ...newTeam, short_name: e.target.value.toUpperCase().slice(0, 6) })} placeholder="Short (e.g. TFC)" style={{ ...fieldS, width: 110 }} />
+                <input value={newTeam.city} onChange={(e) => setNewTeam({ ...newTeam, city: e.target.value })} placeholder={tournament.city ? `City (${tournament.city})` : 'City'} style={{ ...fieldS, flex: 1, minWidth: 120 }} />
+                <Button variant="primary" disabled={busy || newTeam.name.trim().length < 2}
+                  onClick={() => act(() => dataService.organiserCreateTeam(tournament.id, newTeam), `${newTeam.name} created and added. Open it to add its players.`).then(() => setNewTeam({ name: '', short_name: '', city: '' }))}
+                  style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                  <UserPlus size={14} /> Create & add
+                </Button>
+              </div>
+              <p style={{ margin: '0.35rem 0 0', fontSize: '0.75rem', color: '#64748b' }}>You become the owner of teams you create here, so you can add their players by mobile number.</p>
+            </div>
+            <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.8rem', color: '#334155' }}>
+              Most teams allowed:
+              <input type="number" min={2} max={64} value={maxTeams} onChange={(e) => setMaxTeams(e.target.value)} style={{ ...fieldS, width: 80 }} />
+              <Button variant="secondary" size="sm" disabled={busy || Number(maxTeams) === tournament.teams_count} onClick={saveMax}>Save</Button>
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* Apply with my team (#40) */}
       <Card title="Register your team">
@@ -125,18 +196,23 @@ export function TeamRegistrationPanel({ tournament, onChanged }) {
       {/* All registrations */}
       <Card title={`Teams · ${approvedCount} / ${tournament.teams_count} approved`}>
         {data.teams.length === 0 ? (
-          <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>No teams have registered yet.</p>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>No teams yet.{data.is_organiser ? ' Add them above.' : ''}</p>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.75rem' }}>
             {data.teams.map((t) => (
               <div key={t.team_id} style={{ padding: '0.8rem', border: '1px solid #e2e8f0', borderRadius: '0.6rem', display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
                 <Avatar url={t.logo_url} name={t.short_name || t.name} size={40} square dark />
                 <span style={{ flex: 1 }}>
-                  <strong style={{ display: 'block' }}>{t.name}</strong>
+                  <strong style={{ display: 'block', cursor: onNavigate ? 'pointer' : 'default', color: onNavigate ? '#0f172a' : undefined }} onClick={() => onNavigate && onNavigate('team-details', t.team_id)}>{t.name}</strong>
                   <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{t.captain ? `Captain: ${t.captain}` : 'Captain not set'} · {t.squad_size} players</span>
                   <span style={{ display: 'block', marginTop: '0.3rem' }}><Badge variant={STATUS[t.status]?.variant}>{STATUS[t.status]?.label || t.status}</Badge></span>
                   {t.status === 'rejected' && t.note && <span style={{ display: 'block', fontSize: '0.72rem', color: '#b91c1c', marginTop: '0.2rem' }}>Reason: {t.note}</span>}
                 </span>
+                {data.is_organiser && !t.i_own && t.status === 'approved' && !finished && (
+                  <Button variant="secondary" disabled={busy} title="Remove from tournament" onClick={() => window.confirm(`Remove ${t.name} from ${tournament.name}?`) && act(() => dataService.organiserRemoveTeam(tournament.id, t.team_id), `${t.name} removed.`)} style={{ padding: '0.3rem 0.5rem' }}>
+                    <Trash2 size={14} />
+                  </Button>
+                )}
                 {t.i_own && ['pending', 'approved'].includes(t.status) && (
                   <Button variant="secondary" disabled={busy} title="Withdraw" onClick={() => window.confirm(`Withdraw ${t.name} from ${tournament.name}?`) && act(() => dataService.withdrawTeamFromTournament(tournament.id, t.team_id), `${t.name} withdrawn.`)} style={{ padding: '0.3rem 0.5rem' }}>
                     <LogOut size={14} />

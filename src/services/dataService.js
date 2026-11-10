@@ -502,6 +502,28 @@ export const dataService = {
     return res.data;
   },
 
+  // Organiser adds / creates / removes tournament teams directly
+  async organiserAddTeam(tournamentId, teamId) {
+    requireDatabase();
+    const res = await supabaseClient.organiserAddTeam(tournamentId, teamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async organiserCreateTeam(tournamentId, team) {
+    requireDatabase();
+    const res = await supabaseClient.organiserCreateTeam(tournamentId, team);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async organiserRemoveTeam(tournamentId, teamId) {
+    requireDatabase();
+    const res = await supabaseClient.organiserRemoveTeam(tournamentId, teamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   // #72 Playing XI, #73 substitutes, #74 replacements, #75 transfers
   async fetchMatchLineups(matchId) {
     requireDatabase();

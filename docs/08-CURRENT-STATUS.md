@@ -37,6 +37,7 @@
 | `20261106105506_phase1_user_management_foundation.sql` | Phase 1 tables, row-level security, profile trigger |
 | `20261106105529_phase1_security_and_fk_index_hardening.sql` | Indexes and deny-rules for audit logs and templates |
 | `20261110050000_phase1_profile_mobile_number.sql` | Saves name and unique mobile number on sign-up |
+| `20261110170000_phase2_local_cricket_setup.sql` | local-cricket tournament fields (match type, category, pitch), new create_tournament, organiser add/create/remove team |
 | `20261110160000_phase2_playing_xi_transfers.sql` | match_players (playing XI, substitutes, replacements), player_transfers, lineup/transfer functions, team search, public team history filtered |
 | `20261110150000_phase2_double_elimination.sql` | double_elimination format, matches.bracket |
 | `20261110140000_phase2_tournament_logo_banner.sql` | tournament images in media bucket, set_tournament_image |
@@ -68,6 +69,8 @@
 
 ## 5. Known issues
 
+- Header "2 LIVE MATCHES" badge and the Live & Match Centre page still show sample data; they are replaced when Phase 3 live scoring is built.
+
 - The Tournament Details page was labelled "#32". It is a supporting screen; #32 in the master list is "Tournament name and branding". UI labels will be corrected when Phase 2 work resumes.
 - Dashboard statistics (4 tournaments, 32 teams, 520 players, 2 live matches) are fake sample data.
 - Maintenance mode currently shows a notice to everyone; it does not yet block any actions. Blocking will be added as write features become real.
@@ -93,6 +96,7 @@
 | :--- | :--- | :--- |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
+| 2026-11-10 | Claude | Local-cricket rework after owner feedback: new Create Tournament form (overs number, ball/pitch/category, players a side), organiser adds or creates teams, honest tournament summary |
 | 2026-11-10 | Claude | Playing XI, substitutes, replacements, transfers (#72–75) |
 | 2026-11-10 | Claude | Double elimination (#46); tracker summary tables refreshed |
 | 2026-11-10 | Claude | Tournament logo, banner and colour (#33) |

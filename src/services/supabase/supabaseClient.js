@@ -873,6 +873,25 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  // Organiser adds / creates / removes tournament teams directly
+  async organiserAddTeam(tournamentId, teamId) {
+    const { data, error } = await supabase.rpc('organiser_add_team', { p_tournament_id: tournamentId, p_team_id: teamId });
+    if (error) return { data: null, error: friendlyError(error, 'add team') };
+    return { data, error: null };
+  },
+
+  async organiserCreateTeam(tournamentId, { name, short_name, city }) {
+    const { data, error } = await supabase.rpc('organiser_create_team', { p_tournament_id: tournamentId, p_name: name, p_short_name: short_name || null, p_city: city || null });
+    if (error) return { data: null, error: friendlyError(error, 'create team') };
+    return { data, error: null };
+  },
+
+  async organiserRemoveTeam(tournamentId, teamId) {
+    const { data, error } = await supabase.rpc('organiser_remove_team', { p_tournament_id: tournamentId, p_team_id: teamId });
+    if (error) return { data: null, error: friendlyError(error, 'remove team') };
+    return { data, error: null };
+  },
+
   // #72 Playing XI, #73 substitutes, #74 replacements, #75 transfers
   async getMatchLineups(matchId) {
     const { data, error } = await supabase.rpc('get_match_lineups', { p_match_id: matchId });

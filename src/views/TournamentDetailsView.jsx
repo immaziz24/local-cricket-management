@@ -116,7 +116,7 @@ export function TournamentDetailsView(props) {
               Back to Tournament Registry
             </Button>
             <Button variant="outline" onClick={() => onNavigate('create-tournament')}>
-              Create Tournament (#31)
+              Create Tournament
             </Button>
           </div>
         </div>
@@ -296,91 +296,40 @@ export function TournamentDetailsView(props) {
               onClick={() => onNavigate('create-tournament')}
               style={{ backgroundColor: '#059669' }}
             >
-              + Create Tournament (#31)
+              New tournament
             </Button>
           </div>
         </div>
 
-        {/* Vital Metric Strip */}
+        {/* Key facts (local cricket) */}
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
           gap: '1rem',
           paddingTop: '1.25rem',
           borderTop: '1px solid var(--color-border)'
         }}>
-          {/* Format & Ball */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>
-              Format & Ball
-            </span>
-            <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-text-main)' }}>
-              {tournament.format}
-            </span>
-            <span style={{ fontSize: '0.76rem', color: 'var(--color-text-muted)' }}>
-              {tournament.ball_type || 'Leather Ball (White)'}
-            </span>
-          </div>
-
-          {/* Teams Quota */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>
-              Enrolled Teams
-            </span>
-            <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-text-main)' }}>
-              {tournament.teams_count} Clubs
-            </span>
-            <span style={{ fontSize: '0.76rem', color: 'var(--color-text-muted)' }}>
-              {tournament.teams_count <= 8 ? 'Single Pool' : '2 Groups of ' + (tournament.teams_count / 2)}
-            </span>
-          </div>
-
-          {/* Matches & Progress */}
+          {[
+            ['Overs', tournament.match_type === 'two_innings' ? 'Two innings' : `${tournament.overs_per_innings || '?'} overs`, tournament.match_type === 'box_cricket' ? 'Box cricket' : `${tournament.players_per_side || 11} a side`],
+            ['Ball', tournament.ball_type || 'Not set', tournament.pitch_type ? `${tournament.pitch_type} pitch` : 'Pitch not set'],
+            ['Teams', `${teams.length} / ${tournament.teams_count}`, tournament.category || 'Open'],
+            ['Prizes', tournament.prize_pool || 'Not set', tournament.entry_fee ? `Entry: ${tournament.entry_fee}` : 'No entry fee set']
+          ].map(([label, value, sub]) => (
+            <div key={label} style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>{label}</span>
+              <span style={{ fontSize: '1rem', fontWeight: 700, color: label === 'Prizes' ? '#047857' : 'var(--color-text-main)' }}>{value}</span>
+              <span style={{ fontSize: '0.76rem', color: 'var(--color-text-muted)' }}>{sub}</span>
+            </div>
+          ))}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>
-                Fixtures
-              </span>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-primary-dark)' }}>
-                {progressPercent}%
-              </span>
+              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>Matches played</span>
+              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-primary-dark)' }}>{progressPercent}%</span>
             </div>
-            <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-text-main)' }}>
-              {matchesDone} / {matchesTotal}
-            </span>
+            <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-text-main)' }}>{matchesDone} / {matchesTotal}</span>
             <div style={{ width: '100%', height: '5px', backgroundColor: 'var(--color-border)', borderRadius: '999px', marginTop: '0.2rem', overflow: 'hidden' }}>
               <div style={{ width: progressPercent + '%', height: '100%', backgroundColor: tournament.banner_color || 'var(--color-primary)', borderRadius: '999px' }} />
             </div>
-          </div>
-
-          {/* Prize Stakes */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>
-              Prize Purse
-            </span>
-            <span style={{ fontSize: '1rem', fontWeight: 700, color: '#047857' }}>
-              {tournament.prize_pool || 'Trophy & Medals'}
-            </span>
-            <span style={{ fontSize: '0.76rem', color: 'var(--color-text-muted)' }}>
-              Entry: {tournament.entry_fee || 'Free Entry'}
-            </span>
-          </div>
-
-          {/* Category Q Late Arrival Standard */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-            <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>
-              Late Arrival Rule (Cat Q)
-            </span>
-            <span style={{ fontSize: '0.9rem', fontWeight: 700, color: '#B45309' }}>
-              {tournament.penalty_policy === 'fielding_restriction'
-                ? 'Fielding Restriction'
-                : tournament.penalty_policy === 'penalty_runs'
-                ? '5 Penalty Runs'
-                : 'Overs Deduction'}
-            </span>
-            <span style={{ fontSize: '0.74rem', color: 'var(--color-text-muted)' }}>
-              Single Method Constraint Active
-            </span>
           </div>
         </div>
       </Card>
@@ -410,7 +359,7 @@ export function TournamentDetailsView(props) {
           }}
         >
           <Layers size={15} />
-          <span>Profile & Regulations</span>
+          <span>About & Rules</span>
         </button>
 
         <button
@@ -431,7 +380,7 @@ export function TournamentDetailsView(props) {
           }}
         >
           <Users size={15} />
-          <span>Participating Clubs ({teams.length})</span>
+          <span>Teams ({teams.length})</span>
         </button>
 
         <button
@@ -452,7 +401,7 @@ export function TournamentDetailsView(props) {
           }}
         >
           <Activity size={15} />
-          <span>Fixtures & Match Schedule ({matches.length})</span>
+          <span>Fixtures ({matches.length})</span>
         </button>
 
         <button
@@ -477,96 +426,54 @@ export function TournamentDetailsView(props) {
         </button>
       </div>
 
-      {/* TAB 1: OVERVIEW & REGULATIONS */}
+      {/* TAB 1: ABOUT & RULES */}
       {activeTab === 'overview' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
-          {/* Tournament Specifications Card */}
-          <Card
-            title="Tournament Architecture & Playing Conditions"
-            subtitle="Authoritative specifications configured for this tournament"
-          >
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', marginTop: '0.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.6rem 0', borderBottom: '1px solid var(--color-border)' }}>
-                <span style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Match Format:</span>
-                <span style={{ fontWeight: 700, fontSize: '0.85rem' }}>{tournament.format}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.6rem 0', borderBottom: '1px solid var(--color-border)' }}>
-                <span style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Official Match Ball:</span>
-                <span style={{ fontWeight: 700, fontSize: '0.85rem' }}>{tournament.ball_type || 'Leather Ball (White)'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.6rem 0', borderBottom: '1px solid var(--color-border)' }}>
-                <span style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Tournament Status:</span>
-                <Badge variant={tournament.status === 'ongoing' ? 'primary' : 'upcoming'}>{tournament.status}</Badge>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.6rem 0', borderBottom: '1px solid var(--color-border)' }}>
-                <span style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Host Ground / Complex:</span>
-                <span style={{ fontWeight: 600, fontSize: '0.85rem', textAlign: 'right' }}>{tournament.venue}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.6rem 0', borderBottom: '1px solid var(--color-border)' }}>
-                <span style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Tournament Window:</span>
-                <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{tournament.start_date} to {tournament.end_date}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.6rem 0', borderBottom: '1px solid var(--color-border)' }}>
-                <span style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Organizing Authority:</span>
-                <span style={{ fontWeight: 600, fontSize: '0.85rem' }}>{tournament.organizer_name || 'Tournament Committee'}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0.6rem 0' }}>
-                <span style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>Prize Pool & Honors:</span>
-                <span style={{ fontWeight: 700, fontSize: '0.85rem', color: '#047857' }}>{tournament.prize_pool || 'Champions Trophy'}</span>
-              </div>
+          <Card title="About this tournament">
+            <div style={{ display: 'flex', flexDirection: 'column', marginTop: '0.25rem' }}>
+              {[
+                ['Match type', tournament.match_type === 'box_cricket' ? 'Box cricket' : tournament.match_type === 'two_innings' ? 'Two innings' : 'Limited overs'],
+                ['Overs per innings', tournament.match_type === 'two_innings' ? '—' : (tournament.overs_per_innings || 'Not set')],
+                ['Players a side', tournament.players_per_side || 11],
+                ['Ball', tournament.ball_type || 'Not set'],
+                ['Pitch', tournament.pitch_type || 'Not set'],
+                ['Category', tournament.category || 'Open'],
+                ['Ground', tournament.venue],
+                ['City', tournament.city || '—'],
+                ['Dates', `${tournament.start_date} to ${tournament.end_date}`],
+                ['Organiser', tournament.organizer_name || '—'],
+                ['Entry fee', tournament.entry_fee || '—'],
+                ['Prizes', tournament.prize_pool || '—']
+              ].map(([k, v]) => (
+                <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', padding: '0.55rem 0', borderBottom: '1px solid var(--color-border)' }}>
+                  <span style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>{k}</span>
+                  <span style={{ fontWeight: 600, fontSize: '0.85rem', textAlign: 'right' }}>{v}</span>
+                </div>
+              ))}
             </div>
           </Card>
 
-          {/* Category Q & Local Regulations Card */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            <Card
-              title="Category Q Late Arrival Policy Enforcement"
-              subtitle="Enforced in accordance with Master Blueprint Section 5"
-            >
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginTop: '0.5rem' }}>
-                <div style={{
-                  padding: '0.85rem 1rem',
-                  backgroundColor: '#FEF3C7',
-                  border: '1px solid #FDE68A',
-                  borderRadius: 'var(--radius-md)',
-                  fontSize: '0.82rem',
-                  color: '#92400E',
-                  lineHeight: 1.4
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, marginBottom: '0.25rem' }}>
-                    <ShieldAlert size={16} />
-                    <span>Active Penalty Method: {tournament.penalty_policy === 'fielding_restriction' ? 'Fielding Restriction' : tournament.penalty_policy === 'penalty_runs' ? 'Penalty Runs' : 'Overs Deduction'}</span>
+          <Card title="Rules">
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginTop: '0.25rem' }}>
+              {tournament.penalty_policy && tournament.penalty_policy !== 'none' && (
+                <div style={{ padding: '0.85rem 1rem', backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', borderRadius: 'var(--radius-md)', fontSize: '0.84rem', color: '#92400E' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 700, marginBottom: '0.2rem' }}>
+                    <ShieldAlert size={16} /> Late-arrival rule
                   </div>
-                  <span>Master Blueprint Rule: Only <strong>ONE</strong> penalty method can be active in a match. Organisers must publish this rule in advance.</span>
+                  {tournament.penalty_policy === 'fielding_restriction'
+                    ? 'A team that arrives late fields with restrictions.'
+                    : tournament.penalty_policy === 'penalty_runs'
+                    ? 'The other team gets penalty runs when a team arrives late.'
+                    : 'A team that arrives late loses overs.'}
                 </div>
-
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.82rem' }}>
-                  <div style={{ padding: '0.65rem 0.85rem', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', backgroundColor: '#F8FAFC' }}>
-                    <div style={{ fontWeight: 700, color: 'var(--color-text-main)' }}>Official Cutoff Time</div>
-                    <div style={{ color: 'var(--color-text-muted)', fontSize: '0.76rem' }}>Toss nominations must be submitted 15 minutes prior to scheduled start.</div>
-                  </div>
-                  <div style={{ padding: '0.65rem 0.85rem', border: '1px solid var(--color-border)', borderRadius: 'var(--radius-sm)', backgroundColor: '#F8FAFC' }}>
-                    <div style={{ fontWeight: 700, color: 'var(--color-text-main)' }}>Sanction Authority</div>
-                    <div style={{ color: 'var(--color-text-muted)', fontSize: '0.76rem' }}>Both match umpires and designated tournament referee must co-sign penalty execution.</div>
-                  </div>
-                </div>
-
-                {tournament.rules_summary && (
-                  <div style={{
-                    padding: '0.85rem 1rem',
-                    backgroundColor: '#F0FDF4',
-                    border: '1px solid #BBF7D0',
-                    borderRadius: 'var(--radius-md)',
-                    fontSize: '0.82rem',
-                    color: '#166534'
-                  }}>
-                    <strong style={{ display: 'block', marginBottom: '0.25rem' }}>Special Ground Regulations:</strong>
-                    <span>{tournament.rules_summary}</span>
-                  </div>
-                )}
-              </div>
-            </Card>
-          </div>
+              )}
+              {tournament.rules_summary ? (
+                <div style={{ whiteSpace: 'pre-line', fontSize: '0.88rem', color: 'var(--color-text-main)', lineHeight: 1.5 }}>{tournament.rules_summary}</div>
+              ) : (
+                <div style={{ fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>The organiser has not written the rules yet.</div>
+              )}
+            </div>
+          </Card>
         </div>
       )}
 
@@ -574,6 +481,8 @@ export function TournamentDetailsView(props) {
       {activeTab === 'teams' && (
         <TeamRegistrationPanel
           tournament={tournament}
+          onNavigate={onNavigate}
+          onTournamentChanged={async () => setTournament(await dataService.fetchTournamentById(tournament.id))}
           onChanged={(regs) => setTeams((regs?.teams || []).filter((t) => t.status === 'approved'))}
         />
       )}
