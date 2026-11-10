@@ -5,6 +5,7 @@ import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { ArrowLeft, Search, UserPlus, UserMinus, Crown, Star, Shield, AlertCircle, CheckCircle, Phone } from 'lucide-react';
 import { ROLE_OPTIONS, BATTING_OPTIONS, BOWLING_OPTIONS, labelOf } from './playerOptions.js';
+import { Avatar } from './Avatar.jsx';
 
 /**
  * Phase 2 – Team page
@@ -42,11 +43,13 @@ export function TeamDetailView({ teamId, onNavigate }) {
 
   // Leadership
   const [lead, setLead] = useState({ captain: '', vice: '', icon: '' });
+  const [history, setHistory] = useState([]);
 
   const load = async () => {
     try {
       const t = await dataService.fetchTeam(teamId);
       setTeam(t);
+      dataService.fetchTeamHistory(teamId).then(setHistory).catch(() => setHistory([]));
       setLead({
         captain: t.squad.find((p) => p.is_captain)?.id || '',
         vice: t.squad.find((p) => p.is_vice_captain)?.id || '',
@@ -116,6 +119,28 @@ export function TeamDetailView({ teamId, onNavigate }) {
     } finally { setBusy(false); }
   };
 
+  const uploadLogo = async (file) => {
+    setBusy(true);
+    try {
+      await dataService.setTeamLogo(teamId, file);
+      setMsg({ ok: true, text: 'Team logo updated.' });
+      await load();
+    } catch (err) {
+      setMsg({ ok: false, text: err.message });
+    } finally { setBusy(false); }
+  };
+
+  const uploadPlayerPhoto = async (p, file) => {
+    setBusy(true);
+    try {
+      await dataService.setPlayerPhoto(p.id, file);
+      setMsg({ ok: true, text: `Photo updated for ${p.display_name}.` });
+      await load();
+    } catch (err) {
+      setMsg({ ok: false, text: err.message });
+    } finally { setBusy(false); }
+  };
+
   const saveLeadership = async () => {
     if (lead.captain && lead.captain === lead.vice) { setMsg({ ok: false, text: 'Captain and vice-captain must be different players.' }); return; }
     setBusy(true);
@@ -154,9 +179,7 @@ export function TeamDetailView({ teamId, onNavigate }) {
 
       {/* Team header (#68) */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem 1.5rem', backgroundColor: '#0f172a', borderRadius: '0.75rem', color: '#fff', flexWrap: 'wrap' }}>
-        <span style={{ width: '56px', height: '56px', borderRadius: '50%', backgroundColor: '#10b981', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800 }}>
-          {(team.short_name || team.name).slice(0, 3).toUpperCase()}
-        </span>
+        <Avatar url={team.logo_url} name={team.short_name || team.name} size={64} square dark onPick={team.i_own ? uploadLogo : undefined} busy={busy} />
         <div style={{ flex: 1 }}>
           <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{team.name}</h2>
           <div style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>{team.city ? `${team.city} · ` : ''}{squad.length} players</div>
@@ -174,11 +197,10 @@ export function TeamDetailView({ teamId, onNavigate }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {squad.map((p) => (
               <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.6rem 0.8rem', border: '1px solid #e2e8f0', borderRadius: '0.5rem', backgroundColor: '#f8fafc', flexWrap: 'wrap' }}>
-                <span style={{ width: '34px', height: '34px', borderRadius: '50%', backgroundColor: '#e2e8f0', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, color: '#334155' }}>
-                  {p.display_name.charAt(0).toUpperCase()}
-                </span>
+                <Avatar url={p.photo_url} name={p.display_name} size={38} onPick={p.can_edit_photo ? (f) => uploadPlayerPhoto(p, f) : undefined} busy={busy} />
                 <span style={{ flex: 1, minWidth: '160px' }}>
-                  <strong style={{ color: '#0f172a' }}>{p.display_name}</strong>
+                  <button type="button" onClick={() => onNavigate && onNavigate('player-profile', p.id)} style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', fontWeight: 700, color: '#0f172a', fontSize: '0.92rem' }}>{p.display_name}</button>
+                  <span style={{ marginLeft: '0.4rem', fontSize: '0.7rem', color: '#94a3b8', fontFamily: 'monospace' }}>{p.player_code}</span>
                   {p.is_captain && <span title="Captain" style={{ marginLeft: '0.4rem', fontSize: '0.72rem', fontWeight: 800, color: '#b45309' }}>(C)</span>}
                   {p.is_vice_captain && <span title="Vice-captain" style={{ marginLeft: '0.4rem', fontSize: '0.72rem', fontWeight: 800, color: '#1d4ed8' }}>(VC)</span>}
                   {p.is_icon && <span title="Icon player" style={{ marginLeft: '0.4rem', fontSize: '0.72rem', fontWeight: 800, color: '#7c3aed' }}>★ Icon</span>}
@@ -281,8 +303,43 @@ export function TeamDetailView({ teamId, onNavigate }) {
           </Card>
         </>
       )}
+
+      {/* Team history (#76) */}
+      <Card title="Team history">
+        {history.length === 0 ? (
+          <div style={{ color: '#94a3b8', fontSize: '0.85rem' }}>No history yet.</div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
+            {history.map((h, i) => (
+              <div key={i} style={{ display: 'flex', gap: '0.75rem', fontSize: '0.83rem', padding: '0.4rem 0', borderBottom: '1px solid #f1f5f9' }}>
+                <span style={{ color: '#94a3b8', whiteSpace: 'nowrap', minWidth: '110px' }}>
+                  {new Date(h.created_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
+                </span>
+                <span style={{ color: '#334155' }}>{describeHistory(h)}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
     </div>
   );
+}
+
+function describeHistory(h) {
+  switch (h.action) {
+    case 'TEAM_CREATED': return `Team created by ${h.by_name}`;
+    case 'PLAYER_ADDED_TO_TEAM': return `${h.player_name || 'A player'} joined the squad`;
+    case 'PLAYER_REMOVED_FROM_TEAM': return `${h.player_name || 'A player'} left the squad`;
+    case 'TEAM_LEADERSHIP_SET': {
+      const parts = [];
+      if (h.captain_name) parts.push(`Captain: ${h.captain_name}`);
+      if (h.vice_captain_name) parts.push(`Vice-captain: ${h.vice_captain_name}`);
+      if (h.icon_name) parts.push(`Icon: ${h.icon_name}`);
+      return parts.length ? `Leadership updated — ${parts.join(', ')}` : 'Leadership cleared';
+    }
+    case 'TEAM_LOGO_CHANGED': return 'Team logo changed';
+    default: return String(h.action || '').replace(/_/g, ' ').toLowerCase();
+  }
 }
 
 export default TeamDetailView;

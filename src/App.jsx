@@ -12,6 +12,7 @@ import { PasswordRecoveryView } from './views/auth/PasswordRecoveryView.jsx';
 import { CategoryNView } from './views/CategoryNView.jsx';
 import { TeamsView } from './views/teams/TeamsView.jsx';
 import { TeamDetailView } from './views/teams/TeamDetailView.jsx';
+import { PlayerProfileView } from './views/teams/PlayerProfileView.jsx';
 import { useDashboardData } from './hooks/useDashboardData.js';
 import { dataService, onAuthChange } from './services/dataService.js';
 
@@ -20,6 +21,7 @@ export function App() {
   const [selectedTournamentId, setSelectedTournamentId] = useState('trn-001');
   const [currentUser, setCurrentUser] = useState(null);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
+  const [selectedPlayerId, setSelectedPlayerId] = useState(null);
 
   // Keep the signed-in user in sync across the whole app (#255).
   useEffect(() => {
@@ -46,6 +48,9 @@ export function App() {
     }
     if (tab === 'team-details' && param) {
       setSelectedTeamId(param);
+    }
+    if (tab === 'player-profile' && param) {
+      setSelectedPlayerId(param);
     }
     setActiveTab(tab);
   };
@@ -91,6 +96,10 @@ export function App() {
 
       {activeTab === 'team-details' && selectedTeamId && (
         <TeamDetailView key={selectedTeamId} teamId={selectedTeamId} onNavigate={handleNavigate} />
+      )}
+
+      {activeTab === 'player-profile' && selectedPlayerId && (
+        <PlayerProfileView key={selectedPlayerId} playerId={selectedPlayerId} onNavigate={handleNavigate} />
       )}
 
       {activeTab === 'category-n' && <CategoryNView onNavigate={handleNavigate} />}

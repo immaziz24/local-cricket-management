@@ -5,6 +5,7 @@ import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { Users, Plus, ChevronRight, Save, AlertCircle, CheckCircle } from 'lucide-react';
 import { ROLE_OPTIONS, BATTING_OPTIONS, BOWLING_OPTIONS } from './playerOptions.js';
+import { Avatar } from './Avatar.jsx';
 
 /**
  * Phase 2 – My Teams
@@ -66,8 +67,20 @@ export function TeamsView({ onNavigate }) {
   const saveMe = async () => {
     setBusy(true);
     try {
+      await dataService.saveMyBirthDate(me.date_of_birth || null);
       setMe(await dataService.saveMyPlayer(me));
       setMsg({ ok: true, text: 'Your player profile is saved.' });
+    } catch (err) {
+      setMsg({ ok: false, text: err.message });
+    } finally { setBusy(false); }
+  };
+
+  const uploadMyPhoto = async (file) => {
+    setBusy(true);
+    try {
+      await dataService.setPlayerPhoto(me.id, file);
+      setMe(await dataService.fetchMyPlayer());
+      setMsg({ ok: true, text: 'Photo updated.' });
     } catch (err) {
       setMsg({ ok: false, text: err.message });
     } finally { setBusy(false); }
@@ -131,9 +144,7 @@ export function TeamsView({ onNavigate }) {
             {teams.map((t) => (
               <button key={t.id} onClick={() => onNavigate && onNavigate('team-details', t.id)}
                 style={{ textAlign: 'left', padding: '1rem', border: '1px solid #e2e8f0', borderRadius: '0.6rem', backgroundColor: '#fff', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                <span style={{ width: '42px', height: '42px', borderRadius: '50%', backgroundColor: '#0f172a', color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, fontSize: '0.8rem', flexShrink: 0 }}>
-                  {(t.short_name || t.name).slice(0, 3).toUpperCase()}
-                </span>
+                <Avatar url={t.logo_url} name={t.short_name || t.name} size={44} square dark />
                 <span style={{ flex: 1 }}>
                   <strong style={{ display: 'block', color: '#0f172a' }}>{t.name}</strong>
                   <span style={{ fontSize: '0.78rem', color: '#64748b' }}>{t.city ? `${t.city} · ` : ''}{t.squad_size || 0} players</span>
@@ -148,10 +159,18 @@ export function TeamsView({ onNavigate }) {
 
       {me && (
         <Card title="My player profile">
-          <p style={{ margin: '0 0 0.75rem', fontSize: '0.8rem', color: '#64748b' }}>
-            <strong>{me.display_name}</strong> · this is how you appear in every team.
-          </p>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+            <Avatar url={me.photo_url} name={me.display_name} size={64} onPick={uploadMyPhoto} busy={busy} />
+            <div style={{ flex: 1 }}>
+              <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{me.display_name}</strong>
+              <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Player ID (#62): <strong style={{ fontFamily: 'monospace', color: '#0f172a' }}>{me.player_code}</strong> · this is how you appear in every team.</div>
+              <button type="button" onClick={() => onNavigate && onNavigate('player-profile', me.id)} style={{ background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', padding: 0, fontSize: '0.8rem', marginTop: '0.2rem' }}>View my public profile →</button>
+            </div>
+          </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.6rem' }}>
+            <label style={{ fontSize: '0.8rem', color: '#475569' }}>Date of birth (#66) – others see only your age
+              <input type="date" value={me.date_of_birth || ''} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setMe({ ...me, date_of_birth: e.target.value })} style={field} />
+            </label>
             <label style={{ fontSize: '0.8rem', color: '#475569' }}>Playing role (#65)
               <select value={me.player_role || ''} onChange={(e) => setMe({ ...me, player_role: e.target.value })} style={field}>
                 <option value="">Not set</option>

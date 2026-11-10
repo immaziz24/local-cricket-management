@@ -589,9 +589,9 @@ export const supabaseClient = {
     const me = await supabase.rpc('get_my_player');
     const playerId = me.data?.id;
     const [owned, member] = await Promise.all([
-      supabase.from('teams').select('id, name, short_name, city, owner_id, created_at').eq('owner_id', uid),
+      supabase.from('teams').select('id, name, short_name, city, logo_url, owner_id, created_at').eq('owner_id', uid),
       playerId
-        ? supabase.from('team_members').select('team_id, teams(id, name, short_name, city, owner_id, created_at)').eq('player_id', playerId)
+        ? supabase.from('team_members').select('team_id, teams(id, name, short_name, city, logo_url, owner_id, created_at)').eq('player_id', playerId)
         : Promise.resolve({ data: [] })
     ]);
     if (owned.error) return { data: null, error: friendlyError(owned.error, 'teams') };
@@ -611,9 +611,9 @@ export const supabaseClient = {
     const { data: s } = await supabase.auth.getSession();
     const uid = s.session?.user?.id;
     const [teamRes, squadRes] = await Promise.all([
-      supabase.from('teams').select('id, name, short_name, city, owner_id, created_at').eq('id', teamId).maybeSingle(),
+      supabase.from('teams').select('id, name, short_name, city, logo_url, owner_id, created_at').eq('id', teamId).maybeSingle(),
       supabase.from('team_members')
-        .select('player_id, is_captain, is_vice_captain, is_icon, jersey_number, joined_at, players(id, display_name, player_role, batting_style, bowling_style, profile_id)')
+        .select('player_id, is_captain, is_vice_captain, is_icon, jersey_number, joined_at, players(id, player_code, display_name, photo_url, player_role, batting_style, bowling_style, profile_id, created_by)')
         .eq('team_id', teamId)
     ]);
     if (teamRes.error) return { data: null, error: friendlyError(teamRes.error, 'team') };
@@ -621,6 +621,7 @@ export const supabaseClient = {
     const squad = (squadRes.data || []).map((m) => ({
       ...m.players,
       is_registered: !!m.players?.profile_id,
+      can_edit_photo: !!uid && (m.players?.profile_id === uid || (!m.players?.profile_id && m.players?.created_by === uid)),
       is_captain: m.is_captain,
       is_vice_captain: m.is_vice_captain,
       is_icon: m.is_icon,
@@ -675,6 +676,53 @@ export const supabaseClient = {
     });
     if (error) return { data: null, error: friendlyError(error, 'team leadership') };
     return { data, error: null };
+  },
+
+  // #61 / #69 image upload to the public 'media' bucket (max 2 MB, JPG/PNG/WEBP)
+  async uploadImage(folder, ownerId, file) {
+    if (!file) return { data: null, error: 'Choose an image first.' };
+    if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return { data: null, error: 'Please choose a JPG, PNG or WEBP image.' };
+    if (file.size > 2 * 1024 * 1024) return { data: null, error: 'The image must be smaller than 2 MB.' };
+    const ext = file.type === 'image/png' ? 'png' : file.type === 'image/webp' ? 'webp' : 'jpg';
+    const path = `${folder}/${ownerId}/${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from('media').upload(path, file, { upsert: true, contentType: file.type, cacheControl: '3600' });
+    if (error) return { data: null, error: friendlyError(error, 'image upload') };
+    const { data } = supabase.storage.from('media').getPublicUrl(path);
+    return { data: { url: data.publicUrl }, error: null };
+  },
+
+  async setPlayerPhoto({ playerId, file }) {
+    const up = await this.uploadImage('players', playerId, file);
+    if (up.error) return up;
+    const { error } = await supabase.rpc('set_player_photo', { p_player_id: playerId, p_url: up.data.url });
+    if (error) return { data: null, error: friendlyError(error, 'player photo') };
+    return { data: { photo_url: up.data.url }, error: null };
+  },
+
+  async setTeamLogo({ teamId, file }) {
+    const up = await this.uploadImage('teams', teamId, file);
+    if (up.error) return up;
+    const { error } = await supabase.rpc('set_team_logo', { p_team_id: teamId, p_url: up.data.url });
+    if (error) return { data: null, error: friendlyError(error, 'team logo') };
+    return { data: { logo_url: up.data.url }, error: null };
+  },
+
+  async updateMyBirthDate(date) {
+    const { data, error } = await supabase.rpc('update_my_birth_date', { p_date: date || null });
+    if (error) return { data: null, error: friendlyError(error, 'date of birth') };
+    return { data, error: null };
+  },
+
+  async getPlayerProfile(playerId) {
+    const { data, error } = await supabase.rpc('get_player_profile', { p_player_id: playerId });
+    if (error) return { data: null, error: friendlyError(error, 'player profile') };
+    return { data, error: null };
+  },
+
+  async getTeamHistory(teamId) {
+    const { data, error } = await supabase.rpc('get_team_history', { p_team_id: teamId });
+    if (error) return { data: null, error: friendlyError(error, 'team history') };
+    return { data: data || [], error: null };
   },
 
   /** Public platform settings: maintenance flag and the active announcement (readable by everyone). */

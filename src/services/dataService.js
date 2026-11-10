@@ -354,6 +354,41 @@ export const dataService = {
     return res.data;
   },
 
+  async setPlayerPhoto(playerId, file) {
+    requireDatabase();
+    const res = await supabaseClient.setPlayerPhoto({ playerId, file });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setTeamLogo(teamId, file) {
+    requireDatabase();
+    const res = await supabaseClient.setTeamLogo({ teamId, file });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveMyBirthDate(date) {
+    requireDatabase();
+    const res = await supabaseClient.updateMyBirthDate(date);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchPlayerProfile(playerId) {
+    requireDatabase();
+    const res = await supabaseClient.getPlayerProfile(playerId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchTeamHistory(teamId) {
+    requireDatabase();
+    const res = await supabaseClient.getTeamHistory(teamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   /** Maintenance flag + active announcement, shown to every visitor (#257). */
   async fetchPlatformSettings() {
     if (isSupabaseConfigured) {

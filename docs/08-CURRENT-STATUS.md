@@ -13,7 +13,7 @@
 | Real login | 🟩 Register (#254) and login/logout (#255) tested by the owner. 🟨 Password recovery (#256): code verified, new-password login to be confirmed. |
 | Super-Admin | 🟩 #257 dashboard on real data; owner's account has the **super_admin** role. |
 | Admin | 🟨 #258 Admin dashboard connected (members, sign-ups, verification/report queues). Awaiting owner check. |
-| Phase 2: players & teams | 🟨 #59, #60, #63–65, #68, #70, #71: My Teams page, create team, add players by mobile number (or by name if not registered — they claim it later by registering with that number), captain / vice-captain / icon player. Awaiting owner check. |
+| Phase 2: players & teams | 🟨 #59–71 except none missing: player ID, photo, DOB/age, contact privacy, team logo, team history, public player profile (#60–62, #66, #67, #69, #76) added on top of My Teams page, create team, add players by mobile number (or by name if not registered — they claim it later by registering with that number), captain / vice-captain / icon player. Awaiting owner check. |
 | Security & operations | 🟨 #267 audit log, #268 backup download, #269 privacy + my-data download + sign out everywhere, #270 notification inbox + send-to-all. Awaiting owner check. |
 | Reports & suspension | 🟨 #266 report a member, admin suspend/lift, notifications, audit log. Awaiting owner check. |
 | Verification | 🟨 #265 optional badges (person / umpire / scorer): request + admin review, notifications, audit log. Awaiting owner check. |
@@ -36,6 +36,7 @@
 | `20261106105506_phase1_user_management_foundation.sql` | Phase 1 tables, row-level security, profile trigger |
 | `20261106105529_phase1_security_and_fk_index_hardening.sql` | Indexes and deny-rules for audit logs and templates |
 | `20261110050000_phase1_profile_mobile_number.sql` | Saves name and unique mobile number on sign-up |
+| `20261110103000_phase2_player_profile_media.sql` | Player ID, DOB, media bucket + upload rules, photo/logo functions, public player profile, team history |
 | `20261110100000_phase2_players_teams.sql` | players, teams, team_members; mobile lookup (exact, rate-limited, numbers hidden); unregistered players; claim on sign-up; captain/vice/icon |
 | `20261110093000_phase1_security_operations.sql` | Audit log list, platform snapshot, my-data export, send announcement |
 | `20261110090000_phase1_reporting_suspension.sql` | Member search, report, review, suspend/lift, auto-lift on login |
@@ -54,7 +55,7 @@
 ## 4. Next steps (in order)
 
 1. **Owner check of #265** (Category N → User Governance → Verification): request a badge, approve it. Push to GitHub (today's work is not on GitHub yet).
-2. **Phase 2 next:** rest of Category C (#61 photo, #62 player ID, #66 age, #67 contact privacy, #69 team logo, #72–78), then Category B tournaments (#31 onward; creator becomes Organiser).
+2. **Phase 2 next:** Category B tournaments (#31 onward; creator becomes Organiser). Category C #72–75, #77–78 wait for matches/tournaments.
 3. **Phase 2** in number order: #31 Create a tournament (connect to database), #32 Tournament name and branding, #33, …
 
 ## 5. Known issues
@@ -84,6 +85,7 @@
 | :--- | :--- | :--- |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
+| 2026-11-10 | Claude | Player ID, photos, logos, DOB/age, contact privacy, player profile page, team history |
 | 2026-11-10 | Claude | Phase 2 started: players & teams with add-by-mobile (CricHeroes-style) |
 | 2026-11-10 | Claude | #267–270 on real data — all 17 Phase 1 features connected |
 | 2026-11-10 | Claude | #266 Reporting and suspension on real data |
