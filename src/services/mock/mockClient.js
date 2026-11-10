@@ -84,6 +84,7 @@ const initialMockUsers = [
 
 let mockUsers = [...initialMockUsers];
 let currentSessionUser = null;
+let tournamentsStore = [...mockTournaments];
 
 // Initial role permissions store for #259–#264
 const initialRolePermissions = {
@@ -347,12 +348,48 @@ export const mockClient = {
   // Existing Core Queries
   async getStats() {
     await delay();
-    return { data: { ...mockStats }, error: null };
+    return { data: { ...mockStats, active_tournaments: tournamentsStore.length }, error: null };
   },
 
   async getTournaments() {
     await delay();
-    return { data: [...mockTournaments], error: null };
+    return { data: [...tournamentsStore], error: null };
+  },
+
+  // ==========================================
+  // Phase 2 - Feature #32: Tournament Details & Profile View
+  // ==========================================
+  async getTournamentById(tournamentId) {
+    await delay(120);
+    if (!tournamentId) {
+      return { data: null, error: 'Tournament identifier is required.' };
+    }
+    const cleanId = String(tournamentId).trim();
+    const tournament = tournamentsStore.find(
+      (t) => t.id === cleanId || t.code?.toUpperCase() === cleanId.toUpperCase()
+    );
+    if (!tournament) {
+      return { data: null, error: `Tournament with ID or Code "${cleanId}" not found.` };
+    }
+    return { data: { ...tournament }, error: null };
+  },
+
+  async getTournamentMatches(tournamentId) {
+    await delay(100);
+    if (!tournamentId) {
+      return { data: [], error: null };
+    }
+    const cleanId = String(tournamentId).trim();
+    const trn = tournamentsStore.find(
+      (t) => t.id === cleanId || t.code?.toUpperCase() === cleanId.toUpperCase()
+    );
+    const targetId = trn ? trn.id : cleanId;
+    const targetName = trn ? trn.name.toLowerCase() : cleanId.toLowerCase();
+
+    const matches = mockMatches.filter(
+      (m) => m.tournament_id === targetId || (m.tournament_name && m.tournament_name.toLowerCase() === targetName)
+    );
+    return { data: [...matches], error: null };
   },
 
   async getMatches(filterStatus = null) {
@@ -378,6 +415,106 @@ export const mockClient = {
   async getCategoryQPolicy() {
     await delay();
     return { data: { ...mockCategoryQPenaltyPolicy }, error: null };
+  },
+
+  // ==========================================
+  // Phase 2 - Feature #31: Create a Tournament
+  // ==========================================
+  async createTournament(tournamentData) {
+    await delay(180);
+    if (!tournamentData) {
+      return { data: null, error: 'Tournament data is required.' };
+    }
+
+    const name = tournamentData.name?.trim();
+    if (!name || name.length < 3) {
+      return { data: null, error: 'Tournament name must be at least 3 characters long.' };
+    }
+
+    const code = tournamentData.code?.trim().toUpperCase();
+    if (!code || code.length < 2) {
+      return { data: null, error: 'Tournament code is required (min 2 characters, e.g. PCCC-26).' };
+    }
+
+    const nameExists = tournamentsStore.some(
+      (t) => t.name.toLowerCase() === name.toLowerCase()
+    );
+    if (nameExists) {
+      return { data: null, error: `A tournament named "${name}" already exists. Please choose a different name.` };
+    }
+
+    const codeExists = tournamentsStore.some(
+      (t) => t.code.toUpperCase() === code
+    );
+    if (codeExists) {
+      return { data: null, error: `A tournament with code "${code}" already exists. Please choose a unique code.` };
+    }
+
+    if (!tournamentData.start_date) {
+      return { data: null, error: 'Tournament start date is required.' };
+    }
+
+    if (!tournamentData.end_date) {
+      return { data: null, error: 'Tournament end date is required.' };
+    }
+
+    if (new Date(tournamentData.end_date) < new Date(tournamentData.start_date)) {
+      return { data: null, error: 'End date cannot be earlier than start date.' };
+    }
+
+    const venue = tournamentData.venue?.trim();
+    if (!venue || venue.length < 3) {
+      return { data: null, error: 'Tournament venue is required (minimum 3 characters).' };
+    }
+
+    const teamsCount = parseInt(tournamentData.teams_count, 10);
+    if (isNaN(teamsCount) || teamsCount < 2 || teamsCount > 64) {
+      return { data: null, error: 'Participating teams count must be between 2 and 64.' };
+    }
+
+    const matchesTotal = tournamentData.matches_total
+      ? parseInt(tournamentData.matches_total, 10)
+      : Math.max(1, teamsCount - 1);
+
+    const newTournament = {
+      id: `trn-${String(tournamentsStore.length + 1).padStart(3, '0')}`,
+      name,
+      code,
+      format: tournamentData.format || 'T20',
+      status: tournamentData.status || 'registration',
+      teams_count: teamsCount,
+      matches_total: matchesTotal,
+      matches_completed: 0,
+      start_date: tournamentData.start_date,
+      end_date: tournamentData.end_date,
+      venue,
+      banner_color: tournamentData.banner_color || '#059669',
+      ball_type: tournamentData.ball_type || 'Leather Ball (White)',
+      organizer_name: tournamentData.organizer_name?.trim() || 'Tournament Committee',
+      entry_fee: tournamentData.entry_fee?.trim() || 'Free Entry',
+      prize_pool: tournamentData.prize_pool?.trim() || 'Trophy & Medals',
+      penalty_policy: tournamentData.penalty_policy || 'overs_deduction',
+      rules_summary: tournamentData.rules_summary?.trim() || '',
+      created_at: new Date().toISOString()
+    };
+
+    tournamentsStore.unshift(newTournament);
+
+    // Record audit event for Feature #267
+    const logItem = {
+      id: `log-${Date.now()}`,
+      timestamp: new Date().toISOString(),
+      actor: currentSessionUser?.full_name || 'Tournament Organiser',
+      role: currentSessionUser?.role || 'Organiser',
+      action: 'TOURNAMENT_CREATED',
+      target: `${newTournament.name} (${newTournament.code})`,
+      ip_address: '103.212.145.42',
+      severity: 'INFO',
+      details: `Feature #31: Created tournament "${newTournament.name}" (${newTournament.code}) with format ${newTournament.format}, ${newTournament.teams_count} teams, venue "${newTournament.venue}", starting ${newTournament.start_date}`
+    };
+    auditLogs.unshift(logItem);
+
+    return { data: newTournament, error: null };
   },
 
   // ==========================================
@@ -569,6 +706,10 @@ export const mockClient = {
     return {
       data: {
         total_users: mockUsers.length + 184,
+        new_users_7d: 12,
+        suspended_users: activeSuspensions.length,
+        pending_verifications: verificationQueue.filter((v) => v.status === 'pending').length,
+        open_reports: userReports.length,
         active_tournaments: 6,
         registered_teams: 32,
         active_matches: 3,
@@ -598,7 +739,8 @@ export const mockClient = {
     return { data: { maintenance_mode: platformMaintenanceMode }, error: null };
   },
 
-  async setGlobalBroadcast({ message, level = 'info' }) {
+  async setGlobalBroadcast(broadcast) {
+    const { message, level = 'info' } = broadcast || {};
     await delay(100);
     if (!message) {
       globalBroadcastBanner = null;
@@ -611,6 +753,33 @@ export const mockClient = {
   // ==========================================
   // Feature #258: Admin Dashboard
   // ==========================================
+  async getAdminDashboard() {
+    await delay(100);
+    return {
+      data: {
+        total_users: mockUsers.length,
+        new_users_7d: mockUsers.length,
+        suspended_users: activeSuspensions.length,
+        pending_verifications: verificationQueue.filter((v) => v.status === 'pending').length,
+        open_reports: userReports.filter((r) => r.status !== 'resolved').length,
+        recent_users: mockUsers.slice().reverse().map((u) => ({
+          id: u.id,
+          display_name: u.full_name,
+          created_at: u.created_at,
+          account_status: u.is_suspended ? 'suspended' : 'active',
+          roles: [u.role.toLowerCase().replace(/[- ]/g, '_')]
+        })),
+        pending_verification_items: verificationQueue
+          .filter((v) => v.status === 'pending')
+          .map((v) => ({ id: v.id, user_name: v.user_name, verification_type: v.document_type, submitted_at: v.submitted_at })),
+        open_report_items: userReports
+          .filter((r) => r.status !== 'resolved')
+          .map((r) => ({ id: r.id, reported_user_name: r.reported_user_name, reporter_name: r.reported_by, reason: r.incident_type, status: r.status, created_at: r.date }))
+      },
+      error: null
+    };
+  },
+
   async getAdminQueue() {
     await delay(100);
     return {
@@ -676,22 +845,86 @@ export const mockClient = {
     return { data: { success: true, role, permissions: rolePermissionsState[role] }, error: null };
   },
 
+  async listMembersWithRoles() {
+    await delay(60);
+    return {
+      data: mockUsers.map((u) => ({
+        id: u.id,
+        display_name: u.full_name,
+        account_status: u.is_suspended ? 'suspended' : 'active',
+        created_at: u.created_at,
+        roles: u.mock_roles || [u.role.toLowerCase().replace(/[- ]/g, '_')]
+      })),
+      error: null
+    };
+  },
+
+  async assignRole({ userId, role }) {
+    await delay(60);
+    const u = mockUsers.find((x) => x.id === userId);
+    if (!u) return { data: null, error: 'Member not found.' };
+    u.mock_roles = Array.from(new Set([...(u.mock_roles || [u.role.toLowerCase().replace(/[- ]/g, '_')]), role]));
+    return { data: { user_id: userId, role, active: true }, error: null };
+  },
+
+  async revokeRole({ userId, role }) {
+    await delay(60);
+    const u = mockUsers.find((x) => x.id === userId);
+    if (!u) return { data: null, error: 'Member not found.' };
+    u.mock_roles = (u.mock_roles || [u.role.toLowerCase().replace(/[- ]/g, '_')]).filter((r) => r !== role);
+    return { data: { user_id: userId, role, active: false }, error: null };
+  },
+
   // ==========================================
   // Feature #265: User Verification
   // ==========================================
   async getVerificationQueue() {
     await delay(100);
-    return { data: [...verificationQueue], error: null };
+    return {
+      data: verificationQueue.map((v) => ({
+        id: v.id,
+        user_id: v.user_id,
+        user_name: v.user_name,
+        verification_type: /umpire/i.test(v.role) ? 'umpire' : /scorer/i.test(v.role) ? 'scorer' : 'identity',
+        status: v.status === 'verified' ? 'approved' : v.status,
+        note: `${v.document_type} · ${v.club_name}`,
+        submitted_at: v.submitted_at,
+        review_note: v.rejection_reason || null
+      })),
+      error: null
+    };
   },
 
-  async processUserVerification({ id, status, rejectionReason = '' }) {
+  async getMyVerifications() {
+    await delay(60);
+    return { data: [], error: null };
+  },
+
+  async requestVerification({ type, note }) {
+    await delay(80);
+    const item = {
+      id: `ver-${Date.now()}`,
+      user_id: currentSessionUser?.id || 'usr-guest',
+      user_name: currentSessionUser?.full_name || 'Guest',
+      role: type,
+      document_type: note || 'No note',
+      club_name: '',
+      submitted_at: new Date().toISOString(),
+      status: 'pending'
+    };
+    verificationQueue.unshift(item);
+    return { data: { id: item.id, verification_type: type, status: 'pending' }, error: null };
+  },
+
+  async processUserVerification({ id, approve, note = '' }) {
     await delay(120);
     const item = verificationQueue.find((v) => v.id === id);
     if (!item) {
       return { data: null, error: 'Verification request not found.' };
     }
+    const status = approve ? 'verified' : 'rejected';
     item.status = status;
-    item.rejection_reason = rejectionReason;
+    item.rejection_reason = note;
     item.processed_at = new Date().toISOString();
 
     // If verified, update matching user in mockUsers
@@ -706,6 +939,29 @@ export const mockClient = {
   // ==========================================
   // Feature #266: User Reporting and Suspension
   // ==========================================
+  async searchMembers(query) {
+    await delay(40);
+    const q = String(query || '').toLowerCase();
+    if (q.length < 2) return { data: [], error: null };
+    return { data: mockUsers.filter((u) => u.full_name.toLowerCase().includes(q)).slice(0, 10).map((u) => ({ id: u.id, display_name: u.full_name })), error: null };
+  },
+
+  async reportUser({ userId, reason, description }) {
+    await delay(60);
+    const u = mockUsers.find((x) => x.id === userId);
+    const item = { id: `rep-${Date.now()}`, reported_user_id: userId, reported_user_name: u?.full_name || 'Member', reported_by: currentSessionUser?.full_name || 'Guest', incident_type: reason, description, severity: 'Medium', status: 'submitted', date: new Date().toISOString() };
+    userReports.unshift(item);
+    return { data: { id: item.id, status: 'submitted' }, error: null };
+  },
+
+  async resolveUserReport({ id, dismiss }) {
+    await delay(60);
+    const r = userReports.find((x) => x.id === id);
+    if (!r) return { data: null, error: 'Report not found.' };
+    r.status = dismiss ? 'dismissed' : 'resolved';
+    return { data: { id, status: r.status }, error: null };
+  },
+
   async getUserReports() {
     await delay(100);
     return { data: [...userReports], error: null };
@@ -762,6 +1018,7 @@ export const mockClient = {
       filtered = filtered.filter((l) => 
         l.action.toLowerCase().includes(q) || 
         l.actor.toLowerCase().includes(q) || 
+        (l.target && l.target.toLowerCase().includes(q)) || 
         l.details.toLowerCase().includes(q)
       );
     }
@@ -899,23 +1156,23 @@ export const mockClient = {
   async getCategoryNSlots() {
     await delay(50);
     const slots = [
-      { id: 254, title: 'User registration', category: 'N', status: 'Implemented & Verified', pillar: 'Authentication', description: 'Self-service registration with email, mobile, password validation, and terms agreement.' },
-      { id: 255, title: 'User login and logout', category: 'N', status: 'Implemented & Verified', pillar: 'Authentication', description: 'Dual identifier login (Email or Indian Mobile), remember-me session, and secure sign-out.' },
-      { id: 256, title: 'Password recovery', category: 'N', status: 'Implemented & Verified', pillar: 'Authentication', description: 'Self-service password reset workflow with OTP verification and new password creation.' },
-      { id: 257, title: 'Super-admin dashboard', category: 'N', status: 'Implemented & Verified', pillar: 'Administrative Dashboards', description: 'Platform health monitoring, maintenance mode toggle, tenant stats, and broadcast banners.' },
-      { id: 258, title: 'Admin dashboard', category: 'N', status: 'Implemented & Verified', pillar: 'Administrative Dashboards', description: 'Regional operations queue: tournament approvals, team sanctions, and match dispute resolution.' },
-      { id: 259, title: 'Organiser permissions', category: 'N', status: 'Implemented & Verified', pillar: 'Role Permissions', description: 'RBAC controls for tournament creation, venue allocation, fixture rescheduling, and Cat Q penalty assignment.' },
-      { id: 260, title: 'Team owner permissions', category: 'N', status: 'Implemented & Verified', pillar: 'Role Permissions', description: 'RBAC controls for team squad rosters, player transfers, tournament entries, and branding.' },
-      { id: 261, title: 'Captain permissions', category: 'N', status: 'Implemented & Verified', pillar: 'Role Permissions', description: 'RBAC controls for Playing XI submission, toss nomination, batting/bowling orders, and score review appeals.' },
-      { id: 262, title: 'Scorer permissions', category: 'N', status: 'Implemented & Verified', pillar: 'Role Permissions', description: 'RBAC controls for ball-by-ball recording, extras, wagon wheels, DLS/VJD rain target calculation.' },
-      { id: 263, title: 'Umpire permissions', category: 'N', status: 'Implemented & Verified', pillar: 'Role Permissions', description: 'RBAC controls for official match sign-off, pitch reports, code of conduct violations, and penalty runs.' },
-      { id: 264, title: 'Player permissions', category: 'N', status: 'Implemented & Verified', pillar: 'Role Permissions', description: 'RBAC controls for personal stats access, fixture availability RSVP, transfer requests, and stats export.' },
-      { id: 265, title: 'User verification', category: 'N', status: 'Implemented & Verified', pillar: 'User Governance', description: 'Official credential review and badge verification for players, umpires, and scorers.' },
-      { id: 266, title: 'User reporting and suspension', category: 'N', status: 'Implemented & Verified', pillar: 'User Governance', description: 'Incident reports desk, disciplinary reviews, temporary bans, and indefinite suspensions.' },
-      { id: 267, title: 'Activity and audit logs', category: 'N', status: 'Implemented & Verified', pillar: 'Security & Operations', description: 'Immutable, searchable system audit trail capturing logins, score amendments, and admin actions.' },
-      { id: 268, title: 'Database backup', category: 'N', status: 'Implemented & Verified', pillar: 'Security & Operations', description: 'On-demand and automated database backup snapshots, checksum verification, and restore simulation.' },
-      { id: 269, title: 'Security and privacy management', category: 'N', status: 'Implemented & Verified', pillar: 'Security & Operations', description: 'Two-factor authentication policies, session timeouts, active session termination, and DPDP/GDPR export.' },
-      { id: 270, title: 'Notifications management', category: 'N', status: 'Implemented & Verified', pillar: 'Security & Operations', description: 'Multi-channel announcement composer (SMS, Email, Push, In-App), recipient grouping, and delivery logs.' }
+      { id: 254, title: 'User registration', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Authentication', description: 'Self-service registration with email, mobile, password validation, and terms agreement.' },
+      { id: 255, title: 'User login and logout', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Authentication', description: 'Dual identifier login (Email or Indian Mobile), remember-me session, and secure sign-out.' },
+      { id: 256, title: 'Password recovery', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Authentication', description: 'Self-service password reset workflow with OTP verification and new password creation.' },
+      { id: 257, title: 'Super-admin dashboard', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Administrative Dashboards', description: 'Platform health monitoring, maintenance mode toggle, tenant stats, and broadcast banners.' },
+      { id: 258, title: 'Admin dashboard', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Administrative Dashboards', description: 'Regional operations queue: tournament approvals, team sanctions, and match dispute resolution.' },
+      { id: 259, title: 'Organiser permissions', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Role Permissions', description: 'RBAC controls for tournament creation, venue allocation, fixture rescheduling, and Cat Q penalty assignment.' },
+      { id: 260, title: 'Team owner permissions', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Role Permissions', description: 'RBAC controls for team squad rosters, player transfers, tournament entries, and branding.' },
+      { id: 261, title: 'Captain permissions', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Role Permissions', description: 'RBAC controls for Playing XI submission, toss nomination, batting/bowling orders, and score review appeals.' },
+      { id: 262, title: 'Scorer permissions', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Role Permissions', description: 'RBAC controls for ball-by-ball recording, extras, wagon wheels, DLS/VJD rain target calculation.' },
+      { id: 263, title: 'Umpire permissions', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Role Permissions', description: 'RBAC controls for official match sign-off, pitch reports, code of conduct violations, and penalty runs.' },
+      { id: 264, title: 'Player permissions', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Role Permissions', description: 'RBAC controls for personal stats access, fixture availability RSVP, transfer requests, and stats export.' },
+      { id: 265, title: 'User verification', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'User Governance', description: 'Official credential review and badge verification for players, umpires, and scorers.' },
+      { id: 266, title: 'User reporting and suspension', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'User Governance', description: 'Incident reports desk, disciplinary reviews, temporary bans, and indefinite suspensions.' },
+      { id: 267, title: 'Activity and audit logs', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Security & Operations', description: 'Immutable, searchable system audit trail capturing logins, score amendments, and admin actions.' },
+      { id: 268, title: 'Database backup', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Security & Operations', description: 'On-demand and automated database backup snapshots, checksum verification, and restore simulation.' },
+      { id: 269, title: 'Security and privacy management', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Security & Operations', description: 'Two-factor authentication policies, session timeouts, active session termination, and DPDP/GDPR export.' },
+      { id: 270, title: 'Notifications management', category: 'N', status: 'See FEATURE_STATUS in CategoryNView.jsx', pillar: 'Security & Operations', description: 'Multi-channel announcement composer (SMS, Email, Push, In-App), recipient grouping, and delivery logs.' }
     ];
     return { data: slots, error: null };
   }

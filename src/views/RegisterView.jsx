@@ -16,9 +16,10 @@ import {
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
-import { dataService } from '../services/dataService';
+import { dataService, authBackend } from '../services/dataService';
 
-export function RegisterView({ onNavigate }) {
+export function RegisterView(props) {
+  const { onNavigate = () => {} } = props || {};
   // Form input states
   const [formData, setFormData] = useState({
     fullName: '',
@@ -280,7 +281,15 @@ export function RegisterView({ onNavigate }) {
       >
         <Info size={18} style={{ flexShrink: 0 }} />
         <span>
-          <strong>Frontend-Only Mock State:</strong> No real database or Supabase instance is connected. Submissions are processed through the replaceable mock data service layer.
+          {authBackend === 'supabase' ? (
+            <>
+              <strong>Real account:</strong> Your account is saved in the Local Cricket database. We will email you a link to confirm your email address.
+            </>
+          ) : (
+            <>
+              <strong>Frontend-Only Mock State:</strong> No real database or Supabase instance is connected. Submissions are processed through the replaceable mock data service layer.
+            </>
+          )}
         </span>
       </div>
 
@@ -306,7 +315,11 @@ export function RegisterView({ onNavigate }) {
             <div>
               <h2 style={{ fontSize: '1.35rem', marginBottom: '0.35rem' }}>Registration Successful!</h2>
               <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', maxWidth: '440px' }}>
-                Your user registration profile has been validated and recorded by the mock service layer.
+                {registeredUser.needs_email_confirmation
+                  ? `Your account has been created. We have sent a confirmation link to ${registeredUser.email}. Open it, then sign in.`
+                  : authBackend === 'supabase'
+                    ? 'Your account has been created. You can now sign in.'
+                    : 'Your user registration profile has been validated and recorded by the mock service layer.'}
               </p>
             </div>
 
@@ -605,7 +618,7 @@ export function RegisterView({ onNavigate }) {
       )}
 
       {/* Component Styles */}
-      <style>{`
+      <style dangerouslySetInnerHTML={{ __html: `
         .form-group {
           display: flex;
           flex-direction: column;
@@ -695,7 +708,7 @@ export function RegisterView({ onNavigate }) {
         @keyframes btnSpin {
           to { transform: rotate(360deg); }
         }
-      `}</style>
+      ` }} />
     </div>
   )
 }

@@ -22,6 +22,7 @@ export const mockTournaments = [
     name: "Premier City Cricket Championship 2026",
     code: "PCCC-26",
     format: "T20",
+    ball_type: "Leather Ball (White)",
     status: "ongoing",
     teams_count: 16,
     matches_total: 31,
@@ -29,13 +30,19 @@ export const mockTournaments = [
     start_date: "2026-10-15",
     end_date: "2026-11-20",
     venue: "Central City Oval, Ground 1 & 2",
-    banner_color: "#059669"
+    banner_color: "#059669",
+    organizer_name: "Premier City Cricket Association",
+    entry_fee: "₹7,500",
+    prize_pool: "₹75,000 + Champions Trophy",
+    penalty_policy: "overs_deduction",
+    rules_summary: "Official MCA/BCCI limited-overs rules. 20 overs per innings, 4 overs maximum per bowler. Strict Category Q overs deduction for late arrivals (1 over per 4 minutes late)."
   },
   {
     id: "trn-002",
     name: "Monsoon Night Super League",
     code: "MNSL-26",
     format: "T20 (Floodlights)",
+    ball_type: "Leather Ball (Pink)",
     status: "ongoing",
     teams_count: 8,
     matches_total: 16,
@@ -43,13 +50,19 @@ export const mockTournaments = [
     start_date: "2026-10-25",
     end_date: "2026-11-15",
     venue: "Greenfield Sports Complex",
-    banner_color: "#1E3A8A"
+    banner_color: "#1E3A8A",
+    organizer_name: "Suburban Night Cricket Federation",
+    entry_fee: "₹5,000",
+    prize_pool: "₹50,000 + Night Trophy",
+    penalty_policy: "fielding_restriction",
+    rules_summary: "Pink ball match play under high-mast LED floodlights. Category Q fielding restriction penalty active: non-compliant side restricted to maximum 3 fielders outside the 30-yard circle."
   },
   {
     id: "trn-003",
     name: "Inter-Suburban Veterans Trophy",
     code: "ISVT-26",
     format: "35 Overs",
+    ball_type: "Leather Ball (Red)",
     status: "upcoming",
     teams_count: 6,
     matches_total: 15,
@@ -57,13 +70,19 @@ export const mockTournaments = [
     start_date: "2026-11-12",
     end_date: "2026-12-05",
     venue: "Railway Recreation Ground",
-    banner_color: "#D97706"
+    banner_color: "#D97706",
+    organizer_name: "Veterans Cricket Club Board",
+    entry_fee: "₹4,000",
+    prize_pool: "₹30,000 + Rolling Shield",
+    penalty_policy: "penalty_runs",
+    rules_summary: "35 overs per side for registered players aged 35+. Red 4-piece leather ball. Category Q 5 penalty runs awarded directly to opponent if side reports past official cutoff time."
   },
   {
     id: "trn-004",
     name: "Youth Talent Hunt Cup (U-19)",
     code: "YTHC-26",
     format: "T20",
+    ball_type: "Leather Ball (White)",
     status: "registration",
     teams_count: 12,
     matches_total: 23,
@@ -71,7 +90,12 @@ export const mockTournaments = [
     start_date: "2026-11-25",
     end_date: "2026-12-20",
     venue: "St. Xavier Ground & Oval",
-    banner_color: "#7C3AED"
+    banner_color: "#7C3AED",
+    organizer_name: "State Youth Cricket Development Board",
+    entry_fee: "₹3,000",
+    prize_pool: "₹40,000 + Academy Scholarships",
+    penalty_policy: "overs_deduction",
+    rules_summary: "Under-19 developmental showcase tournament. Full digital verification required prior to squad lock-in. Category Q overs deduction in effect."
   }
 ];
 

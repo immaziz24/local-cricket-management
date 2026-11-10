@@ -138,3 +138,47 @@
 
 
 
+
+### ADR-012: Phase 2 Initialization & Feature #31 (Create a Tournament) Implementation
+- **Context:** Official commencement of Phase 2 (Categories B & C). The project owner directed implementation of **Feature #31: Create a Tournament** as a single isolated task, preserving all Phase 1 features, using the existing data service abstraction, and avoiding uninstructed features (#32–78).
+- **Decision:**
+  1. **Author `CreateTournamentView.jsx`:** Built a responsive, accessible two-column tournament creation interface:
+     - Section 1: Tournament Profile (Full name, unique uppercase code, playing format, official match ball type, status, organizing body).
+     - Section 2: Schedule, Ground & Rules (Start date, end date, venue, expected teams 2–64, total estimated matches, Category Q penalty policy selector, entry fee, prize pool, theme palette picker, special ground rules).
+     - Live Registry Card Preview: Real-time visual feedback showing how the tournament card will appear in the tournament registries before submission.
+     - Inline Validation & States: Real-time field errors, submitting spinner, error banner, and rich success feedback with instant navigation links.
+  2. **Data Layer Extension (`mockClient.js` & `dataService.js`):**
+     - Implemented `createTournament(tournamentData)` in `mockClient.js` with uniqueness validation on code and name, date-ordering check, and in-memory persistence in `tournamentsStore`.
+     - Integrated with Feature #267 Audit Log system, recording `TOURNAMENT_CREATED` with actor, format, venue, and team quota details.
+     - Exposed `dataService.createTournament()` via the DAL facade without altering physical database tables or executing SQL.
+  3. **Seamless Navigation & Organiser Workflow Integration:**
+     - Added `Create Tournament (#31)` directly into `Sidebar.jsx` and `MobileNav.jsx`.
+     - Added "Create Tournament (#31)" header action button to `TournamentsView.jsx`.
+     - Added quick launch link directly from the `create_tournament` capability in `RolePermissionsView.jsx` (Feature #259 Organiser permissions).
+     - Added quick action button in `DashboardOverview.jsx`.
+- **Consequences:** Feature #31 is 100% operational, fully responsive, and verified with 27 automated tests. All 17 Phase 1 features passed regression testing (38/38 tests passing). Features #32–78 remain reserved awaiting subsequent instructions.
+
+
+---
+
+### ADR-013: Phase 2 Feature #32 (Tournament Details & Profile View) Implementation
+- **Context:** Sequential execution of Phase 2 (Categories B & C). Feature #32 delivers the dedicated inspection interface for individual tournament profiles, vital operational statistics, format parameters, participating clubs, match schedule breakdown, Category Q penalty policy rules, and ground conditions.
+- **Decision:**
+  1. **Author `TournamentDetailsView.jsx`:** Built a responsive, multi-tab tournament detail interface:
+     - Header / Hero Section: Banner accent strip, live status badges, unique monospace tournament code with click-to-copy clipboard action, venue, start/end dates with duration calculation, and organizing body.
+     - Vital Statistics Strip: Format & official match ball, team quota, fixture completion progress bar, prize purse and entry fee, and Category Q penalty method indicator.
+     - Quick Tournament Switcher: Integrated selector permitting instant navigation across all active tournaments without returning to the main registry.
+     - Tab 1 (Profile & Regulations): Authoritative playing conditions, match ball specifications, tournament window, organizing authority, and Category Q late arrival policy rules.
+     - Tab 2 (Participating Clubs): Enrolled clubs grid with captain names, home grounds, short codes, and championship titles.
+     - Tab 3 (Fixtures & Schedule): Filterable fixture list (All, Live, Upcoming, Completed) displaying match stages, timings, team scores, and results.
+  2. **Data Access Layer Extensions (`mockClient.js` & `dataService.js`):**
+     - Implemented `getTournamentById(tournamentId)` with ID and case-insensitive code resolution in `tournamentsStore`.
+     - Implemented `getTournamentMatches(tournamentId)` returning associated fixtures from `mockMatches`.
+     - Added rich profile fields (`ball_type`, `organizer_name`, `entry_fee`, `prize_pool`, `penalty_policy`, `rules_summary`) to initial mock tournaments in `mockData.js`.
+  3. **Seamless Navigation Integration:**
+     - Connected tournament cards in `TournamentsView.jsx` with clickable headers and a "View Details (#32)" action button.
+     - Connected tournament entries in `DashboardOverview.jsx` directly to `TournamentDetailsView`.
+     - Connected Feature #31 creation success screen with direct "View Tournament Details (#32)" CTA button.
+     - Synchronized `Sidebar.jsx` and `MobileNav.jsx` active tab states when inspecting tournament details.
+  4. **Strict Scope Integrity:** Only Feature #32 implemented; Feature #33 and subsequent features remain unstarted.
+- **Consequences:** Feature #32 is fully operational, verified with 44 automated tests and 0 build diagnostics. Phase 1 features and Feature #31 remain 100% operational.

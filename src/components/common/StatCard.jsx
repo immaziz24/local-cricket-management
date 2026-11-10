@@ -1,6 +1,7 @@
 import React from 'react';
 
-export function StatCard({ label, value, subtext, icon: Icon, color = 'var(--color-primary)' }) {
+export function StatCard(props) {
+  const { label, value, subtext, icon: Icon, color = 'var(--color-primary)' } = props || {};
   return (
     <div className="card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>

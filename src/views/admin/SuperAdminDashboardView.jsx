@@ -24,6 +24,8 @@ export function SuperAdminDashboardView() {
   const [broadcastMessage, setBroadcastMessage] = useState('');
   const [broadcastLevel, setBroadcastLevel] = useState('info');
   const [broadcastStatus, setBroadcastStatus] = useState(null);
+  const [loadError, setLoadError] = useState(null);
+  const [actionError, setActionError] = useState(null);
 
   useEffect(() => {
     loadMetrics();
@@ -31,11 +33,13 @@ export function SuperAdminDashboardView() {
 
   const loadMetrics = async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       const data = await dataService.fetchSuperAdminMetrics();
       setMetrics(data);
     } catch (err) {
       console.error('Failed to load super admin metrics:', err);
+      setLoadError(err.message || 'Could not load the Super-Admin dashboard.');
     } finally {
       setLoading(false);
     }
@@ -45,11 +49,13 @@ export function SuperAdminDashboardView() {
     if (!metrics) return;
     const targetState = !metrics.maintenance_mode;
     setMaintenanceLoading(true);
+    setActionError(null);
     try {
       await dataService.togglePlatformMaintenance(targetState);
       setMetrics((prev) => ({ ...prev, maintenance_mode: targetState }));
     } catch (err) {
       console.error('Failed to toggle maintenance mode:', err);
+      setActionError(err.message || 'Could not change maintenance mode.');
     } finally {
       setMaintenanceLoading(false);
     }
@@ -70,6 +76,7 @@ export function SuperAdminDashboardView() {
       setTimeout(() => setBroadcastStatus(null), 4000);
     } catch (err) {
       console.error('Failed to dispatch broadcast:', err);
+      setActionError(err.message || 'Could not publish the announcement.');
     }
   };
 
@@ -79,6 +86,7 @@ export function SuperAdminDashboardView() {
       setMetrics((prev) => ({ ...prev, broadcast_banner: null }));
     } catch (err) {
       console.error('Failed to clear broadcast:', err);
+      setActionError(err.message || 'Could not clear the announcement.');
     }
   };
 
@@ -90,8 +98,28 @@ export function SuperAdminDashboardView() {
     );
   }
 
+  if (loadError) {
+    return (
+      <Card>
+        <div style={{ padding: '1.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+          <ShieldAlert size={32} style={{ color: '#dc2626' }} />
+          <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Super-Admin access required</h3>
+          <p style={{ margin: 0, fontSize: '0.875rem', color: '#64748b', maxWidth: '440px' }}>
+            {loadError} Sign in with a Super-Admin account to use this dashboard.
+          </p>
+          <Button variant="outline" onClick={loadMetrics}>Try Again</Button>
+        </div>
+      </Card>
+    );
+  }
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {actionError && (
+        <div style={{ padding: '0.75rem 1rem', backgroundColor: '#fef2f2', border: '1px solid #fecaca', borderRadius: '0.5rem', color: '#b91c1c', fontSize: '0.85rem' }}>
+          {actionError}
+        </div>
+      )}
       {/* Header Banner */}
       <div style={{
         display: 'flex',
@@ -186,33 +214,33 @@ export function SuperAdminDashboardView() {
             {metrics?.total_users}
           </div>
           <div style={{ fontSize: '0.75rem', color: '#16a34a', marginTop: '0.25rem' }}>
-            Across 8 User Personas
+            +{metrics?.new_users_7d ?? 0} new in the last 7 days
           </div>
         </Card>
 
         <Card>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>System Uptime</span>
+            <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Pending Verifications</span>
             <Activity size={18} style={{ color: '#16a34a' }} />
           </div>
           <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>
-            {metrics?.system_uptime}
+            {metrics?.pending_verifications ?? 0}
           </div>
           <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
-            Hostinger server1495 Node
+            Awaiting review (#265)
           </div>
         </Card>
 
         <Card>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
-            <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Memory Allocation</span>
+            <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>Suspended Accounts</span>
             <Cpu size={18} style={{ color: '#8b5cf6' }} />
           </div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 800, color: '#0f172a' }}>
-            {metrics?.memory_usage.split('(')[0]}
+          <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>
+            {metrics?.suspended_users ?? 0}
           </div>
           <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
-            Max Limit: 3,072 MB RAM
+            Open reports: {metrics?.open_reports ?? 0} (#266)
           </div>
         </Card>
 
@@ -222,10 +250,10 @@ export function SuperAdminDashboardView() {
             <CheckCircle size={18} style={{ color: '#059669' }} />
           </div>
           <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>
-            {metrics?.active_matches}
+            {metrics?.active_matches ?? 0}
           </div>
           <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
-            Across 6 Tournaments
+            Live scoring arrives in Phase 3
           </div>
         </Card>
       </div>

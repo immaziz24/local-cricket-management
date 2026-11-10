@@ -18,14 +18,15 @@ import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
 import { LoadingSpinner } from '../components/common/LoadingSpinner';
 
-export function DashboardOverview({
-  stats,
-  liveMatches = [],
-  tournaments = [],
-  penaltyPolicy,
-  loading,
-  onNavigate
-}) {
+export function DashboardOverview(props) {
+  const {
+    stats,
+    liveMatches = [],
+    tournaments = [],
+    penaltyPolicy,
+    loading,
+    onNavigate = () => {}
+  } = props || {};
   if (loading) {
     return <LoadingSpinner message="Loading cricket dashboard metrics..." />
   }
@@ -49,16 +50,24 @@ export function DashboardOverview({
           <div>
             <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', backgroundColor: 'rgba(16, 185, 129, 0.18)', color: '#34D399', padding: '0.2rem 0.6rem', borderRadius: 'var(--radius-full)', fontSize: '0.75rem', fontWeight: 700, marginBottom: '0.5rem' }}>
               <Sparkles size={12} />
-              <span>Phase 0 Frontend Foundation Active</span>
+              <span>Phase 1 In Progress · Accounts are live</span>
             </div>
             <h1 style={{ fontSize: '1.6rem', color: '#FFFFFF', marginBottom: '0.35rem' }}>
               Local Cricket Management Platform
             </h1>
             <p style={{ color: '#CBD5E1', fontSize: '0.875rem', maxWidth: '640px' }}>
-              Interactive frontend shell configured with mock data services, ready for future Supabase PostgreSQL integration.
+              Real accounts, sign-in and the Super-Admin console run on the live database. Tournaments, matches and the numbers below are still sample data until their phases are built.
             </p>
           </div>
           <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+            <Button
+              variant="primary"
+              size="sm"
+              onClick={() => onNavigate('create-tournament')}
+              style={{ backgroundColor: '#059669', borderColor: '#059669' }}
+            >
+              Create Tournament (#31)
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -257,10 +266,15 @@ export function DashboardOverview({
             title="Tournament Management Progress"
             subtitle="Scheduled, active and completed tournament structures"
             action={
-              <Button variant="ghost" size="sm" onClick={() => onNavigate('tournaments')}>
-                <span>View All</span>
-                <ChevronRight size={14} />
-              </Button>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <Button variant="outline" size="sm" onClick={() => onNavigate('create-tournament')}>
+                  + Create (#31)
+                </Button>
+                <Button variant="ghost" size="sm" onClick={() => onNavigate('tournaments')}>
+                  <span>View All</span>
+                  <ChevronRight size={14} />
+                </Button>
+              </div>
             }
           >
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginTop: '0.5rem' }}>
@@ -280,7 +294,12 @@ export function DashboardOverview({
                   >
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
                       <div>
-                        <div style={{ fontWeight: 700, fontSize: '0.95rem' }}>{trn.name}</div>
+                        <div
+                          onClick={() => onNavigate && onNavigate('tournament-details', trn.id)}
+                          style={{ fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer', color: 'var(--color-text-main)' }}
+                        >
+                          {trn.name}
+                        </div>
                         <div style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)' }}>
                           {trn.format} • {trn.venue}
                         </div>
@@ -297,7 +316,7 @@ export function DashboardOverview({
                         <span>{progressPct}% Completed</span>
                       </div>
                       <div style={{ width: '100%', height: '6px', backgroundColor: 'var(--color-border-subtle)', borderRadius: '999px', overflow: 'hidden' }}>
-                        <div style={{ width: `${progressPct}%`, height: '100%', backgroundColor: 'var(--color-primary)', borderRadius: '999px' }} />
+                        <div style={{ width: progressPct + '%', height: '100%', backgroundColor: 'var(--color-primary)', borderRadius: '999px' }} />
                       </div>
                     </div>
                   </div>

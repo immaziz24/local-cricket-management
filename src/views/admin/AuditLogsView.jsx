@@ -3,204 +3,140 @@ import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
-import {
-  FileText,
-  Search,
-  Filter,
-  Download,
-  ShieldAlert,
-  Clock,
-  Terminal
-} from 'lucide-react';
+import { Search, Download, RefreshCw, ShieldAlert } from 'lucide-react';
+
+/** Feature #267 – Activity and audit logs (Admin / Super-Admin). Read-only record of every important change. */
+
+const ACTION_LABELS = {
+  ROLE_ASSIGNED: 'Role given',
+  ROLE_REVOKED: 'Role removed',
+  ROLE_PERMISSION_CHANGED: 'Permission changed',
+  ROLE_PERMISSIONS_RESET: 'Permissions reset',
+  MAINTENANCE_MODE_CHANGED: 'Maintenance mode changed',
+  BROADCAST_PUBLISHED: 'Announcement banner published',
+  BROADCAST_CLEARED: 'Announcement banner cleared',
+  VERIFICATION_REQUESTED: 'Badge requested',
+  VERIFICATION_APPROVED: 'Badge approved',
+  VERIFICATION_REJECTED: 'Badge rejected',
+  USER_REPORTED: 'Member reported',
+  REPORT_RESOLVED: 'Report resolved',
+  REPORT_DISMISSED: 'Report dismissed',
+  USER_SUSPENDED: 'Member suspended',
+  SUSPENSION_LIFTED: 'Suspension lifted',
+  PLATFORM_SNAPSHOT_EXPORTED: 'Backup exported',
+  PERSONAL_DATA_EXPORTED: 'Personal data downloaded',
+  ANNOUNCEMENT_SENT: 'Notification sent to all'
+};
+
+const label = (a) => ACTION_LABELS[a] || String(a || '').replace(/_/g, ' ').toLowerCase().replace(/^\w/, (c) => c.toUpperCase());
+const when = (v) => new Date(v).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+const detail = (row) => {
+  const m = row.metadata || {};
+  const parts = [];
+  if (m.role) parts.push(`role: ${m.role}`);
+  if (m.permission) parts.push(`${m.permission} → ${m.enabled ? 'on' : 'off'}`);
+  if (m.type) parts.push(`badge: ${m.type}`);
+  if (m.reason) parts.push(`reason: ${m.reason}`);
+  if (m.days !== undefined && m.days !== null) parts.push(`${m.days} days`);
+  if (m.enabled !== undefined && !m.permission) parts.push(m.enabled ? 'on' : 'off');
+  if (m.message) parts.push(`"${m.message}"`);
+  if (m.title) parts.push(`"${m.title}"`);
+  if (m.recipients !== undefined) parts.push(`${m.recipients} recipients`);
+  return parts.join(' · ');
+};
 
 export function AuditLogsView() {
-  const [logs, setLogs] = useState([]);
+  const [rows, setRows] = useState([]);
+  const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(true);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [severityFilter, setSeverityFilter] = useState('all');
-  const [exportNotice, setExportNotice] = useState(null);
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    loadLogs();
-  }, [severityFilter, searchQuery]);
-
-  const loadLogs = async () => {
+  const load = async (q = search) => {
     setLoading(true);
     try {
-      const data = await dataService.fetchAuditLogs({
-        severity: severityFilter,
-        query: searchQuery
-      });
-      setLogs(data || []);
+      setRows((await dataService.fetchAuditLogs(q.trim(), 300)) || []);
+      setError(null);
     } catch (err) {
-      console.error('Failed to load audit logs:', err);
+      setError(err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleExport = () => {
-    const jsonString = `data:text/json;charset=utf-8,${encodeURIComponent(
-      JSON.stringify(logs, null, 2)
-    )}`;
-    const downloadAnchor = document.createElement('a');
-    downloadAnchor.setAttribute('href', jsonString);
-    downloadAnchor.setAttribute('download', `audit_logs_${Date.now()}.json`);
-    document.body.appendChild(downloadAnchor);
-    downloadAnchor.click();
-    downloadAnchor.remove();
+  useEffect(() => { load(''); }, []);
 
-    setExportNotice('Audit trail exported successfully as JSON.');
-    setTimeout(() => setExportNotice(null), 3000);
+  const exportCsv = () => {
+    const header = ['When', 'Action', 'By', 'Affected member', 'Details'];
+    const lines = rows.map((r) => [new Date(r.created_at).toISOString(), label(r.action), r.actor_name, r.target_name || '', detail(r)]
+      .map((v) => `"${String(v).replace(/"/g, '""')}"`).join(','));
+    const blob = new Blob([[header.join(','), ...lines].join('\n')], { type: 'text/csv' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = `audit-log-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(a.href);
   };
 
+  if (error) {
+    return (
+      <Card>
+        <div style={{ padding: '1.5rem', textAlign: 'center' }}>
+          <ShieldAlert size={30} style={{ color: '#dc2626' }} />
+          <p style={{ fontSize: '0.875rem', color: '#64748b' }}>{error}</p>
+        </div>
+      </Card>
+    );
+  }
+
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Header Banner */}
-      <div style={{
-        padding: '1.25rem 1.5rem',
-        backgroundColor: 'var(--card-bg, #ffffff)',
-        border: '1px solid var(--border-color, #e2e8f0)',
-        borderRadius: '0.75rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '1rem'
-      }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <Badge variant="primary">FEATURE #267</Badge>
-            <span style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Immutable Compliance Stream
-            </span>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <div style={{ padding: '1.25rem 1.5rem', backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.75rem' }}>
+        <Badge variant="success">FEATURE #267</Badge>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0.35rem 0 0.25rem' }}>Activity & Audit Log</h2>
+        <p style={{ fontSize: '0.825rem', color: '#64748b', margin: 0 }}>
+          Every important change — roles, badges, reports, suspensions, settings — is recorded here and cannot be edited.
+        </p>
+      </div>
+
+      <Card>
+        <form onSubmit={(e) => { e.preventDefault(); load(); }} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginBottom: '1rem' }}>
+          <div style={{ flex: 1, minWidth: '220px', display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 0.65rem', border: '1px solid #cbd5e1', borderRadius: '0.5rem' }}>
+            <Search size={14} style={{ color: '#94a3b8' }} />
+            <input value={search} onChange={(e) => setSearch(e.target.value)} placeholder="Search by member name or action (e.g. SUSPENDED)" style={{ border: 'none', outline: 'none', flex: 1, fontSize: '0.85rem' }} />
           </div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main, #0f172a)', margin: '0 0 0.25rem 0' }}>
-            Activity and Audit Logs
-          </h2>
-          <p style={{ fontSize: '0.825rem', color: '#64748b', margin: 0 }}>
-            Chronological audit trail recording authentication events, score corrections, and administrative decisions.
-          </p>
-        </div>
+          <Button type="submit" variant="primary" style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}><RefreshCw size={14} /> Search</Button>
+          <Button type="button" variant="secondary" onClick={exportCsv} disabled={rows.length === 0} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}><Download size={14} /> Export CSV</Button>
+        </form>
 
-        <Button
-          variant="secondary"
-          onClick={handleExport}
-          style={{ fontSize: '0.8rem', padding: '0.45rem 0.85rem' }}
-        >
-          <Download size={14} />
-          Export Audit Trail (.JSON)
-        </Button>
-      </div>
-
-      {exportNotice && (
-        <div style={{
-          padding: '0.75rem 1rem',
-          backgroundColor: '#f0fdf4',
-          border: '1px solid #bbf7d0',
-          borderRadius: '0.5rem',
-          color: '#166534',
-          fontSize: '0.85rem'
-        }}>
-          {exportNotice}
-        </div>
-      )}
-
-      {/* Filter Toolbar */}
-      <div style={{
-        display: 'flex',
-        gap: '1rem',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        backgroundColor: '#f8fafc',
-        padding: '0.75rem 1rem',
-        borderRadius: '0.5rem',
-        border: '1px solid #e2e8f0'
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', flex: 1, minWidth: '220px' }}>
-          <Search size={16} style={{ color: '#64748b' }} />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search by action, actor name, or match ID..."
-            style={{
-              width: '100%',
-              padding: '0.4rem 0.6rem',
-              border: '1px solid #cbd5e1',
-              borderRadius: '0.375rem',
-              fontSize: '0.85rem'
-            }}
-          />
-        </div>
-
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <Filter size={15} style={{ color: '#64748b' }} />
-          <select
-            value={severityFilter}
-            onChange={(e) => setSeverityFilter(e.target.value)}
-            style={{
-              padding: '0.4rem 0.6rem',
-              border: '1px solid #cbd5e1',
-              borderRadius: '0.375rem',
-              fontSize: '0.85rem'
-            }}
-          >
-            <option value="all">All Severities</option>
-            <option value="info">INFO</option>
-            <option value="warning">WARNING</option>
-            <option value="critical">CRITICAL</option>
-          </select>
-        </div>
-      </div>
-
-      {/* Logs Table */}
-      <Card title={`System Audit Trail (${logs.length} events)`}>
         {loading ? (
-          <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
-            Loading audit records...
-          </div>
-        ) : logs.length === 0 ? (
-          <div style={{ padding: '1rem 0', color: '#64748b', fontStyle: 'italic', fontSize: '0.85rem' }}>
-            No audit records match the selected filter.
-          </div>
+          <div style={{ padding: '1rem', textAlign: 'center', color: '#64748b' }}>Loading…</div>
+        ) : rows.length === 0 ? (
+          <div style={{ padding: '1rem', textAlign: 'center', backgroundColor: '#f8fafc', borderRadius: '0.5rem', color: '#94a3b8', fontSize: '0.85rem' }}>No activity recorded yet.</div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-            {logs.map((log) => {
-              const badgeVariant =
-                log.severity === 'CRITICAL' ? 'danger' : log.severity === 'WARNING' ? 'warning' : 'primary';
-              return (
-                <div key={log.id} style={{
-                  padding: '0.75rem 1rem',
-                  backgroundColor: '#ffffff',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '0.375rem',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '0.75rem',
-                  fontSize: '0.825rem'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    <Badge variant={badgeVariant}>{log.severity}</Badge>
-                    <div>
-                      <div style={{ fontWeight: 700, color: '#0f172a' }}>
-                        {log.action} • <span style={{ fontWeight: 500, color: '#475569' }}>{log.details}</span>
-                      </div>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.2rem' }}>
-                        Actor: <strong>{log.actor}</strong> ({log.role}) • Target: {log.target} • IP: {log.ip_address}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                    <Clock size={13} />
-                    {new Date(log.timestamp).toLocaleString()}
-                  </div>
-                </div>
-              );
-            })}
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.83rem' }}>
+              <thead>
+                <tr style={{ textAlign: 'left', color: '#64748b', borderBottom: '1px solid #e2e8f0' }}>
+                  <th style={{ padding: '0.5rem' }}>When</th>
+                  <th style={{ padding: '0.5rem' }}>What happened</th>
+                  <th style={{ padding: '0.5rem' }}>By</th>
+                  <th style={{ padding: '0.5rem' }}>Member affected</th>
+                  <th style={{ padding: '0.5rem' }}>Details</th>
+                </tr>
+              </thead>
+              <tbody>
+                {rows.map((r) => (
+                  <tr key={r.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '0.5rem', whiteSpace: 'nowrap', color: '#64748b' }}>{when(r.created_at)}</td>
+                    <td style={{ padding: '0.5rem', fontWeight: 600, color: '#0f172a' }}>{label(r.action)}</td>
+                    <td style={{ padding: '0.5rem' }}>{r.actor_name}</td>
+                    <td style={{ padding: '0.5rem' }}>{r.target_name || '—'}</td>
+                    <td style={{ padding: '0.5rem', color: '#475569' }}>{detail(r)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </Card>
@@ -208,3 +144,4 @@ export function AuditLogsView() {
   );
 }
 
+export default AuditLogsView;

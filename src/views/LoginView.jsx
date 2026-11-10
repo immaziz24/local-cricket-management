@@ -16,9 +16,10 @@ import {
 import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
-import { dataService } from '../services/dataService';
+import { dataService, authBackend } from '../services/dataService';
 
-export function LoginView({ onNavigate }) {
+export function LoginView(props) {
+  const { onNavigate = () => {} } = props || {};
   const [formData, setFormData] = useState({
     identifier: '',
     password: '',
@@ -216,7 +217,15 @@ export function LoginView({ onNavigate }) {
       >
         <Info size={18} style={{ flexShrink: 0 }} />
         <span>
-          <strong>Frontend-Only Mock Authentication:</strong> Auth state is managed via the replaceable mock data service layer (`dataService.loginUser`), ready for future Supabase Auth integration.
+          {authBackend === 'supabase' ? (
+            <>
+              <strong>Secure sign-in:</strong> Accounts are stored in the Local Cricket database. Sign in with the email address you registered with.
+            </>
+          ) : (
+            <>
+              <strong>Frontend-Only Mock Authentication:</strong> Auth state is managed via the replaceable mock data service layer (`dataService.loginUser`). Add Supabase settings to `.env` to use real accounts.
+            </>
+          )}
         </span>
       </div>
 
@@ -271,7 +280,7 @@ export function LoginView({ onNavigate }) {
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ color: 'var(--color-text-muted)' }}>Session Security Token:</span>
                 <span style={{ fontFamily: 'monospace', fontSize: '0.75rem', color: 'var(--color-primary-dark)' }}>
-                  {sessionUser.token?.slice(0, 26)}...
+                  {authBackend === 'supabase' ? 'Active (Supabase Auth)' : `${sessionUser.token?.slice(0, 26)}...`}
                 </span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -334,7 +343,7 @@ export function LoginView({ onNavigate }) {
                   id="identifier"
                   name="identifier"
                   type="text"
-                  placeholder="e.g. admin@localcricket.com or 9876543210"
+                  placeholder={authBackend === 'supabase' ? 'e.g. name@example.com' : 'e.g. admin@localcricket.com or 9876543210'}
                   value={formData.identifier}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -438,7 +447,8 @@ export function LoginView({ onNavigate }) {
               )}
             </Button>
 
-            {/* Quick Credentials Helper for Reviewers */}
+            {/* Quick Credentials Helper for Reviewers (mock mode only) */}
+            {authBackend === 'mock' && (
             <div
               style={{
                 marginTop: '0.5rem',
@@ -498,6 +508,7 @@ export function LoginView({ onNavigate }) {
                 </button>
               </div>
             </div>
+            )}
 
             {/* Navigation back to Register (Feature #254) */}
             <div style={{ textAlign: 'center', marginTop: '0.5rem', fontSize: '0.85rem', color: 'var(--color-text-muted)' }}>

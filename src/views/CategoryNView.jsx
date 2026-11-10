@@ -36,7 +36,24 @@ import {
   ArrowRight
 } from 'lucide-react';
 
-export function CategoryNView({ onNavigate, initialTab = 'overview' }) {
+// Real status of each Phase 1 feature. Keep in sync with docs/03-PROGRESS-TRACKER.md.
+//   working = works with the real database and tested by the owner
+//   testing = connected to the real database, waiting for the owner's test
+//   screen  = screen only, still using sample data
+const FEATURE_STATUS = {
+  254: 'working', 255: 'working', 256: 'testing', 257: 'working',
+  258: 'testing', 259: 'testing', 260: 'testing', 261: 'testing', 262: 'testing', 263: 'testing',
+  264: 'testing', 265: 'testing', 266: 'testing', 267: 'testing', 268: 'testing', 269: 'testing', 270: 'testing'
+};
+const STATUS_BADGE = {
+  working: { variant: 'success', label: 'Working (real data)' },
+  testing: { variant: 'warning', label: 'Connected – testing' },
+  screen: { variant: 'neutral', label: 'Screen only (sample data)' }
+};
+const countStatus = (st) => Object.values(FEATURE_STATUS).filter((v) => v === st).length;
+
+export function CategoryNView(props) {
+  const { onNavigate = () => {}, initialTab = 'overview' } = props || {};
   const [activeTab, setActiveTab] = useState(initialTab);
   const [slots, setSlots] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -104,10 +121,10 @@ export function CategoryNView({ onNavigate, initialTab = 'overview' }) {
               fontWeight: 800,
               padding: '0.2rem 0.5rem',
               borderRadius: '4px',
-              backgroundColor: '#10b981',
+              backgroundColor: '#f59e0b',
               color: '#ffffff'
             }}>
-              PHASE 1 COMPLETE
+              PHASE 1 IN PROGRESS
             </span>
             <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Category N • Administration, Security and User Management
@@ -194,8 +211,8 @@ export function CategoryNView({ onNavigate, initialTab = 'overview' }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
             <Card>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>Features in Phase 1</div>
-              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', margin: '0.25rem 0' }}>17 / 17</div>
-              <div style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>100% Phase Scope Built</div>
+              <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#0f172a', margin: '0.25rem 0' }}>{countStatus('working')} / 17</div>
+              <div style={{ fontSize: '0.75rem', color: '#16a34a', fontWeight: 600 }}>Working with real data · {countStatus('testing')} in testing</div>
             </Card>
             <Card>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>Authentication Workflows</div>
@@ -205,12 +222,12 @@ export function CategoryNView({ onNavigate, initialTab = 'overview' }) {
             <Card>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>RBAC Persona Schemas</div>
               <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#8b5cf6', margin: '0.25rem 0' }}>6 Roles</div>
-              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>#259 to #264 Configured</div>
+              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>#259 to #264 · connected – testing</div>
             </Card>
             <Card>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b' }}>Security & Operations</div>
               <div style={{ fontSize: '1.75rem', fontWeight: 800, color: '#059669', margin: '0.25rem 0' }}>6 Features</div>
-              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>#265–#270 Verified</div>
+              <div style={{ fontSize: '0.75rem', color: '#64748b' }}>#265–#270 · connected – testing</div>
             </Card>
           </div>
 
@@ -238,7 +255,9 @@ export function CategoryNView({ onNavigate, initialTab = 'overview' }) {
                       }}>
                         SLOT #{slot.id}
                       </span>
-                      <Badge variant="success">Implemented & Verified</Badge>
+                      <Badge variant={STATUS_BADGE[FEATURE_STATUS[slot.id] || 'screen'].variant}>
+                        {STATUS_BADGE[FEATURE_STATUS[slot.id] || 'screen'].label}
+                      </Badge>
                     </div>
                     <strong style={{ fontSize: '0.95rem', color: '#0f172a', display: 'block', marginBottom: '0.25rem' }}>
                       {slot.title}
@@ -389,7 +408,7 @@ export function CategoryNView({ onNavigate, initialTab = 'overview' }) {
       )}
 
       {/* PILLAR 4: ROLE-BASED ACCESS CONTROL (#259–#264) */}
-      {activeTab === 'rbac' && <RolePermissionsView />}
+      {activeTab === 'rbac' && <RolePermissionsView onNavigate={onNavigate} />}
 
       {/* PILLAR 5: USER GOVERNANCE (#265, #266) */}
       {activeTab === 'governance' && (

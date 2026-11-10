@@ -1,109 +1,457 @@
 # Progress Tracker: Local Cricket Management Platform
 
-> **Tracking Timestamp:** 2026-11-06  
-> **Initial Domain:** [https://localcricket.plateria.in/](https://localcricket.plateria.in/) *(Temporary starting address; main domain to be purchased later)*  
-> **Hosting Plan:** Hostinger Business Web Hosting *(Server: server1495, IP: 93.127.208.116)*  
-> **Overall Progress:** 17 / 310 Features Completed (5.5%)  
-> **Feature Inventory Status:** Phase 1 Complete (Category N: Features #254–270 all 17 features implemented, integrated, and verified)  
-> **Application Code Base:** React 18 + Vite Frontend Application (Phase 1 Complete: All 17 Category N Features Operational, Production Build Verified, 0 Errors)  
-> **Database State:** Not created / Not configured (Deferred)  
-> **Git Remote Status:** Initialized & configured to `https://github.com/immaziz24/local-cricket-management` (No files pushed yet)  
+> **Last Updated:** 2026-11-10  
+> **Feature list:** see `01-MASTER-BLUEPRINT.md` (310 features, A–Q, 6 phases)  
 
----
+## 1. Status definitions
 
-## 1. High-Level Progress Dashboard
+| Symbol | Meaning |
+| :---: | :--- |
+| ⬜ | Not started |
+| 🟨 | Screen built with **mock (fake) data** — nothing is saved, no real login |
+| 🟩 | Working with the **real database** (Supabase) |
+| ✅ | Verified by the project owner in the browser and pushed to GitHub |
 
-| Metric | Target / Total | Current Value | Completion (%) |
-| :--- | :---: | :---: | :---: |
-| **Total Features** | 310 | 17 Completed | 5.5% |
-| **Categories Covered** | 17 (A–Q) | 1 Fully Implemented (Category N) | 5.9% |
-| **Development Phases** | 6 Phases | Phase 1 Complete (17 / 17 completed) | 100% (Phase 1) |
-| **Documentation Set** | 8 Documents | 8 Maintained & Tracked | 100% |
-| **Frontend Application Code** | Full System | Phase 1 Operational (17 Features Complete) | In Progress |
-| **Backend & Database Implementation** | Full System | Deferred | Deferred |
-| **Git & Remote Setup** | Initialized & Linked | Initialized, No pushes | 50% |
+## 2. Overall
 
----
+| Status | Features |
+| :--- | :---: |
+| ✅ Verified | 0 / 310 |
+| 🟩 Working (real database) | 3 / 310 |
+| 🟨 Screen only (mock data) | 15 / 310 |
+| ⬜ Not started | 292 / 310 |
 
-## 2. Phase-by-Phase Execution Status
+**Honest summary (2026-11-10, end of Phase 1 build):** all 17 Phase 1 features are connected to the real database; #254, #255, #257 checked by owner, the rest await a quick owner check.
 
-| Phase | Category Scope | Feature Count | Features ID Range | Phase Status | Next Milestone Action |
-| :--- | :--- | :---: | :--- | :--- | :--- |
-| **Phase 1** | **Category N** | 17 | #254–270 | **Completed & Verified (17 / 17)** | Complete Phase 1 audit & review; await Phase 2 specs |
-| **Phase 2** | **Category B, Category C** | 48 | Reserved | **Pending Source Specs** | Await Phase 1 completion sign-off & spec confirmation |
-| **Phase 3** | **Category A, D, E, L** | 103 | Reserved | **Pending Source Specs** | Await Phase 2 completion & spec confirmation |
-| **Phase 4** | **Category F, G, Q** | 37 | Reserved | **Pending Source Specs** | Await Phase 3 completion & spec confirmation |
-| **Phase 5** | **Category H, I, J, K** | 56 | Reserved | **Pending Source Specs** | Await Phase 4 completion & spec confirmation |
-| **Phase 6** | **Category M, O, P** | 49 | Reserved | **Pending Source Specs** | Await Phase 5 completion & spec confirmation |
+**Earlier summary:** #254 and #255 work end-to-end on the real database (owner tested). #256 password recovery is connected and awaiting test. All other screens still use sample data.
 
----
+## 3. By phase
 
-## 3. Category Progress Matrix (Categories A–Q)
+| Phase | Categories | Total | ⬜ | 🟨 | 🟩 | ✅ |
+| :---: | :--- | :---: | :---: | :---: | :---: | :---: |
+| 1 | N | 17 | 0 | 14 | 3 | 0 |
+| 2 | B, C | 48 | 47 | 1 | 0 | 0 |
+| 3 | A, D, E, L | 103 | 103 | 0 | 0 | 0 |
+| 4 | F, G, Q | 37 | 37 | 0 | 0 | 0 |
+| 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
+| 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
 
-| Cat | Associated Phase | Feature Count | Detailed Feature List | Frontend Status | Backend/DB Status |
-| :---: | :---: | :---: | :--- | :--- | :--- |
-| **A** | Phase 3 | Included in 103 | *Pending source confirmation* | Not Started | Deferred |
-| **B** | Phase 2 | Included in 48 | *Pending source confirmation* | Not Started | Deferred |
-| **C** | Phase 2 | Included in 48 | *Pending source confirmation* | Not Started | Deferred |
-| **D** | Phase 3 | Included in 103 | *Pending source confirmation* | Not Started | Deferred |
-| **E** | Phase 3 | Included in 103 | *Pending source confirmation* | Not Started | Deferred |
-| **F** | Phase 4 | Included in 37 | *Pending source confirmation* | Not Started | Deferred |
-| **G** | Phase 4 | Included in 37 | *Pending source confirmation* | Not Started | Deferred |
-| **H** | Phase 5 | Included in 56 | *Pending source confirmation* | Not Started | Deferred |
-| **I** | Phase 5 | Included in 56 | *Pending source confirmation* | Not Started | Deferred |
-| **J** | Phase 5 | Included in 56 | *Pending source confirmation* | Not Started | Deferred |
-| **K** | Phase 5 | Included in 56 | *Pending source confirmation* | Not Started | Deferred |
-| **L** | Phase 3 | Included in 103 | *Pending source confirmation* | Not Started | Deferred |
-| **M** | Phase 6 | Included in 49 | *Pending source confirmation* | Not Started | Deferred |
-| **N** | **Phase 1** | **17** | **Features #254 to #270** (All 17 features confirmed from master blueprint) | **Completed & Verified (17/17)** | Deferred |
-| **O** | Phase 6 | Included in 49 | *Pending source confirmation* | Not Started | Deferred |
-| **P** | Phase 6 | Included in 49 | *Pending source confirmation* | Not Started | Deferred |
-| **Q** | Phase 4 | Included in 37 | *Pending source confirmation* | Not Started | Deferred |
+## 4. Supporting screens (not numbered features)
 
----
+| Screen | File | Notes |
+| :--- | :--- | :--- |
+| Dashboard overview | `views/DashboardOverview.jsx` | Shows mock statistics. Numbers are fake until the database is connected. |
+| Tournaments list | `views/TournamentsView.jsx` | Lists tournaments from the mock store. |
+| Tournament details page | `views/TournamentDetailsView.jsx` | Was labelled "#32" by mistake. **#32 is "Tournament name and branding"** in the master list. This page is a supporting screen. |
+| Live match centre | `views/MatchesView.jsx` | Mock scoreboards only. Real scoring is Category A (Phase 3). |
+| Late-arrival rules info | `views/PenaltyRulesView.jsx` | Information page. Category Q features (#299–310) are not built yet. |
+| Category N hub | `views/CategoryNView.jsx` | Navigation hub for Phase 1 admin screens. |
 
-## 4. Phase 1 Detailed Feature Itemization (Category N: #254–270)
+## 5. Feature-by-feature status
 
-All 17 features of Phase 1 have been implemented in the frontend application using the replaceable mock data layer, verified with automated integration tests and clean production builds:
+### Phase 1 – Foundation and User Management
 
-| Feature # | Category | Official Feature Name | Specification Status | UI Implementation & Testing |
-| :---: | :---: | :--- | :---: | :---: |
-| **254** | N | User registration | Confirmed / Blueprint Verified | Completed & Verified |
-| **255** | N | User login and logout | Confirmed / Blueprint Verified | Completed & Verified |
-| **256** | N | Password recovery | Confirmed / Blueprint Verified | Completed & Verified |
-| **257** | N | Super-admin dashboard | Confirmed / Blueprint Verified | Completed & Verified |
-| **258** | N | Admin dashboard | Confirmed / Blueprint Verified | Completed & Verified |
-| **259** | N | Organiser permissions | Confirmed / Blueprint Verified | Completed & Verified |
-| **260** | N | Team owner permissions | Confirmed / Blueprint Verified | Completed & Verified |
-| **261** | N | Captain permissions | Confirmed / Blueprint Verified | Completed & Verified |
-| **262** | N | Scorer permissions | Confirmed / Blueprint Verified | Completed & Verified |
-| **263** | N | Umpire permissions | Confirmed / Blueprint Verified | Completed & Verified |
-| **264** | N | Player permissions | Confirmed / Blueprint Verified | Completed & Verified |
-| **265** | N | User verification | Confirmed / Blueprint Verified | Completed & Verified |
-| **266** | N | User reporting and suspension | Confirmed / Blueprint Verified | Completed & Verified |
-| **267** | N | Activity and audit logs | Confirmed / Blueprint Verified | Completed & Verified |
-| **268** | N | Database backup | Confirmed / Blueprint Verified | Completed & Verified |
-| **269** | N | Security and privacy management | Confirmed / Blueprint Verified | Completed & Verified |
-| **270** | N | Notifications management | Confirmed / Blueprint Verified | Completed & Verified |
+**Category N – Administration, security and user management**
 
----
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 254 | User registration | 🟩 | RegisterView.jsx — real Supabase account; owner tested 2026-11-10 (email confirmed, name + mobile saved) |
+| 255 | User login and logout | 🟩 | LoginView.jsx + Header — real Supabase login; owner tested 2026-11-10. Header shows user + Sign Out |
+| 256 | Password recovery | 🟨 | auth/PasswordRecoveryView.jsx — connected; code email + verification confirmed in database 2026-11-10. Awaiting owner confirmation that new-password login works |
+| 257 | Super-admin dashboard | 🟩 | admin/SuperAdminDashboardView.jsx — real data, maintenance mode, site-wide announcement; owner checked 2026-11-10 |
+| 258 | Admin dashboard | 🟨 | admin/AdminDashboardView.jsx — **connected 2026-11-10**: members, recent sign-ups, verification + report queues (Admin or Super-Admin). Tournament/team/dispute queues arrive with Phases 2 and 4. Awaiting owner check |
+| 259 | Organiser permissions | 🟨 | admin/RolePermissionsView.jsx — open-platform rule: earned by creating a tournament (built in Phase 2). Permission rules stored in database (Super-Admin can switch off). Awaiting owner check |
+| 260 | Team owner permissions | 🟨 | admin/RolePermissionsView.jsx — open-platform rule: earned by creating a team (Phase 2). Permission rules stored in database (Super-Admin can switch off). Awaiting owner check |
+| 261 | Captain permissions | 🟨 | admin/RolePermissionsView.jsx — open-platform rule: chosen by team owner (Phase 2). Permission rules stored in database (Super-Admin can switch off). Awaiting owner check |
+| 262 | Scorer permissions | 🟨 | admin/RolePermissionsView.jsx — open-platform rule: match/tournament owner + added scorers (Phase 3). Permission rules stored in database (Super-Admin can switch off). Awaiting owner check |
+| 263 | Umpire permissions | 🟨 | admin/RolePermissionsView.jsx — open-platform rule: chosen by match owner (Phase 3/4). Permission rules stored in database (Super-Admin can switch off). Awaiting owner check |
+| 264 | Player permissions | 🟨 | admin/RolePermissionsView.jsx — open-platform rule: automatic for every user at sign-up — live now. Permission rules stored in database (Super-Admin can switch off). Awaiting owner check |
+| 265 | User verification | 🟨 | admin/UserVerificationView.jsx — **connected 2026-11-10**: any user requests a badge (Verified person / umpire / scorer); Admin/Super-Admin approve or reject with reason; user notified; audit-logged. Awaiting owner check |
+| 266 | User reporting and suspension | 🟨 | admin/UserReportingSuspensionView.jsx — **connected 2026-11-10**: any user reports a member (name search); Admin/Super-Admin resolve/dismiss, suspend for N days or indefinitely, lift; member notified; login blocked while suspended; expired suspensions lift automatically; audit-logged. Awaiting owner check |
+| 267 | Activity and audit logs | 🟨 | admin/AuditLogsView.jsx — **connected 2026-11-10**: real log of every admin/user action, search, CSV export (Admin/Super-Admin). Awaiting owner check |
+| 268 | Database backup | 🟨 | admin/DatabaseBackupView.jsx — **connected 2026-11-10**: Super-Admin downloads full JSON snapshot (audited). Automatic daily backups need Supabase paid plan. Awaiting owner check |
+| 269 | Security and privacy management | 🟨 | admin/SecurityPrivacyView.jsx — **connected 2026-11-10**: privacy settings, download my data (DPDP), sign out of all devices. 2FA later. Awaiting owner check |
+| 270 | Notifications management | 🟨 | admin/NotificationsManagementView.jsx — **connected 2026-11-10**: inbox, mark read, preferences, admin send-to-all. Email/push/SMS delivery later. Awaiting owner check |
 
-## 5. Technical Environment & Readiness Checklist
+### Phase 2 – Core Cricket Platform
 
-- [x] Local Git repository initialized on branch `master`.
-- [x] Remote URL configured (`origin` -> `https://github.com/immaziz24/local-cricket-management`).
-- [x] Hostinger hosting verified: Hostinger Business Web Hosting (50 GB Disk, 3072 MB RAM, 2 CPU Cores, 600K Inodes, 120 Max Processes, 60 PHP Workers, server1495 in Asia (India), IP 93.127.208.116).
-- [x] Frontend architecture approved & initialized: React 18 + Vite with static deployment.
-- [x] Frontend project scaffolding initialized with modular components, responsive layout, and replaceable data service layer.
-- [x] Production build verified with zero errors (`npm.cmd run build` -> `dist/` generated).
-- [x] Phase 1 Complete: All 17 features in Category N (#254–270) implemented and verified in frontend.
-- [x] Feature #254 (User Registration) implemented with Indian mobile validation, email RFC 5322 check, and duplicate rejection.
-- [x] Feature #255 (User Login & Logout) implemented with dual identifier login, remember-me session, and profile view.
-- [x] Feature #256 (Password Recovery) implemented with 3-step OTP verification and password reset.
-- [x] Features #257 & #258 (Super-Admin & Admin Dashboards) implemented with cluster telemetry, maintenance toggle, and sanction queues.
-- [x] Features #259–#264 (Role Permissions) implemented for Organiser, Team Owner, Captain, Scorer, Umpire, and Player.
-- [x] Features #265 & #266 (User Verification & Suspension) implemented with document audit queue and disciplinary ban controls.
-- [x] Features #267–#270 (Audit Logs, Database Backup, Security & Privacy, Notifications) implemented and verified.
-- [x] Automated test suite verified (38 / 38 unit and integration tests passing with 0 errors).
-- [ ] Initial documentation and frontend foundation committed and pushed to remote GitHub repository (Awaiting user authorization).
+**Category B – Tournament management**
 
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 31 | Create a tournament | 🟨 | CreateTournamentView.jsx — saves to mock store only |
+| 32 | Tournament name and branding | ⬜ |  |
+| 33 | Tournament logo and banner | ⬜ |  |
+| 34 | Tournament start and end dates | ⬜ |  |
+| 35 | Tournament location | ⬜ |  |
+| 36 | Tournament registration | ⬜ |  |
+| 37 | Registration fees | ⬜ |  |
+| 38 | Prize money details | ⬜ |  |
+| 39 | Tournament rules and regulations | ⬜ |  |
+| 40 | Team registration | ⬜ |  |
+| 41 | Team approval and rejection | ⬜ |  |
+| 42 | Group creation | ⬜ |  |
+| 43 | League format | ⬜ |  |
+| 44 | Knockout format | ⬜ |  |
+| 45 | Round-robin format | ⬜ |  |
+| 46 | Double-elimination format | ⬜ |  |
+| 47 | Custom tournament formats | ⬜ |  |
+| 48 | Automatic fixture generation | ⬜ |  |
+| 49 | Manual fixture creation | ⬜ |  |
+| 50 | Match scheduling | ⬜ |  |
+| 51 | Match rescheduling | ⬜ |  |
+| 52 | Tournament calendar | ⬜ |  |
+| 53 | Points table | ⬜ |  |
+| 54 | Net Run Rate calculation | ⬜ |  |
+| 55 | Qualification management | ⬜ |  |
+| 56 | Knockout brackets | ⬜ |  |
+| 57 | Tournament leaderboards | ⬜ |  |
+| 58 | Tournament completion and winner declaration | ⬜ |  |
+
+**Category C – Player and team management**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 59 | Player registration | ⬜ |  |
+| 60 | Player profile | ⬜ |  |
+| 61 | Player profile photograph | ⬜ |  |
+| 62 | Player ID | ⬜ |  |
+| 63 | Batting style | ⬜ |  |
+| 64 | Bowling style | ⬜ |  |
+| 65 | Player role | ⬜ |  |
+| 66 | Age and date of birth | ⬜ |  |
+| 67 | Contact information and privacy settings | ⬜ |  |
+| 68 | Team profile | ⬜ |  |
+| 69 | Team logo | ⬜ |  |
+| 70 | Captain and vice-captain assignment | ⬜ |  |
+| 71 | Squad management | ⬜ |  |
+| 72 | Playing XI management | ⬜ |  |
+| 73 | Substitute management | ⬜ |  |
+| 74 | Player replacements | ⬜ |  |
+| 75 | Player transfers | ⬜ |  |
+| 76 | Team history | ⬜ |  |
+| 77 | Player career statistics | ⬜ |  |
+| 78 | Player awards and achievements | ⬜ |  |
+
+### Phase 3 – Cricket Scoring and Intelligence Engine
+
+**Category A – Local live scoring**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 1 | Create a new cricket match | ⬜ |  |
+| 2 | Select participating teams | ⬜ |  |
+| 3 | Add playing XI | ⬜ |  |
+| 4 | Add substitute players | ⬜ |  |
+| 5 | Toss winner selection | ⬜ |  |
+| 6 | Toss decision: bat or bowl | ⬜ |  |
+| 7 | Ball-by-ball scoring | ⬜ |  |
+| 8 | Record runs: 0, 1, 2, 3, 4, 6 | ⬜ |  |
+| 9 | Record extras: wides, no-balls, byes and leg-byes | ⬜ |  |
+| 10 | Record wickets and dismissal types | ⬜ |  |
+| 11 | Handle retired hurt and retired out | ⬜ |  |
+| 12 | Automatic strike rotation | ⬜ |  |
+| 13 | Automatic end-of-over strike changes | ⬜ |  |
+| 14 | Bowler selection and bowler changes | ⬜ |  |
+| 15 | Over and innings management | ⬜ |  |
+| 16 | Target calculation | ⬜ |  |
+| 17 | Match result calculation | ⬜ |  |
+| 18 | Score correction and undo | ⬜ |  |
+| 19 | Abandoned and tied match handling | ⬜ |  |
+| 20 | Live commentary | ⬜ |  |
+| 21 | Full batting scorecard | ⬜ |  |
+| 22 | Full bowling scorecard | ⬜ |  |
+| 23 | Match summary | ⬜ |  |
+| 24 | Save incomplete matches | ⬜ |  |
+| 25 | Resume a saved match | ⬜ |  |
+| 26 | Offline scoring support | ⬜ |  |
+| 27 | Automatic synchronisation after internet returns | ⬜ |  |
+| 28 | Live score sharing | ⬜ |  |
+| 29 | Live score updates for spectators | ⬜ |  |
+| 30 | Scoring history and audit trail | ⬜ |  |
+
+**Category D – Cricket statistics and analytics**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 79 | Total runs | ⬜ |  |
+| 80 | Batting average | ⬜ |  |
+| 81 | Batting strike rate | ⬜ |  |
+| 82 | Fours and sixes | ⬜ |  |
+| 83 | Highest individual score | ⬜ |  |
+| 84 | Half-centuries | ⬜ |  |
+| 85 | Centuries | ⬜ |  |
+| 86 | Bowling wickets | ⬜ |  |
+| 87 | Bowling average | ⬜ |  |
+| 88 | Bowling economy | ⬜ |  |
+| 89 | Bowling strike rate | ⬜ |  |
+| 90 | Best bowling figures | ⬜ |  |
+| 91 | Maiden overs | ⬜ |  |
+| 92 | Dot balls | ⬜ |  |
+| 93 | Catches | ⬜ |  |
+| 94 | Run-outs | ⬜ |  |
+| 95 | Stumpings | ⬜ |  |
+| 96 | Player of the Match | ⬜ |  |
+| 97 | Most Valuable Player | ⬜ |  |
+| 98 | Player comparison | ⬜ |  |
+| 99 | Team comparison | ⬜ |  |
+| 100 | Performance charts | ⬜ |  |
+| 101 | Match analysis | ⬜ |  |
+| 102 | Tournament statistics and leaderboards | ⬜ |  |
+
+**Category E – Cricket laws, playing conditions and rules**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 103 | MCC Laws of Cricket reference library | ⬜ |  |
+| 104 | ICC playing conditions reference library | ⬜ |  |
+| 105 | Match-specific rule configuration | ⬜ |  |
+| 106 | Batting and innings rules | ⬜ |  |
+| 107 | Bowling restrictions | ⬜ |  |
+| 108 | Maximum overs per bowler | ⬜ |  |
+| 109 | Wide-ball rules | ⬜ |  |
+| 110 | No-ball rules | ⬜ |  |
+| 111 | Free-hit rules | ⬜ |  |
+| 112 | LBW applicability | ⬜ |  |
+| 113 | Dismissal rules | ⬜ |  |
+| 114 | Byes and leg-byes | ⬜ |  |
+| 115 | Dead-ball rules | ⬜ |  |
+| 116 | Overthrow rules | ⬜ |  |
+| 117 | Short-run rules | ⬜ |  |
+| 118 | Boundary rules | ⬜ |  |
+| 119 | Powerplay configuration | ⬜ |  |
+| 120 | Follow-on rules | ⬜ |  |
+| 121 | Super Over rules | ⬜ |  |
+| 122 | DLS reference and calculation support | ⬜ |  |
+| 123 | Penalty-run rules | ⬜ |  |
+| 124 | Time-wasting regulations | ⬜ |  |
+| 125 | Umpire signals and decisions | ⬜ |  |
+| 126 | Match decision log | ⬜ |  |
+| 127 | Incident reports | ⬜ |  |
+| 128 | Disciplinary reports | ⬜ |  |
+| 129 | Ball type configuration | ⬜ |  |
+| 130 | Pitch and ground conditions | ⬜ |  |
+| 131 | Fielding restrictions | ⬜ |  |
+| 132 | Local tournament playing conditions | ⬜ |  |
+| 133 | Rules for substitutions and replacements | ⬜ |  |
+| 134 | Match-specific rule publishing and version history | ⬜ |  |
+
+**Category L – Cricket calculators and tools**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 216 | Run-rate calculator | ⬜ |  |
+| 217 | Required run-rate calculator | ⬜ |  |
+| 218 | Batting strike-rate calculator | ⬜ |  |
+| 219 | Batting average calculator | ⬜ |  |
+| 220 | Bowling economy calculator | ⬜ |  |
+| 221 | Bowling average calculator | ⬜ |  |
+| 222 | Net Run Rate calculator | ⬜ |  |
+| 223 | DLS calculation support | ⬜ |  |
+| 224 | Toss generator | ⬜ |  |
+| 225 | Team generator | ⬜ |  |
+| 226 | Playing XI generator | ⬜ |  |
+| 227 | Fixture generator | ⬜ |  |
+| 228 | Points table calculator | ⬜ |  |
+| 229 | Tournament budget calculator | ⬜ |  |
+| 230 | Prize distribution calculator | ⬜ |  |
+| 231 | Player auction calculator | ⬜ |  |
+| 232 | Cricket ground dimension calculator | ⬜ |  |
+
+### Phase 4 – Cricket Operations and Match Management
+
+**Category F – Umpire, scorer and officials management**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 135 | Umpire registration | ⬜ |  |
+| 136 | Umpire profiles | ⬜ |  |
+| 137 | Scorer registration | ⬜ |  |
+| 138 | Scorer profiles | ⬜ |  |
+| 139 | Official assignments | ⬜ |  |
+| 140 | Official availability | ⬜ |  |
+| 141 | Official schedules | ⬜ |  |
+| 142 | Umpire and scorer feedback | ⬜ |  |
+| 143 | Dispute management | ⬜ |  |
+| 144 | Incident reporting | ⬜ |  |
+| 145 | Official payment records | ⬜ |  |
+| 146 | Officials' performance history | ⬜ |  |
+
+**Category G – Ground and venue management**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 147 | Ground registration | ⬜ |  |
+| 148 | Ground profile | ⬜ |  |
+| 149 | Ground photographs | ⬜ |  |
+| 150 | Ground location and map | ⬜ |  |
+| 151 | Pitch information | ⬜ |  |
+| 152 | Boundary dimensions | ⬜ |  |
+| 153 | Ground facilities | ⬜ |  |
+| 154 | Ground booking | ⬜ |  |
+| 155 | Ground availability calendar | ⬜ |  |
+| 156 | Ground rental charges | ⬜ |  |
+| 157 | Pitch preparation records | ⬜ |  |
+| 158 | Ground inspection reports | ⬜ |  |
+| 159 | Ground match history | ⬜ |  |
+
+**Category Q – Team punctuality, attendance and match delay management**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 299 | Team arrival check-in | ⬜ |  |
+| 300 | Player attendance tracking | ⬜ |  |
+| 301 | Match readiness status | ⬜ |  |
+| 302 | Automatic delay calculator | ⬜ |  |
+| 303 | Over deduction penalty – configurable rate (example: 1 over per 10 minutes) | ⬜ |  |
+| 304 | Fielding restriction penalty – configurable outside-circle limit (example: only 2 fielders outside the 30-yard circle) | ⬜ |  |
+| 305 | Penalty runs – configurable rate (example: 5 runs per 10 minutes awarded to the opponent) | ⬜ |  |
+| 306 | One penalty method per match – only one of the three methods can be active | ⬜ |  |
+| 307 | Penalty approval and opponent selection – select late team, benefiting opponent and authorised approver | ⬜ |  |
+| 308 | Repeat offender and owner accountability | ⬜ |  |
+| 309 | Penalty payments, appeals and exemptions | ⬜ |  |
+| 310 | Delay history and automatic notifications | ⬜ |  |
+
+### Phase 5 – Cricket Community and Media Ecosystem
+
+**Category H – Cricket community and marketplace**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 160 | Cricket academies directory | ⬜ |  |
+| 161 | Coaching centres directory | ⬜ |  |
+| 162 | Cricket shops directory | ⬜ |  |
+| 163 | Cricket equipment listings | ⬜ |  |
+| 164 | Bat and ball listings | ⬜ |  |
+| 165 | Cricket kit rental | ⬜ |  |
+| 166 | Net practice facilities | ⬜ |  |
+| 167 | Local cricket clubs directory | ⬜ |  |
+| 168 | Tournament organisers directory | ⬜ |  |
+| 169 | Find cricket grounds | ⬜ |  |
+| 170 | Find umpires | ⬜ |  |
+| 171 | Find scorers | ⬜ |  |
+| 172 | Find commentators | ⬜ |  |
+| 173 | Find teams | ⬜ |  |
+| 174 | Find players | ⬜ |  |
+| 175 | Find tournaments | ⬜ |  |
+| 176 | Community listings and enquiries | ⬜ |  |
+
+**Category I – Live streaming and media**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 177 | Mobile live streaming | ⬜ |  |
+| 178 | YouTube live streaming integration | ⬜ |  |
+| 179 | Live score overlays | ⬜ |  |
+| 180 | Match highlights | ⬜ |  |
+| 181 | Match video uploads | ⬜ |  |
+| 182 | Player video profiles | ⬜ |  |
+| 183 | Tournament photo galleries | ⬜ |  |
+| 184 | Match photo galleries | ⬜ |  |
+| 185 | Promotional video creation | ⬜ |  |
+| 186 | Tournament posters | ⬜ |  |
+| 187 | Shareable scorecards and player cards | ⬜ |  |
+| 188 | Shareable match results | ⬜ |  |
+
+**Category J – Branding, sponsorship and promotion**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 189 | Tournament website | ⬜ |  |
+| 190 | Tournament QR code | ⬜ |  |
+| 191 | Sponsor registration | ⬜ |  |
+| 192 | Sponsor logos | ⬜ |  |
+| 193 | Sponsor banners | ⬜ |  |
+| 194 | Advertising placements | ⬜ |  |
+| 195 | Promotional campaigns | ⬜ |  |
+| 196 | Digital certificates | ⬜ |  |
+| 197 | Digital trophies and awards | ⬜ |  |
+| 198 | Tournament merchandise | ⬜ |  |
+| 199 | Tournament reports for sponsors | ⬜ |  |
+
+**Category K – Local cricket news and learning**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 200 | Local cricket news | ⬜ |  |
+| 201 | Tournament announcements | ⬜ |  |
+| 202 | Match previews | ⬜ |  |
+| 203 | Match reports | ⬜ |  |
+| 204 | Player interviews | ⬜ |  |
+| 205 | Local cricket stories | ⬜ |  |
+| 206 | Coaching tutorials | ⬜ |  |
+| 207 | Cricket learning guides | ⬜ |  |
+| 208 | Equipment guides | ⬜ |  |
+| 209 | Cricket rules guides | ⬜ |  |
+| 210 | Umpiring tutorials | ⬜ |  |
+| 211 | Scoring tutorials | ⬜ |  |
+| 212 | Cricket quizzes | ⬜ |  |
+| 213 | Player success stories | ⬜ |  |
+| 214 | Academy updates | ⬜ |  |
+| 215 | Community cricket updates | ⬜ |  |
+
+### Phase 6 – Business, International References and Mobile Expansion
+
+**Category M – International cricket rules and reference**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 233 | Men's T20 International playing conditions | ⬜ |  |
+| 234 | Men's ODI playing conditions | ⬜ |  |
+| 235 | Men's Test playing conditions | ⬜ |  |
+| 236 | Women's T20 International playing conditions | ⬜ |  |
+| 237 | Women's ODI playing conditions | ⬜ |  |
+| 238 | ICC tournament playing conditions | ⬜ |  |
+| 239 | Cricket equipment regulations | ⬜ |  |
+| 240 | Bat regulations | ⬜ |  |
+| 241 | Ball regulations | ⬜ |  |
+| 242 | Player eligibility regulations | ⬜ |  |
+| 243 | Concussion replacement regulations | ⬜ |  |
+| 244 | Substitute player regulations | ⬜ |  |
+| 245 | Over-rate regulations | ⬜ |  |
+| 246 | DRS regulations | ⬜ |  |
+| 247 | Player code of conduct | ⬜ |  |
+| 248 | Match referee regulations | ⬜ |  |
+| 249 | Anti-corruption regulations | ⬜ |  |
+| 250 | Anti-doping regulations | ⬜ |  |
+| 251 | Anti-discrimination regulations | ⬜ |  |
+| 252 | Player disciplinary regulations | ⬜ |  |
+| 253 | Umpire regulations | ⬜ |  |
+
+**Category O – Revenue and business management**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 271 | Free membership | ⬜ |  |
+| 272 | Premium membership | ⬜ |  |
+| 273 | Tournament organiser packages | ⬜ |  |
+| 274 | Online payments | ⬜ |  |
+| 275 | Online tournament registration payments | ⬜ |  |
+| 276 | Sponsorship payments | ⬜ |  |
+| 277 | Invoices and receipts | ⬜ |  |
+| 278 | Refund management | ⬜ |  |
+| 279 | Subscription renewals | ⬜ |  |
+| 280 | Advertising revenue | ⬜ |  |
+| 281 | Platform commission | ⬜ |  |
+| 282 | Revenue dashboard | ⬜ |  |
+| 283 | Payment history | ⬜ |  |
+
+**Category P – Android app and future expansion**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 284 | Android player application | ⬜ |  |
+| 285 | Android scorer application | ⬜ |  |
+| 286 | Android organiser application | ⬜ |  |
+| 287 | Push notifications | ⬜ |  |
+| 288 | Offline scoring in Android | ⬜ |  |
+| 289 | Background synchronisation | ⬜ |  |
+| 290 | Deep links | ⬜ |  |
+| 291 | Match and tournament sharing | ⬜ |  |
+| 292 | QR-based registration | ⬜ |  |
+| 293 | Camera integration | ⬜ |  |
+| 294 | Ground finder using location | ⬜ |  |
+| 295 | Bengali language support | ⬜ |  |
+| 296 | Hindi language support | ⬜ |  |
+| 297 | Future iOS application | ⬜ |  |
+| 298 | Multi-language expansion | ⬜ |  |

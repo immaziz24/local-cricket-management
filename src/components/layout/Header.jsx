@@ -1,8 +1,9 @@
 import React from 'react';
-import { Menu, Globe, Server, Activity, UserPlus, LogIn } from 'lucide-react';
+import { Menu, Globe, Server, Activity, UserPlus, LogIn, LogOut } from 'lucide-react';
 import { Badge } from '../common/Badge';
 
-export function Header({ onToggleMobileNav, liveMatchCount = 2, onNavigate }) {
+export function Header(props) {
+  const { onToggleMobileNav, liveMatchCount = 2, onNavigate, currentUser, onSignOut } = props || {};
   return (
     <header
       style={{
@@ -39,7 +40,43 @@ export function Header({ onToggleMobileNav, liveMatchCount = 2, onNavigate }) {
       </div>
 
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-        {/* Category N CTAs */}
+        {/* Category N CTAs: signed-in user, or Login / Register */}
+        {currentUser ? (
+          <>
+            <button
+              onClick={() => onNavigate && onNavigate('login')}
+              className="btn btn-ghost btn-sm"
+              title="My account"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem', fontSize: '0.8rem', fontWeight: 600 }}
+            >
+              <span
+                style={{
+                  width: '26px',
+                  height: '26px',
+                  borderRadius: '50%',
+                  backgroundColor: 'var(--color-primary-light, #D1FAE5)',
+                  color: 'var(--color-primary-dark, #065F46)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontWeight: 700
+                }}
+              >
+                {(currentUser.full_name || currentUser.email || '?').charAt(0).toUpperCase()}
+              </span>
+              <span className="header-user-name">{currentUser.full_name || currentUser.email}</span>
+            </button>
+            <button
+              onClick={onSignOut}
+              className="btn btn-outline btn-sm"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', fontSize: '0.78rem' }}
+            >
+              <LogOut size={13} />
+              <span>Sign Out</span>
+            </button>
+          </>
+        ) : (
+        <>
         <button
           onClick={() => onNavigate && onNavigate('login')}
           className="btn btn-outline btn-sm"
@@ -57,6 +94,8 @@ export function Header({ onToggleMobileNav, liveMatchCount = 2, onNavigate }) {
           <UserPlus size={13} />
           <span>Register</span>
         </button>
+        </>
+        )}
 
         {/* Live Matches Pulse */}
         {liveMatchCount > 0 && (

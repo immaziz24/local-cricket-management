@@ -12,9 +12,16 @@ import {
   LogIn,
   KeyRound,
   ShieldCheck,
+  PlusCircle
 } from 'lucide-react';
 
-export function MobileNav({ isOpen, onClose, activeTab, onSelectTab }) {
+export function MobileNav(props) {
+  const {
+    isOpen = false,
+    onClose = () => {},
+    activeTab = 'dashboard',
+    onSelectTab = () => {}
+  } = props || {};
   if (!isOpen) return null;
 
   const navItems = [
@@ -25,13 +32,14 @@ export function MobileNav({ isOpen, onClose, activeTab, onSelectTab }) {
     { id: 'password-recovery', label: 'Password Recovery', icon: KeyRound, tag: '#256' },
     { id: 'matches', label: 'Live & Match Center', icon: Activity, badge: '2 Live' },
     { id: 'tournaments', label: 'Tournaments', icon: Trophy, count: '4' },
+    { id: 'create-tournament', label: 'Create Tournament', icon: PlusCircle, tag: '#31' },
     { id: 'penalties', label: 'Late Arrival Rules', icon: ShieldAlert, tag: 'Cat Q' }
   ];
 
   const handleSelect = (id) => {
-    onSelectTab(id)
-    onClose()
-  }
+    onSelectTab(id);
+    onClose();
+  };
 
   return (
     <div
@@ -104,10 +112,10 @@ export function MobileNav({ isOpen, onClose, activeTab, onSelectTab }) {
         </div>
 
         {/* Links */}
-        <nav style={{ flex: 1, padding: '1rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <nav style={{ flex: 1, padding: '1rem 0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', overflowY: 'auto' }}>
           {navItems.map((item) => {
-            const Icon = item.icon
-            const isActive = activeTab === item.id
+            const Icon = item.icon;
+            const isActive = activeTab === item.id || (item.id === 'tournaments' && activeTab === 'tournament-details');
             return (
               <button
                 key={item.id}
@@ -157,7 +165,7 @@ export function MobileNav({ isOpen, onClose, activeTab, onSelectTab }) {
                   </span>
                 )}
               </button>
-            )
+            );
           })}
         </nav>
 
@@ -188,6 +196,5 @@ export function MobileNav({ isOpen, onClose, activeTab, onSelectTab }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
-

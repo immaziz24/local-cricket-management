@@ -1,4 +1,5 @@
 import React from 'react';
+import { authBackend } from '../../services/dataService';
 import {
   LayoutDashboard,
   Trophy,
@@ -12,9 +13,11 @@ import {
   LogIn,
   KeyRound,
   ShieldCheck,
+  PlusCircle
 } from 'lucide-react';
 
-export function Sidebar({ activeTab, onSelectTab, isCollapsed, onToggleCollapse }) {
+export function Sidebar(props) {
+  const { activeTab, onSelectTab, isCollapsed, onToggleCollapse } = props || {};
   const navItems = [
     { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
     { id: 'category-n', label: 'Category N Phase 1', icon: ShieldCheck, tag: '#254-270' },
@@ -23,6 +26,7 @@ export function Sidebar({ activeTab, onSelectTab, isCollapsed, onToggleCollapse 
     { id: 'password-recovery', label: 'Password Recovery', icon: KeyRound, tag: '#256' },
     { id: 'matches', label: 'Live & Match Center', icon: Activity, badge: '2 Live' },
     { id: 'tournaments', label: 'Tournaments', icon: Trophy, count: '4' },
+    { id: 'create-tournament', label: 'Create Tournament', icon: PlusCircle, tag: '#31' },
     { id: 'penalties', label: 'Late Arrival Rules', icon: ShieldAlert, tag: 'Cat Q' }
   ];
 
@@ -83,8 +87,8 @@ export function Sidebar({ activeTab, onSelectTab, isCollapsed, onToggleCollapse 
       {/* Navigation List */}
       <nav style={{ flex: 1, padding: '1rem 0.5rem', display: 'flex', flexDirection: 'column', gap: '0.35rem' }}>
         {navItems.map((item) => {
-          const Icon = item.icon
-          const isActive = activeTab === item.id
+          const Icon = item.icon;
+          const isActive = activeTab === item.id || (item.id === 'tournaments' && activeTab === 'tournament-details');
           return (
             <button
               key={item.id}
@@ -140,7 +144,7 @@ export function Sidebar({ activeTab, onSelectTab, isCollapsed, onToggleCollapse 
                 </span>
               )}
             </button>
-          )
+          );
         })}
       </nav>
 
@@ -159,27 +163,14 @@ export function Sidebar({ activeTab, onSelectTab, isCollapsed, onToggleCollapse 
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#10B981', fontWeight: 600, marginBottom: '0.25rem' }}>
             <Database size={12} />
-            <span>Mock Data Layer Active</span>
+            <span>{authBackend === 'supabase' ? 'Database Connected' : 'Mock Data Layer Active'}</span>
           </div>
-          <div>Future Supabase-ready facade</div>
+          <div>{authBackend === 'supabase' ? 'Real data: accounts, admin, roles, badges' : 'Future Supabase-ready facade'}</div>
           <div style={{ marginTop: '0.35rem', color: '#64748B' }}>
-            Phase 0 Foundation • v0.1.0
+            {authBackend === 'supabase' ? 'Other screens: sample data' : 'Phase 2: Tournaments (#31)'}
           </div>
         </div>
       )}
-
-      <style>{`
-        @media (min-width: 1024px) {
-          .desktop-sidebar {
-            display: flex !important;
-          }
-        }
-        .sidebar-link:hover {
-          background-color: var(--color-bg-sidebar-hover);
-          color: #FFFFFF;
-        }
-      `}</style>
     </aside>
-  )
+  );
 }
-

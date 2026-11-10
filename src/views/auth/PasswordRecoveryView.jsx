@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
-import { dataService } from '../../services/dataService.js';
+import { dataService, authBackend } from '../../services/dataService.js';
 import {
   KeyRound,
   Mail,
@@ -18,7 +18,8 @@ import {
   Sparkles
 } from 'lucide-react';
 
-export function PasswordRecoveryView({ onNavigate }) {
+export function PasswordRecoveryView(props) {
+  const { onNavigate = () => {} } = props || {};
   // Step 1: Request code | Step 2: Verify OTP | Step 3: Set new password | Step 4: Done
   const [step, setStep] = useState(1);
   const [identifier, setIdentifier] = useState('');
@@ -74,7 +75,7 @@ export function PasswordRecoveryView({ onNavigate }) {
     setError(null);
 
     if (!otp.trim()) {
-      setError('Please enter the 6-digit verification code.');
+      setError('Please enter the verification code from the email.');
       return;
     }
 
@@ -219,7 +220,7 @@ export function PasswordRecoveryView({ onNavigate }) {
                   type="text"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}
-                  placeholder="e.g. admin@localcricket.com or 9876543210"
+                  placeholder={authBackend === 'supabase' ? 'e.g. name@example.com' : 'e.g. admin@localcricket.com or 9876543210'}
                   disabled={loading}
                   style={{
                     width: '100%',
@@ -237,7 +238,8 @@ export function PasswordRecoveryView({ onNavigate }) {
               </div>
             </div>
 
-            {/* Test Helper Chips */}
+            {/* Test Helper Chips (mock mode only) */}
+            {authBackend === 'mock' && (
             <div style={{
               padding: '0.75rem',
               backgroundColor: '#f8fafc',
@@ -281,6 +283,7 @@ export function PasswordRecoveryView({ onNavigate }) {
                 </button>
               </div>
             </div>
+            )}
 
             <Button
               type="submit"
@@ -306,20 +309,29 @@ export function PasswordRecoveryView({ onNavigate }) {
               fontSize: '0.825rem',
               color: '#166534'
             }}>
-              <strong>Simulated OTP Sent!</strong> For testing, use the mock code{' '}
-              <strong style={{ textDecoration: 'underline', color: '#14532d' }}>748291</strong>.
+              {authBackend === 'supabase' ? (
+                <>
+                  <strong>Check your email.</strong> {successInfo?.message || 'If an account exists for this email, we have sent a verification code.'}
+                </>
+              ) : (
+                <>
+                  <strong>Simulated OTP Sent!</strong> For testing, use the mock code{' '}
+                  <strong style={{ textDecoration: 'underline', color: '#14532d' }}>748291</strong>.
+                </>
+              )}
             </div>
 
             <div style={{ marginBottom: '1.25rem' }}>
               <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: 'var(--text-main, #0f172a)', marginBottom: '0.4rem' }}>
-                Enter 6-Digit Verification Code
+                Enter Verification Code
               </label>
               <input
                 type="text"
                 value={otp}
                 onChange={(e) => setOtp(e.target.value)}
-                placeholder="748291"
-                maxLength={6}
+                placeholder={authBackend === 'supabase' ? 'Enter code' : '748291'}
+                maxLength={10}
+                inputMode="numeric"
                 disabled={loading}
                 style={{
                   width: '100%',
@@ -334,6 +346,7 @@ export function PasswordRecoveryView({ onNavigate }) {
                 }}
               />
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.5rem' }}>
+                {authBackend === 'mock' ? (
                 <button
                   type="button"
                   onClick={() => setOtp('748291')}
@@ -349,6 +362,7 @@ export function PasswordRecoveryView({ onNavigate }) {
                 >
                   ⚡ Auto-fill Test Code (748291)
                 </button>
+                ) : <span />}
                 <button
                   type="button"
                   onClick={() => setStep(1)}
@@ -491,7 +505,9 @@ export function PasswordRecoveryView({ onNavigate }) {
               Password Reset Successful!
             </h2>
             <p style={{ fontSize: '0.875rem', color: '#64748b', margin: '0 0 1.5rem 0' }}>
-              Your account password has been updated in the mock security store. You can now log in using your new credentials.
+              {authBackend === 'supabase'
+                ? 'Your password has been updated. You can now log in with your new password.'
+                : 'Your account password has been updated in the mock security store. You can now log in using your new credentials.'}
             </p>
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
               <Button

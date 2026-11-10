@@ -3,318 +3,159 @@ import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
-import {
-  Bell,
-  Send,
-  MessageSquare,
-  Mail,
-  Smartphone,
-  Radio,
-  CheckCircle,
-  Clock
-} from 'lucide-react';
+import { Bell, CheckCheck, Send, Save, CheckCircle, AlertCircle } from 'lucide-react';
+
+/**
+ * Feature #270 – Notifications management
+ * - Every user: notification inbox + notification preferences
+ * - Admin / Super-Admin: send a notification to all active members
+ * In-app notifications work now; email / push / SMS delivery is added later.
+ */
+
+const when = (v) => new Date(v).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
+
+function Notice({ msg }) {
+  if (!msg) return null;
+  return (
+    <div style={{ padding: '0.7rem 1rem', borderRadius: '0.5rem', fontSize: '0.85rem', display: 'flex', gap: '0.5rem', alignItems: 'center', backgroundColor: msg.ok ? '#f0fdf4' : '#fef2f2', color: msg.ok ? '#166534' : '#b91c1c', border: `1px solid ${msg.ok ? '#bbf7d0' : '#fecaca'}` }}>
+      {msg.ok ? <CheckCircle size={16} /> : <AlertCircle size={16} />} {msg.text}
+    </div>
+  );
+}
 
 export function NotificationsManagementView() {
-  const [channels, setChannels] = useState({
-    sms_enabled: true,
-    email_enabled: true,
-    push_enabled: true,
-    in_app_banner: true
-  });
-  const [history, setHistory] = useState([]);
-  const [loading, setLoading] = useState(true);
-
-  // Compose form state
-  const [targetGroup, setTargetGroup] = useState('All Registered Captains');
-  const [selectedChannel, setSelectedChannel] = useState('In-App + Email');
+  const [inbox, setInbox] = useState([]);
+  const [prefs, setPrefs] = useState(null);
+  const [signedIn, setSignedIn] = useState(true);
+  const [msg, setMsg] = useState(null);
   const [title, setTitle] = useState('');
-  const [message, setMessage] = useState('');
-  const [sending, setSending] = useState(false);
-  const [feedback, setFeedback] = useState(null);
+  const [body, setBody] = useState('');
+  const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    loadNotifications();
-  }, []);
-
-  const loadNotifications = async () => {
-    setLoading(true);
+  const load = async () => {
     try {
-      const data = await dataService.fetchNotificationSettings();
-      if (data) {
-        setChannels(data.channels || channels);
-        setHistory(data.history || []);
-      }
-    } catch (err) {
-      console.error('Failed to load notifications:', err);
-    } finally {
-      setLoading(false);
+      const [n, p] = await Promise.all([dataService.fetchMyNotifications(), dataService.fetchNotificationPreferences()]);
+      setInbox(n || []);
+      setPrefs(p);
+      setSignedIn(true);
+    } catch {
+      setSignedIn(false);
     }
   };
 
-  const handleToggleChannel = async (channelKey) => {
-    const updated = { ...channels, [channelKey]: !channels[channelKey] };
-    setChannels(updated);
+  useEffect(() => { load(); }, []);
+
+  const unread = inbox.filter((n) => !n.read_at);
+
+  const markAllRead = async () => {
     try {
-      await dataService.updateNotificationChannels(updated);
-      setFeedback(`Channel ${channelKey} updated.`);
-      setTimeout(() => setFeedback(null), 3000);
+      await dataService.markNotificationsRead(unread.map((n) => n.id));
+      await load();
     } catch (err) {
-      console.error('Failed to update channel:', err);
+      setMsg({ ok: false, text: err.message });
     }
   };
 
-  const handleSendNotification = async (e) => {
-    e?.preventDefault();
-    if (!title.trim() || !message.trim()) return;
-
-    setSending(true);
+  const savePrefs = async () => {
+    setBusy(true);
     try {
-      const res = await dataService.dispatchCustomNotification({
-        channel: selectedChannel,
-        targetGroup,
-        title: title.trim(),
-        message: message.trim()
-      });
-      setHistory((prev) => [res, ...prev]);
-      setFeedback(`Notification dispatched to ${targetGroup} via ${selectedChannel}.`);
-      setTitle('');
-      setMessage('');
-      setTimeout(() => setFeedback(null), 3500);
+      await dataService.saveNotificationPreferences(prefs);
+      setMsg({ ok: true, text: 'Notification settings saved.' });
     } catch (err) {
-      console.error('Failed to dispatch notification:', err);
-    } finally {
-      setSending(false);
-    }
+      setMsg({ ok: false, text: err.message });
+    } finally { setBusy(false); }
   };
+
+  const send = async (e) => {
+    e.preventDefault();
+    if (!title.trim()) { setMsg({ ok: false, text: 'Please write a title.' }); return; }
+    if (!window.confirm('Send this notification to every active member?')) return;
+    setBusy(true);
+    try {
+      const res = await dataService.sendAnnouncement(title.trim(), body.trim());
+      setMsg({ ok: true, text: `Sent to ${res.recipients} member${res.recipients === 1 ? '' : 's'}.` });
+      setTitle(''); setBody('');
+      await load();
+    } catch (err) {
+      setMsg({ ok: false, text: err.message });
+    } finally { setBusy(false); }
+  };
+
+  if (!signedIn) {
+    return <Card><p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>Please sign in to see your notifications.</p></Card>;
+  }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Header Banner */}
-      <div style={{
-        padding: '1.25rem 1.5rem',
-        backgroundColor: 'var(--card-bg, #ffffff)',
-        border: '1px solid var(--border-color, #e2e8f0)',
-        borderRadius: '0.75rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '1rem'
-      }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <Badge variant="primary">FEATURE #270</Badge>
-            <span style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Multi-Channel Broadcast Hub
-            </span>
-          </div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main, #0f172a)', margin: '0 0 0.25rem 0' }}>
-            Notifications Management
-          </h2>
-          <p style={{ fontSize: '0.825rem', color: '#64748b', margin: 0 }}>
-            Configure SMS, Email, and Push gateways, and dispatch announcements across player groups.
-          </p>
-        </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <div style={{ padding: '1.25rem 1.5rem', backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.75rem' }}>
+        <Badge variant="success">FEATURE #270</Badge>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0.35rem 0 0.25rem' }}>Notifications</h2>
+        <p style={{ fontSize: '0.825rem', color: '#64748b', margin: 0 }}>Your messages from Local Cricket, and how you want to receive them.</p>
       </div>
 
-      {feedback && (
-        <div style={{
-          padding: '0.75rem 1rem',
-          backgroundColor: '#f0fdf4',
-          border: '1px solid #bbf7d0',
-          borderRadius: '0.5rem',
-          color: '#166534',
-          fontSize: '0.85rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem'
-        }}>
-          <CheckCircle size={16} />
-          {feedback}
-        </div>
+      <Notice msg={msg} />
+
+      <Card title={`Inbox · ${unread.length} unread`}>
+        {unread.length > 0 && (
+          <div style={{ marginBottom: '0.75rem' }}>
+            <Button variant="secondary" onClick={markAllRead} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem', fontSize: '0.8rem' }}><CheckCheck size={14} /> Mark all as read</Button>
+          </div>
+        )}
+        {inbox.length === 0 ? (
+          <div style={{ padding: '1rem', textAlign: 'center', backgroundColor: '#f8fafc', borderRadius: '0.5rem', color: '#94a3b8', fontSize: '0.85rem' }}>No notifications yet.</div>
+        ) : (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {inbox.map((n) => (
+              <div key={n.id} style={{ padding: '0.7rem 0.85rem', borderRadius: '0.5rem', border: `1px solid ${n.read_at ? '#e2e8f0' : '#bfdbfe'}`, backgroundColor: n.read_at ? '#f8fafc' : '#eff6ff' }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem' }}>
+                  <strong style={{ fontSize: '0.88rem', color: '#0f172a', display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+                    {!n.read_at && <Bell size={13} style={{ color: '#2563eb' }} />} {n.title}
+                  </strong>
+                  <span style={{ fontSize: '0.75rem', color: '#94a3b8', whiteSpace: 'nowrap' }}>{when(n.created_at)}</span>
+                </div>
+                {n.body && <div style={{ fontSize: '0.83rem', color: '#475569', marginTop: '0.2rem' }}>{n.body}</div>}
+              </div>
+            ))}
+          </div>
+        )}
+      </Card>
+
+      {prefs && (
+        <Card title="How I receive notifications">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            {[
+              ['in_app_enabled', 'On the website (inbox)', 'Available now'],
+              ['email_enabled', 'By email', 'Coming soon'],
+              ['push_enabled', 'Phone push notifications', 'Coming with the Android app'],
+              ['sms_enabled', 'By SMS', 'Coming later']
+            ].map(([key, label, hint]) => (
+              <label key={key} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '0.65rem 0.85rem', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.5rem', cursor: 'pointer' }}>
+                <span>
+                  <strong style={{ fontSize: '0.88rem', color: '#0f172a' }}>{label}</strong>
+                  <span style={{ display: 'block', fontSize: '0.75rem', color: '#64748b' }}>{hint}</span>
+                </span>
+                <input type="checkbox" checked={!!prefs[key]} onChange={(e) => setPrefs((p) => ({ ...p, [key]: e.target.checked }))} style={{ width: '18px', height: '18px' }} />
+              </label>
+            ))}
+          </div>
+          <div style={{ marginTop: '0.85rem' }}>
+            <Button variant="primary" onClick={savePrefs} disabled={busy} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}><Save size={14} /> Save</Button>
+          </div>
+        </Card>
       )}
 
-      {/* 2-Column: Channels + Dispatcher */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
-        {/* Gateway Channels Toggle */}
-        <Card title="Active Delivery Channels">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {[
-              { key: 'sms_enabled', label: 'SMS Notifications (Transactional)', icon: Smartphone, desc: 'Deliver instant OTP codes and late arrival alerts' },
-              { key: 'email_enabled', label: 'Email Dispatch (SMTP / API)', icon: Mail, desc: 'Send tournament sanctions and official scorecard summaries' },
-              { key: 'push_enabled', label: 'Mobile Push Notifications', icon: Bell, desc: 'Deliver live ball-by-ball milestones and toss notifications' },
-              { key: 'in_app_banner', label: 'In-App Alert Banners', icon: Radio, desc: 'Display global system warnings across dashboard views' }
-            ].map((c) => {
-              const Icon = c.icon;
-              const isEnabled = channels[c.key];
-              return (
-                <div key={c.key} style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '0.75rem',
-                  backgroundColor: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '0.5rem'
-                }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                    <Icon size={18} style={{ color: isEnabled ? '#0284c7' : '#94a3b8' }} />
-                    <div>
-                      <strong style={{ fontSize: '0.85rem', color: '#0f172a' }}>{c.label}</strong>
-                      <div style={{ fontSize: '0.75rem', color: '#64748b' }}>{c.desc}</div>
-                    </div>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={isEnabled}
-                    onChange={() => handleToggleChannel(c.key)}
-                    style={{ width: '18px', height: '18px', cursor: 'pointer' }}
-                  />
-                </div>
-              );
-            })}
+      <Card title="Send to all members (Admins only)">
+        <form onSubmit={send} style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} maxLength={120} placeholder="Title, e.g. New tournament season starts Monday" style={{ padding: '0.55rem 0.65rem', border: '1px solid #cbd5e1', borderRadius: '0.5rem', fontSize: '0.85rem' }} />
+          <textarea value={body} onChange={(e) => setBody(e.target.value)} maxLength={2000} rows={3} placeholder="Message (optional)" style={{ padding: '0.55rem 0.65rem', border: '1px solid #cbd5e1', borderRadius: '0.5rem', fontSize: '0.85rem', fontFamily: 'inherit' }} />
+          <div>
+            <Button type="submit" variant="primary" disabled={busy} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}><Send size={14} /> Send to everyone</Button>
           </div>
-        </Card>
-
-        {/* Dispatch Notification Form */}
-        <Card title="Dispatch Group Notification">
-          <form onSubmit={handleSendNotification}>
-            <div style={{ marginBottom: '0.85rem' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#334155', marginBottom: '0.3rem' }}>
-                Recipient Persona Group
-              </label>
-              <select
-                value={targetGroup}
-                onChange={(e) => setTargetGroup(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.55rem 0.75rem',
-                  fontSize: '0.85rem',
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '0.375rem'
-                }}
-              >
-                <option value="All Registered Captains">All Registered Captains</option>
-                <option value="Official Scorers">Official Scorers</option>
-                <option value="Certified Umpires">Certified Umpires</option>
-                <option value="Tournament Organisers">Tournament Organisers</option>
-                <option value="All Platform Users">All Platform Users (Broadcast)</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '0.85rem' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#334155', marginBottom: '0.3rem' }}>
-                Delivery Gateway
-              </label>
-              <select
-                value={selectedChannel}
-                onChange={(e) => setSelectedChannel(e.target.value)}
-                style={{
-                  width: '100%',
-                  padding: '0.55rem 0.75rem',
-                  fontSize: '0.85rem',
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '0.375rem'
-                }}
-              >
-                <option value="In-App + Email">In-App + Email</option>
-                <option value="SMS">SMS Gateway</option>
-                <option value="Push Notification">Mobile Push</option>
-                <option value="Multi-Channel (All)">Multi-Channel (SMS + Email + In-App)</option>
-              </select>
-            </div>
-
-            <div style={{ marginBottom: '0.85rem' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#334155', marginBottom: '0.3rem' }}>
-                Announcement Title
-              </label>
-              <input
-                type="text"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Mandatory Pre-Match Captains Briefing"
-                style={{
-                  width: '100%',
-                  padding: '0.55rem 0.75rem',
-                  fontSize: '0.85rem',
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '0.375rem',
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
-
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.8rem', fontWeight: 600, color: '#334155', marginBottom: '0.3rem' }}>
-                Message Body
-              </label>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Compose the full notice here..."
-                rows={2}
-                style={{
-                  width: '100%',
-                  padding: '0.55rem 0.75rem',
-                  fontSize: '0.85rem',
-                  border: '1px solid #cbd5e1',
-                  borderRadius: '0.375rem',
-                  boxSizing: 'border-box'
-                }}
-              />
-            </div>
-
-            <Button
-              type="submit"
-              variant="primary"
-              disabled={sending}
-              style={{ width: '100%', justifyContent: 'center' }}
-            >
-              <Send size={15} />
-              {sending ? 'Dispatching...' : 'Dispatch Notification'}
-            </Button>
-          </form>
-        </Card>
-      </div>
-
-      {/* Dispatch History Archive */}
-      <Card title={`Dispatched Notification Logs (${history.length})`}>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-          {history.map((h) => (
-            <div key={h.id} style={{
-              padding: '0.85rem 1rem',
-              backgroundColor: '#f8fafc',
-              border: '1px solid #e2e8f0',
-              borderRadius: '0.375rem',
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              flexWrap: 'wrap',
-              gap: '0.75rem',
-              fontSize: '0.825rem'
-            }}>
-              <div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <strong style={{ color: '#0f172a' }}>{h.title}</strong>
-                  <Badge variant="success">{h.status}</Badge>
-                  <span style={{ fontSize: '0.75rem', color: '#64748b' }}>
-                    ({h.channel} • {h.delivery_count} Delivered)
-                  </span>
-                </div>
-                <div style={{ fontSize: '0.775rem', color: '#475569', marginTop: '0.2rem' }}>
-                  Target: <strong>{h.target}</strong> — {h.message}
-                </div>
-              </div>
-
-              <div style={{ fontSize: '0.75rem', color: '#94a3b8', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
-                <Clock size={13} />
-                {new Date(h.sent_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </div>
-            </div>
-          ))}
-        </div>
+          <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Members who turned off website notifications will not receive it. Only Admins and the Super-Admin can send.</span>
+        </form>
       </Card>
     </div>
   );
 }
 
+export default NotificationsManagementView;

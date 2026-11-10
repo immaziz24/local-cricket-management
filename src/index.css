@@ -321,3 +321,19 @@ a {
   background: #94A3B8;
 }
 
+/* Sidebar Responsive & Hover Styles */
+@media (min-width: 1024px) {
+  .desktop-sidebar {
+    display: flex !important;
+  }
+}
+
+.sidebar-link:hover {
+  background-color: var(--color-bg-sidebar-hover);
+  color: #FFFFFF;
+}
+
+/* Spinner Animation */
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

@@ -1,6 +1,7 @@
 import React from 'react';
 
-export function LoadingSpinner({ message = 'Loading cricket data...' }) {
+export function LoadingSpinner(props) {
+  const { message = 'Loading cricket data...' } = props || {};
   return (
     <div
       style={{
@@ -23,11 +24,6 @@ export function LoadingSpinner({ message = 'Loading cricket data...' }) {
           animation: 'spin 0.8s linear infinite'
         }}
       />
-      <style>{`
-        @keyframes spin {
-          to { transform: rotate(360deg); }
-        }
-      `}</style>
       <span style={{ fontSize: '0.875rem', fontWeight: 500 }}>{message}</span>
     </div>
   )

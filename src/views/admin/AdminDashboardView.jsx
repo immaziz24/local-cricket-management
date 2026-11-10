@@ -5,62 +5,85 @@ import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import {
   ShieldCheck,
+  ShieldAlert,
   Trophy,
   Users,
+  UserPlus,
   AlertTriangle,
-  CheckCircle,
-  XCircle,
+  BadgeCheck,
   Clock,
-  Filter
+  RefreshCw
 } from 'lucide-react';
 
+/**
+ * Feature #258 – Admin Dashboard
+ * Daily operations desk for Admins and the Super-Admin.
+ * Real data today: members, recent sign-ups, verification requests, user reports.
+ * Tournament approvals, team sanctions and match disputes appear here once
+ * those features exist (Phase 2 and Phase 4).
+ */
+
+const ROLE_LABELS = {
+  super_admin: 'Super-Admin',
+  admin: 'Admin',
+  organiser: 'Organiser',
+  team_owner: 'Team Owner',
+  captain: 'Captain',
+  scorer: 'Scorer',
+  umpire: 'Umpire',
+  player: 'Player'
+};
+
+const formatDate = (value) => {
+  if (!value) return '—';
+  const d = new Date(value);
+  return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+};
+
+const titleCase = (text) =>
+  String(text || '').replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
+
+function StatCard({ label, value, note, icon: Icon, color }) {
+  return (
+    <Card>
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+        <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 600 }}>{label}</span>
+        <Icon size={18} style={{ color }} />
+      </div>
+      <div style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a' }}>{value}</div>
+      <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>{note}</div>
+    </Card>
+  );
+}
+
+function EmptyRow({ children }) {
+  return (
+    <div style={{ padding: '1rem', textAlign: 'center', fontSize: '0.85rem', color: '#94a3b8', backgroundColor: '#f8fafc', borderRadius: '0.5rem' }}>
+      {children}
+    </div>
+  );
+}
+
 export function AdminDashboardView() {
-  const [queue, setQueue] = useState(null);
+  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [filterTab, setFilterTab] = useState('all');
-  const [actionNotice, setActionNotice] = useState(null);
+  const [loadError, setLoadError] = useState(null);
 
   useEffect(() => {
-    loadQueue();
+    loadDashboard();
   }, []);
 
-  const loadQueue = async () => {
+  const loadDashboard = async () => {
     setLoading(true);
+    setLoadError(null);
     try {
-      const data = await dataService.fetchAdminQueue();
-      setQueue(data);
+      const result = await dataService.fetchAdminDashboard();
+      setData(result);
     } catch (err) {
-      console.error('Failed to load admin queue:', err);
+      console.error('Failed to load admin dashboard:', err);
+      setLoadError(err.message || 'Could not load the Admin dashboard.');
     } finally {
       setLoading(false);
-    }
-  };
-
-  const handleAction = async (itemId, type, resolution) => {
-    try {
-      await dataService.resolveAdminQueueItem({ id: itemId, type, resolution, notes: 'Approved via Admin Console' });
-      setActionNotice(`Action confirmed: ${resolution.toUpperCase()} applied to item ${itemId}.`);
-      setTimeout(() => setActionNotice(null), 3500);
-
-      // Locally update state for responsive feel
-      if (type === 'tournament') {
-        setQueue((prev) => ({
-          ...prev,
-          pending_tournaments: prev.pending_tournaments.filter((t) => t.id !== itemId)
-        }));
-      } else if (type === 'team') {
-        setQueue((prev) => ({
-          ...prev,
-          pending_team_sanctions: prev.pending_team_sanctions.filter((tm) => tm.id !== itemId)
-        }));
-      } else if (type === 'dispute') {
-        setQueue((prev) => ({
-          ...prev,
-          active_disputes: prev.active_disputes.filter((d) => d.id !== itemId)
-        }));
-      }
-    } catch (err) {
-      console.error('Failed to resolve queue item:', err);
     }
   };
 
@@ -72,300 +95,185 @@ export function AdminDashboardView() {
     );
   }
 
-  const tournamentCount = queue?.pending_tournaments?.length || 0;
-  const teamCount = queue?.pending_team_sanctions?.length || 0;
-  const disputeCount = queue?.active_disputes?.length || 0;
-  const totalPending = tournamentCount + teamCount + disputeCount;
+  if (loadError) {
+    return (
+      <Card>
+        <div style={{ padding: '1.5rem', textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem' }}>
+          <ShieldAlert size={32} style={{ color: '#dc2626' }} />
+          <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Admin access required</h3>
+          <p style={{ margin: 0, fontSize: '0.875rem', color: '#64748b', maxWidth: '440px' }}>
+            {loadError} Sign in with an Admin or Super-Admin account to use this dashboard.
+          </p>
+          <Button variant="outline" onClick={loadDashboard}>Try Again</Button>
+        </div>
+      </Card>
+    );
+  }
+
+  const recentUsers = data?.recent_users || [];
+  const verifications = data?.pending_verification_items || [];
+  const reports = data?.open_report_items || [];
+  const needsAttention = (data?.pending_verifications || 0) + (data?.open_reports || 0);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Header Banner */}
+      {/* Header */}
       <div style={{
-        padding: '1.25rem 1.5rem',
-        backgroundColor: 'var(--card-bg, #ffffff)',
-        border: '1px solid var(--border-color, #e2e8f0)',
-        borderRadius: '0.75rem',
         display: 'flex',
         justifyContent: 'space-between',
         alignItems: 'center',
         flexWrap: 'wrap',
-        gap: '1rem'
+        gap: '1rem',
+        padding: '1.25rem 1.5rem',
+        backgroundColor: '#0f172a',
+        borderRadius: '0.75rem',
+        color: '#ffffff'
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <Badge variant="primary">FEATURE #258</Badge>
-            <span style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              League Administration
+            <Badge variant="warning">FEATURE #258</Badge>
+            <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Admin Operations Desk
             </span>
           </div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main, #0f172a)', margin: '0 0 0.25rem 0' }}>
-            Admin Dashboard
-          </h2>
-          <p style={{ fontSize: '0.825rem', color: '#64748b', margin: 0 }}>
-            Operational queues for tournament sanctions, team eligibility verification, and match disputes.
+          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0 0 0.25rem 0' }}>Admin Dashboard</h2>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: '#cbd5e1' }}>
+            Members, verification requests and user reports that need an admin.
           </p>
         </div>
-
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <div style={{
-            padding: '0.4rem 0.8rem',
-            backgroundColor: '#f1f5f9',
-            borderRadius: '0.5rem',
-            fontSize: '0.825rem',
-            fontWeight: 600,
-            color: '#334155'
-          }}>
-            Queue Items: <strong style={{ color: totalPending > 0 ? '#b91c1c' : '#15803d' }}>{totalPending}</strong>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div style={{ textAlign: 'right' }}>
+            <div style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Needs attention</div>
+            <div style={{ fontSize: '1.25rem', fontWeight: 800, color: needsAttention ? '#fbbf24' : '#4ade80' }}>
+              {needsAttention ? `${needsAttention} item${needsAttention > 1 ? 's' : ''}` : 'All clear'}
+            </div>
           </div>
+          <Button variant="outline" onClick={loadDashboard} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+            <RefreshCw size={14} /> Refresh
+          </Button>
         </div>
       </div>
 
-      {/* Action Notification */}
-      {actionNotice && (
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem',
-          padding: '0.75rem 1rem',
-          backgroundColor: '#f0fdf4',
-          border: '1px solid #bbf7d0',
-          borderRadius: '0.5rem',
-          color: '#166534',
-          fontSize: '0.85rem'
-        }}>
-          <CheckCircle size={16} />
-          {actionNotice}
-        </div>
-      )}
-
-      {/* Filter Tabs */}
-      <div style={{ display: 'flex', gap: '0.5rem', borderBottom: '1px solid #e2e8f0', paddingBottom: '0.5rem' }}>
-        <button
-          onClick={() => setFilterTab('all')}
-          style={{
-            padding: '0.4rem 0.8rem',
-            borderRadius: '0.375rem',
-            fontSize: '0.825rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            backgroundColor: filterTab === 'all' ? '#0f172a' : 'transparent',
-            color: filterTab === 'all' ? '#ffffff' : '#64748b',
-            border: 'none'
-          }}
-        >
-          All Items ({totalPending})
-        </button>
-        <button
-          onClick={() => setFilterTab('tournaments')}
-          style={{
-            padding: '0.4rem 0.8rem',
-            borderRadius: '0.375rem',
-            fontSize: '0.825rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            backgroundColor: filterTab === 'tournaments' ? '#0f172a' : 'transparent',
-            color: filterTab === 'tournaments' ? '#ffffff' : '#64748b',
-            border: 'none'
-          }}
-        >
-          Tournaments ({tournamentCount})
-        </button>
-        <button
-          onClick={() => setFilterTab('teams')}
-          style={{
-            padding: '0.4rem 0.8rem',
-            borderRadius: '0.375rem',
-            fontSize: '0.825rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            backgroundColor: filterTab === 'teams' ? '#0f172a' : 'transparent',
-            color: filterTab === 'teams' ? '#ffffff' : '#64748b',
-            border: 'none'
-          }}
-        >
-          Team Sanctions ({teamCount})
-        </button>
-        <button
-          onClick={() => setFilterTab('disputes')}
-          style={{
-            padding: '0.4rem 0.8rem',
-            borderRadius: '0.375rem',
-            fontSize: '0.825rem',
-            fontWeight: 600,
-            cursor: 'pointer',
-            backgroundColor: filterTab === 'disputes' ? '#0f172a' : 'transparent',
-            color: filterTab === 'disputes' ? '#ffffff' : '#64748b',
-            border: 'none'
-          }}
-        >
-          Match Disputes ({disputeCount})
-        </button>
+      {/* KPI cards */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
+        <StatCard label="Total Members" value={data?.total_users ?? 0} note={`+${data?.new_users_7d ?? 0} joined in the last 7 days`} icon={Users} color="#0284c7" />
+        <StatCard label="Verification Requests" value={data?.pending_verifications ?? 0} note="Waiting for review (#265)" icon={BadgeCheck} color="#16a34a" />
+        <StatCard label="Open User Reports" value={data?.open_reports ?? 0} note="Waiting for review (#266)" icon={AlertTriangle} color="#d97706" />
+        <StatCard label="Suspended Accounts" value={data?.suspended_users ?? 0} note="Currently suspended" icon={ShieldCheck} color="#8b5cf6" />
       </div>
 
-      {/* 1. Pending Tournaments Section */}
-      {(filterTab === 'all' || filterTab === 'tournaments') && (
-        <Card title={`Pending Tournament Sanctions (${tournamentCount})`}>
-          {tournamentCount === 0 ? (
-            <div style={{ color: '#64748b', fontSize: '0.85rem', fontStyle: 'italic', padding: '0.5rem 0' }}>
-              No pending tournament applications awaiting sanction.
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {queue.pending_tournaments.map((trn) => (
-                <div key={trn.id} style={{
-                  padding: '1rem',
-                  backgroundColor: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '0.5rem',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '1rem'
-                }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <Trophy size={16} style={{ color: '#d97706' }} />
-                      <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>{trn.name}</strong>
-                      <Badge variant="warning">Awaiting Sanction</Badge>
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.35rem' }}>
-                      Organiser: {trn.applicant} • Ground: {trn.grounds} • {trn.dates} ({trn.teams} Teams)
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <Button
-                      variant="primary"
-                      onClick={() => handleAction(trn.id, 'tournament', 'sanctioned')}
-                      style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}
-                    >
-                      Sanction
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      onClick={() => handleAction(trn.id, 'tournament', 'rejected')}
-                      style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}
-                    >
-                      Reject
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </Card>
-      )}
+      {/* Recent members */}
+      <Card title="Recent Sign-ups">
+        {recentUsers.length === 0 ? (
+          <EmptyRow>No members yet.</EmptyRow>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.85rem' }}>
+              <thead>
+                <tr style={{ textAlign: 'left', color: '#64748b', borderBottom: '1px solid #e2e8f0' }}>
+                  <th style={{ padding: '0.5rem' }}>Name</th>
+                  <th style={{ padding: '0.5rem' }}>Joined</th>
+                  <th style={{ padding: '0.5rem' }}>Roles</th>
+                  <th style={{ padding: '0.5rem' }}>Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentUsers.map((u) => (
+                  <tr key={u.id} style={{ borderBottom: '1px solid #f1f5f9' }}>
+                    <td style={{ padding: '0.6rem 0.5rem', fontWeight: 600, color: '#0f172a' }}>
+                      <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}>
+                        <UserPlus size={14} style={{ color: '#94a3b8' }} />
+                        {u.display_name}
+                      </span>
+                    </td>
+                    <td style={{ padding: '0.6rem 0.5rem', color: '#64748b' }}>{formatDate(u.created_at)}</td>
+                    <td style={{ padding: '0.6rem 0.5rem' }}>
+                      {(u.roles || []).length === 0 ? (
+                        <span style={{ color: '#94a3b8' }}>Member</span>
+                      ) : (
+                        <span style={{ display: 'inline-flex', gap: '0.3rem', flexWrap: 'wrap' }}>
+                          {u.roles.map((r) => (
+                            <Badge key={r} variant="primary">{ROLE_LABELS[r] || titleCase(r)}</Badge>
+                          ))}
+                        </span>
+                      )}
+                    </td>
+                    <td style={{ padding: '0.6rem 0.5rem' }}>
+                      <Badge variant={u.account_status === 'active' ? 'success' : 'danger'}>{titleCase(u.account_status)}</Badge>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
 
-      {/* 2. Pending Team Sanctions */}
-      {(filterTab === 'all' || filterTab === 'teams') && (
-        <Card title={`Pending Team Roster Sanctions (${teamCount})`}>
-          {teamCount === 0 ? (
-            <div style={{ color: '#64748b', fontSize: '0.85rem', fontStyle: 'italic', padding: '0.5rem 0' }}>
-              No team roster verification requests pending.
-            </div>
+      {/* Queues */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+        <Card title="Verification Requests (#265)">
+          {verifications.length === 0 ? (
+            <EmptyRow>No verification requests waiting.</EmptyRow>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {queue.pending_team_sanctions.map((tm) => (
-                <div key={tm.id} style={{
-                  padding: '1rem',
-                  backgroundColor: '#f8fafc',
-                  border: '1px solid #e2e8f0',
-                  borderRadius: '0.5rem',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '1rem'
-                }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <Users size={16} style={{ color: '#0284c7' }} />
-                      <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>{tm.team_name}</strong>
-                      <Badge variant={tm.fee_status === 'Paid' ? 'success' : 'warning'}>
-                        {tm.fee_status}
-                      </Badge>
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: '#64748b', marginTop: '0.35rem' }}>
-                      Owner: {tm.owner} • Roster Size: {tm.roster_count} Players
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <Button
-                      variant="primary"
-                      onClick={() => handleAction(tm.id, 'team', 'approved')}
-                      style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}
-                    >
-                      Approve Roster
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      onClick={() => handleAction(tm.id, 'team', 'clarification_requested')}
-                      style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}
-                    >
-                      Request Info
-                    </Button>
-                  </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {verifications.map((v) => (
+                <div key={v.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.6rem 0.75rem', backgroundColor: '#f8fafc', borderRadius: '0.5rem', fontSize: '0.85rem' }}>
+                  <span><strong>{v.user_name}</strong> · {titleCase(v.verification_type)}</span>
+                  <span style={{ color: '#64748b', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <Clock size={12} /> {formatDate(v.submitted_at)}
+                  </span>
                 </div>
               ))}
             </div>
           )}
+          <p style={{ margin: '0.75rem 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>
+            Approve or reject in the User Governance tab once #265 is connected.
+          </p>
         </Card>
-      )}
 
-      {/* 3. Match Disputes */}
-      {(filterTab === 'all' || filterTab === 'disputes') && (
-        <Card title={`Active Match Disputes (${disputeCount})`}>
-          {disputeCount === 0 ? (
-            <div style={{ color: '#64748b', fontSize: '0.85rem', fontStyle: 'italic', padding: '0.5rem 0' }}>
-              No active match disputes filed.
-            </div>
+        <Card title="Open User Reports (#266)">
+          {reports.length === 0 ? (
+            <EmptyRow>No open reports.</EmptyRow>
           ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-              {queue.active_disputes.map((d) => (
-                <div key={d.id} style={{
-                  padding: '1rem',
-                  backgroundColor: '#fffbeb',
-                  border: '1px solid #fef3c7',
-                  borderRadius: '0.5rem',
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  flexWrap: 'wrap',
-                  gap: '1rem'
-                }}>
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                      <AlertTriangle size={16} style={{ color: '#d97706' }} />
-                      <strong style={{ fontSize: '0.95rem', color: '#92400e' }}>{d.match}</strong>
-                      <Badge variant="warning">{d.status}</Badge>
-                    </div>
-                    <div style={{ fontSize: '0.8rem', color: '#78350f', marginTop: '0.35rem' }}>
-                      Raised By: {d.raised_by} • Issue: {d.reason}
-                    </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+              {reports.map((r) => (
+                <div key={r.id} style={{ padding: '0.6rem 0.75rem', backgroundColor: '#f8fafc', borderRadius: '0.5rem', fontSize: '0.85rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <strong>{r.reported_user_name}</strong>
+                    <Badge variant="warning">{titleCase(r.status)}</Badge>
                   </div>
-                  <div style={{ display: 'flex', gap: '0.5rem' }}>
-                    <Button
-                      variant="primary"
-                      onClick={() => handleAction(d.id, 'dispute', 'dismissed')}
-                      style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}
-                    >
-                      Uphold Decision
-                    </Button>
-                    <Button
-                      variant="secondary"
-                      onClick={() => handleAction(d.id, 'dispute', 'scheduled')}
-                      style={{ fontSize: '0.8rem', padding: '0.4rem 0.75rem' }}
-                    >
-                      Open Hearing
-                    </Button>
+                  <div style={{ color: '#64748b', marginTop: '0.2rem' }}>
+                    {r.reason} · reported by {r.reporter_name} · {formatDate(r.created_at)}
                   </div>
                 </div>
               ))}
             </div>
           )}
+          <p style={{ margin: '0.75rem 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>
+            Review and suspend in the User Governance tab once #266 is connected.
+          </p>
         </Card>
-      )}
+      </div>
+
+      {/* Coming later */}
+      <Card title="Coming with later phases">
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
+          {[
+            { icon: Trophy, title: 'Tournament approvals', when: 'Phase 2 · tournament management (#31–58)' },
+            { icon: Users, title: 'Team registrations to approve', when: 'Phase 2 · team approval (#41)' },
+            { icon: AlertTriangle, title: 'Match disputes', when: 'Phase 4 · dispute management (#143)' }
+          ].map(({ icon: Icon, title, when }) => (
+            <div key={title} style={{ padding: '0.85rem', border: '1px dashed #cbd5e1', borderRadius: '0.5rem', color: '#64748b', fontSize: '0.85rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, color: '#334155' }}>
+                <Icon size={15} /> {title}
+              </div>
+              <div style={{ marginTop: '0.25rem', fontSize: '0.75rem' }}>{when}</div>
+            </div>
+          ))}
+        </div>
+      </Card>
     </div>
   );
 }
 
+export default AdminDashboardView;

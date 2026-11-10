@@ -1,7 +1,7 @@
 # Test Report: Local Cricket Management Platform
 
-> **Report Date:** 2026-11-06  
-> **Report Status:** Active / Phase 1 Complete (All 17 Features Implemented & Verified)  
+> **Report Date:** 2026-11-10  
+> **Report Status:** Active / Phase 1 Complete & Phase 2 Features #31 & #32 Verified (Problems Panel: 0 Errors)  
 > **Overall Test Execution Status:** **PASSED (Production Build & Automated Test Suite Verified, 0 Errors)**  
 > **Application Code Base:** React 18 + Vite Frontend Application (Phase 1 Complete: All 17 Category N Features Operational)  
 > **Database State:** No database created or configured (Deferred)  
@@ -160,3 +160,109 @@ When frontend development commences (starting with Phase 1: Category N, Features
 - **Resolved Defects:** 0
 - **Blocked Items:** None (Project is in documentation and planning phase).
 
+
+
+---
+
+## 2.11 Feature #31 (Create a Tournament) Functional Test Record
+
+- **Test Date:** 2026-11-06
+- **Component Under Test:** `src/views/CreateTournamentView.jsx`
+- **Data Facade:** `src/services/dataService.js` -> `src/services/mock/mockClient.js`
+- **Automated Test Suite:** `scratch/test_feature_31.js` (27 / 27 Tests Passed)
+
+| # | Test Scenario | Input Data | Expected Result | Actual Result | Status |
+| :-: | :--- | :--- | :--- | :--- | :-: |
+| 1 | Name length validation | Name: `"AB"` (< 3 chars) | "Tournament name must be at least 3 characters." | Error displayed below Name field | **PASS** |
+| 2 | Code length validation | Code: `"A"` (< 2 chars) | "Tournament code must be at least 2 characters (e.g. PCCC-26)." | Error displayed below Code field | **PASS** |
+| 3 | Duplicate code rejection | Code: `"PCCC-26"` (already exists) | "A tournament with code \"PCCC-26\" already exists. Please choose a unique code." | Conflict error returned and displayed | **PASS** |
+| 4 | Date chronology validation | Start: `"2026-12-10"`, End: `"2026-12-01"` | "End date cannot be earlier than start date." | Error displayed below End Date field | **PASS** |
+| 5 | Venue validation | Venue: `"A"` (< 3 chars) | "Venue / Ground name must be at least 3 characters." | Error displayed below Venue field | **PASS** |
+| 6 | Teams quota validation | Teams: `1` (< 2) | "Teams count must be between 2 and 64." | Error displayed below Teams field | **PASS** |
+| 7 | Successful tournament creation | Complete valid payload | Generates ID, adds to registry, shows success screen | Tournament created with ID `trn-005` | **PASS** |
+| 8 | Immediate registry retrieval | Fetch all tournaments | New tournament appears at index 0 in list | Verified at top of registry | **PASS** |
+| 9 | Feature #267 Audit Log capture | Query audit trail for new tournament | Audit log records `TOURNAMENT_CREATED` event | Verified in audit event stream | **PASS** |
+| 10 | Phase 1 regression verification | All 17 Phase 1 features executed | Zero regressions in authentication, RBAC, dashboards | 38 / 38 Phase 1 tests passed | **PASS** |
+
+---
+
+## 2.12 Workspace Repair & Problems Panel Zero-Diagnostic Verification
+
+- **Verification Date:** 2026-11-10
+- **Objective:** Verify resolution of all reported language service / Problems panel issues, prioritizing `src/components/common/Badge.jsx` and `src/components/layout/MobileNav.jsx`.
+- **Root Cause Analysis:** Component signatures across layout and common components had direct object destructuring patterns that lacked fallback defaults and rest prop propagation, and `Badge.jsx` lacked explicit mappings for all application variants (e.g. `danger`, `default`).
+- **Remediations Applied:**
+  1. `src/components/common/Badge.jsx`: Converted to safe `export function Badge(props)` signature with safe fallback `props || {}`, `style` and `...rest` spreading, and full mapping for `live`, `upcoming`, `completed`, `primary`, `neutral`, `success`, `warning`, `danger`, `default`.
+  2. `src/components/layout/MobileNav.jsx`: Converted to safe `export function MobileNav(props)` signature with robust default handlers for `isOpen`, `onClose`, `activeTab`, and `onSelectTab`.
+  3. Standardized all component signatures across common, layout, and view files to the uniform `export function Component(props)` pattern.
+- **Automated Diagnostic Scan Results:**
+  - Syntactic Diagnostics across all 33 files in `src/`: **0 errors**
+  - Full Program Diagnostics (checkJs=true): **0 errors**
+  - Language Service Diagnostics (with jsconfig.json): **0 errors**
+- **Production Build Results:**
+  - Command: `npm.cmd run build`
+  - Modules Transformed: 1,603
+  - Exit Code: **0 (PASSED in 10.25s)**
+- **Development Server:** Active on `http://localhost:5173/` with hot-reload functional.
+- **Feature #31 Integration Tests:** **27/27 PASSED**
+- **Phase 1 Regression Tests:** **38/38 PASSED**
+
+---
+
+## 2.13 JSX Syntax & Bracket Parsing Resolution Record
+
+- **Verification Date:** 2026-11-10
+- **Inspected Files:**
+  1. `src/components/layout/MobileNav.jsx`
+  2. `src/components/layout/Sidebar.jsx`
+  3. `src/views/CreateTournamentView.jsx`
+  4. `src/views/TournamentsView.jsx`
+  5. Additional related files: `LoadingSpinner.jsx`, `RegisterView.jsx`, `DashboardOverview.jsx`
+- **Root Cause Identified:**
+  - Embedded `<style>{`...`}</style>` blocks in `Sidebar.jsx` and `LoadingSpinner.jsx` had raw CSS braces `{` and `}` inside template strings, which standard JSX/TypeScript parsers interpreted as nested unclosed JSX expression boundaries.
+  - Template literal interpolations (e.g. `style={{ borderTop: `4px solid ${...}` }}` and `style={{ width: `${pct}%` }}`) inside double-curly JSX style attributes in `TournamentsView.jsx`, `CreateTournamentView.jsx`, and `DashboardOverview.jsx` created nested `${` and `}` inside `{{` and `}}`, causing bracket matchers to register unmatched brace errors.
+  - Unused `...rest` parameters in component destructuring in `MobileNav.jsx` and `CreateTournamentView.jsx` triggered linter diagnostics.
+- **Corrections Implemented:**
+  1. Migrated all responsive sidebar media queries and hover styles to `src/index.css` and removed the inline `<style>` tag from `Sidebar.jsx`.
+  2. Migrated `@keyframes spin` to `src/index.css` and removed the inline `<style>` tag from `LoadingSpinner.jsx`.
+  3. Refactored dynamic style attribute expressions in `TournamentsView.jsx`, `CreateTournamentView.jsx`, and `DashboardOverview.jsx` from nested template literals to clean string concatenations (e.g. `pct + '%'` and `'4px solid ' + color`).
+  4. Removed unused `...rest` parameters from `MobileNav.jsx` and `CreateTournamentView.jsx`.
+  5. Converted `RegisterView.jsx` inline styles to `dangerouslySetInnerHTML`.
+  6. Normalized all file line endings to Windows standard CRLF (`\r\n`).
+- **Verification Outcome:**
+  - Babel AST Parse (33 files): **0 failures**
+  - TypeScript Syntactic & Semantic Diagnostics: **0 errors**
+  - Production Build (`npm.cmd run build`): **PASSED in 6.91s (Exit Code: 0)**
+  - Feature #31 Test Suite: **27 / 27 PASSED**
+  - Phase 1 Regression Suite (#254–#270): **38 / 38 PASSED**
+  - Development Server: Active at `http://localhost:5173/` with hot-reload functional.
+
+
+---
+
+## 2.14 Feature #32 (Tournament Details & Profile View) Test Record
+
+- **Test Date:** 2026-11-10
+- **Component Under Test:** `src/views/TournamentDetailsView.jsx`
+- **Data Facade:** `src/services/dataService.js` -> `src/services/mock/mockClient.js`
+- **Automated Test Harness:** `scratch/test_feature_32.js` (44 automated test assertions)
+
+| # | Test Area | Scenario | Expected Result | Actual Result | Status |
+| :-: | :--- | :--- | :--- | :--- | :-: |
+| 1 | Feature #32 Query | Fetch valid tournament by ID (`trn-001`) | Returns complete tournament object with all profile attributes | Successfully retrieved `PCCC-26` with format, ball type, venue, fees, and rules | **PASS** |
+| 2 | Feature #32 Query | Fetch by code case-insensitive (`mnsl-26`) | Resolves tournament `trn-002` | Resolved `MNSL-26` with format `T20 (Floodlights)` | **PASS** |
+| 3 | Feature #32 Query | Fetch remaining tournaments (`trn-003`, `trn-004`) | Returns valid profiles | Retrieved `35 Overs` Veterans Trophy and `registration` Youth Cup | **PASS** |
+| 4 | Feature #32 Query | Error handling for non-existent ID (`trn-999`) | Throws descriptive "not found" error | Threw `Tournament with ID or Code "trn-999" not found` | **PASS** |
+| 5 | Feature #32 Query | Error handling for empty identifier (`""`) | Throws descriptive "required" error | Threw `Tournament identifier is required` | **PASS** |
+| 6 | Feature #32 Matches | Fetch associated matches for `trn-001` | Returns array of matches for this tournament | Returned 3 associated matches (`mch-101`, `mch-104`) | **PASS** |
+| 7 | Feature #32 Matches | Fetch matches for tournament without fixtures (`trn-003`) | Returns empty array without throwing | Returned `[]` safely | **PASS** |
+| 8 | Feature #31 + #32 | End-to-end tournament creation followed by detail inspection | Newly created tournament immediately retrievable via Feature #32 | Created `PMIC-26` and verified all fields via `fetchTournamentById` | **PASS** |
+| 9 | Feature #31 Validation | Short name and duplicate code validation | Rejects invalid inputs | Short name (<3) and duplicate code rejected with proper errors | **PASS** |
+| 10 | Phase 1 Regression | Features #254–#270 complete regression | All 17 Category N operations succeed | Registration, auth, recovery, dashboards, RBAC, verifications, audits, and backups pass | **PASS** |
+
+### Test Execution Summary
+- **Feature #32 Test Suite:** **44 / 44 PASSED (0 Failures)**
+- **Feature #31 Test Suite:** **27 / 27 PASSED (0 Failures)**
+- **Phase 1 Complete Regression Suite:** **38 / 38 PASSED (0 Failures)**
+- **Production Build:** Vite v6.4.5 completed with exit code 0 (1,604 modules transformed in 7.46s).
+- **Workspace Diagnostics:** 0 syntax diagnostics, 0 semantic diagnostics across all 34 files.

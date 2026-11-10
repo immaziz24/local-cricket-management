@@ -1,195 +1,82 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
-import {
-  Database,
-  Download,
-  HardDrive,
-  ShieldCheck,
-  RotateCcw,
-  PlusCircle,
-  CheckCircle,
-  FileArchive
-} from 'lucide-react';
+import { Download, Database, Info, CheckCircle, AlertCircle } from 'lucide-react';
+
+/**
+ * Feature #268 – Database backup
+ * Super-Admin can download a full JSON snapshot of platform data at any time.
+ * Automatic daily backups and point-in-time restore are provided by Supabase on paid plans.
+ */
+
+const downloadJson = (obj, name) => {
+  const blob = new Blob([JSON.stringify(obj, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = name;
+  a.click();
+  URL.revokeObjectURL(a.href);
+};
 
 export function DatabaseBackupView() {
-  const [backups, setBackups] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
-  const [backupType, setBackupType] = useState('Full Platform Snapshot');
-  const [feedback, setFeedback] = useState(null);
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState(null);
 
-  useEffect(() => {
-    loadBackups();
-  }, []);
-
-  const loadBackups = async () => {
-    setLoading(true);
+  const runExport = async () => {
+    setBusy(true);
+    setMsg(null);
     try {
-      const data = await dataService.fetchDatabaseBackups();
-      setBackups(data || []);
+      const snap = await dataService.exportPlatformSnapshot();
+      const stamp = new Date().toISOString().replace(/[:T]/g, '-').slice(0, 16);
+      downloadJson(snap, `local-cricket-backup-${stamp}.json`);
+      setMsg({ ok: true, text: `Backup downloaded: ${snap.profiles?.length ?? 0} members, ${snap.user_reports?.length ?? 0} reports, ${snap.audit_logs_last_1000?.length ?? 0} log entries. Keep the file somewhere safe (e.g. Google Drive).` });
     } catch (err) {
-      console.error('Failed to load database backups:', err);
+      setMsg({ ok: false, text: err.message });
     } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCreateBackup = async () => {
-    setCreating(true);
-    try {
-      const res = await dataService.triggerDatabaseBackup({ type: backupType });
-      setBackups((prev) => [res, ...prev]);
-      setFeedback(`New snapshot generated: ${res.id} (${res.size}). Checksum verified.`);
-      setTimeout(() => setFeedback(null), 4000);
-    } catch (err) {
-      console.error('Failed to create backup:', err);
-    } finally {
-      setCreating(false);
-    }
-  };
-
-  const handleSimulateRestore = async (id) => {
-    try {
-      const res = await dataService.simulateBackupRestore(id);
-      setFeedback(`Restore point test successful for ${id}: ${res.message}`);
-      setTimeout(() => setFeedback(null), 4000);
-    } catch (err) {
-      console.error('Failed to simulate restore:', err);
+      setBusy(false);
     }
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Header Banner */}
-      <div style={{
-        padding: '1.25rem 1.5rem',
-        backgroundColor: 'var(--card-bg, #ffffff)',
-        border: '1px solid var(--border-color, #e2e8f0)',
-        borderRadius: '0.75rem',
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        flexWrap: 'wrap',
-        gap: '1rem'
-      }}>
-        <div>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <Badge variant="primary">FEATURE #268</Badge>
-            <span style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Data Resilience & Disaster Recovery
-            </span>
-          </div>
-          <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-main, #0f172a)', margin: '0 0 0.25rem 0' }}>
-            Database Backup Management
-          </h2>
-          <p style={{ fontSize: '0.825rem', color: '#64748b', margin: 0 }}>
-            Automated nightly snapshot archives, on-demand exports, and integrity verification.
-          </p>
-        </div>
-
-        {/* Create Backup Control */}
-        <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
-          <select
-            value={backupType}
-            onChange={(e) => setBackupType(e.target.value)}
-            style={{
-              padding: '0.45rem 0.75rem',
-              fontSize: '0.825rem',
-              border: '1px solid #cbd5e1',
-              borderRadius: '0.375rem'
-            }}
-          >
-            <option value="Full Platform Snapshot">Full Platform Snapshot</option>
-            <option value="Scores & Match Center Data">Scores & Match Center Data</option>
-            <option value="User Accounts & RBAC">User Accounts & RBAC</option>
-          </select>
-          <Button
-            variant="primary"
-            onClick={handleCreateBackup}
-            disabled={creating}
-            style={{ fontSize: '0.8rem', padding: '0.45rem 0.85rem' }}
-          >
-            <PlusCircle size={15} />
-            {creating ? 'Archiving...' : 'Trigger Backup'}
-          </Button>
-        </div>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <div style={{ padding: '1.25rem 1.5rem', backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.75rem' }}>
+        <Badge variant="success">FEATURE #268</Badge>
+        <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0.35rem 0 0.25rem' }}>Database Backup</h2>
+        <p style={{ fontSize: '0.825rem', color: '#64748b', margin: 0 }}>Download a copy of all platform data whenever you want.</p>
       </div>
 
-      {feedback && (
-        <div style={{
-          padding: '0.75rem 1rem',
-          backgroundColor: '#f0fdf4',
-          border: '1px solid #bbf7d0',
-          borderRadius: '0.5rem',
-          color: '#166534',
-          fontSize: '0.85rem',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '0.5rem'
-        }}>
-          <CheckCircle size={16} />
-          {feedback}
+      <Card>
+        <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start', flexWrap: 'wrap' }}>
+          <Database size={36} style={{ color: '#0284c7', flexShrink: 0 }} />
+          <div style={{ flex: 1, minWidth: '240px' }}>
+            <h3 style={{ margin: '0 0 0.25rem', fontSize: '1.05rem' }}>Download backup now</h3>
+            <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: '#64748b' }}>
+              Members, roles, permissions, badges, reports, suspensions, settings and the latest 1,000 log entries, as one JSON file. Super-Admin only. Every download is recorded in the audit log.
+            </p>
+            <Button variant="primary" onClick={runExport} disabled={busy} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+              <Download size={14} /> {busy ? 'Preparing…' : 'Download backup'}
+            </Button>
+          </div>
         </div>
-      )}
-
-      {/* Backup Archives Table */}
-      <Card title={`Available Backup Snapshots (${backups.length})`}>
-        {loading ? (
-          <div style={{ padding: '2rem', textAlign: 'center', color: '#64748b' }}>
-            Loading database backup manifest...
-          </div>
-        ) : backups.length === 0 ? (
-          <div style={{ padding: '1rem 0', color: '#64748b', fontStyle: 'italic', fontSize: '0.85rem' }}>
-            No backup archives found.
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
-            {backups.map((b) => (
-              <div key={b.id} style={{
-                padding: '1rem',
-                backgroundColor: '#f8fafc',
-                border: '1px solid #e2e8f0',
-                borderRadius: '0.5rem',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                flexWrap: 'wrap',
-                gap: '1rem'
-              }}>
-                <div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-                    <FileArchive size={18} style={{ color: '#0284c7' }} />
-                    <strong style={{ fontSize: '0.95rem', color: '#0f172a' }}>{b.id}</strong>
-                    <Badge variant="success">{b.status}</Badge>
-                    <span style={{ fontSize: '0.75rem', color: '#64748b' }}>({b.size})</span>
-                  </div>
-                  <div style={{ fontSize: '0.8rem', color: '#475569', marginTop: '0.25rem' }}>
-                    Type: <strong>{b.type}</strong> • Records: {b.records_count?.toLocaleString()} rows
-                  </div>
-                  <div style={{ fontSize: '0.7rem', color: '#64748b', fontFamily: 'monospace', marginTop: '0.2rem' }}>
-                    SHA-256: {b.checksum}
-                  </div>
-                </div>
-
-                <div style={{ display: 'flex', gap: '0.5rem' }}>
-                  <Button
-                    variant="secondary"
-                    onClick={() => handleSimulateRestore(b.id)}
-                    style={{ fontSize: '0.75rem', padding: '0.35rem 0.75rem' }}
-                  >
-                    <RotateCcw size={13} />
-                    Test Restore Point
-                  </Button>
-                </div>
-              </div>
-            ))}
+        {msg && (
+          <div style={{ marginTop: '1rem', padding: '0.7rem 1rem', borderRadius: '0.5rem', fontSize: '0.85rem', display: 'flex', gap: '0.5rem', alignItems: 'center', backgroundColor: msg.ok ? '#f0fdf4' : '#fef2f2', color: msg.ok ? '#166534' : '#b91c1c', border: `1px solid ${msg.ok ? '#bbf7d0' : '#fecaca'}` }}>
+            {msg.ok ? <CheckCircle size={16} /> : <AlertCircle size={16} />} {msg.text}
           </div>
         )}
+      </Card>
+
+      <Card>
+        <div style={{ display: 'flex', gap: '0.6rem', fontSize: '0.85rem', color: '#475569' }}>
+          <Info size={18} style={{ color: '#64748b', flexShrink: 0 }} />
+          <div>
+            <strong>Automatic backups:</strong> the database runs on Supabase's free plan. Automatic daily backups with one-click restore come with Supabase's paid plan — recommended before the public launch. Until then, download a backup regularly (for example once a week).
+          </div>
+        </div>
       </Card>
     </div>
   );
 }
 
+export default DatabaseBackupView;
