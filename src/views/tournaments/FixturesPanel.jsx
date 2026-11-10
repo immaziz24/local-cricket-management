@@ -6,6 +6,7 @@ import { dataService } from '../../services/dataService.js';
 import { CalendarDays, Wand2, Plus, Trash2, Clock, MapPin, AlertCircle, CheckCircle, Layers } from 'lucide-react';
 import { roundRobin, knockoutFirstRound, scheduleFixtures, shuffle, interleave } from './fixtureGenerator.js';
 import { MatchResultForm, scoreLine } from './MatchResultForm.jsx';
+import { LineupPanel } from './LineupPanel.jsx';
 
 /**
  * #42 Groups, #43–#47 formats, #48 automatic fixtures, #49 manual fixture,
@@ -53,6 +54,7 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged }) {
   const [manual, setManual] = useState({ teamA: '', teamB: '', at: '', venue: '', stage: 'league' });
   const [resched, setResched] = useState(null); // { id, at, venue, reason }
   const [resultFor, setResultFor] = useState(null); // match id with the result form open
+  const [lineupFor, setLineupFor] = useState(null); // match id with the lineups open (#72–#74)
   const finished = tournament.status === 'completed' || tournament.status === 'cancelled';
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -262,6 +264,13 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged }) {
                           <span>{m.team_b?.short_name || m.team_b?.name}: <strong>{scoreLine(m.team_b_runs, m.team_b_wickets, m.team_b_balls)}</strong></span>
                         </div>
                       )}
+
+                      {m.team_a && m.team_b && (
+                        <button onClick={() => setLineupFor(lineupFor === m.id ? null : m.id)} style={{ background: 'none', border: 'none', color: '#7c3aed', cursor: 'pointer', fontSize: '0.78rem', padding: 0, marginTop: '0.4rem', fontWeight: 700 }}>
+                          {lineupFor === m.id ? 'Hide Playing XI' : 'Playing XI'}
+                        </button>
+                      )}
+                      {lineupFor === m.id && <LineupPanel match={m} />}
 
                       {isOrganiser && !finished && resultFor === m.id && (
                         <MatchResultForm match={m} oversLimit={tournament.overs_per_innings} busy={busy}

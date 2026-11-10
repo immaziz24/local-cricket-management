@@ -502,6 +502,63 @@ export const dataService = {
     return res.data;
   },
 
+  // #72 Playing XI, #73 substitutes, #74 replacements, #75 transfers
+  async fetchMatchLineups(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getMatchLineups(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setMatchLineup(matchId, teamId, lineup) {
+    requireDatabase();
+    const res = await supabaseClient.setMatchLineup(matchId, teamId, lineup);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async replaceMatchPlayer(details) {
+    requireDatabase();
+    const res = await supabaseClient.replaceMatchPlayer(details);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async requestPlayerTransfer(details) {
+    requireDatabase();
+    const res = await supabaseClient.requestPlayerTransfer(details);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async decidePlayerTransfer(transferId, accept, reason) {
+    requireDatabase();
+    const res = await supabaseClient.decidePlayerTransfer(transferId, accept, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async cancelPlayerTransfer(transferId) {
+    requireDatabase();
+    const res = await supabaseClient.cancelPlayerTransfer(transferId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchTeamTransfers(teamId) {
+    requireDatabase();
+    const res = await supabaseClient.getTeamTransfers(teamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async searchTeams(query) {
+    requireDatabase();
+    const res = await supabaseClient.searchTeams(query);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   // #53 #54 #55 points table with NRR and qualification
   async fetchPointsTable(tournamentId) {
     requireDatabase();

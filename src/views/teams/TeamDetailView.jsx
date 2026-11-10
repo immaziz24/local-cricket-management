@@ -6,6 +6,7 @@ import { dataService } from '../../services/dataService.js';
 import { ArrowLeft, Search, UserPlus, UserMinus, Crown, Star, Shield, AlertCircle, CheckCircle, Phone, Pencil } from 'lucide-react';
 import { ROLE_OPTIONS, BATTING_OPTIONS, BOWLING_OPTIONS, labelOf } from './playerOptions.js';
 import { Avatar } from './Avatar.jsx';
+import { TransfersPanel } from './TransfersPanel.jsx';
 
 /**
  * Phase 2 – Team page
@@ -344,6 +345,9 @@ export function TeamDetailView({ teamId, onNavigate }) {
         </>
       )}
 
+      {/* Player transfers (#75) */}
+      {team.i_own && <TransfersPanel team={team} onChanged={load} />}
+
       {/* Team history (#76) */}
       <Card title="Team history">
         {history.length === 0 ? (
@@ -378,6 +382,9 @@ function describeHistory(h) {
       return parts.length ? `Leadership updated — ${parts.join(', ')}` : 'Leadership cleared';
     }
     case 'TEAM_LOGO_CHANGED': return 'Team logo changed';
+    case 'TRANSFER_ACCEPTED': return `${h.player_name || 'A player'} transferred to ${h.other_team_name || 'another team'}`;
+    case 'PLAYER_JOINED_BY_TRANSFER': return `${h.player_name || 'A player'} joined by transfer from ${h.other_team_name || 'another team'}`;
+    case 'MATCH_PLAYER_REPLACED': return `${h.in_name || 'A player'} replaced ${h.out_name || 'a player'} in a match${h.reason ? ` (${h.reason})` : ''}`;
     case 'TEAM_PLAYER_EDITED': return `${h.player_name || 'A player'}'s details were updated`;
     default: return String(h.action || '').replace(/_/g, ' ').toLowerCase();
   }

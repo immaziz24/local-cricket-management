@@ -873,6 +873,55 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  // #72 Playing XI, #73 substitutes, #74 replacements, #75 transfers
+  async getMatchLineups(matchId) {
+    const { data, error } = await supabase.rpc('get_match_lineups', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'lineups') };
+    return { data, error: null };
+  },
+
+  async setMatchLineup(matchId, teamId, lineup) {
+    const { data, error } = await supabase.rpc('set_match_lineup', { p_match_id: matchId, p_team_id: teamId, p: lineup });
+    if (error) return { data: null, error: friendlyError(error, 'lineup') };
+    return { data, error: null };
+  },
+
+  async replaceMatchPlayer({ matchId, teamId, outId, inId, reason }) {
+    const { data, error } = await supabase.rpc('replace_match_player', { p_match_id: matchId, p_team_id: teamId, p_out: outId, p_in: inId, p_reason: reason || null });
+    if (error) return { data: null, error: friendlyError(error, 'replacement') };
+    return { data, error: null };
+  },
+
+  async requestPlayerTransfer({ playerId, fromTeamId, toTeamId, note }) {
+    const { data, error } = await supabase.rpc('request_player_transfer', { p_player_id: playerId, p_from_team: fromTeamId, p_to_team: toTeamId, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'transfer') };
+    return { data, error: null };
+  },
+
+  async decidePlayerTransfer(transferId, accept, reason) {
+    const { data, error } = await supabase.rpc('decide_player_transfer', { p_transfer_id: transferId, p_accept: !!accept, p_reason: reason || null });
+    if (error) return { data: null, error: friendlyError(error, 'transfer') };
+    return { data, error: null };
+  },
+
+  async cancelPlayerTransfer(transferId) {
+    const { data, error } = await supabase.rpc('cancel_player_transfer', { p_transfer_id: transferId });
+    if (error) return { data: null, error: friendlyError(error, 'transfer') };
+    return { data, error: null };
+  },
+
+  async getTeamTransfers(teamId) {
+    const { data, error } = await supabase.rpc('get_team_transfers', { p_team_id: teamId });
+    if (error) return { data: null, error: friendlyError(error, 'transfers') };
+    return { data, error: null };
+  },
+
+  async searchTeams(query) {
+    const { data, error } = await supabase.rpc('search_teams', { p_query: query });
+    if (error) return { data: null, error: friendlyError(error, 'team search') };
+    return { data, error: null };
+  },
+
   async createTournament(tournamentData) {
     const { data, error } = await supabase.rpc('create_tournament', { p: tournamentData });
     if (error) return { data: null, error: friendlyError(error, 'create tournament') };

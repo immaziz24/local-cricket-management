@@ -18,10 +18,10 @@
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
 | 🟩 Working (real database) | 12 / 310 |
-| 🟨 Built / connected, awaiting check | 46 / 310 |
-| ⬜ Not started | 252 / 310 |
+| 🟨 Built / connected, awaiting check | 50 / 310 |
+| ⬜ Not started | 248 / 310 |
 
-**Honest summary (2026-11-10, Phase 2):** Phase 1 done (17 connected). Phase 2: 41 of 48 built; left: #72–75 (playing XI, substitutes, replacements, transfers), and #57, #77, #78 which need Phase 3 scoring.
+**Honest summary (2026-11-10, Phase 2):** Phase 1 done (17 connected). Phase 2: 45 of 48 built; #57, #77, #78 wait for Phase 3 ball-by-ball scoring.
 
 **Phase 1 summary:** all 17 Phase 1 features are connected to the real database; #254, #255, #257 checked by owner, the rest await a quick owner check.
 
@@ -32,7 +32,7 @@
 | Phase | Categories | Total | ⬜ | 🟨 | 🟩 | ✅ |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | 1 | N | 17 | 0 | 14 | 3 | 0 |
-| 2 | B, C | 48 | 7 | 32 | 9 | 0 |
+| 2 | B, C | 48 | 3 | 36 | 9 | 0 |
 | 3 | A, D, E, L | 103 | 103 | 0 | 0 | 0 |
 | 4 | F, G, Q | 37 | 37 | 0 | 0 | 0 |
 | 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
@@ -127,10 +127,10 @@
 | 69 | Team logo | 🟨 | **connected 2026-11-10** – team owner uploads logo on team page. Awaiting owner check |
 | 70 | Captain and vice-captain assignment | 🟩 | **connected 2026-11-10** – teams/TeamDetailView.jsx — captain, vice-captain and icon player; registered captain gets Captain role for that team. Owner checked 2026-11-10 |
 | 71 | Squad management | 🟩 | **connected 2026-11-10** – teams/TeamDetailView.jsx — squad list, add by mobile / by name, remove (max 40). Owner checked 2026-11-10 |
-| 72 | Playing XI management | ⬜ | Waiting: needs matches — built with scoring (Phase 3) |
-| 73 | Substitute management | ⬜ | Waiting: needs matches — Phase 3 |
-| 74 | Player replacements | ⬜ | Waiting: needs matches — Phase 3 |
-| 75 | Player transfers | ⬜ | Waiting: needs tournament transfer rules — built with tournaments |
+| 72 | Playing XI management | 🟨 | **connected 2026-11-10** – tournament → Fixtures → Playing XI: team owner (or organiser) picks the playing side from the squad, batting order, captain and wicket-keeper; players a side set by organiser (default 11); everyone can view. Tested in DB. Awaiting owner check |
+| 73 | Substitute management | 🟨 | **connected 2026-11-10** – substitutes picked with the lineup (default up to 4, organiser can change). Tested in DB. Awaiting owner check |
+| 74 | Player replacements | 🟨 | **connected 2026-11-10** – in a match, swap a playing player for a substitute or squad player with a reason (injury, concussion, illness); other team notified; shown in team history. Tested in DB. Awaiting owner check |
+| 75 | Player transfers | 🟨 | **connected 2026-11-10** – team page → Player transfers: ask another team for a player; that team's owner accepts (player moves) or declines with a reason; requests can be withdrawn; completed transfers in team history. Tested in DB. Awaiting owner check |
 | 76 | Team history | 🟩 | **connected 2026-11-10** – team page timeline: created, joined/left, leadership, logo changes. Owner checked 2026-11-10 |
 | 77 | Player career statistics | ⬜ | Waiting: needs scored matches — Phase 3 |
 | 78 | Player awards and achievements | ⬜ | Waiting: needs matches/tournaments — Phase 3 |

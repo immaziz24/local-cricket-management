@@ -159,8 +159,8 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged })
   };
   useEffect(() => { load(); }, [tournament.id, tournament.status]);
   useEffect(() => {
-    setRules({ overs_per_innings: tournament.overs_per_innings ?? '', points_win: tournament.points_win ?? 2, points_tie: tournament.points_tie ?? 1, points_no_result: tournament.points_no_result ?? 1, qualify_per_group: tournament.qualify_per_group ?? 2 });
-  }, [tournament.id, tournament.overs_per_innings, tournament.points_win, tournament.points_tie, tournament.points_no_result, tournament.qualify_per_group]);
+    setRules({ players_per_side: tournament.players_per_side ?? 11, max_substitutes: tournament.max_substitutes ?? 4, overs_per_innings: tournament.overs_per_innings ?? '', points_win: tournament.points_win ?? 2, points_tie: tournament.points_tie ?? 1, points_no_result: tournament.points_no_result ?? 1, qualify_per_group: tournament.qualify_per_group ?? 2 });
+  }, [tournament.id, tournament.players_per_side, tournament.max_substitutes, tournament.overs_per_innings, tournament.points_win, tournament.points_tie, tournament.points_no_result, tournament.qualify_per_group]);
 
   const run = async (fn, okText, refreshTournament) => {
     setBusy(true); setMsg(null);
@@ -310,11 +310,11 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged })
 
       {/* Rules (#53 points, #55 qualification) */}
       {isOrganiser && !finished && (
-        <Card title="Points & qualification rules">
+        <Card title="Match & points rules">
           <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', alignItems: 'end' }}>
-            {[['overs_per_innings', 'Overs per innings'], ['points_win', 'Points for a win'], ['points_tie', 'Points for a tie'], ['points_no_result', 'Points for no result'], ['qualify_per_group', structure === 'groups_knockout' ? 'Teams qualifying per group' : 'Teams qualifying']].map(([k, l]) => (
+            {[['players_per_side', 'Players a side'], ['max_substitutes', 'Substitutes allowed'], ['overs_per_innings', 'Overs per innings'], ['points_win', 'Points for a win'], ['points_tie', 'Points for a tie'], ['points_no_result', 'Points for no result'], ['qualify_per_group', structure === 'groups_knockout' ? 'Teams qualifying per group' : 'Teams qualifying']].map(([k, l]) => (
               <label key={k} style={{ fontSize: '0.72rem', color: '#64748b' }}>{l}<br />
-                <input type="number" min={k === 'qualify_per_group' || k === 'overs_per_innings' ? 1 : 0} value={rules[k] ?? ''} onChange={(e) => setRules({ ...rules, [k]: e.target.value })} style={{ ...field, width: 110 }} />
+                <input type="number" min={k === 'qualify_per_group' || k === 'overs_per_innings' ? 1 : k === 'players_per_side' ? 2 : 0} value={rules[k] ?? ''} onChange={(e) => setRules({ ...rules, [k]: e.target.value })} style={{ ...field, width: 110 }} />
               </label>
             ))}
             <Button variant="secondary" disabled={busy} onClick={() => run(() => dataService.setTournamentRules(tournament.id, rules), 'Rules saved. The table is updated.', true)} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}><Settings2 size={14} /> Save rules</Button>
