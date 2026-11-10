@@ -489,7 +489,7 @@ export function TournamentDetailsView(props) {
 
       {/* TAB 3: FIXTURES, SCHEDULE & CALENDAR (#42–#52) */}
       {activeTab === 'fixtures' && (
-        <FixturesPanel tournament={tournament} isOrganiser={isOrganiser} onChanged={(m) => setMatches(m)} />
+        <FixturesPanel tournament={tournament} isOrganiser={isOrganiser} onNavigate={onNavigate} onChanged={(m) => setMatches(m)} />
       )}
 
       {/* TAB 4: POINTS TABLE, NRR, QUALIFICATION, KNOCKOUTS, WINNER (#53–#58) */}

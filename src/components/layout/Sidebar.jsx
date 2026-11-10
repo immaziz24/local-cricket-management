@@ -17,7 +17,7 @@ import {
 } from 'lucide-react';
 
 export function Sidebar(props) {
-  const { activeTab, onSelectTab, isCollapsed, onToggleCollapse } = props || {};
+  const { activeTab, onSelectTab, isCollapsed, onToggleCollapse, liveMatchCount = 0 } = props || {};
   const navItems = [
     { id: 'dashboard', label: 'Dashboard Overview', icon: LayoutDashboard },
     { id: 'category-n', label: 'Category N Phase 1', icon: ShieldCheck, tag: '#254-270' },
@@ -25,8 +25,8 @@ export function Sidebar(props) {
     { id: 'login', label: 'User Login & Logout', icon: LogIn, tag: '#255' },
     { id: 'password-recovery', label: 'Password Recovery', icon: KeyRound, tag: '#256' },
     { id: 'teams', label: 'My Teams', icon: Users, tag: 'New' },
-    { id: 'matches', label: 'Live & Match Center', icon: Activity, badge: '2 Live' },
-    { id: 'tournaments', label: 'Tournaments', icon: Trophy, count: '4' },
+    { id: 'matches', label: 'Matches', icon: Activity, badge: liveMatchCount > 0 ? `${liveMatchCount} Live` : null },
+    { id: 'tournaments', label: 'Tournaments', icon: Trophy },
     { id: 'create-tournament', label: 'Create Tournament', icon: PlusCircle, tag: '#31' },
     { id: 'penalties', label: 'Late Arrival Rules', icon: ShieldAlert, tag: 'Cat Q' }
   ];

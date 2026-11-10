@@ -13,6 +13,7 @@ import { CategoryNView } from './views/CategoryNView.jsx';
 import { TeamsView } from './views/teams/TeamsView.jsx';
 import { TeamDetailView } from './views/teams/TeamDetailView.jsx';
 import { PlayerProfileView } from './views/teams/PlayerProfileView.jsx';
+import { MatchCentreView } from './views/matches/MatchCentreView.jsx';
 import { useDashboardData } from './hooks/useDashboardData.js';
 import { dataService, onAuthChange } from './services/dataService.js';
 
@@ -22,6 +23,8 @@ export function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
+  const [selectedMatchId, setSelectedMatchId] = useState(null);
+  const [liveCount, setLiveCount] = useState(0);
 
   // Keep the signed-in user in sync across the whole app (#255).
   useEffect(() => {
@@ -52,11 +55,21 @@ export function App() {
     if (tab === 'player-profile' && param) {
       setSelectedPlayerId(param);
     }
+    if (tab === 'match-centre' && param) {
+      setSelectedMatchId(param);
+    }
     setActiveTab(tab);
   };
   const { stats, liveMatches, tournaments, penaltyPolicy, loading } = useDashboardData();
 
-  const liveCount = liveMatches ? liveMatches.length : 0;
+  // Real number of live matches (refreshed every minute)
+  useEffect(() => {
+    let alive = true;
+    const tick = () => dataService.countLiveMatches().then((n) => { if (alive) setLiveCount(n || 0); }).catch(() => {});
+    tick();
+    const id = setInterval(tick, 60000);
+    return () => { alive = false; clearInterval(id); };
+  }, []);
 
   return (
     <AppLayout
@@ -77,7 +90,11 @@ export function App() {
         />
       )}
 
-      {activeTab === 'matches' && <MatchesView />}
+      {activeTab === 'matches' && <MatchesView key={currentUser ? currentUser.id : 'guest'} currentUser={currentUser} onNavigate={handleNavigate} />}
+
+      {activeTab === 'match-centre' && selectedMatchId && (
+        <MatchCentreView key={selectedMatchId} matchId={selectedMatchId} onNavigate={handleNavigate} />
+      )}
 
       {activeTab === 'tournaments' && <TournamentsView onNavigate={handleNavigate} />}
 

@@ -502,6 +502,42 @@ export const dataService = {
     return res.data;
   },
 
+  // #1–#6 matches: create, list, match centre, toss and start
+  async listMatches(filter = 'all', limit = 50) {
+    requireDatabase();
+    const res = await supabaseClient.listMatches(filter, limit);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async countLiveMatches() {
+    requireDatabase();
+    const res = await supabaseClient.countLiveMatches();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchMatchCentre(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getMatchCentre(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async createFriendlyMatch(details) {
+    requireDatabase();
+    const res = await supabaseClient.createFriendlyMatch(details);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async startMatch(matchId, tossWinnerId, decision) {
+    requireDatabase();
+    const res = await supabaseClient.startMatch(matchId, tossWinnerId, decision);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   // Organiser adds / creates / removes tournament teams directly
   async organiserAddTeam(tournamentId, teamId) {
     requireDatabase();

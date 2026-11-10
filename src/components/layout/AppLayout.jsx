@@ -34,6 +34,7 @@ export function AppLayout(props) {
         onSelectTab={onSelectTab}
         isCollapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        liveMatchCount={liveMatchCount}
       />
 
       {/* Mobile Drawer */}
@@ -42,6 +43,7 @@ export function AppLayout(props) {
         onClose={() => setMobileNavOpen(false)}
         activeTab={activeTab}
         onSelectTab={onSelectTab}
+        liveMatchCount={liveMatchCount}
       />
 
       {/* Main Content Area */}

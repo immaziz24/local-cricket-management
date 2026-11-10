@@ -3,7 +3,7 @@ import { Menu, Globe, Server, Activity, UserPlus, LogIn, LogOut } from 'lucide-r
 import { Badge } from '../common/Badge';
 
 export function Header(props) {
-  const { onToggleMobileNav, liveMatchCount = 2, onNavigate, currentUser, onSignOut } = props || {};
+  const { onToggleMobileNav, liveMatchCount = 0, onNavigate, currentUser, onSignOut } = props || {};
   return (
     <header
       style={{

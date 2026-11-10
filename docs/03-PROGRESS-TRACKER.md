@@ -18,8 +18,8 @@
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
 | 🟩 Working (real database) | 12 / 310 |
-| 🟨 Built / connected, awaiting check | 50 / 310 |
-| ⬜ Not started | 248 / 310 |
+| 🟨 Built / connected, awaiting check | 56 / 310 |
+| ⬜ Not started | 242 / 310 |
 
 **Honest summary (2026-11-10, Phase 2):** Phase 1 done (17 connected). Phase 2: 45 of 48 built; #57, #77, #78 wait for Phase 3 ball-by-ball scoring.
 
@@ -33,7 +33,7 @@
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | 1 | N | 17 | 0 | 14 | 3 | 0 |
 | 2 | B, C | 48 | 3 | 36 | 9 | 0 |
-| 3 | A, D, E, L | 103 | 103 | 0 | 0 | 0 |
+| 3 | A, D, E, L | 103 | 97 | 6 | 0 | 0 |
 | 4 | F, G, Q | 37 | 37 | 0 | 0 | 0 |
 | 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
@@ -141,12 +141,12 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 1 | Create a new cricket match | ⬜ |  |
-| 2 | Select participating teams | ⬜ |  |
-| 3 | Add playing XI | ⬜ |  |
-| 4 | Add substitute players | ⬜ |  |
-| 5 | Toss winner selection | ⬜ |  |
-| 6 | Toss decision: bat or bowl | ⬜ |  |
+| 1 | Create a new cricket match | 🟨 | **connected 2026-11-10** – Matches page → Start a match: friendly match between any two teams; tournament fixtures also open here; creator becomes scorer. Tested in DB. Awaiting owner check |
+| 2 | Select participating teams | 🟨 | **connected 2026-11-10** – pick any two teams (yours or found by search). Tested in DB. Awaiting owner check |
+| 3 | Add playing XI | 🟨 | **connected 2026-11-10** – match page → Playing XI (same lineup tool as #72; size follows the match's players a side). Tested in DB. Awaiting owner check |
+| 4 | Add substitute players | 🟨 | **connected 2026-11-10** – substitutes picked with the lineup (#73). Tested in DB. Awaiting owner check |
+| 5 | Toss winner selection | 🟨 | **connected 2026-11-10** – match page → Toss: who won the toss. Tested in DB. Awaiting owner check |
+| 6 | Toss decision: bat or bowl | 🟨 | **connected 2026-11-10** – bat or bowl first; match goes live, batting side set, team owners notified. Tested in DB. Awaiting owner check |
 | 7 | Ball-by-ball scoring | ⬜ |  |
 | 8 | Record runs: 0, 1, 2, 3, 4, 6 | ⬜ |  |
 | 9 | Record extras: wides, no-balls, byes and leg-byes | ⬜ |  |

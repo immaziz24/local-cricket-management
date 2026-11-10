@@ -45,7 +45,7 @@ function Notice({ msg }) {
   );
 }
 
-export function FixturesPanel({ tournament, isOrganiser, onChanged }) {
+export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }) {
   const [matches, setMatches] = useState([]);
   const [structure, setStructure] = useState({ groups: [], teams: [] });
   const [format, setFormat] = useState(tournament.structure || 'league');
@@ -265,6 +265,11 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged }) {
                         </div>
                       )}
 
+                      {m.team_a && m.team_b && onNavigate && (
+                        <button onClick={() => onNavigate('match-centre', m.id)} style={{ background: 'none', border: 'none', color: '#dc2626', cursor: 'pointer', fontSize: '0.78rem', padding: 0, marginTop: '0.4rem', marginRight: '0.8rem', fontWeight: 700 }}>
+                          {m.status === 'live' ? 'Open live match' : m.status === 'scheduled' ? 'Open match (toss & start)' : 'Open match'}
+                        </button>
+                      )}
                       {m.team_a && m.team_b && (
                         <button onClick={() => setLineupFor(lineupFor === m.id ? null : m.id)} style={{ background: 'none', border: 'none', color: '#7c3aed', cursor: 'pointer', fontSize: '0.78rem', padding: 0, marginTop: '0.4rem', fontWeight: 700 }}>
                           {lineupFor === m.id ? 'Hide Playing XI' : 'Playing XI'}

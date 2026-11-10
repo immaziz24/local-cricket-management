@@ -873,6 +873,37 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  // #1–#6 matches: create, list, match centre, toss and start
+  async listMatches(filter = 'all', limit = 50) {
+    const { data, error } = await supabase.rpc('list_matches', { p_filter: filter, p_limit: limit });
+    if (error) return { data: null, error: friendlyError(error, 'matches') };
+    return { data, error: null };
+  },
+
+  async countLiveMatches() {
+    const { data, error } = await supabase.rpc('count_live_matches', {});
+    if (error) return { data: null, error: friendlyError(error, 'live matches') };
+    return { data, error: null };
+  },
+
+  async getMatchCentre(matchId) {
+    const { data, error } = await supabase.rpc('get_match_centre', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'match') };
+    return { data, error: null };
+  },
+
+  async createFriendlyMatch(details) {
+    const { data, error } = await supabase.rpc('create_friendly_match', { p: details });
+    if (error) return { data: null, error: friendlyError(error, 'create match') };
+    return { data, error: null };
+  },
+
+  async startMatch(matchId, tossWinnerId, decision) {
+    const { data, error } = await supabase.rpc('start_match', { p_match_id: matchId, p_toss_winner: tossWinnerId, p_decision: decision });
+    if (error) return { data: null, error: friendlyError(error, 'start match') };
+    return { data, error: null };
+  },
+
   // Organiser adds / creates / removes tournament teams directly
   async organiserAddTeam(tournamentId, teamId) {
     const { data, error } = await supabase.rpc('organiser_add_team', { p_tournament_id: tournamentId, p_team_id: teamId });
