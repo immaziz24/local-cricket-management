@@ -16,6 +16,7 @@ import { PlayerProfileView } from './views/teams/PlayerProfileView.jsx';
 import { MatchCentreView } from './views/matches/MatchCentreView.jsx';
 import { StatsView } from './views/stats/StatsView.jsx';
 import { LawsView } from './views/rules/LawsView.jsx';
+import { ToolsView } from './views/tools/ToolsView.jsx';
 import { useDashboardData } from './hooks/useDashboardData.js';
 import { dataService, onAuthChange } from './services/dataService.js';
 
@@ -118,6 +119,8 @@ export function App() {
       {activeTab === 'stats' && <StatsView onNavigate={handleNavigate} />}
 
       {activeTab === 'laws' && <LawsView />}
+
+      {activeTab === 'tools' && <ToolsView />}
 
       {activeTab === 'tournaments' && <TournamentsView onNavigate={handleNavigate} />}
 

@@ -17,11 +17,11 @@
 | Status | Features |
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
-| 🟩 Working (real database) | 71 / 310 |
+| 🟩 Working (real database) | 88 / 310 |
 | 🟨 Built / connected, awaiting check | 80 / 310 |
-| ⬜ Not started | 159 / 310 |
+| ⬜ Not started | 142 / 310 |
 
-**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Next: Category L calculators (#216–232) – the last 17 features of Phase 3.
+**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. Next: Phase 4 – Category F (umpires, scorers, officials #135–146), then G (grounds) and Q (late-arrival rules).
 
 **Phase 2 summary:** 45 of 48 built; #57, #77, #78 waited for ball-by-ball scoring.
 
@@ -35,7 +35,7 @@
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | 1 | N | 17 | 0 | 14 | 3 | 0 |
 | 2 | B, C | 48 | 0 | 36 | 12 | 0 |
-| 3 | A, D, E, L | 103 | 17 | 30 | 56 | 0 |
+| 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
 | 4 | F, G, Q | 37 | 37 | 0 | 0 | 0 |
 | 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
@@ -244,23 +244,23 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 216 | Run-rate calculator | ⬜ |  |
-| 217 | Required run-rate calculator | ⬜ |  |
-| 218 | Batting strike-rate calculator | ⬜ |  |
-| 219 | Batting average calculator | ⬜ |  |
-| 220 | Bowling economy calculator | ⬜ |  |
-| 221 | Bowling average calculator | ⬜ |  |
-| 222 | Net Run Rate calculator | ⬜ |  |
-| 223 | DLS calculation support | ⬜ |  |
-| 224 | Toss generator | ⬜ |  |
-| 225 | Team generator | ⬜ |  |
-| 226 | Playing XI generator | ⬜ |  |
-| 227 | Fixture generator | ⬜ |  |
-| 228 | Points table calculator | ⬜ |  |
-| 229 | Tournament budget calculator | ⬜ |  |
-| 230 | Prize distribution calculator | ⬜ |  |
-| 231 | Player auction calculator | ⬜ |  |
-| 232 | Cricket ground dimension calculator | ⬜ |  |
+| 216 | Run-rate calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – run rate |
+| 217 | Required run-rate calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – required run rate, runs/balls needed |
+| 218 | Batting strike-rate calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – batting strike rate |
+| 219 | Batting average calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – batting average |
+| 220 | Bowling economy calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – bowling economy |
+| 221 | Bowling average calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – bowling average + bowling strike rate |
+| 222 | Net Run Rate calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – multi-match NRR, all-out counts full quota |
+| 223 | DLS calculation support | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – rain target helper (run-rate + DLS-style resources) |
+| 224 | Toss generator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – fair digital coin toss (secure random) |
+| 225 | Team generator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – balanced teams from a list or one of my teams (ratings, keepers spread) |
+| 226 | Playing XI generator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – suggested XI with keeper and bowling options + batting order; can load my team squad |
+| 227 | Fixture generator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – league / home-away / knockout fixtures with optional dates; copy list |
+| 228 | Points table calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – points table with NRR from entered results |
+| 229 | Tournament budget calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – costs vs entry fees + sponsorship, break-even fee |
+| 230 | Prize distribution calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – prize split by %, rounding |
+| 231 | Player auction calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – auction purse: remaining, max bid keeping base price for open slots |
+| 232 | Cricket ground dimension calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – ground size from boundary distances (yards, rope length, area) |
 
 ### Phase 4 – Cricket Operations and Match Management
 

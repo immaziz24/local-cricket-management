@@ -17,6 +17,7 @@
 | Phase 3: statistics | 🟩 #79–102 + #57, #77, #78: everything worked out from scored balls. Statistics page (site leaderboards, compare players, compare teams + head-to-head), career stats/awards/form chart on player profile, team record on team page, Analysis tab in each match (worm, runs per over, partnerships, Player of the Match – automatic, scorer can change), leaderboards in tournament Points Table tab. |
 | Phase 3: playing conditions | 🟩 Tournament default rules + per-match rules (wide/no-ball runs, free hit, LBW on/off, byes/leg-byes, max overs per bowler, retire-at, powerplay, fielding limits, boundary, written local rules), version history with change notes, teams notified. Frozen when the match starts; the scoring screen follows them (free-hit/powerplay banners, bowler quota, LBW/leg-bye hidden when off). |
 | Phase 3: laws & match reports | 🟩 Laws & Rules page (own summaries + MCC/ICC links, dismissals, dead ball, overthrows, short runs, boundaries, follow-on, Super Over, penalty runs, time-wasting, umpire signals, revised-target helper). Super Over after a tie; penalty runs; follow-on; match Reports tab (decision log public; incident and disciplinary private, with notifications). |
+| Phase 3: cricket tools | 🟩 Cricket Tools page (#216–232): run rate, required rate, strike rate, averages, economy, NRR, rain target, toss, team generator, Playing XI generator, fixture generator, points table, budget, prizes, auction, ground size. Runs in the browser; generators can load a squad from my teams. |
 | Phase 2: players & teams | 🟨 #59–76: playing XI, substitutes and in-match replacements per match, player transfers between teams (#72–75); player ID, photo, DOB/age, contact privacy, team logo, team history, public player profile (#60–62, #66, #67, #69, #76) added on top of My Teams page, create team, add players by mobile number (or by name if not registered — they claim it later by registering with that number), captain / vice-captain / icon player. Awaiting owner check. |
 | Security & operations | 🟨 #267 audit log, #268 backup download, #269 privacy + my-data download + sign out everywhere, #270 notification inbox + send-to-all. Awaiting owner check. |
 | Reports & suspension | 🟨 #266 report a member, admin suspend/lift, notifications, audit log. Awaiting owner check. |
@@ -76,7 +77,7 @@
 ## 4. Next steps (in order)
 
 1. **Owner check of #265** (Category N → User Governance → Verification): request a badge, approve it. Push to GitHub (today's work is not on GitHub yet).
-2. **Phase 3:** Category A (live scoring #1–30) complete. **Category D statistics (#79–102) complete** on the real database, together with Phase 2 #57, #77, #78 (Statistics page, player profile stats, team record, match Analysis tab, tournament leaderboards, automatic Player of the Match). **Category E batch 1 – playing conditions (#105–112, #114, #118, #119, #129–134) complete; scoring follows them.** **Category E batch 2 complete** (laws reference, Super Over, follow-on, penalty runs, DLS helper, match reports). **Next: Category L calculators (#216–232)** – last part of Phase 3.
+2. **Phase 3:** Category A (live scoring #1–30) complete. **Category D statistics (#79–102) complete** on the real database, together with Phase 2 #57, #77, #78 (Statistics page, player profile stats, team record, match Analysis tab, tournament leaderboards, automatic Player of the Match). **Category E batch 1 – playing conditions (#105–112, #114, #118, #119, #129–134) complete; scoring follows them.** **Category E batch 2 complete** (laws reference, Super Over, follow-on, penalty runs, DLS helper, match reports). **Category L calculators (#216–232) built – Phase 3 complete.** **Next: Phase 4** – Category F officials (#135–146), Category G grounds (#147–159), Category Q late-arrival rules.
 3. **Phase 2** in number order: #31 Create a tournament (connect to database), #32 Tournament name and branding, #33, …
 
 ## 5. Known issues
@@ -112,6 +113,7 @@
 | :--- | :--- | :--- |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
+| 2026-11-10 | Claude | Category L: Cricket Tools page (17 calculators/generators) – Phase 3 complete |
 | 2026-11-10 | Claude | Category E batch 2 (15 features): Laws & Rules page, Super Over, penalty runs, follow-on, DLS helper, match Reports tab – Category E complete |
 | 2026-11-10 | Claude | Category E batch 1: playing conditions (17 features) – rules editor, versions, enforced in ball-by-ball scoring |
 | 2026-11-10 | Claude | Category D statistics #79–102 + #57, #77, #78 (Statistics page, MVP points, Player of the Match, comparisons, charts, match analysis). Fixed player profile error for players without an account |

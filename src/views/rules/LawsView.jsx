@@ -91,7 +91,7 @@ const SECTIONS = [
   ), note: 'The MCC Laws app has videos of every signal.' }
 ];
 
-function DlsHelper() {
+export function DlsHelper() {
   const [m, setM] = useState({ t1: '', o1: '', o2: '', r1: '', r2: '' });
   const n = (v) => (v === '' ? NaN : Number(v));
   const t1 = n(m.t1); const o1 = n(m.o1); const o2 = n(m.o2); const r1 = n(m.r1); const r2 = n(m.r2);
