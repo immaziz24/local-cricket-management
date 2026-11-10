@@ -502,6 +502,49 @@ export const dataService = {
     return res.data;
   },
 
+  // #7–#19 ball-by-ball scoring
+  async fetchLiveState(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getLiveState(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setInningsPlayers(matchId, players) {
+    requireDatabase();
+    const res = await supabaseClient.setInningsPlayers(matchId, players || {});
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async recordBall(matchId, ball) {
+    requireDatabase();
+    const res = await supabaseClient.recordBall(matchId, ball);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async undoLastBall(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.undoLastBall(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async endInnings(matchId, reason) {
+    requireDatabase();
+    const res = await supabaseClient.endInnings(matchId, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async abandonMatch(matchId, reason) {
+    requireDatabase();
+    const res = await supabaseClient.abandonMatch(matchId, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   // #1–#6 matches: create, list, match centre, toss and start
   async listMatches(filter = 'all', limit = 50) {
     requireDatabase();

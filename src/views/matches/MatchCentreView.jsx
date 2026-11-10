@@ -5,6 +5,7 @@ import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { ArrowLeft, Coins, MapPin, Clock, Trophy, AlertCircle, CheckCircle } from 'lucide-react';
 import { LineupPanel } from '../tournaments/LineupPanel.jsx';
+import { ScoringPanel } from './ScoringPanel.jsx';
 import { scoreLine } from '../tournaments/MatchResultForm.jsx';
 
 /**
@@ -102,7 +103,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       )}
 
       {/* Step 1: Playing XI (#3, #4) */}
-      <Card title={m.status === 'scheduled' ? '1. Playing XI & substitutes' : 'Playing XI'}>
+      <Card title={m.status === 'scheduled' ? '1. Playing XI & substitutes' : 'Playing XI'} style={m.status !== 'scheduled' ? { order: 10 } : undefined}>
         {a && b ? <LineupPanel key={lineupKey} match={m} /> : <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Both teams must be set first.</span>}
       </Card>
 
@@ -146,13 +147,8 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
         <Card><p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>This match has not started yet. Only the scorer or the tournament organiser can start it.</p></Card>
       )}
 
-      {m.status === 'live' && (
-        <Card title="Live scoring">
-          <p style={{ margin: 0, fontSize: '0.88rem', color: '#334155' }}>
-            {nameOf(m.batting_first_team_id)} are batting first. The ball-by-ball scoring screen is the next step being built.
-          </p>
-        </Card>
-      )}
+      {/* Ball-by-ball scoring and scorecard (#7–#19) */}
+      {m.status !== 'scheduled' && <ScoringPanel matchId={m.id} onChanged={() => load()} />}
     </div>
   );
 }

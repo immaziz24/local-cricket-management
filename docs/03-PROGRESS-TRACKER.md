@@ -18,8 +18,8 @@
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
 | 🟩 Working (real database) | 12 / 310 |
-| 🟨 Built / connected, awaiting check | 56 / 310 |
-| ⬜ Not started | 242 / 310 |
+| 🟨 Built / connected, awaiting check | 69 / 310 |
+| ⬜ Not started | 229 / 310 |
 
 **Honest summary (2026-11-10, Phase 2):** Phase 1 done (17 connected). Phase 2: 45 of 48 built; #57, #77, #78 wait for Phase 3 ball-by-ball scoring.
 
@@ -33,7 +33,7 @@
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | 1 | N | 17 | 0 | 14 | 3 | 0 |
 | 2 | B, C | 48 | 3 | 36 | 9 | 0 |
-| 3 | A, D, E, L | 103 | 97 | 6 | 0 | 0 |
+| 3 | A, D, E, L | 103 | 84 | 19 | 0 | 0 |
 | 4 | F, G, Q | 37 | 37 | 0 | 0 | 0 |
 | 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
@@ -147,19 +147,19 @@
 | 4 | Add substitute players | 🟨 | **connected 2026-11-10** – substitutes picked with the lineup (#73). Tested in DB. Awaiting owner check |
 | 5 | Toss winner selection | 🟨 | **connected 2026-11-10** – match page → Toss: who won the toss. Tested in DB. Awaiting owner check |
 | 6 | Toss decision: bat or bowl | 🟨 | **connected 2026-11-10** – bat or bowl first; match goes live, batting side set, team owners notified. Tested in DB. Awaiting owner check |
-| 7 | Ball-by-ball scoring | ⬜ |  |
-| 8 | Record runs: 0, 1, 2, 3, 4, 6 | ⬜ |  |
-| 9 | Record extras: wides, no-balls, byes and leg-byes | ⬜ |  |
-| 10 | Record wickets and dismissal types | ⬜ |  |
-| 11 | Handle retired hurt and retired out | ⬜ |  |
-| 12 | Automatic strike rotation | ⬜ |  |
-| 13 | Automatic end-of-over strike changes | ⬜ |  |
-| 14 | Bowler selection and bowler changes | ⬜ |  |
-| 15 | Over and innings management | ⬜ |  |
-| 16 | Target calculation | ⬜ |  |
-| 17 | Match result calculation | ⬜ |  |
-| 18 | Score correction and undo | ⬜ |  |
-| 19 | Abandoned and tied match handling | ⬜ |  |
+| 7 | Ball-by-ball scoring | 🟨 | **connected 2026-11-10** – match page → scoring pad: one tap per ball; every ball saved with who batted/bowled. Tested in DB. Awaiting owner check |
+| 8 | Record runs: 0, 1, 2, 3, 4, 6 | 🟨 | **connected 2026-11-10** – buttons 0,1,2,3,4,6 (+5,7 for overthrows). Tested in DB. Awaiting owner check |
+| 9 | Record extras: wides, no-balls, byes and leg-byes | 🟨 | **connected 2026-11-10** – wide, no-ball (+1 run each), bye, leg-bye; extras shown on the scorecard. Tested in DB. Awaiting owner check |
+| 10 | Record wickets and dismissal types | 🟨 | **connected 2026-11-10** – wicket button: bowled, caught, c&b, lbw, run out (either batter), stumped, hit wicket, obstructing, timed out; fielder recorded. Tested in DB. Awaiting owner check |
+| 11 | Handle retired hurt and retired out | 🟨 | **connected 2026-11-10** – retired hurt (can bat again) and retired out. Tested in DB. Awaiting owner check |
+| 12 | Automatic strike rotation | 🟨 | **connected 2026-11-10** – strike changes on odd runs automatically. Tested in DB. Awaiting owner check |
+| 13 | Automatic end-of-over strike changes | 🟨 | **connected 2026-11-10** – batters change ends at the end of each over; new bowler asked for. Tested in DB. Awaiting owner check |
+| 14 | Bowler selection and bowler changes | 🟨 | **connected 2026-11-10** – pick openers, next batter after a wicket, and bowler each over; same bowler cannot bowl two overs in a row. Tested in DB. Awaiting owner check |
+| 15 | Over and innings management | 🟨 | **connected 2026-11-10** – overs counted (legal balls only); innings ends when all out (players a side − 1), overs done or target reached; next innings opens automatically. Tested in DB. Awaiting owner check |
+| 16 | Target calculation | 🟨 | **connected 2026-11-10** – target = first innings + 1; runs needed, balls left, current and required run rate. Tested in DB. Awaiting owner check |
+| 17 | Match result calculation | 🟨 | **connected 2026-11-10** – result worked out: won by X runs / won by N wickets / tied; feeds points table and NRR. Tested in DB. Awaiting owner check |
+| 18 | Score correction and undo | 🟨 | **connected 2026-11-10** – Undo the last ball (also re-opens a finished innings or match). Tested in DB. Awaiting owner check |
+| 19 | Abandoned and tied match handling | 🟨 | **connected 2026-11-10** – abandon with a reason (no result); tie detected automatically. Tested in DB. Awaiting owner check |
 | 20 | Live commentary | ⬜ |  |
 | 21 | Full batting scorecard | ⬜ |  |
 | 22 | Full bowling scorecard | ⬜ |  |

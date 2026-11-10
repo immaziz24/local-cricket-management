@@ -37,6 +37,7 @@
 | `20261106105506_phase1_user_management_foundation.sql` | Phase 1 tables, row-level security, profile trigger |
 | `20261106105529_phase1_security_and_fk_index_hardening.sql` | Indexes and deny-rules for audit logs and templates |
 | `20261110050000_phase1_profile_mobile_number.sql` | Saves name and unique mobile number on sign-up |
+| `20261110190000_phase3_ball_by_ball.sql` | innings + balls tables, record_ball, set_innings_players, undo, end innings, abandon, live state, result, all-out flags for NRR |
 | `20261110180000_phase3_start_match_toss.sql` | match details (overs, ball, toss, scorer), friendly matches, start_match (toss), match centre, matches list, live count |
 | `20261110170000_phase2_local_cricket_setup.sql` | local-cricket tournament fields (match type, category, pitch), new create_tournament, organiser add/create/remove team |
 | `20261110160000_phase2_playing_xi_transfers.sql` | match_players (playing XI, substitutes, replacements), player_transfers, lineup/transfer functions, team search, public team history filtered |
@@ -65,7 +66,7 @@
 ## 4. Next steps (in order)
 
 1. **Owner check of #265** (Category N → User Governance → Verification): request a badge, approve it. Push to GitHub (today's work is not on GitHub yet).
-2. **Phase 3 started:** #1–6 done (start a match, teams, Playing XI, substitutes, toss). **Next: #7–19 ball-by-ball scoring screen** (runs, extras, wickets, strike rotation, bowler changes, overs/innings, target, result, undo). #57 leaderboards waits for Phase 3 scoring.
+2. **Phase 3 started:** #1–6 done (start a match, teams, Playing XI, substitutes, toss). #7–19 ball-by-ball scoring done. **Next: #20–25, #28–30** – commentary, full batting/bowling scorecards page, match summary, save and resume, share link, live updates for spectators, scoring history; then #26–27 offline scoring. #57 leaderboards waits for Phase 3 scoring.
 3. **Phase 2** in number order: #31 Create a tournament (connect to database), #32 Tournament name and branding, #33, …
 
 ## 5. Known issues
@@ -97,6 +98,7 @@
 | :--- | :--- | :--- |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
+| 2026-11-10 | Claude | Fixed blank Tournaments page (missing icon import). Ball-by-ball scoring #7–19 with scorecard |
 | 2026-11-10 | Claude | Phase 3 start: real Matches page, start a match, Playing XI, toss (#1–6); real live-match count |
 | 2026-11-10 | Claude | Local-cricket rework after owner feedback: new Create Tournament form (overs number, ball/pitch/category, players a side), organiser adds or creates teams, honest tournament summary |
 | 2026-11-10 | Claude | Playing XI, substitutes, replacements, transfers (#72–75) |

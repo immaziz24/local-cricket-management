@@ -873,6 +873,43 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  // #7–#19 ball-by-ball scoring
+  async getLiveState(matchId) {
+    const { data, error } = await supabase.rpc('get_live_state', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'live score') };
+    return { data, error: null };
+  },
+
+  async setInningsPlayers(matchId, { striker, nonStriker, bowler }) {
+    const { data, error } = await supabase.rpc('set_innings_players', { p_match_id: matchId, p_striker: striker || null, p_non_striker: nonStriker || null, p_bowler: bowler || null });
+    if (error) return { data: null, error: friendlyError(error, 'players') };
+    return { data, error: null };
+  },
+
+  async recordBall(matchId, ball) {
+    const { data, error } = await supabase.rpc('record_ball', { p_match_id: matchId, p: ball });
+    if (error) return { data: null, error: friendlyError(error, 'ball') };
+    return { data, error: null };
+  },
+
+  async undoLastBall(matchId) {
+    const { data, error } = await supabase.rpc('undo_last_ball', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'undo') };
+    return { data, error: null };
+  },
+
+  async endInnings(matchId, reason) {
+    const { data, error } = await supabase.rpc('end_innings', { p_match_id: matchId, p_reason: reason || 'closed' });
+    if (error) return { data: null, error: friendlyError(error, 'end innings') };
+    return { data, error: null };
+  },
+
+  async abandonMatch(matchId, reason) {
+    const { data, error } = await supabase.rpc('abandon_match', { p_match_id: matchId, p_reason: reason });
+    if (error) return { data: null, error: friendlyError(error, 'abandon match') };
+    return { data, error: null };
+  },
+
   // #1–#6 matches: create, list, match centre, toss and start
   async listMatches(filter = 'all', limit = 50) {
     const { data, error } = await supabase.rpc('list_matches', { p_filter: filter, p_limit: limit });

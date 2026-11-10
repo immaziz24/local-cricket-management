@@ -5,7 +5,7 @@ import { Button } from '../components/common/Button.jsx';
 import { LoadingSpinner } from '../components/common/LoadingSpinner.jsx';
 import { dataService } from '../services/dataService.js';
 import { TournamentLogo } from './tournaments/TournamentBranding.jsx';
-import { Trophy, Calendar, Users, MapPin, PlusCircle, Sparkles } from 'lucide-react';
+import { Trophy, Calendar, Users, MapPin, PlusCircle, Sparkles, Eye } from 'lucide-react';
 
 export function TournamentsView(props) {
   const { onNavigate = () => {} } = props || {};
