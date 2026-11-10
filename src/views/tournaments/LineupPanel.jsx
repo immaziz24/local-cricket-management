@@ -17,6 +17,7 @@ function TeamLineup({ match, team, perSide, maxSubs, onSaved }) {
   const lineup = team.lineup || [];
   const hasReplacement = lineup.some((p) => p.role === 'replaced');
   const open = match.status === 'scheduled' || match.status === 'live';
+  const canPick = match.status === 'scheduled';
   const [editing, setEditing] = useState(false);
   const [playing, setPlaying] = useState([]);
   const [subs, setSubs] = useState([]);
@@ -75,7 +76,7 @@ function TeamLineup({ match, team, perSide, maxSubs, onSaved }) {
     <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.6rem', padding: '0.75rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', minWidth: 260, flex: 1 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem' }}>
         <strong style={{ fontSize: '0.92rem' }}>{team.name}</strong>
-        {team.can_edit && open && !editing && !hasReplacement && (
+        {team.can_edit && canPick && !editing && !hasReplacement && (
           <Button variant="secondary" size="sm" onClick={startEdit}>{playingNow.length ? 'Change lineup' : 'Pick Playing XI'}</Button>
         )}
       </div>

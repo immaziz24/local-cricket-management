@@ -45,6 +45,23 @@ export function App() {
     }
   };
 
+  // #28 Shareable links: ?match=<id> or ?tournament=<id> open that page directly.
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    const matchId = q.get('match');
+    const tournamentId = q.get('tournament');
+    if (matchId && /^[0-9a-f-]{36}$/i.test(matchId)) { setSelectedMatchId(matchId); setActiveTab('match-centre'); }
+    else if (tournamentId && /^[0-9a-f-]{36}$/i.test(tournamentId)) { setSelectedTournamentId(tournamentId); setActiveTab('tournament-details'); }
+  }, []);
+  useEffect(() => {
+    const url = activeTab === 'match-centre' && selectedMatchId ? `?match=${selectedMatchId}`
+      : activeTab === 'tournament-details' && selectedTournamentId && /^[0-9a-f-]{36}$/i.test(selectedTournamentId) ? `?tournament=${selectedTournamentId}`
+      : window.location.pathname;
+    if (`${window.location.pathname}${window.location.search}` !== (url.startsWith('?') ? `${window.location.pathname}${url}` : url)) {
+      window.history.replaceState(null, '', url);
+    }
+  }, [activeTab, selectedMatchId, selectedTournamentId]);
+
   const handleNavigate = (tab, param = null) => {
     if (tab === 'tournament-details' && param) {
       setSelectedTournamentId(param);

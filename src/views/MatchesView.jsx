@@ -29,6 +29,7 @@ export function MatchesView({ onNavigate = () => {}, currentUser }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showNew, setShowNew] = useState(false);
+  const [myLive, setMyLive] = useState([]);
 
   const load = async (f = filter) => {
     setLoading(true); setError(null);
@@ -37,6 +38,11 @@ export function MatchesView({ onNavigate = () => {}, currentUser }) {
     finally { setLoading(false); }
   };
   useEffect(() => { load(filter); }, [filter]);
+  // #25 resume: the signed-in user's own live matches
+  useEffect(() => {
+    if (!currentUser) { setMyLive([]); return; }
+    dataService.listMatches('mine', 30).then((l) => setMyLive((l || []).filter((m) => m.status === 'live'))).catch(() => setMyLive([]));
+  }, [currentUser]);
   // first visit: if nothing is live, show upcoming
   useEffect(() => {
     dataService.countLiveMatches().then((n) => { if (!n) setFilter('upcoming'); }).catch(() => {});
@@ -60,6 +66,18 @@ export function MatchesView({ onNavigate = () => {}, currentUser }) {
           <Button variant="secondary" onClick={() => onNavigate('login')}>Sign in to start a match</Button>
         )}
       </div>
+
+      {myLive.length > 0 && (
+        <div style={{ border: '1px solid #fecaca', backgroundColor: '#fef2f2', borderRadius: '0.75rem', padding: '0.75rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
+          <strong style={{ fontSize: '0.9rem', color: '#991b1b' }}>Your matches in progress</strong>
+          {myLive.map((m) => (
+            <div key={m.id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap', fontSize: '0.88rem' }}>
+              <span><strong>{m.team_a.name}</strong> {scoreLine(m.team_a_runs, m.team_a_wickets, m.team_a_balls) || ''} vs <strong>{m.team_b.name}</strong> {scoreLine(m.team_b_runs, m.team_b_wickets, m.team_b_balls) || ''}</span>
+              <Button variant="primary" size="sm" onClick={() => onNavigate('match-centre', m.id)}>Continue scoring</Button>
+            </div>
+          ))}
+        </div>
+      )}
 
       {showNew && <NewMatchForm onCreated={(id) => onNavigate('match-centre', id)} onCancel={() => setShowNew(false)} />}
 

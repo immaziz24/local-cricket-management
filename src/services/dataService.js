@@ -503,6 +503,40 @@ export const dataService = {
   },
 
   // #7–#19 ball-by-ball scoring
+  // #24 #25 pause / resume, #30 history, #29 realtime
+  async pauseMatch(matchId, reason) {
+    requireDatabase();
+    const res = await supabaseClient.pauseMatch(matchId, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async resumeMatch(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.resumeMatch(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchMatchHistory(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getMatchHistory(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  subscribeToMatch(matchId, onChange) {
+    if (authBackend !== 'supabase') return () => {};
+    try { return supabaseClient.subscribeToMatch(matchId, onChange); } catch { return () => {}; }
+  },
+
+  async fetchCommentary(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getCommentary(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchLiveState(matchId) {
     requireDatabase();
     const res = await supabaseClient.getLiveState(matchId);

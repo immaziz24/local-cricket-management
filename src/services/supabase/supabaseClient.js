@@ -874,6 +874,43 @@ export const supabaseClient = {
   },
 
   // #7–#19 ball-by-ball scoring
+  // #24 #25 pause / resume, #30 history, #29 realtime
+  async pauseMatch(matchId, reason) {
+    const { data, error } = await supabase.rpc('pause_match', { p_match_id: matchId, p_reason: reason || null });
+    if (error) return { data: null, error: friendlyError(error, 'pause') };
+    return { data, error: null };
+  },
+
+  async resumeMatch(matchId) {
+    const { data, error } = await supabase.rpc('resume_match', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'resume') };
+    return { data, error: null };
+  },
+
+  async getMatchHistory(matchId) {
+    const { data, error } = await supabase.rpc('get_match_history', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'history') };
+    return { data, error: null };
+  },
+
+  /** Calls onChange whenever a ball, innings or the match row changes. Returns an unsubscribe function. */
+  subscribeToMatch(matchId, onChange) {
+    let timer = null;
+    const fire = () => { clearTimeout(timer); timer = setTimeout(onChange, 300); };
+    const channel = supabase.channel(`match-${matchId}-${Math.random().toString(36).slice(2, 8)}`)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'balls', filter: `match_id=eq.${matchId}` }, fire)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'innings', filter: `match_id=eq.${matchId}` }, fire)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'matches', filter: `id=eq.${matchId}` }, fire)
+      .subscribe();
+    return () => { clearTimeout(timer); supabase.removeChannel(channel); };
+  },
+
+  async getCommentary(matchId) {
+    const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'commentary') };
+    return { data, error: null };
+  },
+
   async getLiveState(matchId) {
     const { data, error } = await supabase.rpc('get_live_state', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'live score') };

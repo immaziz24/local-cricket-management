@@ -54,7 +54,7 @@ function BallChip({ b }) {
   return <span style={{ minWidth: 30, height: 30, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 800, backgroundColor: bg, color, padding: '0 4px' }}>{l}</span>;
 }
 
-export function ScoringPanel({ matchId, onChanged }) {
+export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0 }) {
   const [st, setSt] = useState(null);
   const [err, setErr] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -75,10 +75,11 @@ export function ScoringPanel({ matchId, onChanged }) {
     } catch (e) { setErr(e.message); return null; }
   };
   useEffect(() => { load(); }, [matchId]);
-  // spectators: refresh every 10 s while live (#29 basic)
+  // #29 instant updates arrive through refreshKey; spectators also poll every 20 s as a fallback
+  useEffect(() => { if (refreshKey && !busy) load(); }, [refreshKey]);
   useEffect(() => {
     if (!st || st.can_score || st.status !== 'live') return undefined;
-    const id = setInterval(load, 10000);
+    const id = setInterval(load, 20000);
     return () => clearInterval(id);
   }, [st?.can_score, st?.status]);
   useEffect(() => {
@@ -130,7 +131,7 @@ export function ScoringPanel({ matchId, onChanged }) {
       {err && <div style={{ padding: '0.6rem 0.85rem', borderRadius: '0.5rem', backgroundColor: '#fef2f2', color: '#b91c1c', fontSize: '0.85rem', display: 'flex', gap: '0.4rem', alignItems: 'center' }}><AlertCircle size={15} /> {err}</div>}
 
       {/* Scoreboard */}
-      {curInn && (
+      {mode === 'live' && curInn && (
         <Card>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '0.5rem' }}>
@@ -167,6 +168,10 @@ export function ScoringPanel({ matchId, onChanged }) {
                     </div>
                   </div>
                 </div>
+                <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.8rem', color: '#475569' }}>
+                  {cur.partnership && <span>Partnership: <strong>{cur.partnership.runs}</strong> ({cur.partnership.balls} balls)</span>}
+                  {cur.yet_to_bat?.length > 0 && <span>Yet to bat: {cur.yet_to_bat.join(', ')}</span>}
+                </div>
               </>
             )}
             {st.status !== 'live' && st.result_summary && <div style={{ fontWeight: 800, color: '#065f46' }}>{st.result_summary}</div>}
@@ -175,7 +180,7 @@ export function ScoringPanel({ matchId, onChanged }) {
       )}
 
       {/* Pick batters / bowler (#14) */}
-      {scoring && (!cur || needPick) && (
+      {mode === 'live' && scoring && (!cur || needPick) && (
         <Card title={!cur || (!cur.striker_id && !cur.non_striker_id && cur.legal_balls === 0 && !(curInn?.batting.length)) ? 'Openers and first bowler' : 'Next batter / bowler'}>
           <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap', alignItems: 'end' }}>
             {(!cur || !cur.striker_id) && (
@@ -212,7 +217,7 @@ export function ScoringPanel({ matchId, onChanged }) {
       )}
 
       {/* Scoring pad (#7–#11) */}
-      {scoring && cur && cur.status === 'in_progress' && !needPick && (
+      {mode === 'live' && scoring && cur && cur.status === 'in_progress' && !needPick && (
         <Card>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
@@ -301,7 +306,7 @@ export function ScoringPanel({ matchId, onChanged }) {
       )}
 
       {/* Undo after the match ended (score correction) */}
-      {st.can_score && st.status === 'completed' && st.innings.length > 0 && (
+      {mode === 'live' && st.can_score && st.status === 'completed' && st.innings.length > 0 && (
         <div>
           <Button variant="secondary" disabled={busy} onClick={() => window.confirm('Re-open the match and undo the last ball?') && act(() => dataService.undoLastBall(matchId))} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
             <Undo2 size={14} /> Undo last ball (re-open match)
@@ -310,7 +315,7 @@ export function ScoringPanel({ matchId, onChanged }) {
       )}
 
       {/* Recent balls */}
-      {cur && cur.recent.length > 0 && (
+      {mode === 'live' && cur && cur.recent.length > 0 && (
         <Card title="Recent balls">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.84rem' }}>
             {cur.recent.map((b) => (
@@ -328,8 +333,34 @@ export function ScoringPanel({ matchId, onChanged }) {
         </Card>
       )}
 
-      {/* Innings summaries */}
-      {st.innings.length > 0 && (
+      {/* #23 Match summary */}
+      {mode === 'scorecard' && st.innings.length > 0 && (
+        <Card title="Match summary">
+          {st.result_summary && <div style={{ fontWeight: 800, color: '#065f46', marginBottom: '0.6rem' }}>{st.result_summary}</div>}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '0.75rem' }}>
+            {st.innings.map((inn) => {
+              const topBat = [...inn.batting].sort((x, y) => y.runs - x.runs || x.balls - y.balls).slice(0, 2);
+              const topBowl = [...inn.bowling].sort((x, y) => y.wickets - x.wickets || x.runs - y.runs).slice(0, 2);
+              return (
+                <div key={inn.id} style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '0.6rem 0.75rem', fontSize: '0.84rem' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 800, marginBottom: '0.35rem' }}>
+                    <span>{inn.batting_team.name}</span><span>{inn.runs}/{inn.wickets} ({oversText(inn.legal_balls)})</span>
+                  </div>
+                  {topBat.map((p) => <div key={p.player_id} style={{ display: 'flex', justifyContent: 'space-between' }}><span>{p.name}</span><span><strong>{p.runs}</strong> ({p.balls})</span></div>)}
+                  <div style={{ borderTop: '1px dashed #e2e8f0', margin: '0.3rem 0' }} />
+                  {topBowl.map((b) => <div key={b.player_id} style={{ display: 'flex', justifyContent: 'space-between', color: '#475569' }}><span>{b.name}</span><span><strong>{b.wickets}-{b.runs}</strong> ({oversText(b.legal_balls)})</span></div>)}
+                </div>
+              );
+            })}
+          </div>
+        </Card>
+      )}
+
+      {/* Scorecards (#21 #22) */}
+      {mode === 'scorecard' && st.innings.length === 0 && (
+        <Card><span style={{ color: '#94a3b8', fontSize: '0.88rem' }}>The scorecard appears after the first ball.</span></Card>
+      )}
+      {mode === 'scorecard' && st.innings.length > 0 && (
         <Card title="Scorecard">
           {st.innings.map((inn) => (
             <div key={inn.id} style={{ marginBottom: '1rem' }}>
@@ -338,13 +369,13 @@ export function ScoringPanel({ matchId, onChanged }) {
                 <span>{inn.runs}/{inn.wickets} ({oversText(inn.legal_balls)} ov)</span>
               </div>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
-                <thead><tr style={{ color: '#64748b', textAlign: 'right' }}><th style={{ textAlign: 'left' }}>Batter</th><th style={{ textAlign: 'left' }}></th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th></tr></thead>
+                <thead><tr style={{ color: '#64748b', textAlign: 'right' }}><th style={{ textAlign: 'left' }}>Batter</th><th style={{ textAlign: 'left' }}></th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th><th title="Minutes at the crease">M</th></tr></thead>
                 <tbody>
                   {inn.batting.map((p) => (
                     <tr key={p.player_id} style={{ textAlign: 'right', borderBottom: '1px solid #f1f5f9' }}>
                       <td style={{ textAlign: 'left', fontWeight: 700, padding: '0.25rem 0' }}>{p.name}{p.on_strike ? ' *' : ''}</td>
                       <td style={{ textAlign: 'left', color: '#64748b' }}>{p.at_crease && !p.out ? 'not out' : dismissalText(p.out)}</td>
-                      <td style={{ fontWeight: 800 }}>{p.runs}</td><td>{p.balls}</td><td>{p.fours}</td><td>{p.sixes}</td><td>{sr(p.runs, p.balls)}</td>
+                      <td style={{ fontWeight: 800 }}>{p.runs}</td><td>{p.balls}</td><td>{p.fours}</td><td>{p.sixes}</td><td>{sr(p.runs, p.balls)}</td><td style={{ color: '#64748b' }}>{p.minutes ?? '-'}</td>
                     </tr>
                   ))}
                 </tbody>

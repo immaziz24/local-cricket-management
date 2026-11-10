@@ -18,8 +18,8 @@
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
 | 🟩 Working (real database) | 12 / 310 |
-| 🟨 Built / connected, awaiting check | 69 / 310 |
-| ⬜ Not started | 229 / 310 |
+| 🟨 Built / connected, awaiting check | 78 / 310 |
+| ⬜ Not started | 220 / 310 |
 
 **Honest summary (2026-11-10, Phase 2):** Phase 1 done (17 connected). Phase 2: 45 of 48 built; #57, #77, #78 wait for Phase 3 ball-by-ball scoring.
 
@@ -33,7 +33,7 @@
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | 1 | N | 17 | 0 | 14 | 3 | 0 |
 | 2 | B, C | 48 | 3 | 36 | 9 | 0 |
-| 3 | A, D, E, L | 103 | 84 | 19 | 0 | 0 |
+| 3 | A, D, E, L | 103 | 75 | 28 | 0 | 0 |
 | 4 | F, G, Q | 37 | 37 | 0 | 0 | 0 |
 | 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
@@ -160,17 +160,17 @@
 | 17 | Match result calculation | 🟨 | **connected 2026-11-10** – result worked out: won by X runs / won by N wickets / tied; feeds points table and NRR. Tested in DB. Awaiting owner check |
 | 18 | Score correction and undo | 🟨 | **connected 2026-11-10** – Undo the last ball (also re-opens a finished innings or match). Tested in DB. Awaiting owner check |
 | 19 | Abandoned and tied match handling | 🟨 | **connected 2026-11-10** – abandon with a reason (no result); tie detected automatically. Tested in DB. Awaiting owner check |
-| 20 | Live commentary | ⬜ |  |
-| 21 | Full batting scorecard | ⬜ |  |
-| 22 | Full bowling scorecard | ⬜ |  |
-| 23 | Match summary | ⬜ |  |
-| 24 | Save incomplete matches | ⬜ |  |
-| 25 | Resume a saved match | ⬜ |  |
+| 20 | Live commentary | 🟨 | **connected 2026-11-10** – match page → Commentary tab: every ball written out (FOUR!, SIX!, OUT! c X b Y 7(3)), scorer's note, end-of-over summary; refreshes every 10 s. Awaiting owner check |
+| 21 | Full batting scorecard | 🟨 | **connected 2026-11-10** – Scorecard tab: R, B, 4s, 6s, SR, M (minutes at the crease), how out, extras, fall of wickets; partnership and yet-to-bat on the live screen. Awaiting owner check |
+| 22 | Full bowling scorecard | 🟨 | **connected 2026-11-10** – Scorecard tab: O, M, R, W, Wd, Nb, Econ. Awaiting owner check |
+| 23 | Match summary | 🟨 | **connected 2026-11-10** – Scorecard tab → Match summary: result, each innings total, top 2 batters and bowlers. Awaiting owner check |
+| 24 | Save incomplete matches | 🟨 | **connected 2026-11-10** – every ball is saved the moment it is scored; scorer can Pause with a reason (rain, break) – spectators see "Play stopped". Awaiting owner check |
+| 25 | Resume a saved match | 🟨 | **connected 2026-11-10** – Matches page → "Your matches in progress" → Continue scoring; Resume play button; scoring a ball resumes automatically. Awaiting owner check |
 | 26 | Offline scoring support | ⬜ |  |
 | 27 | Automatic synchronisation after internet returns | ⬜ |  |
-| 28 | Live score sharing | ⬜ |  |
-| 29 | Live score updates for spectators | ⬜ |  |
-| 30 | Scoring history and audit trail | ⬜ |  |
+| 28 | Live score sharing | 🟨 | **connected 2026-11-10** – match page → Share / WhatsApp / Copy link; link ?match=<id> opens the match directly (also ?tournament=<id>). Awaiting owner check |
+| 29 | Live score updates for spectators | 🟨 | **connected 2026-11-10** – Supabase Realtime: score, scorecard and commentary update the moment a ball is scored (tested); 20 s polling as fallback. Awaiting owner check |
+| 30 | Scoring history and audit trail | 🟨 | **connected 2026-11-10** – match page → History tab: who scored how many balls, every undo, innings ended, pauses, lineups, replacements, with times. Awaiting owner check |
 
 **Category D – Cricket statistics and analytics**
 
