@@ -480,6 +480,44 @@ export const dataService = {
     return res.data;
   },
 
+  // #53 #54 #55 points table with NRR and qualification
+  async fetchPointsTable(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.getPointsTable(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  // Manual result entry (until ball-by-ball scoring in Phase 3)
+  async recordMatchResult(matchId, result) {
+    requireDatabase();
+    const res = await supabaseClient.recordMatchResult(matchId, result);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async clearMatchResult(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.clearMatchResult(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setTournamentRules(tournamentId, rules) {
+    requireDatabase();
+    const res = await supabaseClient.setTournamentRules(tournamentId, rules);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  // #58 finish the tournament and declare the winner
+  async completeTournament(tournamentId, winnerId, runnerUpId) {
+    requireDatabase();
+    const res = await supabaseClient.completeTournament(tournamentId, winnerId, runnerUpId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async deleteMatch(matchId) {
     requireDatabase();
     const res = await supabaseClient.deleteMatch(matchId);

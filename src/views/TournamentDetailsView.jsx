@@ -6,6 +6,7 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner.jsx';
 import { dataService } from '../services/dataService.js';
 import { TeamRegistrationPanel } from './tournaments/TeamRegistrationPanel.jsx';
 import { FixturesPanel } from './tournaments/FixturesPanel.jsx';
+import { StandingsPanel } from './tournaments/StandingsPanel.jsx';
 import {
   Trophy,
   Calendar,
@@ -36,7 +37,7 @@ export function TournamentDetailsView(props) {
   const [isOrganiser, setIsOrganiser] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview'); // overview | teams | fixtures
+  const [activeTab, setActiveTab] = useState('overview'); // overview | teams | fixtures | standings
   const [matchFilter, setMatchFilter] = useState('all'); // all | live | upcoming | completed
   const [copiedCode, setCopiedCode] = useState(false);
 
@@ -442,6 +443,27 @@ export function TournamentDetailsView(props) {
           <Activity size={15} />
           <span>Fixtures & Match Schedule ({matches.length})</span>
         </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('standings')}
+          style={{
+            padding: '0.65rem 1.25rem',
+            fontSize: '0.88rem',
+            fontWeight: 700,
+            border: 'none',
+            borderBottom: activeTab === 'standings' ? '3px solid var(--color-primary)' : '3px solid transparent',
+            backgroundColor: 'transparent',
+            color: activeTab === 'standings' ? 'var(--color-primary-dark)' : 'var(--color-text-muted)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem'
+          }}
+        >
+          <Trophy size={15} />
+          <span>Points Table & Knockouts</span>
+        </button>
       </div>
 
       {/* TAB 1: OVERVIEW & REGULATIONS */}
@@ -548,6 +570,18 @@ export function TournamentDetailsView(props) {
       {/* TAB 3: FIXTURES, SCHEDULE & CALENDAR (#42–#52) */}
       {activeTab === 'fixtures' && (
         <FixturesPanel tournament={tournament} isOrganiser={isOrganiser} onChanged={(m) => setMatches(m)} />
+      )}
+
+      {/* TAB 4: POINTS TABLE, NRR, QUALIFICATION, KNOCKOUTS, WINNER (#53–#58) */}
+      {activeTab === 'standings' && (
+        <StandingsPanel
+          tournament={tournament}
+          isOrganiser={isOrganiser}
+          onTournamentChanged={async () => {
+            const fresh = await dataService.fetchTournamentById(tournament.id);
+            setTournament(fresh);
+          }}
+        />
       )}
     </div>
   );

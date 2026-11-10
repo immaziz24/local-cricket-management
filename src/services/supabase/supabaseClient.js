@@ -828,6 +828,36 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async getPointsTable(tournamentId) {
+    const { data, error } = await supabase.rpc('get_points_table', { p_tournament_id: tournamentId });
+    if (error) return { data: null, error: friendlyError(error, 'points table') };
+    return { data: data || [], error: null };
+  },
+
+  async recordMatchResult(matchId, result) {
+    const { data, error } = await supabase.rpc('record_match_result', { p_match_id: matchId, p: result });
+    if (error) return { data: null, error: friendlyError(error, 'match result') };
+    return { data, error: null };
+  },
+
+  async clearMatchResult(matchId) {
+    const { data, error } = await supabase.rpc('clear_match_result', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'match result') };
+    return { data, error: null };
+  },
+
+  async setTournamentRules(tournamentId, rules) {
+    const { data, error } = await supabase.rpc('set_tournament_rules', { p_tournament_id: tournamentId, p: rules });
+    if (error) return { data: null, error: friendlyError(error, 'tournament rules') };
+    return { data, error: null };
+  },
+
+  async completeTournament(tournamentId, winnerId, runnerUpId) {
+    const { data, error } = await supabase.rpc('complete_tournament', { p_tournament_id: tournamentId, p_winner: winnerId || null, p_runner_up: runnerUpId || null });
+    if (error) return { data: null, error: friendlyError(error, 'finish tournament') };
+    return { data, error: null };
+  },
+
   async createTournament(tournamentData) {
     const { data, error } = await supabase.rpc('create_tournament', { p: tournamentData });
     if (error) return { data: null, error: friendlyError(error, 'create tournament') };

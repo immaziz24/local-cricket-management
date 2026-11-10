@@ -101,12 +101,12 @@
 | 50 | Match scheduling | 🟨 | **connected 2026-11-10** – automatic dates/times: first day, first time, matches per day, gap. Awaiting owner check |
 | 51 | Match rescheduling | 🟨 | **connected 2026-11-10** – reschedule date/time/ground with reason; both team owners notified. Awaiting owner check |
 | 52 | Tournament calendar | 🟨 | **connected 2026-11-10** – fixtures listed by day (tournament calendar). Awaiting owner check |
-| 53 | Points table | ⬜ |  |
-| 54 | Net Run Rate calculation | ⬜ |  |
-| 55 | Qualification management | ⬜ |  |
-| 56 | Knockout brackets | ⬜ |  |
-| 57 | Tournament leaderboards | ⬜ |  |
-| 58 | Tournament completion and winner declaration | ⬜ |  |
+| 53 | Points table | 🟨 | **connected 2026-11-10** – Points table tab: P/W/L/T/NR/Pts per group, points per win/tie/no result set by organiser; results entered by hand on each fixture until Phase 3 scoring. Awaiting owner check |
+| 54 | Net Run Rate calculation | 🟨 | **connected 2026-11-10** – NRR from entered scores; bowled-out team counts full overs; walkovers/no-results left out; tested (+0.500/−0.500). Awaiting owner check |
+| 55 | Qualification management | 🟨 | **connected 2026-11-10** – top N per group marked Q (N set by organiser); ties broken by points, NRR, wins. Awaiting owner check |
+| 56 | Knockout brackets | 🟨 | **connected 2026-11-10** – bracket view by round; "Create next round" seeds from the table (A1 v B2, 1 v 4) or pairs winners, byes for odd numbers. Awaiting owner check |
+| 57 | Tournament leaderboards | ⬜ | Waits for Phase 3 ball-by-ball scoring (player runs/wickets); placeholder card shown |
+| 58 | Tournament completion and winner declaration | 🟨 | **connected 2026-11-10** – Finish tournament: winner/runner-up (filled from the final), all matches must be done, teams notified, champion banner. Awaiting owner check |
 
 **Category C – Player and team management**
 

@@ -13,7 +13,7 @@
 | Real login | 🟩 Register (#254) and login/logout (#255) tested by the owner. 🟨 Password recovery (#256): code verified, new-password login to be confirmed. |
 | Super-Admin | 🟩 #257 dashboard on real data; owner's account has the **super_admin** role. |
 | Admin | 🟨 #258 Admin dashboard connected (members, sign-ups, verification/report queues). Awaiting owner check. |
-| Phase 2: tournaments | 🟨 #31, #32, #34–45, #47–52: groups, formats, automatic/manual fixtures, scheduling, rescheduling, calendar; and create tournament (creator = Organiser), details, team registration + organiser approval/rejection with notifications. Awaiting owner check. |
+| Phase 2: tournaments | 🟨 #31, #32, #34–45, #47–56, #58: result entry, points table, NRR, qualification, knockout bracket, winner;  groups, formats, automatic/manual fixtures, scheduling, rescheduling, calendar; and create tournament (creator = Organiser), details, team registration + organiser approval/rejection with notifications. Awaiting owner check. |
 | Phase 2: players & teams | 🟨 #59–71 except none missing: player ID, photo, DOB/age, contact privacy, team logo, team history, public player profile (#60–62, #66, #67, #69, #76) added on top of My Teams page, create team, add players by mobile number (or by name if not registered — they claim it later by registering with that number), captain / vice-captain / icon player. Awaiting owner check. |
 | Security & operations | 🟨 #267 audit log, #268 backup download, #269 privacy + my-data download + sign out everywhere, #270 notification inbox + send-to-all. Awaiting owner check. |
 | Reports & suspension | 🟨 #266 report a member, admin suspend/lift, notifications, audit log. Awaiting owner check. |
@@ -37,6 +37,7 @@
 | `20261106105506_phase1_user_management_foundation.sql` | Phase 1 tables, row-level security, profile trigger |
 | `20261106105529_phase1_security_and_fk_index_hardening.sql` | Indexes and deny-rules for audit logs and templates |
 | `20261110050000_phase1_profile_mobile_number.sql` | Saves name and unique mobile number on sign-up |
+| `20261110130000_phase2_results_points_table.sql` | manual results, points table + NRR, rules, qualification, complete tournament, overs-from-format trigger |
 | `20261110120000_phase2_groups_fixtures.sql` | tournament_groups, matches (shared with Phase 3), groups/fixtures/reschedule functions |
 | `20261110113000_phase2_tournaments.sql` | tournaments, tournament_teams; create/update tournament; register/approve/reject/withdraw team |
 | `20261110110000_phase2_edit_team_player.sql` | Team owner edits unregistered players in their squad |
@@ -59,7 +60,7 @@
 ## 4. Next steps (in order)
 
 1. **Owner check of #265** (Category N → User Governance → Verification): request a badge, approve it. Push to GitHub (today's work is not on GitHub yet).
-2. **Phase 2 next:** manual result entry, then #53 points table, #54 NRR, #55 qualification, #56 knockout brackets, #57 leaderboards, #58 winner; #33 logo/banner, #46 double elimination.
+2. **Phase 2 next:** #33 tournament logo/banner, #46 double elimination, then the remaining Phase 2 items in blueprint order. #57 leaderboards waits for Phase 3 scoring.
 3. **Phase 2** in number order: #31 Create a tournament (connect to database), #32 Tournament name and branding, #33, …
 
 ## 5. Known issues
@@ -89,6 +90,7 @@
 | :--- | :--- | :--- |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
+| 2026-11-10 | Claude | Results entry, points table, NRR, qualification, knockout bracket, winner (#53–56, #58) |
 | 2026-11-10 | Claude | Groups, formats, automatic fixtures, scheduling, rescheduling, calendar |
 | 2026-11-10 | Claude | Tournaments on real database: create, team registration, approval |
 | 2026-11-10 | Claude | Fixed empty squad bug (hidden column); added Edit player. Owner checked teams, squad, captain/VC/icon, edit |

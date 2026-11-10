@@ -5,6 +5,7 @@ import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { CalendarDays, Wand2, Plus, Trash2, Clock, MapPin, AlertCircle, CheckCircle, Layers } from 'lucide-react';
 import { roundRobin, knockoutFirstRound, scheduleFixtures, shuffle, interleave } from './fixtureGenerator.js';
+import { MatchResultForm, scoreLine } from './MatchResultForm.jsx';
 
 /**
  * #42 Groups, #43–#47 formats, #48 automatic fixtures, #49 manual fixture,
@@ -49,6 +50,8 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged }) {
   const [opts, setOpts] = useState({ startDate: tournament.start_date, firstTime: '09:00', perDay: 2, gapMinutes: 240 });
   const [manual, setManual] = useState({ teamA: '', teamB: '', at: '', venue: '', stage: 'league' });
   const [resched, setResched] = useState(null); // { id, at, venue, reason }
+  const [resultFor, setResultFor] = useState(null); // match id with the result form open
+  const finished = tournament.status === 'completed' || tournament.status === 'cancelled';
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
 
@@ -115,7 +118,7 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <Notice msg={msg} />
 
-      {isOrganiser && (
+      {isOrganiser && !finished && (
         <Card title="Organiser: format, groups & fixtures">
           {teams.length < 2 ? (
             <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>Approve at least 2 teams in the <strong>Teams</strong> tab first ({teams.length} approved).</p>
@@ -250,8 +253,30 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged }) {
                         {m.notes && <span>Note: {m.notes}</span>}
                         {m.result_summary && <strong style={{ color: '#065f46' }}>{m.result_summary}</strong>}
                       </div>
+                      {(m.team_a_runs !== null && m.team_a_runs !== undefined) && (
+                        <div style={{ fontSize: '0.8rem', color: '#334155', marginTop: '0.2rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                          <span>{m.team_a?.short_name || m.team_a?.name}: <strong>{scoreLine(m.team_a_runs, m.team_a_wickets, m.team_a_balls)}</strong></span>
+                          <span>{m.team_b?.short_name || m.team_b?.name}: <strong>{scoreLine(m.team_b_runs, m.team_b_wickets, m.team_b_balls)}</strong></span>
+                        </div>
+                      )}
 
-                      {isOrganiser && m.status === 'scheduled' && (
+                      {isOrganiser && !finished && resultFor === m.id && (
+                        <MatchResultForm match={m} oversLimit={tournament.overs_per_innings} busy={busy}
+                          onCancel={() => setResultFor(null)}
+                          onSave={(r) => run(() => dataService.recordMatchResult(m.id, r), (x) => `Result saved: ${x.result_summary}. Both teams were notified.`).then(() => setResultFor(null))} />
+                      )}
+                      {isOrganiser && !finished && resultFor !== m.id && m.team_a && m.team_b && (
+                        <div style={{ display: 'flex', gap: '0.6rem', marginTop: '0.45rem' }}>
+                          <button onClick={() => { setResched(null); setResultFor(m.id); }} style={{ background: 'none', border: 'none', color: '#047857', cursor: 'pointer', fontSize: '0.78rem', padding: 0, fontWeight: 700 }}>
+                            {m.status === 'scheduled' ? 'Enter result' : 'Edit result'}
+                          </button>
+                          {m.status !== 'scheduled' && (
+                            <button onClick={() => window.confirm('Remove this result? The match goes back to "scheduled".') && run(() => dataService.clearMatchResult(m.id), 'Result removed.')} style={{ background: 'none', border: 'none', color: '#b91c1c', cursor: 'pointer', fontSize: '0.78rem', padding: 0 }}>Undo result</button>
+                          )}
+                        </div>
+                      )}
+
+                      {isOrganiser && !finished && m.status === 'scheduled' && resultFor !== m.id && (
                         resched && resched.id === m.id ? (
                           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
                             <input type="datetime-local" value={resched.at} onChange={(e) => setResched({ ...resched, at: e.target.value })} style={field} />
