@@ -340,6 +340,13 @@ export const dataService = {
     return res.data;
   },
 
+  async updateTeamPlayer(details) {
+    requireDatabase();
+    const res = await supabaseClient.updateTeamPlayer(details);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async removePlayerFromTeam(teamId, playerId) {
     requireDatabase();
     const res = await supabaseClient.removePlayerFromTeam({ teamId, playerId });

@@ -613,22 +613,26 @@ export const supabaseClient = {
     const [teamRes, squadRes] = await Promise.all([
       supabase.from('teams').select('id, name, short_name, city, logo_url, owner_id, created_at').eq('id', teamId).maybeSingle(),
       supabase.from('team_members')
-        .select('player_id, is_captain, is_vice_captain, is_icon, jersey_number, joined_at, players(id, player_code, display_name, photo_url, player_role, batting_style, bowling_style, profile_id, created_by)')
+        .select('player_id, is_captain, is_vice_captain, is_icon, jersey_number, joined_at, players(id, player_code, display_name, photo_url, player_role, batting_style, bowling_style, profile_id)')
         .eq('team_id', teamId)
     ]);
     if (teamRes.error) return { data: null, error: friendlyError(teamRes.error, 'team') };
     if (!teamRes.data) return { data: null, error: 'Team not found.' };
+    if (squadRes.error) return { data: null, error: friendlyError(squadRes.error, 'team squad') };
+    const iOwn = !!uid && teamRes.data.owner_id === uid;
     const squad = (squadRes.data || []).map((m) => ({
       ...m.players,
       is_registered: !!m.players?.profile_id,
-      can_edit_photo: !!uid && (m.players?.profile_id === uid || (!m.players?.profile_id && m.players?.created_by === uid)),
+      // Own photo, or (team owner) photos of unregistered players. The database re-checks this.
+      can_edit_photo: !!uid && (m.players?.profile_id === uid || (!m.players?.profile_id && iOwn)),
+      can_edit_details: iOwn && !m.players?.profile_id,
       is_captain: m.is_captain,
       is_vice_captain: m.is_vice_captain,
       is_icon: m.is_icon,
       jersey_number: m.jersey_number,
       joined_at: m.joined_at
     })).sort((a, b) => (b.is_captain - a.is_captain) || (b.is_vice_captain - a.is_vice_captain) || a.display_name.localeCompare(b.display_name));
-    return { data: { ...teamRes.data, i_own: !!uid && teamRes.data.owner_id === uid, squad }, error: null };
+    return { data: { ...teamRes.data, i_own: iOwn, squad }, error: null };
   },
 
   async createTeam({ name, short_name, city }) {
@@ -661,6 +665,15 @@ export const supabaseClient = {
       p_player_role: player_role || null, p_batting_style: batting_style || null, p_bowling_style: bowling_style || null
     });
     if (error) return { data: null, error: friendlyError(error, 'add player') };
+    return { data, error: null };
+  },
+
+  async updateTeamPlayer({ teamId, playerId, name, player_role, batting_style, bowling_style }) {
+    const { data, error } = await supabase.rpc('update_team_player', {
+      p_team_id: teamId, p_player_id: playerId, p_name: name,
+      p_player_role: player_role || null, p_batting_style: batting_style || null, p_bowling_style: bowling_style || null
+    });
+    if (error) return { data: null, error: friendlyError(error, 'edit player') };
     return { data, error: null };
   },
 

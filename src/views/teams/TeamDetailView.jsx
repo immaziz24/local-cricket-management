@@ -3,7 +3,7 @@ import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
-import { ArrowLeft, Search, UserPlus, UserMinus, Crown, Star, Shield, AlertCircle, CheckCircle, Phone } from 'lucide-react';
+import { ArrowLeft, Search, UserPlus, UserMinus, Crown, Star, Shield, AlertCircle, CheckCircle, Phone, Pencil } from 'lucide-react';
 import { ROLE_OPTIONS, BATTING_OPTIONS, BOWLING_OPTIONS, labelOf } from './playerOptions.js';
 import { Avatar } from './Avatar.jsx';
 
@@ -44,6 +44,7 @@ export function TeamDetailView({ teamId, onNavigate }) {
   // Leadership
   const [lead, setLead] = useState({ captain: '', vice: '', icon: '' });
   const [history, setHistory] = useState([]);
+  const [editing, setEditing] = useState(null); // { id, name, player_role, batting_style, bowling_style }
 
   const load = async () => {
     try {
@@ -141,6 +142,19 @@ export function TeamDetailView({ teamId, onNavigate }) {
     } finally { setBusy(false); }
   };
 
+  const saveEdit = async (e) => {
+    e.preventDefault();
+    setBusy(true);
+    try {
+      await dataService.updateTeamPlayer({ teamId, playerId: editing.id, name: editing.name.trim(), player_role: editing.player_role, batting_style: editing.batting_style, bowling_style: editing.bowling_style });
+      setMsg({ ok: true, text: `${editing.name.trim()} updated.` });
+      setEditing(null);
+      await load();
+    } catch (err) {
+      setMsg({ ok: false, text: err.message });
+    } finally { setBusy(false); }
+  };
+
   const saveLeadership = async () => {
     if (lead.captain && lead.captain === lead.vice) { setMsg({ ok: false, text: 'Captain and vice-captain must be different players.' }); return; }
     setBusy(true);
@@ -209,10 +223,36 @@ export function TeamDetailView({ teamId, onNavigate }) {
                   </span>
                 </span>
                 <Badge variant={p.is_registered ? 'success' : 'neutral'}>{p.is_registered ? 'Registered' : 'Not registered yet'}</Badge>
+                {p.can_edit_details && (
+                  <Button variant="secondary" disabled={busy} onClick={() => setEditing({ id: p.id, name: p.display_name, player_role: p.player_role || '', batting_style: p.batting_style || '', bowling_style: p.bowling_style || '' })} style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
+                    <Pencil size={13} /> Edit
+                  </Button>
+                )}
                 {team.i_own && (
                   <Button variant="secondary" disabled={busy} onClick={() => removePlayer(p)} style={{ fontSize: '0.75rem', padding: '0.3rem 0.6rem', display: 'inline-flex', alignItems: 'center', gap: '0.25rem' }}>
                     <UserMinus size={13} /> Remove
                   </Button>
+                )}
+                {editing && editing.id === p.id && (
+                  <form onSubmit={saveEdit} style={{ flexBasis: '100%', display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.5rem', paddingTop: '0.6rem', borderTop: '1px solid #e2e8f0' }}>
+                    <input value={editing.name} onChange={(e) => setEditing({ ...editing, name: e.target.value })} maxLength={80} placeholder="Player name" style={field} />
+                    <select value={editing.player_role} onChange={(e) => setEditing({ ...editing, player_role: e.target.value })} style={field}>
+                      <option value="">Role</option>
+                      {ROLE_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                    </select>
+                    <select value={editing.batting_style} onChange={(e) => setEditing({ ...editing, batting_style: e.target.value })} style={field}>
+                      <option value="">Batting</option>
+                      {BATTING_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                    </select>
+                    <select value={editing.bowling_style} onChange={(e) => setEditing({ ...editing, bowling_style: e.target.value })} style={field}>
+                      <option value="">Bowling</option>
+                      {BOWLING_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                    </select>
+                    <span style={{ display: 'flex', gap: '0.4rem' }}>
+                      <Button type="submit" variant="primary" disabled={busy}>Save</Button>
+                      <Button type="button" variant="secondary" onClick={() => setEditing(null)}>Cancel</Button>
+                    </span>
+                  </form>
                 )}
               </div>
             ))}
@@ -338,6 +378,7 @@ function describeHistory(h) {
       return parts.length ? `Leadership updated — ${parts.join(', ')}` : 'Leadership cleared';
     }
     case 'TEAM_LOGO_CHANGED': return 'Team logo changed';
+    case 'TEAM_PLAYER_EDITED': return `${h.player_name || 'A player'}'s details were updated`;
     default: return String(h.action || '').replace(/_/g, ' ').toLowerCase();
   }
 }

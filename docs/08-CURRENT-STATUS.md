@@ -36,6 +36,7 @@
 | `20261106105506_phase1_user_management_foundation.sql` | Phase 1 tables, row-level security, profile trigger |
 | `20261106105529_phase1_security_and_fk_index_hardening.sql` | Indexes and deny-rules for audit logs and templates |
 | `20261110050000_phase1_profile_mobile_number.sql` | Saves name and unique mobile number on sign-up |
+| `20261110110000_phase2_edit_team_player.sql` | Team owner edits unregistered players in their squad |
 | `20261110103000_phase2_player_profile_media.sql` | Player ID, DOB, media bucket + upload rules, photo/logo functions, public player profile, team history |
 | `20261110100000_phase2_players_teams.sql` | players, teams, team_members; mobile lookup (exact, rate-limited, numbers hidden); unregistered players; claim on sign-up; captain/vice/icon |
 | `20261110093000_phase1_security_operations.sql` | Audit log list, platform snapshot, my-data export, send announcement |
@@ -85,6 +86,7 @@
 | :--- | :--- | :--- |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
+| 2026-11-10 | Claude | Fixed empty squad bug (hidden column); added Edit player. Owner checked teams, squad, captain/VC/icon, edit |
 | 2026-11-10 | Claude | Player ID, photos, logos, DOB/age, contact privacy, player profile page, team history |
 | 2026-11-10 | Claude | Phase 2 started: players & teams with add-by-mobile (CricHeroes-style) |
 | 2026-11-10 | Claude | #267–270 on real data — all 17 Phase 1 features connected |

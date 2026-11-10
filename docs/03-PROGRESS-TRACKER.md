@@ -17,9 +17,9 @@
 | Status | Features |
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
-| 🟩 Working (real database) | 3 / 310 |
-| 🟨 Screen only (mock data) | 15 / 310 |
-| ⬜ Not started | 292 / 310 |
+| 🟩 Working (real database) | 12 / 310 |
+| 🟨 Built / connected, awaiting check | 20 / 310 |
+| ⬜ Not started | 278 / 310 |
 
 **Honest summary (2026-11-10, end of Phase 1 build):** all 17 Phase 1 features are connected to the real database; #254, #255, #257 checked by owner, the rest await a quick owner check.
 
@@ -112,24 +112,24 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 59 | Player registration | 🟨 | **connected 2026-11-10** – teams/TeamDetailView.jsx — every user is a player automatically; team owners add players by mobile number, or by name if not registered; claim on sign-up with same mobile. Awaiting owner check |
+| 59 | Player registration | 🟩 | **connected 2026-11-10** – teams/TeamDetailView.jsx — every user is a player automatically; team owners add players by mobile number, or by name if not registered; claim on sign-up with same mobile. Owner checked 2026-11-10 |
 | 60 | Player profile | 🟨 | **connected 2026-11-10** – teams/PlayerProfileView.jsx — public profile: ID, photo, role, styles, age, badges, teams; privacy respected. Awaiting owner check |
 | 61 | Player profile photograph | 🟨 | **connected 2026-11-10** – photo upload (2 MB JPG/PNG/WEBP, Supabase Storage 'media' bucket) — own photo, or players you added who aren't registered. Awaiting owner check |
-| 62 | Player ID | 🟨 | **connected 2026-11-10** – automatic Player ID LC-000001…. Awaiting owner check |
-| 63 | Batting style | 🟨 | **connected 2026-11-10** – My player profile + add-player form. Awaiting owner check |
-| 64 | Bowling style | 🟨 | **connected 2026-11-10** – My player profile + add-player form. Awaiting owner check |
-| 65 | Player role | 🟨 | **connected 2026-11-10** – My player profile + add-player form. Awaiting owner check |
+| 62 | Player ID | 🟩 | **connected 2026-11-10** – automatic Player ID LC-000001…. Owner checked 2026-11-10 |
+| 63 | Batting style | 🟩 | **connected 2026-11-10** – My player profile + add-player form. Owner checked 2026-11-10 |
+| 64 | Bowling style | 🟩 | **connected 2026-11-10** – My player profile + add-player form. Owner checked 2026-11-10 |
+| 65 | Player role | 🟩 | **connected 2026-11-10** – My player profile + add-player form. Owner checked 2026-11-10 |
 | 66 | Age and date of birth | 🟨 | **connected 2026-11-10** – date of birth in My player profile; others see only age. Awaiting owner check |
 | 67 | Contact information and privacy settings | 🟨 | **connected 2026-11-10** – contact shown on profile only if player allows (Security & Privacy settings); profile visibility everyone/members/only me. Awaiting owner check |
-| 68 | Team profile | 🟨 | **connected 2026-11-10** – teams/TeamsView.jsx + TeamDetailView.jsx — create team (name, short name, city); creator becomes team owner. Logo later (#69). Awaiting owner check |
+| 68 | Team profile | 🟩 | **connected 2026-11-10** – teams/TeamsView.jsx + TeamDetailView.jsx — create team (name, short name, city); creator becomes team owner. Logo later (#69). Owner checked 2026-11-10 |
 | 69 | Team logo | 🟨 | **connected 2026-11-10** – team owner uploads logo on team page. Awaiting owner check |
-| 70 | Captain and vice-captain assignment | 🟨 | **connected 2026-11-10** – teams/TeamDetailView.jsx — captain, vice-captain and icon player; registered captain gets Captain role for that team. Awaiting owner check |
-| 71 | Squad management | 🟨 | **connected 2026-11-10** – teams/TeamDetailView.jsx — squad list, add by mobile / by name, remove (max 40). Awaiting owner check |
+| 70 | Captain and vice-captain assignment | 🟩 | **connected 2026-11-10** – teams/TeamDetailView.jsx — captain, vice-captain and icon player; registered captain gets Captain role for that team. Owner checked 2026-11-10 |
+| 71 | Squad management | 🟩 | **connected 2026-11-10** – teams/TeamDetailView.jsx — squad list, add by mobile / by name, remove (max 40). Owner checked 2026-11-10 |
 | 72 | Playing XI management | ⬜ | Waiting: needs matches — built with scoring (Phase 3) |
 | 73 | Substitute management | ⬜ | Waiting: needs matches — Phase 3 |
 | 74 | Player replacements | ⬜ | Waiting: needs matches — Phase 3 |
 | 75 | Player transfers | ⬜ | Waiting: needs tournament transfer rules — built with tournaments |
-| 76 | Team history | 🟨 | **connected 2026-11-10** – team page timeline: created, joined/left, leadership, logo changes. Awaiting owner check |
+| 76 | Team history | 🟩 | **connected 2026-11-10** – team page timeline: created, joined/left, leadership, logo changes. Owner checked 2026-11-10 |
 | 77 | Player career statistics | ⬜ | Waiting: needs scored matches — Phase 3 |
 | 78 | Player awards and achievements | ⬜ | Waiting: needs matches/tournaments — Phase 3 |
 
