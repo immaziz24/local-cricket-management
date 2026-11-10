@@ -71,12 +71,12 @@ function ensureBowler(inn, cur, id) {
   return b;
 }
 
-function applyBall(st, p, n) {
+function applyBall(st, p, n, rules = {}) {
   const cur = st.current; const inn = st.innings.find((x) => x.id === cur.innings_id);
   if (!cur || !inn || cur.status !== 'in_progress') return st;
   const runs = Number(p.runs || 0); const ext = p.extra || null; const add = Number(p.extras || 0);
   const wk = p.wicket || null; const outEnd = p.out || 'striker';
-  const extraRuns = ext === 'wide' || ext === 'no_ball' ? 1 + add : ext === 'bye' || ext === 'leg_bye' ? add : 0;
+  const extraRuns = ext === 'wide' ? (rules.wide_runs ?? 1) + add : ext === 'no_ball' ? (rules.no_ball_runs ?? 1) + add : ext === 'bye' || ext === 'leg_bye' ? add : 0;
   const legal = !ext || ext === 'bye' || ext === 'leg_bye';
   const isWkt = !!wk && wk !== 'retired_hurt';
   let ran = ext === 'wide' ? add : ext === 'no_ball' ? runs + add : ext === 'bye' || ext === 'leg_bye' ? add : runs;
@@ -159,9 +159,9 @@ function applyPlayers(st, p) {
 }
 
 /** Shown state = server state + queued actions. */
-export function applyQueue(base, queue) {
+export function applyQueue(base, queue, rules) {
   if (!base || !queue?.length || !base.current) return base;
   const st = clone(base);
-  queue.forEach((a, i) => { if (a.kind === 'ball') applyBall(st, a.payload, i); else if (a.kind === 'players') applyPlayers(st, a.payload); });
+  queue.forEach((a, i) => { if (a.kind === 'ball') applyBall(st, a.payload, i, rules || {}); else if (a.kind === 'players') applyPlayers(st, a.payload); });
   return st;
 }

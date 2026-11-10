@@ -15,6 +15,7 @@
 | Admin | 🟨 #258 Admin dashboard connected (members, sign-ups, verification/report queues). Awaiting owner check. |
 | Phase 2: tournaments | 🟨 #31–56, #58: double elimination; logo and banner; result entry, points table, NRR, qualification, knockout bracket, winner;  groups, formats, automatic/manual fixtures, scheduling, rescheduling, calendar; and create tournament (creator = Organiser), details, team registration + organiser approval/rejection with notifications. Awaiting owner check. |
 | Phase 3: statistics | 🟩 #79–102 + #57, #77, #78: everything worked out from scored balls. Statistics page (site leaderboards, compare players, compare teams + head-to-head), career stats/awards/form chart on player profile, team record on team page, Analysis tab in each match (worm, runs per over, partnerships, Player of the Match – automatic, scorer can change), leaderboards in tournament Points Table tab. |
+| Phase 3: playing conditions | 🟩 Tournament default rules + per-match rules (wide/no-ball runs, free hit, LBW on/off, byes/leg-byes, max overs per bowler, retire-at, powerplay, fielding limits, boundary, written local rules), version history with change notes, teams notified. Frozen when the match starts; the scoring screen follows them (free-hit/powerplay banners, bowler quota, LBW/leg-bye hidden when off). |
 | Phase 2: players & teams | 🟨 #59–76: playing XI, substitutes and in-match replacements per match, player transfers between teams (#72–75); player ID, photo, DOB/age, contact privacy, team logo, team history, public player profile (#60–62, #66, #67, #69, #76) added on top of My Teams page, create team, add players by mobile number (or by name if not registered — they claim it later by registering with that number), captain / vice-captain / icon player. Awaiting owner check. |
 | Security & operations | 🟨 #267 audit log, #268 backup download, #269 privacy + my-data download + sign out everywhere, #270 notification inbox + send-to-all. Awaiting owner check. |
 | Reports & suspension | 🟨 #266 report a member, admin suspend/lift, notifications, audit log. Awaiting owner check. |
@@ -38,6 +39,7 @@
 | `20261106105506_phase1_user_management_foundation.sql` | Phase 1 tables, row-level security, profile trigger |
 | `20261106105529_phase1_security_and_fk_index_hardening.sql` | Indexes and deny-rules for audit logs and templates |
 | `20261110050000_phase1_profile_mobile_number.sql` | Saves name and unique mobile number on sign-up |
+| `20261110240000_phase3_playing_conditions.sql` | tournaments.rules, matches.rules (frozen at start), balls.free_hit, rule_versions; get/save_playing_conditions, get_scoring_rules; bowler quota trigger; record_ball follows the rules |
 | `20261110230100_fix_player_profile_unregistered.sql` | Player profile works for players added by name only (no account) |
 | `20261110230000_phase3_statistics.sql` | player_match_stats, get_player_stats, get_leaderboards, get_team_stats, get_match_analysis, search_players; Player of the Match (auto trigger + set_player_of_match) |
 | `20261110220000_phase3_offline_sync.sql` | balls.client_id (unique) so re-sent offline balls are recorded once |
@@ -72,7 +74,7 @@
 ## 4. Next steps (in order)
 
 1. **Owner check of #265** (Category N → User Governance → Verification): request a badge, approve it. Push to GitHub (today's work is not on GitHub yet).
-2. **Phase 3:** Category A (live scoring #1–30) complete. **Category D statistics (#79–102) complete** on the real database, together with Phase 2 #57, #77, #78 (Statistics page, player profile stats, team record, match Analysis tab, tournament leaderboards, automatic Player of the Match). **Next: Category E laws (#103–…) and Category L calculators.**
+2. **Phase 3:** Category A (live scoring #1–30) complete. **Category D statistics (#79–102) complete** on the real database, together with Phase 2 #57, #77, #78 (Statistics page, player profile stats, team record, match Analysis tab, tournament leaderboards, automatic Player of the Match). **Category E batch 1 – playing conditions (#105–112, #114, #118, #119, #129–134) complete; scoring follows them.** **Next: Category E batch 2** (#103, #104, #113, #115–117, #120–128), then Category L calculators.
 3. **Phase 2** in number order: #31 Create a tournament (connect to database), #32 Tournament name and branding, #33, …
 
 ## 5. Known issues
@@ -108,6 +110,7 @@
 | :--- | :--- | :--- |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
+| 2026-11-10 | Claude | Category E batch 1: playing conditions (17 features) – rules editor, versions, enforced in ball-by-ball scoring |
 | 2026-11-10 | Claude | Category D statistics #79–102 + #57, #77, #78 (Statistics page, MVP points, Player of the Match, comparisons, charts, match analysis). Fixed player profile error for players without an account |
 | 2026-11-10 | Claude | Deployed to https://localcricket.plateria.in via Hostinger Git auto-deploy (owner connected GitHub) |
 | 2026-11-10 | Claude | Offline scoring + auto sync (#26–27); live tab shows full batter/bowler tables; fixed a stale-file copy to the laptop |

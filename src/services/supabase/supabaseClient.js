@@ -941,6 +941,24 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async getPlayingConditions(tournamentId, matchId) {
+    const { data, error } = await supabase.rpc('get_playing_conditions', { p_tournament_id: tournamentId || null, p_match_id: matchId || null });
+    if (error) return { data: null, error: friendlyError(error, 'playing conditions') };
+    return { data, error: null };
+  },
+
+  async savePlayingConditions(tournamentId, matchId, rules, note) {
+    const { data, error } = await supabase.rpc('save_playing_conditions', { p_tournament_id: tournamentId || null, p_match_id: matchId || null, p_rules: rules || {}, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'playing conditions') };
+    return { data, error: null };
+  },
+
+  async getScoringRules(matchId) {
+    const { data, error } = await supabase.rpc('get_scoring_rules', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'rules') };
+    return { data, error: null };
+  },
+
   async getCommentary(matchId) {
     const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'commentary') };

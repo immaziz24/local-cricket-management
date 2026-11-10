@@ -7,6 +7,7 @@ import { dataService } from '../services/dataService.js';
 import { TeamRegistrationPanel } from './tournaments/TeamRegistrationPanel.jsx';
 import { FixturesPanel } from './tournaments/FixturesPanel.jsx';
 import { StandingsPanel } from './tournaments/StandingsPanel.jsx';
+import { PlayingConditionsPanel } from './rules/PlayingConditionsPanel.jsx';
 import { BannerStrip, TournamentLogo, BrandingControls } from './tournaments/TournamentBranding.jsx';
 import {
   Trophy,
@@ -453,7 +454,7 @@ export function TournamentDetailsView(props) {
             </div>
           </Card>
 
-          <Card title="Rules">
+          <Card title="Organiser's notes">
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginTop: '0.25rem' }}>
               {tournament.penalty_policy && tournament.penalty_policy !== 'none' && (
                 <div style={{ padding: '0.85rem 1rem', backgroundColor: '#FEF3C7', border: '1px solid #FDE68A', borderRadius: 'var(--radius-md)', fontSize: '0.84rem', color: '#92400E' }}>
@@ -474,6 +475,11 @@ export function TournamentDetailsView(props) {
               )}
             </div>
           </Card>
+
+          {/* Category E: playing conditions for every match of this tournament */}
+          {/^[0-9a-f-]{36}$/i.test(String(tournament.id)) && (
+            <div style={{ gridColumn: '1 / -1' }}><PlayingConditionsPanel tournamentId={tournament.id} /></div>
+          )}
         </div>
       )}
 

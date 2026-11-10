@@ -65,7 +65,8 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   const [syncError, setSyncError] = useState(null);
   const queueRef = useRef(queue);
   const syncingRef = useRef(false);
-  const st = useMemo(() => applyQueue(base, queue), [base, queue]);
+  const [rs, setRs] = useState(() => { try { return JSON.parse(localStorage.getItem(`lcm-rules-${matchId}`) || 'null'); } catch { return null; } }); // playing conditions in force
+  const st = useMemo(() => applyQueue(base, queue, rs?.rules), [base, queue, rs]);
   const setSt = (s) => { setBase(s); if (s) saveCachedState(matchId, s); };
   const updateQueue = (q) => { queueRef.current = q; setQueue(q); saveQueue(matchId, q); };
   const [err, setErr] = useState(null);
@@ -81,6 +82,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   const load = async () => {
     try {
       let s = await dataService.fetchLiveState(matchId);
+      dataService.fetchScoringRules(matchId).then((r) => { setRs(r); try { localStorage.setItem(`lcm-rules-${matchId}`, JSON.stringify(r)); } catch { /* storage full or blocked */ } }).catch(() => {});
       // scorer opens a live match with no innings yet: create innings 1 so the openers can be picked
       if (s.can_score && s.status === 'live' && !s.current) s = await dataService.setInningsPlayers(matchId, {});
       setSt(s); setErr(null); return s;
@@ -186,6 +188,20 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
     submit('ball', p, () => { setWk(null); setExtra(null); setComment(''); });
   };
 
+  // Playing conditions (Category E): free hit, powerplay, bowler quota, retire-at, extras and LBW switched on/off
+  const rules = rs?.rules || {};
+  const lastQueued = [...queue].reverse().find((a) => a.kind === 'ball');
+  const freeHit = rules.free_hit !== false && (lastQueued ? lastQueued.payload.extra === 'no_ball' : !!rs?.free_hit_next);
+  const powerplay = cur && cur.status === 'in_progress' && (rules.powerplay_overs || 0) > Math.floor(cur.legal_balls / 6);
+  const maxOvers = rules.max_overs_per_bowler || null;
+  const bowlerBalls = (id) => curInn?.bowling.find((x) => x.player_id === id)?.legal_balls ?? (rs?.bowler_overs?.[id] || 0);
+  const atQuota = (id) => !!maxOvers && bowlerBalls(id) >= maxOvers * 6;
+  const mustRetire = rules.retire_at ? atCrease.filter((p) => p.runs >= rules.retire_at) : [];
+  const extraButtons = [['wide', 'Wide'], ['no_ball', 'No ball'], ['bye', 'Bye'], ['leg_bye', 'Leg bye']]
+    .filter(([v]) => (v !== 'bye' || rules.byes !== false) && (v !== 'leg_bye' || rules.leg_byes !== false));
+  const wicketChoices = WICKETS.filter(([v]) => (v !== 'lbw' || rules.lbw !== false)
+    && (!freeHit || ['run_out', 'obstructing', 'retired_hurt', 'retired_out', 'timed_out'].includes(v)));
+
   const available = cur ? cur.batting_side.filter((p) => !p.out && p.player_id !== cur.striker_id && p.player_id !== cur.non_striker_id) : [];
   const bowlers = cur ? cur.bowling_side : [];
 
@@ -284,6 +300,13 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                     {cur.this_over.length > 0 && <span style={{ fontSize: '0.78rem', color: '#334155', marginLeft: '0.3rem', fontWeight: 700 }}>= {cur.this_over.reduce((t, b) => t + b.runs + b.extra_runs, 0)} runs</span>}
                   </div>
                 </div>
+                {(freeHit || powerplay || mustRetire.length > 0) && (
+                  <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
+                    {freeHit && <span style={{ padding: '0.3rem 0.7rem', borderRadius: '999px', backgroundColor: '#dc2626', color: '#fff', fontWeight: 900, fontSize: '0.8rem' }}>FREE HIT – only a run out counts</span>}
+                    {powerplay && <span style={{ padding: '0.3rem 0.7rem', borderRadius: '999px', backgroundColor: '#2563eb', color: '#fff', fontWeight: 800, fontSize: '0.78rem' }}>Powerplay (overs 1–{rules.powerplay_overs}) · max {rules.fielders_outside_powerplay} fielders outside the circle</span>}
+                    {mustRetire.map((p) => <span key={p.player_id} style={{ padding: '0.3rem 0.7rem', borderRadius: '999px', backgroundColor: '#fef3c7', color: '#92400e', fontWeight: 700, fontSize: '0.78rem' }}>{p.name} reached {rules.retire_at} – must retire (Wicket → Retired out)</span>)}
+                  </div>
+                )}
                 <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.8rem', color: '#475569' }}>
                   {cur.partnership && <span>Partnership: <strong>{cur.partnership.runs}</strong> ({cur.partnership.balls} balls)</span>}
                   {cur.yet_to_bat?.length > 0 && <span>Yet to bat: {cur.yet_to_bat.join(', ')}</span>}
@@ -319,7 +342,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
               <label style={{ fontSize: '0.75rem', color: '#64748b' }}>Bowler<br />
                 <select value={pick.bowler} onChange={(e) => setPick({ ...pick, bowler: e.target.value })} style={field}>
                   <option value="">Choose</option>
-                  {bowlers.map((p) => <option key={p.player_id} value={p.player_id} disabled={p.player_id === cur?.last_over_bowler_id}>{p.name}{p.player_id === cur?.last_over_bowler_id ? ' (bowled last over)' : ''}</option>)}
+                  {bowlers.map((p) => <option key={p.player_id} value={p.player_id} disabled={p.player_id === cur?.last_over_bowler_id || atQuota(p.player_id)}>{p.name}{p.player_id === cur?.last_over_bowler_id ? ' (bowled last over)' : atQuota(p.player_id) ? ` (bowled max ${maxOvers} ov)` : maxOvers ? ` (${oversText(bowlerBalls(p.player_id))}/${maxOvers})` : ''}</option>)}
                 </select>
               </label>
             )}
@@ -334,7 +357,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
         <Card>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-              {[['wide', 'Wide'], ['no_ball', 'No ball'], ['bye', 'Bye'], ['leg_bye', 'Leg bye']].map(([v, l]) => (
+              {extraButtons.map(([v, l]) => (
                 <button key={v} type="button" onClick={() => setExtra(extra === v ? null : v)}
                   style={{ padding: '0.5rem 0.9rem', borderRadius: '0.5rem', fontWeight: 700, cursor: 'pointer', border: `2px solid ${extra === v ? '#f59e0b' : '#e2e8f0'}`, backgroundColor: extra === v ? '#fffbeb' : '#fff' }}>
                   {l}
@@ -342,8 +365,8 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
               ))}
             </div>
             <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
-              {extra === 'wide' ? 'Wide: 1 run is added. Tap 0 for a plain wide, or the number of runs the batters ran.'
-                : extra === 'no_ball' ? 'No ball: 1 run is added. Tap the runs hit off the bat (4 / 6 for a boundary).'
+              {extra === 'wide' ? `Wide: ${rules.wide_runs ?? 1} run${(rules.wide_runs ?? 1) === 1 ? ' is' : 's are'} added. Tap 0 for a plain wide, or the number of runs the batters ran.`
+                : extra === 'no_ball' ? `No ball: ${rules.no_ball_runs ?? 1} run${(rules.no_ball_runs ?? 1) === 1 ? ' is' : 's are'} added${rules.free_hit !== false ? ' and the next ball is a free hit' : ''}. Tap the runs hit off the bat (4 / 6 for a boundary).`
                 : extra ? 'Tap how many runs were run.' : 'Tap the runs scored off this ball.'}
             </div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
@@ -371,7 +394,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
                   <select value={wk.type} onChange={(e) => setWk({ ...wk, type: e.target.value })} style={field}>
                     <option value="">How out?</option>
-                    {WICKETS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
+                    {wicketChoices.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                   </select>
                   {['run_out', 'retired_hurt', 'retired_out', 'obstructing', 'timed_out'].includes(wk.type) && (
                     <select value={wk.out} onChange={(e) => setWk({ ...wk, out: e.target.value })} style={field}>

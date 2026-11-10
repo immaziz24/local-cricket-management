@@ -17,11 +17,11 @@
 | Status | Features |
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
-| 🟩 Working (real database) | 39 / 310 |
+| 🟩 Working (real database) | 56 / 310 |
 | 🟨 Built / connected, awaiting check | 80 / 310 |
-| ⬜ Not started | 191 / 310 |
+| ⬜ Not started | 174 / 310 |
 
-**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Next: Category E laws and Category L calculators.
+**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E batch 1 (playing conditions, 17 features) connected. Next: Category E batch 2 (laws reference, dismissal/dead-ball/overthrow/short-run, follow-on, super over, DLS, penalty runs, signals, decision/incident/disciplinary logs), then Category L calculators.
 
 **Phase 2 summary:** 45 of 48 built; #57, #77, #78 waited for ball-by-ball scoring.
 
@@ -35,7 +35,7 @@
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | 1 | N | 17 | 0 | 14 | 3 | 0 |
 | 2 | B, C | 48 | 0 | 36 | 12 | 0 |
-| 3 | A, D, E, L | 103 | 49 | 30 | 24 | 0 |
+| 3 | A, D, E, L | 103 | 32 | 30 | 41 | 0 |
 | 4 | F, G, Q | 37 | 37 | 0 | 0 | 0 |
 | 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
@@ -209,21 +209,21 @@
 | :---: | :--- | :---: | :--- |
 | 103 | MCC Laws of Cricket reference library | ⬜ |  |
 | 104 | ICC playing conditions reference library | ⬜ |  |
-| 105 | Match-specific rule configuration | ⬜ |  |
-| 106 | Batting and innings rules | ⬜ |  |
-| 107 | Bowling restrictions | ⬜ |  |
-| 108 | Maximum overs per bowler | ⬜ |  |
-| 109 | Wide-ball rules | ⬜ |  |
-| 110 | No-ball rules | ⬜ |  |
-| 111 | Free-hit rules | ⬜ |  |
-| 112 | LBW applicability | ⬜ |  |
+| 105 | Match-specific rule configuration | 🟩 | **connected 2026-11-10** – tournament default rules + per-match changes until the match starts; frozen when the match goes live |
+| 106 | Batting and innings rules | 🟩 | **connected 2026-11-10** – retire-at runs (scorer warned), batting notes; overs/players a side from match setup |
+| 107 | Bowling restrictions | 🟩 | **connected 2026-11-10** – bowling notes; no two overs in a row (already enforced) |
+| 108 | Maximum overs per bowler | 🟩 | **connected 2026-11-10** – max overs per bowler – enforced when picking the bowler |
+| 109 | Wide-ball rules | 🟩 | **connected 2026-11-10** – wide runs 0/1/2 – used by scoring |
+| 110 | No-ball rules | 🟩 | **connected 2026-11-10** – no-ball runs 0/1/2 – used by scoring |
+| 111 | Free-hit rules | 🟩 | **connected 2026-11-10** – free hit after a no-ball (continues after wide/no-ball) – only run-out allowed; FREE HIT banner |
+| 112 | LBW applicability | 🟩 | **connected 2026-11-10** – LBW on/off – LBW hidden and refused when off |
 | 113 | Dismissal rules | ⬜ |  |
-| 114 | Byes and leg-byes | ⬜ |  |
+| 114 | Byes and leg-byes | 🟩 | **connected 2026-11-10** – byes / leg-byes on/off – buttons hidden and refused when off |
 | 115 | Dead-ball rules | ⬜ |  |
 | 116 | Overthrow rules | ⬜ |  |
 | 117 | Short-run rules | ⬜ |  |
-| 118 | Boundary rules | ⬜ |  |
-| 119 | Powerplay configuration | ⬜ |  |
+| 118 | Boundary rules | 🟩 | **connected 2026-11-10** – boundary size + boundary rules notes |
+| 119 | Powerplay configuration | 🟩 | **connected 2026-11-10** – powerplay overs – Powerplay banner while scoring |
 | 120 | Follow-on rules | ⬜ |  |
 | 121 | Super Over rules | ⬜ |  |
 | 122 | DLS reference and calculation support | ⬜ |  |
@@ -233,12 +233,12 @@
 | 126 | Match decision log | ⬜ |  |
 | 127 | Incident reports | ⬜ |  |
 | 128 | Disciplinary reports | ⬜ |  |
-| 129 | Ball type configuration | ⬜ |  |
-| 130 | Pitch and ground conditions | ⬜ |  |
-| 131 | Fielding restrictions | ⬜ |  |
-| 132 | Local tournament playing conditions | ⬜ |  |
-| 133 | Rules for substitutions and replacements | ⬜ |  |
-| 134 | Match-specific rule publishing and version history | ⬜ |  |
+| 129 | Ball type configuration | 🟩 | **connected 2026-11-10** – ball type from match/tournament setup shown with the rules |
+| 130 | Pitch and ground conditions | 🟩 | **connected 2026-11-10** – pitch type + ground notes |
+| 131 | Fielding restrictions | 🟩 | **connected 2026-11-10** – fielders outside the circle (powerplay / after) – shown while scoring |
+| 132 | Local tournament playing conditions | 🟩 | **connected 2026-11-10** – free-text local rules (batting, bowling, boundary, fielding, ground, substitutes, other) |
+| 133 | Rules for substitutions and replacements | 🟩 | **connected 2026-11-10** – max substitutes shown; substitute rules notes; in-match replacements (#74) |
+| 134 | Match-specific rule publishing and version history | 🟩 | **connected 2026-11-10** – Save & publish creates a new version with a change note; version history; approved teams notified |
 
 **Category L – Cricket calculators and tools**
 

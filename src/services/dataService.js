@@ -572,6 +572,27 @@ export const dataService = {
     return res.data;
   },
 
+  async fetchPlayingConditions(tournamentId, matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getPlayingConditions(tournamentId, matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async savePlayingConditions(tournamentId, matchId, rules, note) {
+    requireDatabase();
+    const res = await supabaseClient.savePlayingConditions(tournamentId, matchId, rules, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchScoringRules(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getScoringRules(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCommentary(matchId) {
     requireDatabase();
     const res = await supabaseClient.getCommentary(matchId);
