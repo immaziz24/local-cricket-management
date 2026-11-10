@@ -9,7 +9,7 @@ import { scoreLine } from './MatchResultForm.jsx';
 
 /**
  * #53 Points table, #54 Net Run Rate, #55 Qualification management,
- * #56 Knockout brackets, #58 Tournament completion and winner declaration.
+ * #56 Knockout brackets, #46 Double elimination, #58 Tournament completion and winner declaration.
  */
 
 const KO_STAGES = ['knockout', 'quarter_final', 'semi_final', 'final'];
@@ -20,6 +20,59 @@ const td = { textAlign: 'center', padding: '0.5rem 0.35rem', fontSize: '0.82rem'
 
 const stageFor = (n) => (n <= 2 ? 'final' : n <= 4 ? 'semi_final' : n <= 8 ? 'quarter_final' : 'knockout');
 const fmtNrr = (v) => { const n = Number(v || 0); return `${n > 0 ? '+' : ''}${n.toFixed(3)}`; };
+
+const BRACKET_LABEL = { winners: 'Winners bracket', losers: 'Losers bracket', grand_final: 'Grand final' };
+
+function pairUp(list) {
+  const out = [];
+  const rest = [...list];
+  const bye = rest.length % 2 === 1 ? rest.pop() : null;
+  for (let i = 0; i + 1 < rest.length; i += 2) out.push([rest[i], rest[i + 1]]);
+  return { pairs: out, bye };
+}
+
+/**
+ * #46 Double elimination: a team is out after its second defeat.
+ * Unbeaten teams play each other (winners bracket), one-defeat teams play each other (losers bracket);
+ * the last unbeaten team meets the last one-defeat team in the grand final.
+ */
+export function nextDoubleEliminationRound({ teamIds, matches }) {
+  const de = matches.filter((m) => m.bracket);
+  if (de.some((m) => m.status === 'scheduled' || m.status === 'live')) throw new Error('Finish the current round first (enter all results).');
+  if (de.some((m) => m.bracket === 'grand_final' && m.winner_team_id)) throw new Error('The grand final is played. Declare the winner below.');
+  const losses = new Map(teamIds.map((id) => [id, 0]));
+  const lastPlayed = new Map();
+  de.forEach((m) => {
+    if (m.winner_team_id) {
+      const loser = m.winner_team_id === m.team_a_id ? m.team_b_id : m.team_a_id;
+      losses.set(loser, (losses.get(loser) || 0) + 1);
+    }
+    [m.team_a_id, m.team_b_id].forEach((id) => lastPlayed.set(id, Math.max(lastPlayed.get(id) || 0, m.match_no || 0)));
+  });
+  const order = (ids) => [...ids].sort((a, b) => (lastPlayed.get(a) || 0) - (lastPlayed.get(b) || 0));
+  const wb = order(teamIds.filter((id) => (losses.get(id) || 0) === 0));
+  const lb = order(teamIds.filter((id) => (losses.get(id) || 0) === 1));
+  const round = Math.max(0, ...de.map((m) => m.round_no || 0)) + 1;
+
+  if (wb.length === 1 && lb.length === 1) {
+    return { fixtures: [{ team_a_id: wb[0], team_b_id: lb[0], stage: 'final', bracket: 'grand_final', round_no: round }], byes: [], label: 'Grand final', round };
+  }
+  if (wb.length + lb.length < 2) throw new Error('Only one team is left. Declare the winner below.');
+  const fixtures = [];
+  const byes = [];
+  if (wb.length >= 2) {
+    const { pairs, bye } = pairUp(wb);
+    pairs.forEach(([a, b]) => fixtures.push({ team_a_id: a, team_b_id: b, stage: 'knockout', bracket: 'winners', round_no: round }));
+    if (bye) byes.push(bye);
+  }
+  if (lb.length >= 2) {
+    const { pairs, bye } = pairUp(lb);
+    pairs.forEach(([a, b]) => fixtures.push({ team_a_id: a, team_b_id: b, stage: 'knockout', bracket: 'losers', round_no: round }));
+    if (bye) byes.push(bye);
+  }
+  if (fixtures.length === 0) throw new Error('No matches possible yet.');
+  return { fixtures, byes, label: `Round ${round}`, round };
+}
 
 /** Works out the next knockout round (#56). Returns { fixtures, bye, stage, round }. */
 export function nextKnockoutRound({ structure, teamIds, table, matches }) {
@@ -122,12 +175,22 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged })
 
   const nameOf = (id) => teams.find((t) => t.id === id)?.name || 'TBD';
   const structure = tournament.structure || 'league';
-  const showTable = structure !== 'knockout';
+  const showTable = structure !== 'knockout' && structure !== 'double_elimination';
   const groups = [...new Map(table.map((r) => [r.group_id || 'all', r.group_name || (structure === 'groups_knockout' ? 'Not in a group' : 'League table')])).entries()];
   const koMatches = matches.filter((m) => KO_STAGES.includes(m.stage) || m.stage === 'third_place');
-  const rounds = [...new Set(koMatches.map((m) => m.round_no || 1))].sort((a, b) => a - b);
 
   const createNextRound = () => {
+    if (structure === 'double_elimination') {
+      let de;
+      try { de = nextDoubleEliminationRound({ teamIds: teams.map((t) => t.id), matches }); }
+      catch (err) { setMsg({ ok: false, text: err.message }); return; }
+      const lines = de.fixtures.map((f) => `${BRACKET_LABEL[f.bracket]}: ${nameOf(f.team_a_id)} vs ${nameOf(f.team_b_id)}`).join('\n');
+      const byeText = de.byes.length ? `\n\nBye: ${de.byes.map(nameOf).join(', ')}` : '';
+      if (!window.confirm(`Create ${de.label}?\n\n${lines}${byeText}`)) return;
+      const fx = scheduleFixtures(de.fixtures, { ...ko, perDay: Number(ko.perDay) || 1, gapMinutes: Number(ko.gapMinutes) || 180 });
+      run(() => dataService.saveGeneratedFixtures(tournament.id, fx, false), (r) => `${de.label}: ${r.matches} match${r.matches === 1 ? '' : 'es'} created.${de.byes.length ? ` Bye: ${de.byes.map(nameOf).join(', ')}.` : ''}`);
+      return;
+    }
     let plan;
     try { plan = nextKnockoutRound({ structure, teamIds: teams.map((t) => t.id), table, matches }); }
     catch (err) { setMsg({ ok: false, text: err.message }); return; }
@@ -202,11 +265,14 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged })
             <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>No knockout matches yet.</p>
           ) : (
             <div style={{ display: 'flex', gap: '1rem', overflowX: 'auto', paddingBottom: '0.25rem' }}>
-              {rounds.map((rn) => {
-                const ms = koMatches.filter((m) => (m.round_no || 1) === rn);
+              {(structure === 'double_elimination' ? ['winners', 'losers', 'grand_final'] : [null]).flatMap((br) => {
+                const inBracket = koMatches.filter((m) => (br ? m.bracket === br : true));
+                const rs = [...new Set(inBracket.map((m) => m.round_no || 1))].sort((a, b) => a - b);
+                return rs.map((rn) => ({ br, rn, ms: inBracket.filter((m) => (m.round_no || 1) === rn) }));
+              }).map(({ br, rn, ms }) => {
                 return (
-                  <div key={rn} style={{ minWidth: 220, display: 'flex', flexDirection: 'column', gap: '0.5rem', justifyContent: 'space-around' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', display: 'flex', gap: '0.3rem', alignItems: 'center' }}><GitBranch size={13} /> {STAGE_LABEL[ms[0]?.stage] || 'Round'} </div>
+                  <div key={`${br}-${rn}`} style={{ minWidth: 220, display: 'flex', flexDirection: 'column', gap: '0.5rem', justifyContent: 'space-around' }}>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', display: 'flex', gap: '0.3rem', alignItems: 'center' }}><GitBranch size={13} /> {br ? `${BRACKET_LABEL[br]}${br === 'grand_final' ? '' : ` · round ${rn}`}` : (STAGE_LABEL[ms[0]?.stage] || 'Round')} </div>
                     {ms.map((m) => (
                       <div key={m.id} style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', overflow: 'hidden', fontSize: '0.82rem' }}>
                         {[['a', m.team_a], ['b', m.team_b]].map(([side, t]) => (
@@ -234,7 +300,8 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged })
                 <Button variant="primary" disabled={busy} onClick={createNextRound} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}><GitBranch size={14} /> Create next round</Button>
               </div>
               <p style={{ margin: '0.4rem 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>
-                {structure === 'knockout' ? 'Winners of the last round are paired automatically.' : 'The first round uses the qualified teams from the table (1st plays the lowest qualifier; with groups A1 v B2, B1 v A2). Later rounds pair the winners.'} An odd team out gets a bye.
+                {structure === 'double_elimination' ? 'Unbeaten teams play in the winners bracket, teams with one defeat in the losers bracket; a second defeat knocks a team out. The last unbeaten team meets the last one-defeat team in the grand final.'
+                  : structure === 'knockout' ? 'Winners of the last round are paired automatically.' : 'The first round uses the qualified teams from the table (1st plays the lowest qualifier; with groups A1 v B2, B1 v A2). Later rounds pair the winners.'} An odd team out gets a bye.
               </p>
             </div>
           )}

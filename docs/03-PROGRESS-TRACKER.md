@@ -18,10 +18,12 @@
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
 | 🟩 Working (real database) | 12 / 310 |
-| 🟨 Built / connected, awaiting check | 20 / 310 |
-| ⬜ Not started | 278 / 310 |
+| 🟨 Built / connected, awaiting check | 46 / 310 |
+| ⬜ Not started | 252 / 310 |
 
-**Honest summary (2026-11-10, end of Phase 1 build):** all 17 Phase 1 features are connected to the real database; #254, #255, #257 checked by owner, the rest await a quick owner check.
+**Honest summary (2026-11-10, Phase 2):** Phase 1 done (17 connected). Phase 2: 41 of 48 built; left: #72–75 (playing XI, substitutes, replacements, transfers), and #57, #77, #78 which need Phase 3 scoring.
+
+**Phase 1 summary:** all 17 Phase 1 features are connected to the real database; #254, #255, #257 checked by owner, the rest await a quick owner check.
 
 **Earlier summary:** #254 and #255 work end-to-end on the real database (owner tested). #256 password recovery is connected and awaiting test. All other screens still use sample data.
 
@@ -30,7 +32,7 @@
 | Phase | Categories | Total | ⬜ | 🟨 | 🟩 | ✅ |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | 1 | N | 17 | 0 | 14 | 3 | 0 |
-| 2 | B, C | 48 | 47 | 1 | 0 | 0 |
+| 2 | B, C | 48 | 7 | 32 | 9 | 0 |
 | 3 | A, D, E, L | 103 | 103 | 0 | 0 | 0 |
 | 4 | F, G, Q | 37 | 37 | 0 | 0 | 0 |
 | 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
@@ -94,7 +96,7 @@
 | 43 | League format | 🟨 | **connected 2026-11-10** – league: everyone plays everyone once. Awaiting owner check |
 | 44 | Knockout format | 🟨 | **connected 2026-11-10** – knockout first round with byes (full brackets with #56). Awaiting owner check |
 | 45 | Round-robin format | 🟨 | **connected 2026-11-10** – round-robin home & away. Awaiting owner check |
-| 46 | Double-elimination format | ⬜ |  |
+| 46 | Double-elimination format | 🟨 | **connected 2026-11-10** – out after 2 defeats; winners and losers brackets, grand final; rounds created from results (simulated 4–8 teams: 2N−2 matches). Awaiting owner check |
 | 47 | Custom tournament formats | 🟨 | **connected 2026-11-10** – custom: organiser adds matches by hand. Awaiting owner check |
 | 48 | Automatic fixture generation | 🟨 | **connected 2026-11-10** – automatic fixture generation (round-robin per group / league / knockout pairings), tested 3–6 teams. Awaiting owner check |
 | 49 | Manual fixture creation | 🟨 | **connected 2026-11-10** – add a match by hand (teams can be TBD). Awaiting owner check |

@@ -17,10 +17,12 @@ const STRUCTURES = [
   ['double_round_robin', 'Round-robin, home & away (twice)', '#45'],
   ['groups_knockout', 'Groups, then knockouts', '#42'],
   ['knockout', 'Knockout (lose and you are out)', '#44'],
+  ['double_elimination', 'Double elimination (out after 2 defeats)', '#46'],
   ['custom', 'Custom (add matches by hand)', '#47']
 ];
 
 const STAGE_LABEL = { league: 'League', group: 'Group', knockout: 'Knockout', quarter_final: 'Quarter-final', semi_final: 'Semi-final', final: 'Final', third_place: '3rd place' };
+const BRACKET_LABEL = { winners: 'Winners bracket', losers: 'Losers bracket', grand_final: 'Grand final' };
 const field = { padding: '0.5rem 0.6rem', border: '1px solid #cbd5e1', borderRadius: '0.45rem', fontSize: '0.85rem' };
 
 const dayKey = (iso) => (iso ? new Date(iso).toLocaleDateString('en-CA', { timeZone: 'Asia/Kolkata' }) : 'unscheduled');
@@ -81,9 +83,9 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged }) {
 
   const buildFixtures = () => {
     let list = [];
-    if (format === 'knockout') {
+    if (format === 'knockout' || format === 'double_elimination') {
       const { fixtures, byes } = knockoutFirstRound(shuffle(teams.map((t) => t.id)));
-      list = fixtures;
+      list = format === 'double_elimination' ? fixtures.map((f) => ({ ...f, bracket: 'winners' })) : fixtures;
       if (byes.length) setMsg({ ok: true, text: `${teamName(byes[0])} gets a bye into the next round.` });
     } else if (format === 'groups_knockout') {
       if (structure.groups.length === 0) throw new Error('Create groups first.');
@@ -243,6 +245,7 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged }) {
                         </span>
                         <span style={{ display: 'inline-flex', gap: '0.35rem', alignItems: 'center' }}>
                           {m.group?.name && <Badge variant="neutral">{m.group.name}</Badge>}
+                          {m.bracket && <Badge variant="neutral">{BRACKET_LABEL[m.bracket]}</Badge>}
                           <Badge variant="primary">{STAGE_LABEL[m.stage] || m.stage}</Badge>
                           <Badge variant={m.status === 'completed' ? 'success' : m.status === 'live' ? 'danger' : 'warning'}>{m.status}</Badge>
                         </span>
