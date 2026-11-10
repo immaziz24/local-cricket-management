@@ -18,8 +18,8 @@
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
 | 🟩 Working (real database) | 12 / 310 |
-| 🟨 Built / connected, awaiting check | 78 / 310 |
-| ⬜ Not started | 220 / 310 |
+| 🟨 Built / connected, awaiting check | 80 / 310 |
+| ⬜ Not started | 218 / 310 |
 
 **Honest summary (2026-11-10, Phase 2):** Phase 1 done (17 connected). Phase 2: 45 of 48 built; #57, #77, #78 wait for Phase 3 ball-by-ball scoring.
 
@@ -33,7 +33,7 @@
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | 1 | N | 17 | 0 | 14 | 3 | 0 |
 | 2 | B, C | 48 | 3 | 36 | 9 | 0 |
-| 3 | A, D, E, L | 103 | 75 | 28 | 0 | 0 |
+| 3 | A, D, E, L | 103 | 73 | 30 | 0 | 0 |
 | 4 | F, G, Q | 37 | 37 | 0 | 0 | 0 |
 | 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
@@ -166,8 +166,8 @@
 | 23 | Match summary | 🟨 | **connected 2026-11-10** – Scorecard tab → Match summary: result, each innings total, top 2 batters and bowlers. Awaiting owner check |
 | 24 | Save incomplete matches | 🟨 | **connected 2026-11-10** – every ball is saved the moment it is scored; scorer can Pause with a reason (rain, break) – spectators see "Play stopped". Awaiting owner check |
 | 25 | Resume a saved match | 🟨 | **connected 2026-11-10** – Matches page → "Your matches in progress" → Continue scoring; Resume play button; scoring a ball resumes automatically. Awaiting owner check |
-| 26 | Offline scoring support | ⬜ |  |
-| 27 | Automatic synchronisation after internet returns | ⬜ |  |
+| 26 | Offline scoring support | 🟨 | **connected 2026-11-10** – no internet on the ground: keep scoring; balls and player changes saved on the device, screen keeps updating with the same rules (tested); page opens offline on the published site (service worker). Awaiting owner check |
+| 27 | Automatic synchronisation after internet returns | 🟨 | **connected 2026-11-10** – when the connection returns the saved balls upload by themselves in order; each ball has a device id so it is never counted twice (tested); Upload now / Discard unsent buttons. Awaiting owner check |
 | 28 | Live score sharing | 🟨 | **connected 2026-11-10** – match page → Share / WhatsApp / Copy link; link ?match=<id> opens the match directly (also ?tournament=<id>). Awaiting owner check |
 | 29 | Live score updates for spectators | 🟨 | **connected 2026-11-10** – Supabase Realtime: score, scorecard and commentary update the moment a ball is scored (tested); 20 s polling as fallback. Awaiting owner check |
 | 30 | Scoring history and audit trail | 🟨 | **connected 2026-11-10** – match page → History tab: who scored how many balls, every undo, innings ended, pauses, lineups, replacements, with times. Awaiting owner check |

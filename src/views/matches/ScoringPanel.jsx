@@ -1,13 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
-import { Undo2, AlertCircle, Flag, CloudRain } from 'lucide-react';
+import { Undo2, AlertCircle, Flag, CloudRain, WifiOff, RefreshCw } from 'lucide-react';
+import { loadQueue, saveQueue, loadCachedState, saveCachedState, newClientId, isNetworkError, applyQueue } from './offlineScoring.js';
 
 /**
  * Ball-by-ball scoring (#7–#19): runs, extras, wickets, automatic strike change, end of over,
  * bowler changes, innings changeover, target, result, undo, end innings, abandon.
- * Spectators see the same live score, refreshed every 10 seconds.
+ * Spectators see the same live score (instant updates).
+ * #26 #27 Offline: without internet, balls are queued on this device, the screen keeps updating,
+ * and the queue is sent automatically (in order, never twice) when the connection returns.
  */
 
 const WICKETS = [
@@ -55,7 +58,16 @@ function BallChip({ b }) {
 }
 
 export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0 }) {
-  const [st, setSt] = useState(null);
+  const [base, setBase] = useState(null);            // last state from the server
+  const [queue, setQueue] = useState(() => loadQueue(matchId)); // actions waiting to be sent
+  const [online, setOnline] = useState(typeof navigator === 'undefined' ? true : navigator.onLine);
+  const [syncing, setSyncing] = useState(false);
+  const [syncError, setSyncError] = useState(null);
+  const queueRef = useRef(queue);
+  const syncingRef = useRef(false);
+  const st = useMemo(() => applyQueue(base, queue), [base, queue]);
+  const setSt = (s) => { setBase(s); if (s) saveCachedState(matchId, s); };
+  const updateQueue = (q) => { queueRef.current = q; setQueue(q); saveQueue(matchId, q); };
   const [err, setErr] = useState(null);
   const [busy, setBusy] = useState(false);
   const [extra, setExtra] = useState(null); // wide | no_ball | bye | leg_bye
@@ -72,7 +84,59 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
       // scorer opens a live match with no innings yet: create innings 1 so the openers can be picked
       if (s.can_score && s.status === 'live' && !s.current) s = await dataService.setInningsPlayers(matchId, {});
       setSt(s); setErr(null); return s;
-    } catch (e) { setErr(e.message); return null; }
+    } catch (e) {
+      const cached = loadCachedState(matchId);
+      if (isNetworkError(e) && cached) { setBase(cached); setErr(null); return cached; }
+      setErr(e.message); return null;
+    }
+  };
+
+  // #27 send queued actions in order; stop on a network error (still offline) or a rule error (needs the scorer)
+  const flush = async () => {
+    if (syncingRef.current || !queueRef.current.length) return;
+    if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
+    syncingRef.current = true; setSyncing(true);
+    try {
+      while (queueRef.current.length) {
+        const [first, ...rest] = queueRef.current;
+        let res;
+        try {
+          res = first.kind === 'ball'
+            ? await dataService.recordBall(matchId, first.payload)
+            : await dataService.setInningsPlayers(matchId, first.payload);
+        } catch (e) {
+          if (!isNetworkError(e)) setSyncError(`Could not upload ${first.kind === 'ball' ? 'a ball' : 'a player change'}: ${e.message}`);
+          break;
+        }
+        updateQueue(rest);
+        if (res) setSt(res);
+      }
+      if (!queueRef.current.length) { setSyncError(null); await load(); onChanged && onChanged(true); }
+    } finally { syncingRef.current = false; setSyncing(false); }
+  };
+  useEffect(() => {
+    const on = () => { setOnline(true); flush(); };
+    const off = () => setOnline(false);
+    window.addEventListener('online', on); window.addEventListener('offline', off);
+    flush();
+    const id = setInterval(() => { if (queueRef.current.length) flush(); }, 10000);
+    return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off); clearInterval(id); };
+  }, [matchId]);
+
+  /** Ball or player change: send now, or keep on the device when there is no internet. */
+  const submit = async (kind, payload, after) => {
+    const action = { kind, payload: kind === 'ball' ? { ...payload, client_id: newClientId() } : payload, at: Date.now() };
+    if (queueRef.current.length || (typeof navigator !== 'undefined' && navigator.onLine === false)) {
+      updateQueue([...queueRef.current, action]); after && after(); flush(); return;
+    }
+    setBusy(true); setErr(null);
+    try {
+      const s = kind === 'ball' ? await dataService.recordBall(matchId, action.payload) : await dataService.setInningsPlayers(matchId, action.payload);
+      setSt(s); after && after(); onChanged && onChanged(true);
+    } catch (e) {
+      if (isNetworkError(e)) { updateQueue([...queueRef.current, action]); after && after(); }
+      else setErr(e.message);
+    } finally { setBusy(false); }
   };
   useEffect(() => { load(); }, [matchId]);
   // #29 instant updates arrive through refreshKey; spectators also poll every 20 s as a fallback
@@ -101,7 +165,6 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   const scoring = st.can_score && st.status === 'live';
   const nameIn = (list, id) => list?.find((p) => p.player_id === id)?.name || '';
   const atCrease = curInn ? curInn.batting.filter((p) => p.at_crease) : [];
-  const bowlerFig = curInn?.bowling.find((b) => b.player_id === cur?.bowler_id);
   const needPick = scoring && cur && cur.status === 'in_progress' && (!cur.striker_id || !cur.non_striker_id || !cur.bowler_id);
   const crr = cur && cur.legal_balls ? ((cur.runs * 6) / cur.legal_balls).toFixed(2) : '0.00';
   const rrr = cur && cur.target && cur.balls_left ? ((cur.runs_needed * 6) / cur.balls_left).toFixed(2) : null;
@@ -112,7 +175,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
     else if (extra === 'bye' || extra === 'leg_bye') { if (!runs) { setErr('Byes / leg-byes need at least 1 run.'); return; } p.extras = runs; }
     else p.runs = runs;
     if (extra) p.extra = extra;
-    act(async () => { const s = await dataService.recordBall(matchId, p); setExtra(null); setComment(''); return s; });
+    submit('ball', p, () => { setExtra(null); setComment(''); });
   };
   const sendWicket = () => {
     if (!wk?.type) { setErr('Choose how the batter got out.'); return; }
@@ -120,7 +183,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
     const r = Number(wk.runs || 0);
     if (extra) { p.extra = extra; if (extra === 'no_ball') p.extras = r; else p.extras = extra === 'wide' ? r : Math.max(r, 1); }
     else p.runs = r;
-    act(async () => { const s = await dataService.recordBall(matchId, p); setWk(null); setExtra(null); setComment(''); return s; });
+    submit('ball', p, () => { setWk(null); setExtra(null); setComment(''); });
   };
 
   const available = cur ? cur.batting_side.filter((p) => !p.out && p.player_id !== cur.striker_id && p.player_id !== cur.non_striker_id) : [];
@@ -129,6 +192,28 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       {err && <div style={{ padding: '0.6rem 0.85rem', borderRadius: '0.5rem', backgroundColor: '#fef2f2', color: '#b91c1c', fontSize: '0.85rem', display: 'flex', gap: '0.4rem', alignItems: 'center' }}><AlertCircle size={15} /> {err}</div>}
+
+      {/* #26 #27 offline status */}
+      {mode === 'live' && st?.can_score && (!online || queue.length > 0 || syncError) && (
+        <div style={{ padding: '0.65rem 0.9rem', borderRadius: '0.5rem', fontSize: '0.85rem', display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap',
+                      backgroundColor: syncError ? '#fef2f2' : '#fffbeb', border: `1px solid ${syncError ? '#fecaca' : '#fde68a'}`, color: syncError ? '#b91c1c' : '#92400e' }}>
+          {online ? <RefreshCw size={15} /> : <WifiOff size={15} />}
+          <span style={{ flex: 1 }}>
+            {!online ? 'No internet – keep scoring. ' : syncing ? 'Uploading… ' : ''}
+            {queue.length > 0 ? `${queue.length} action${queue.length === 1 ? '' : 's'} saved on this device, waiting to upload.` : !online ? 'Nothing waiting.' : ''}
+            {syncError ? ` ${syncError}` : ''}
+          </span>
+          {online && queue.length > 0 && !syncing && <Button variant="secondary" size="sm" onClick={() => { setSyncError(null); flush(); }}>Upload now</Button>}
+          {syncError && queue.length > 0 && (
+            <Button variant="secondary" size="sm" onClick={() => window.confirm(`Delete the ${queue.length} unsent action(s) on this device?`) && (updateQueue([]), setSyncError(null), load())}>Discard unsent</Button>
+          )}
+        </div>
+      )}
+      {mode === 'live' && st?.current?._endedOffline && queue.length > 0 && (
+        <div style={{ padding: '0.6rem 0.9rem', borderRadius: '0.5rem', fontSize: '0.85rem', backgroundColor: '#eff6ff', color: '#1e3a8a' }}>
+          The innings is over. The next innings opens as soon as the balls are uploaded.
+        </div>
+      )}
 
       {/* Scoreboard */}
       {mode === 'live' && curInn && (
@@ -147,25 +232,56 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
             </div>
             {st.status === 'live' && cur.status === 'in_progress' && (
               <>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.5rem', fontSize: '0.88rem' }}>
-                  <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '0.5rem 0.65rem' }}>
-                    {atCrease.length === 0 ? <span style={{ color: '#94a3b8' }}>Batters not picked</span> : atCrease.map((p) => (
-                      <div key={p.player_id} style={{ display: 'flex', justifyContent: 'space-between', fontWeight: p.on_strike ? 800 : 500 }}>
-                        <span>{p.name}{p.on_strike ? ' *' : ''}</span>
-                        <span>{p.runs} ({p.balls}) <span style={{ color: '#94a3b8', fontSize: '0.75rem' }}>SR {sr(p.runs, p.balls)}</span></span>
-                      </div>
-                    ))}
-                  </div>
-                  <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '0.5rem 0.65rem' }}>
-                    {cur.bowler_id ? (
-                      <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <strong>{nameIn(bowlers, cur.bowler_id)}</strong>
-                        <span>{bowlerFig ? `${oversText(bowlerFig.legal_balls)}-${bowlerFig.maidens}-${bowlerFig.runs}-${bowlerFig.wickets}` : '0.0-0-0-0'}</span>
-                      </div>
-                    ) : <span style={{ color: '#94a3b8' }}>New bowler needed</span>}
-                    <div style={{ display: 'flex', gap: '0.25rem', marginTop: '0.4rem', flexWrap: 'wrap' }}>
-                      {cur.this_over.map((b, i) => <BallChip key={i} b={b} />)}
-                    </div>
+                {/* Batters at the crease – full details */}
+                <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', minWidth: 420 }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#f8fafc', color: '#64748b', fontSize: '0.75rem', textAlign: 'right' }}>
+                        <th style={{ textAlign: 'left', padding: '0.4rem 0.6rem' }}>Batter</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th><th style={{ paddingRight: '0.6rem' }} title="Minutes at the crease">M</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {atCrease.length === 0 ? (
+                        <tr><td colSpan={7} style={{ padding: '0.5rem 0.6rem', color: '#94a3b8' }}>Batters not picked yet</td></tr>
+                      ) : [...atCrease].sort((x, y) => (y.on_strike ? 1 : 0) - (x.on_strike ? 1 : 0)).map((p) => (
+                        <tr key={p.player_id} style={{ textAlign: 'right', borderTop: '1px solid #f1f5f9', backgroundColor: p.on_strike ? '#ecfdf5' : 'transparent' }}>
+                          <td style={{ textAlign: 'left', padding: '0.45rem 0.6rem', fontWeight: p.on_strike ? 800 : 600 }}>{p.name}{p.on_strike ? ' *' : ''}</td>
+                          <td style={{ fontWeight: 800 }}>{p.runs}</td><td>{p.balls}</td><td>{p.fours}</td><td>{p.sixes}</td>
+                          <td>{sr(p.runs, p.balls)}</td><td style={{ paddingRight: '0.6rem', color: '#64748b' }}>{p.minutes ?? '-'}</td>
+                        </tr>
+                      ))}
+                      {atCrease.length === 1 && <tr><td colSpan={7} style={{ padding: '0.4rem 0.6rem', color: '#b45309', fontSize: '0.8rem' }}>New batter needed</td></tr>}
+                    </tbody>
+                  </table>
+                </div>
+
+                {/* Bowling – current bowler and the bowler of the last over, full details */}
+                <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', overflowX: 'auto' }}>
+                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', minWidth: 420 }}>
+                    <thead>
+                      <tr style={{ backgroundColor: '#f8fafc', color: '#64748b', fontSize: '0.75rem', textAlign: 'right' }}>
+                        <th style={{ textAlign: 'left', padding: '0.4rem 0.6rem' }}>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th><th>Wd</th><th>Nb</th><th style={{ paddingRight: '0.6rem' }}>Econ</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {[cur.bowler_id, cur.last_over_bowler_id].filter((id, k, arr) => id && arr.indexOf(id) === k).map((id) => {
+                        const f = curInn.bowling.find((x) => x.player_id === id) || { legal_balls: 0, maidens: 0, runs: 0, wickets: 0, wides: 0, no_balls: 0 };
+                        const now = id === cur.bowler_id;
+                        return (
+                          <tr key={id} style={{ textAlign: 'right', borderTop: '1px solid #f1f5f9', backgroundColor: now ? '#eff6ff' : 'transparent', color: now ? '#0f172a' : '#64748b' }}>
+                            <td style={{ textAlign: 'left', padding: '0.45rem 0.6rem', fontWeight: now ? 800 : 600 }}>{nameIn(bowlers, id) || f.name}{now ? ' *' : ' (last over)'}</td>
+                            <td>{oversText(f.legal_balls)}</td><td>{f.maidens}</td><td>{f.runs}</td><td style={{ fontWeight: 800 }}>{f.wickets}</td>
+                            <td>{f.wides}</td><td>{f.no_balls}</td><td style={{ paddingRight: '0.6rem' }}>{econ(f.runs, f.legal_balls)}</td>
+                          </tr>
+                        );
+                      })}
+                      {!cur.bowler_id && <tr><td colSpan={8} style={{ padding: '0.4rem 0.6rem', color: '#b45309', fontSize: '0.8rem' }}>New bowler needed for the next over</td></tr>}
+                    </tbody>
+                  </table>
+                  <div style={{ display: 'flex', gap: '0.25rem', padding: '0.45rem 0.6rem', flexWrap: 'wrap', alignItems: 'center', borderTop: '1px solid #f1f5f9' }}>
+                    <span style={{ fontSize: '0.75rem', color: '#64748b', marginRight: '0.3rem' }}>{cur.bowler_id ? 'This over' : 'Last over'}:</span>
+                    {cur.this_over.length === 0 ? <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>—</span> : cur.this_over.map((b, k) => <BallChip key={k} b={b} />)}
+                    {cur.this_over.length > 0 && <span style={{ fontSize: '0.78rem', color: '#334155', marginLeft: '0.3rem', fontWeight: 700 }}>= {cur.this_over.reduce((t, b) => t + b.runs + b.extra_runs, 0)} runs</span>}
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.8rem', color: '#475569' }}>
@@ -207,11 +323,8 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                 </select>
               </label>
             )}
-            <Button variant="primary" disabled={busy} onClick={() => act(async () => {
-              const s = await dataService.setInningsPlayers(matchId, { striker: pick.striker || null, nonStriker: pick.non_striker || null, bowler: pick.bowler || null });
-              setPick({ striker: '', non_striker: '', bowler: '' });
-              return s;
-            })}>Continue</Button>
+            <Button variant="primary" disabled={busy} onClick={() => submit('players', { striker: pick.striker || null, nonStriker: pick.non_striker || null, bowler: pick.bowler || null },
+              () => setPick({ striker: '', non_striker: '', bowler: '' }))}>Continue</Button>
           </div>
         </Card>
       )}
@@ -247,7 +360,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                 style={{ flex: 1, padding: '0.8rem', fontWeight: 900, fontSize: '1rem', borderRadius: '0.6rem', cursor: 'pointer', border: 'none', backgroundColor: '#dc2626', color: '#fff' }}>
                 WICKET
               </button>
-              <button type="button" disabled={busy} onClick={() => act(() => dataService.undoLastBall(matchId))}
+              <button type="button" disabled={busy || syncing} onClick={() => (queue.length ? updateQueue(queue.slice(0, -1)) : act(() => dataService.undoLastBall(matchId)))}
                 style={{ padding: '0.8rem 1rem', fontWeight: 700, borderRadius: '0.6rem', cursor: 'pointer', border: '1px solid #cbd5e1', backgroundColor: '#fff', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
                 <Undo2 size={16} /> Undo
               </button>
@@ -291,11 +404,11 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
               <button type="button" onClick={() => setMenu(!menu)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '0.8rem', padding: 0 }}>{menu ? 'Hide more options' : 'More options (end innings, abandon)'}</button>
               {menu && (
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem', alignItems: 'center' }}>
-                  <Button variant="secondary" disabled={busy} onClick={() => window.confirm('End this innings now? (e.g. declared, or the team cannot continue)') && act(() => dataService.endInnings(matchId, 'closed'))} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                  <Button variant="secondary" disabled={busy || queue.length > 0 || !online} onClick={() => window.confirm('End this innings now? (e.g. declared, or the team cannot continue)') && act(() => dataService.endInnings(matchId, 'closed'))} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
                     <Flag size={14} /> End innings
                   </Button>
                   <input value={abandonReason} onChange={(e) => setAbandonReason(e.target.value)} placeholder="Reason (e.g. rain)" style={field} />
-                  <Button variant="secondary" disabled={busy || !abandonReason.trim()} onClick={() => window.confirm('Abandon this match? It will count as no result.') && act(() => dataService.abandonMatch(matchId, abandonReason))} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                  <Button variant="secondary" disabled={busy || !abandonReason.trim() || queue.length > 0 || !online} onClick={() => window.confirm('Abandon this match? It will count as no result.') && act(() => dataService.abandonMatch(matchId, abandonReason))} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
                     <CloudRain size={14} /> Abandon match
                   </Button>
                 </div>
@@ -326,6 +439,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                   {b.bowler} to {b.batter}: {b.wicket ? <strong style={{ color: '#b91c1c' }}>{b.out_name} {WICKET_LABEL[b.wicket]?.toLowerCase()}</strong>
                     : b.extra ? `${b.extra.replace('_', ' ')}${b.runs ? `, ${b.runs} off the bat` : ''}` : b.runs === 0 ? 'no run' : `${b.runs} run${b.runs === 1 ? '' : 's'}`}
                   {b.commentary ? <span style={{ color: '#64748b' }}> – {b.commentary}</span> : null}
+                  {b.pending ? <span style={{ color: '#b45309', fontSize: '0.72rem' }}> (not uploaded yet)</span> : null}
                 </span>
               </div>
             ))}
