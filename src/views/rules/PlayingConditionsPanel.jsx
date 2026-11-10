@@ -33,6 +33,7 @@ function summaryRows(r, facts) {
     ['Powerplay', r.powerplay_overs ? `Overs 1–${r.powerplay_overs}, max ${r.fielders_outside_powerplay} fielders outside the circle` : 'None'],
     ['Fielders outside the circle', `Max ${r.fielders_outside} after the powerplay`],
     ['Boundary size', r.boundary_size_m ? `About ${r.boundary_size_m} m` : 'Not set'],
+    ...(facts?.match_type === 'two_innings' ? [['Follow-on', `Lead of ${r.follow_on_lead || 75} runs or more`]] : []),
     ...(facts?.max_substitutes != null ? [['Substitutes', `Up to ${facts.max_substitutes} per team`]] : [])
   ];
 }
@@ -133,6 +134,7 @@ export function PlayingConditionsPanel({ tournamentId = null, matchId = null }) 
               <label style={label}>Fielders outside circle – powerplay{num('fielders_outside_powerplay', '2')}</label>
               <label style={label}>Fielders outside circle – after{num('fielders_outside', '5')}</label>
               <label style={label}>Boundary size (metres){num('boundary_size_m', 'Not set')}</label>
+              {facts?.match_type === 'two_innings' && <label style={label}>Follow-on lead (runs){num('follow_on_lead', '75')}</label>}
             </div>
           </section>
           <section>

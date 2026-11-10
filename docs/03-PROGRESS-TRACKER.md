@@ -17,11 +17,11 @@
 | Status | Features |
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
-| 🟩 Working (real database) | 56 / 310 |
+| 🟩 Working (real database) | 71 / 310 |
 | 🟨 Built / connected, awaiting check | 80 / 310 |
-| ⬜ Not started | 174 / 310 |
+| ⬜ Not started | 159 / 310 |
 
-**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E batch 1 (playing conditions, 17 features) connected. Next: Category E batch 2 (laws reference, dismissal/dead-ball/overthrow/short-run, follow-on, super over, DLS, penalty runs, signals, decision/incident/disciplinary logs), then Category L calculators.
+**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Next: Category L calculators (#216–232) – the last 17 features of Phase 3.
 
 **Phase 2 summary:** 45 of 48 built; #57, #77, #78 waited for ball-by-ball scoring.
 
@@ -35,7 +35,7 @@
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | 1 | N | 17 | 0 | 14 | 3 | 0 |
 | 2 | B, C | 48 | 0 | 36 | 12 | 0 |
-| 3 | A, D, E, L | 103 | 32 | 30 | 41 | 0 |
+| 3 | A, D, E, L | 103 | 17 | 30 | 56 | 0 |
 | 4 | F, G, Q | 37 | 37 | 0 | 0 | 0 |
 | 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
@@ -207,8 +207,8 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 103 | MCC Laws of Cricket reference library | ⬜ |  |
-| 104 | ICC playing conditions reference library | ⬜ |  |
+| 103 | MCC Laws of Cricket reference library | 🟩 | **connected 2026-11-10** – Laws & Rules page: link to the official MCC Laws + own plain-language guides |
+| 104 | ICC playing conditions reference library | 🟩 | **connected 2026-11-10** – Laws & Rules page: link to ICC playing conditions |
 | 105 | Match-specific rule configuration | 🟩 | **connected 2026-11-10** – tournament default rules + per-match changes until the match starts; frozen when the match goes live |
 | 106 | Batting and innings rules | 🟩 | **connected 2026-11-10** – retire-at runs (scorer warned), batting notes; overs/players a side from match setup |
 | 107 | Bowling restrictions | 🟩 | **connected 2026-11-10** – bowling notes; no two overs in a row (already enforced) |
@@ -217,22 +217,22 @@
 | 110 | No-ball rules | 🟩 | **connected 2026-11-10** – no-ball runs 0/1/2 – used by scoring |
 | 111 | Free-hit rules | 🟩 | **connected 2026-11-10** – free hit after a no-ball (continues after wide/no-ball) – only run-out allowed; FREE HIT banner |
 | 112 | LBW applicability | 🟩 | **connected 2026-11-10** – LBW on/off – LBW hidden and refused when off |
-| 113 | Dismissal rules | ⬜ |  |
+| 113 | Dismissal rules | 🟩 | **connected 2026-11-10** – dismissal guide (10 ways out, which are possible on a no-ball/free hit); scoring offers only valid dismissals |
 | 114 | Byes and leg-byes | 🟩 | **connected 2026-11-10** – byes / leg-byes on/off – buttons hidden and refused when off |
-| 115 | Dead-ball rules | ⬜ |  |
-| 116 | Overthrow rules | ⬜ |  |
-| 117 | Short-run rules | ⬜ |  |
+| 115 | Dead-ball rules | 🟩 | **connected 2026-11-10** – dead-ball guide; logged as a Decision report |
+| 116 | Overthrow rules | 🟩 | **connected 2026-11-10** – overthrow guide (enter total runs for the ball) |
+| 117 | Short-run rules | 🟩 | **connected 2026-11-10** – short-run guide; logged as a Decision report |
 | 118 | Boundary rules | 🟩 | **connected 2026-11-10** – boundary size + boundary rules notes |
 | 119 | Powerplay configuration | 🟩 | **connected 2026-11-10** – powerplay overs – Powerplay banner while scoring |
-| 120 | Follow-on rules | ⬜ |  |
-| 121 | Super Over rules | ⬜ |  |
-| 122 | DLS reference and calculation support | ⬜ |  |
-| 123 | Penalty-run rules | ⬜ |  |
-| 124 | Time-wasting regulations | ⬜ |  |
-| 125 | Umpire signals and decisions | ⬜ |  |
-| 126 | Match decision log | ⬜ |  |
-| 127 | Incident reports | ⬜ |  |
-| 128 | Disciplinary reports | ⬜ |  |
+| 120 | Follow-on rules | 🟩 | **connected 2026-11-10** – Enforce follow-on button (two-innings matches, start of innings 3); lead set in Playing conditions (default 75) |
+| 121 | Super Over rules | 🟩 | **connected 2026-11-10** – Start Super Over after a tie (1 over, 1–3 wickets); repeat if tied; Super Over runs excluded from totals, NRR and stats |
+| 122 | DLS reference and calculation support | 🟩 | **connected 2026-11-10** – revised-target helper: average run-rate method + resources (DLS-style) method using official table values |
+| 123 | Penalty-run rules | 🟩 | **connected 2026-11-10** – scorer awards penalty runs to batting/fielding side (pending until a side bats); kept on undo; logged |
+| 124 | Time-wasting regulations | 🟩 | **connected 2026-11-10** – time-wasting guide; warnings via Incident/Disciplinary reports |
+| 125 | Umpire signals and decisions | 🟩 | **connected 2026-11-10** – umpire signals described in words |
+| 126 | Match decision log | 🟩 | **connected 2026-11-10** – match Reports tab: decision log (public); penalty runs and Super Overs logged automatically |
+| 127 | Incident reports | 🟩 | **connected 2026-11-10** – incident reports (officials, organiser, team owners can see); open/close with note |
+| 128 | Disciplinary reports | 🟩 | **connected 2026-11-10** – disciplinary reports with warning/suspension/referred; team owner, organiser and player notified |
 | 129 | Ball type configuration | 🟩 | **connected 2026-11-10** – ball type from match/tournament setup shown with the rules |
 | 130 | Pitch and ground conditions | 🟩 | **connected 2026-11-10** – pitch type + ground notes |
 | 131 | Fielding restrictions | 🟩 | **connected 2026-11-10** – fielders outside the circle (powerplay / after) – shown while scoring |

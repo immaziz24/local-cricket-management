@@ -959,6 +959,42 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async startSuperOver(matchId, wickets) {
+    const { data, error } = await supabase.rpc('start_super_over', { p_match_id: matchId, p_wickets: wickets || 2 });
+    if (error) return { data: null, error: friendlyError(error, 'Super Over') };
+    return { data, error: null };
+  },
+
+  async awardPenaltyRuns(matchId, to, runs, reason) {
+    const { data, error } = await supabase.rpc('award_penalty_runs', { p_match_id: matchId, p_to: to, p_runs: Number(runs), p_reason: reason });
+    if (error) return { data: null, error: friendlyError(error, 'penalty runs') };
+    return { data, error: null };
+  },
+
+  async enforceFollowOn(matchId) {
+    const { data, error } = await supabase.rpc('enforce_follow_on', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'follow-on') };
+    return { data, error: null };
+  },
+
+  async listMatchReports(matchId) {
+    const { data, error } = await supabase.rpc('list_match_reports', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'match reports') };
+    return { data, error: null };
+  },
+
+  async addMatchReport(matchId, report) {
+    const { data, error } = await supabase.rpc('add_match_report', { p_match_id: matchId, p: report });
+    if (error) return { data: null, error: friendlyError(error, 'match report') };
+    return { data, error: null };
+  },
+
+  async closeMatchReport(reportId, note) {
+    const { data, error } = await supabase.rpc('close_match_report', { p_report_id: reportId, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'match report') };
+    return { data, error: null };
+  },
+
   async getCommentary(matchId) {
     const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'commentary') };

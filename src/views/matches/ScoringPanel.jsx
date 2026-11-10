@@ -77,6 +77,8 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   const [comment, setComment] = useState('');
   const [menu, setMenu] = useState(false);
   const [abandonReason, setAbandonReason] = useState('');
+  const [pen, setPen] = useState({ to: 'batting', runs: 5, reason: '' }); // #123 penalty runs
+  const [soWickets, setSoWickets] = useState(2); // #121 Super Over
   const lastStatus = useRef(null);
 
   const load = async () => {
@@ -237,7 +239,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '0.5rem' }}>
               <div>
-                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{curInn.batting_team.name} · innings {curInn.innings_no}</div>
+                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{curInn.batting_team.name} · {curInn.is_super_over ? <strong style={{ color: '#7c3aed' }}>SUPER OVER</strong> : `innings ${curInn.innings_no}`}</div>
                 <div style={{ fontSize: '2rem', fontWeight: 900, lineHeight: 1.1 }}>{cur.runs}/{cur.wickets} <span style={{ fontSize: '1rem', fontWeight: 600, color: '#475569' }}>({oversText(cur.legal_balls)}{st.overs_limit ? ` / ${st.overs_limit}` : ''} ov)</span></div>
               </div>
               <div style={{ textAlign: 'right', fontSize: '0.82rem', color: '#334155' }}>
@@ -424,9 +426,23 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
             <input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Commentary for this ball (optional)" style={{ ...field, width: '100%', boxSizing: 'border-box' }} />
 
             <div>
-              <button type="button" onClick={() => setMenu(!menu)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '0.8rem', padding: 0 }}>{menu ? 'Hide more options' : 'More options (end innings, abandon)'}</button>
+              <button type="button" onClick={() => setMenu(!menu)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '0.8rem', padding: 0 }}>{menu ? 'Hide more options' : 'More options (penalty runs, end innings, abandon)'}</button>
               {menu && (
                 <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', marginTop: '0.5rem', alignItems: 'center' }}>
+                  {/* #123 Penalty runs */}
+                  <div style={{ width: '100%', display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center', padding: '0.5rem', border: '1px solid #e2e8f0', borderRadius: '0.5rem' }}>
+                    <strong style={{ fontSize: '0.8rem' }}>Penalty runs</strong>
+                    <select value={pen.to} onChange={(e) => setPen({ ...pen, to: e.target.value })} style={field}>
+                      <option value="batting">to {curInn?.batting_team.name || 'batting side'} (batting)</option>
+                      <option value="fielding">to {curInn?.bowling_team.name || 'fielding side'} (fielding)</option>
+                    </select>
+                    <input type="number" min="-10" max="10" value={pen.runs} onChange={(e) => setPen({ ...pen, runs: Number(e.target.value) })} style={{ ...field, width: 70 }} />
+                    <input value={pen.reason} maxLength={300} onChange={(e) => setPen({ ...pen, reason: e.target.value })} placeholder="Reason (e.g. fake fielding)" style={{ ...field, flex: 1, minWidth: 160 }} />
+                    <Button variant="secondary" size="sm" disabled={busy || !pen.reason.trim() || !pen.runs || queue.length > 0 || !online}
+                      onClick={() => window.confirm(`Give ${pen.runs} penalty run(s) to the ${pen.to} side?`) && act(async () => { const s = await dataService.awardPenaltyRuns(matchId, pen.to, pen.runs, pen.reason); setPen({ to: 'batting', runs: 5, reason: '' }); return s; })}>
+                      Add
+                    </Button>
+                  </div>
                   <Button variant="secondary" disabled={busy || queue.length > 0 || !online} onClick={() => window.confirm('End this innings now? (e.g. declared, or the team cannot continue)') && act(() => dataService.endInnings(matchId, 'closed'))} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
                     <Flag size={14} /> End innings
                   </Button>
@@ -437,6 +453,29 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                 </div>
               )}
             </div>
+          </div>
+        </Card>
+      )}
+
+      {/* #121 Super Over after a tie */}
+      {mode === 'live' && st.can_score && st.status === 'completed' && st.result_type === 'tie' && st.match_type !== 'two_innings' && st.innings.length > 0 && (
+        <Card title="Match tied – play a Super Over?">
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.85rem' }}>
+            <span>One over each. {st.innings[st.innings.length - 1].batting_team.name} (batted last) bat first.</span>
+            <label>Wickets <select value={soWickets} onChange={(e) => setSoWickets(Number(e.target.value))} style={field}>{[1, 2, 3].map((n) => <option key={n} value={n}>{n}</option>)}</select></label>
+            <Button variant="primary" disabled={busy || !online} onClick={() => act(() => dataService.startSuperOver(matchId, soWickets))}>Start Super Over</Button>
+          </div>
+          <p style={{ margin: '0.4rem 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>Super Over runs do not count toward team totals, net run rate or player statistics.</p>
+        </Card>
+      )}
+
+      {/* #120 Follow-on (two-innings matches, start of innings 3) */}
+      {mode === 'live' && scoring && st.match_type === 'two_innings' && cur && cur.innings_no === 3 && cur.legal_balls === 0 && st.innings.length >= 2
+        && st.innings[0].batting_team.id === cur.batting_team_id && st.innings[0].runs > st.innings[1].runs && (
+        <Card>
+          <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.85rem' }}>
+            <span>{st.innings[0].batting_team.name} lead by <strong>{st.innings[0].runs - st.innings[1].runs}</strong> runs.</span>
+            <Button variant="secondary" size="sm" disabled={busy || !online} onClick={() => window.confirm(`Ask ${st.innings[1].batting_team.name} to follow on (bat again)?`) && act(() => dataService.enforceFollowOn(matchId))}>Enforce follow-on</Button>
           </div>
         </Card>
       )}
@@ -481,7 +520,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
               return (
                 <div key={inn.id} style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', padding: '0.6rem 0.75rem', fontSize: '0.84rem' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 800, marginBottom: '0.35rem' }}>
-                    <span>{inn.batting_team.name}</span><span>{inn.runs}/{inn.wickets} ({oversText(inn.legal_balls)})</span>
+                    <span>{inn.batting_team.name}{inn.is_super_over ? ' (Super Over)' : ''}</span><span>{inn.runs}/{inn.wickets} ({oversText(inn.legal_balls)})</span>
                   </div>
                   {topBat.map((p) => <div key={p.player_id} style={{ display: 'flex', justifyContent: 'space-between' }}><span>{p.name}</span><span><strong>{p.runs}</strong> ({p.balls})</span></div>)}
                   <div style={{ borderTop: '1px dashed #e2e8f0', margin: '0.3rem 0' }} />
@@ -502,7 +541,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
           {st.innings.map((inn) => (
             <div key={inn.id} style={{ marginBottom: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 800, borderBottom: '2px solid #0f172a', paddingBottom: '0.3rem', marginBottom: '0.3rem' }}>
-                <span>{inn.batting_team.name}</span>
+                <span>{inn.batting_team.name}{inn.is_super_over ? ' (Super Over)' : ''}</span>
                 <span>{inn.runs}/{inn.wickets} ({oversText(inn.legal_balls)} ov)</span>
               </div>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem' }}>
@@ -518,7 +557,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                 </tbody>
               </table>
               <div style={{ fontSize: '0.78rem', color: '#475569', margin: '0.3rem 0' }}>
-                Extras {inn.extras} (wd {inn.extras_detail.wides}, nb {inn.extras_detail.no_balls}, b {inn.extras_detail.byes}, lb {inn.extras_detail.leg_byes})
+                Extras {inn.extras} (wd {inn.extras_detail.wides}, nb {inn.extras_detail.no_balls}, b {inn.extras_detail.byes}, lb {inn.extras_detail.leg_byes}{inn.penalty_runs ? `, pen ${inn.penalty_runs}` : ''})
                 {inn.fall_of_wickets.length > 0 && <> · Fall of wickets: {inn.fall_of_wickets.map((f) => `${f.runs}-${f.wicket} (${f.name}, ${f.over})`).join(', ')}</>}
               </div>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', marginTop: '0.3rem' }}>

@@ -593,6 +593,48 @@ export const dataService = {
     return res.data;
   },
 
+  async startSuperOver(matchId, wickets) {
+    requireDatabase();
+    const res = await supabaseClient.startSuperOver(matchId, wickets);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async awardPenaltyRuns(matchId, to, runs, reason) {
+    requireDatabase();
+    const res = await supabaseClient.awardPenaltyRuns(matchId, to, runs, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async enforceFollowOn(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.enforceFollowOn(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchMatchReports(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.listMatchReports(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async addMatchReport(matchId, report) {
+    requireDatabase();
+    const res = await supabaseClient.addMatchReport(matchId, report);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async closeMatchReport(reportId, note) {
+    requireDatabase();
+    const res = await supabaseClient.closeMatchReport(reportId, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCommentary(matchId) {
     requireDatabase();
     const res = await supabaseClient.getCommentary(matchId);

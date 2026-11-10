@@ -10,6 +10,7 @@ import { CommentaryPanel } from './CommentaryPanel.jsx';
 import { MatchHistoryPanel } from './MatchHistoryPanel.jsx';
 import { MatchAnalysisPanel } from '../stats/MatchAnalysisPanel.jsx';
 import { PlayingConditionsPanel } from '../rules/PlayingConditionsPanel.jsx';
+import { MatchReportsPanel } from './MatchReportsPanel.jsx';
 import { scoreLine } from '../tournaments/MatchResultForm.jsx';
 
 /**
@@ -164,7 +165,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       {/* Tabs once the match has started */}
       {m.status !== 'scheduled' && (
         <div style={{ display: 'flex', gap: '0.4rem', borderBottom: '1px solid #e2e8f0', flexWrap: 'wrap' }}>
-          {[['live', m.status === 'live' ? 'Live' : 'Summary'], ['scorecard', 'Scorecard'], ['commentary', 'Commentary'], ['analysis', 'Analysis'], ['lineups', 'Playing XI'], ['rules', 'Rules'], ['history', 'History']].map(([v, l]) => (
+          {[['live', m.status === 'live' ? 'Live' : 'Summary'], ['scorecard', 'Scorecard'], ['commentary', 'Commentary'], ['analysis', 'Analysis'], ['lineups', 'Playing XI'], ['rules', 'Rules'], ['reports', 'Reports'], ['history', 'History']].map(([v, l]) => (
             <button key={v} type="button" onClick={() => setTab(v)}
               style={{ padding: '0.55rem 1rem', border: 'none', borderBottom: `3px solid ${tab === v ? '#059669' : 'transparent'}`, background: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', color: tab === v ? '#065f46' : '#64748b' }}>
               {l}
@@ -229,6 +230,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       {m.status !== 'scheduled' && tab === 'commentary' && <CommentaryPanel matchId={m.id} live={m.status === 'live'} refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'analysis' && <MatchAnalysisPanel matchId={m.id} matchStatus={m.status} canScore={data.can_score} refreshKey={refreshKey} onNavigate={onNavigate} />}
       {m.status !== 'scheduled' && tab === 'rules' && <PlayingConditionsPanel matchId={m.id} />}
+      {m.status !== 'scheduled' && tab === 'reports' && <MatchReportsPanel matchId={m.id} refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'history' && <MatchHistoryPanel matchId={m.id} refreshKey={refreshKey} />}
     </div>
   );
