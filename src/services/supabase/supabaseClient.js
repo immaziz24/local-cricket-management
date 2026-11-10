@@ -995,6 +995,90 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async saveOfficialProfile(profile) {
+    const { data, error } = await supabase.rpc('save_official_profile', { p: profile });
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
+  async setOfficialUnavailable(day, unavailable, note) {
+    const { data, error } = await supabase.rpc('set_official_unavailable', { p_day: day, p_unavailable: !!unavailable, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
+  async getOfficialProfile(userId) {
+    const { data, error } = await supabase.rpc('get_official_profile', { p_user_id: userId });
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
+  async searchOfficials(filters) {
+    const { data, error } = await supabase.rpc('search_officials', { p: filters || {} });
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
+  async inviteOfficial(matchId, userId, role, fee) {
+    const { data, error } = await supabase.rpc('invite_official', { p_match_id: matchId, p_user_id: userId, p_role: role, p_fee: fee === '' || fee == null ? null : Number(fee) });
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
+  async respondOfficialInvite(assignmentId, accept) {
+    const { data, error } = await supabase.rpc('respond_official_invite', { p_assignment_id: assignmentId, p_accept: !!accept });
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
+  async cancelOfficial(assignmentId) {
+    const { data, error } = await supabase.rpc('cancel_official', { p_assignment_id: assignmentId });
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
+  async setOfficialPayment(assignmentId, fee, paid, note) {
+    const { data, error } = await supabase.rpc('set_official_payment', { p_assignment_id: assignmentId, p_fee: fee === '' || fee == null ? null : Number(fee), p_paid: !!paid, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
+  async listMatchOfficials(matchId) {
+    const { data, error } = await supabase.rpc('list_match_officials', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
+  async myOfficialSchedule() {
+    const { data, error } = await supabase.rpc('my_official_schedule', {});
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
+  async rateOfficial(assignmentId, rating, comment) {
+    const { data, error } = await supabase.rpc('rate_official', { p_assignment_id: assignmentId, p_rating: Number(rating), p_comment: comment || null });
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
+  async raiseDispute(matchId, dispute) {
+    const { data, error } = await supabase.rpc('raise_dispute', { p_match_id: matchId, p: dispute });
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
+  async updateDispute(disputeId, status, resolution) {
+    const { data, error } = await supabase.rpc('update_dispute', { p_dispute_id: disputeId, p_status: status, p_resolution: resolution || null });
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
+  async listMatchDisputes(matchId) {
+    const { data, error } = await supabase.rpc('list_match_disputes', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'officials') };
+    return { data, error: null };
+  },
+
   async getCommentary(matchId) {
     const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'commentary') };

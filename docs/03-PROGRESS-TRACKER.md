@@ -17,11 +17,11 @@
 | Status | Features |
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
-| 🟩 Working (real database) | 88 / 310 |
+| 🟩 Working (real database) | 100 / 310 |
 | 🟨 Built / connected, awaiting check | 80 / 310 |
-| ⬜ Not started | 142 / 310 |
+| ⬜ Not started | 130 / 310 |
 
-**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. Next: Phase 4 – Category F (umpires, scorers, officials #135–146), then G (grounds) and Q (late-arrival rules).
+**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. Phase 4 started: Category F officials (12) connected. Next: Category G grounds (#147–159), then Q.
 
 **Phase 2 summary:** 45 of 48 built; #57, #77, #78 waited for ball-by-ball scoring.
 
@@ -36,7 +36,7 @@
 | 1 | N | 17 | 0 | 14 | 3 | 0 |
 | 2 | B, C | 48 | 0 | 36 | 12 | 0 |
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
-| 4 | F, G, Q | 37 | 37 | 0 | 0 | 0 |
+| 4 | F, G, Q | 37 | 25 | 0 | 12 | 0 |
 | 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
 
@@ -268,18 +268,18 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 135 | Umpire registration | ⬜ |  |
-| 136 | Umpire profiles | ⬜ |  |
-| 137 | Scorer registration | ⬜ |  |
-| 138 | Scorer profiles | ⬜ |  |
-| 139 | Official assignments | ⬜ |  |
-| 140 | Official availability | ⬜ |  |
-| 141 | Official schedules | ⬜ |  |
-| 142 | Umpire and scorer feedback | ⬜ |  |
-| 143 | Dispute management | ⬜ |  |
-| 144 | Incident reporting | ⬜ |  |
-| 145 | Official payment records | ⬜ |  |
-| 146 | Officials' performance history | ⬜ |  |
+| 135 | Umpire registration | 🟩 | **connected 2026-11-10** – Umpires & Scorers page: anyone signs up as umpire (open platform, no approval) |
+| 136 | Umpire profiles | 🟩 | **connected 2026-11-10** – public official profile (city, experience, languages, fee, bio, verified badge, stats) |
+| 137 | Scorer registration | 🟩 | **connected 2026-11-10** – sign up as scorer (same profile; umpire and/or scorer) |
+| 138 | Scorer profiles | 🟩 | **connected 2026-11-10** – public scorer profile |
+| 139 | Official assignments | 🟩 | **connected 2026-11-10** – match owner invites umpire/scorer/third umpire/referee; official accepts/declines; accepted scorer can score that match; cancel/withdraw; notifications |
+| 140 | Official availability | 🟩 | **connected 2026-11-10** – usual weekdays + blocked dates; search by free date; invite refused on a blocked day |
+| 141 | Official schedules | 🟩 | **connected 2026-11-10** – My schedule: invitations (accept/decline), upcoming and past matches |
+| 142 | Umpire and scorer feedback | 🟩 | **connected 2026-11-10** – match owner and both team owners rate officials 1–5 with comment after the match |
+| 143 | Dispute management | 🟩 | **connected 2026-11-10** – team owners raise disputes (optionally about an official); match owner reviews/resolves; notifications |
+| 144 | Incident reporting | 🟩 | **connected 2026-11-10** – umpires (accepted officials) can file and close match reports (incidents) as well as scorers |
+| 145 | Official payment records | 🟩 | **connected 2026-11-10** – fee + paid/unpaid + note per assignment; official sees paid/due earnings; fees private |
+| 146 | Officials' performance history | 🟩 | **connected 2026-11-10** – performance history: matches as umpire/scorer, rating, feedback, reports filed, disputes, match list |
 
 **Category G – Ground and venue management**
 

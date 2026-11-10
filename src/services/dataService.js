@@ -635,6 +635,104 @@ export const dataService = {
     return res.data;
   },
 
+  async saveOfficialProfile(profile) {
+    requireDatabase();
+    const res = await supabaseClient.saveOfficialProfile(profile);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setOfficialUnavailable(day, unavailable, note) {
+    requireDatabase();
+    const res = await supabaseClient.setOfficialUnavailable(day, unavailable, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getOfficialProfile(userId) {
+    requireDatabase();
+    const res = await supabaseClient.getOfficialProfile(userId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async searchOfficials(filters) {
+    requireDatabase();
+    const res = await supabaseClient.searchOfficials(filters);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async inviteOfficial(matchId, userId, role, fee) {
+    requireDatabase();
+    const res = await supabaseClient.inviteOfficial(matchId, userId, role, fee);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async respondOfficialInvite(assignmentId, accept) {
+    requireDatabase();
+    const res = await supabaseClient.respondOfficialInvite(assignmentId, accept);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async cancelOfficial(assignmentId) {
+    requireDatabase();
+    const res = await supabaseClient.cancelOfficial(assignmentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setOfficialPayment(assignmentId, fee, paid, note) {
+    requireDatabase();
+    const res = await supabaseClient.setOfficialPayment(assignmentId, fee, paid, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listMatchOfficials(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.listMatchOfficials(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async myOfficialSchedule() {
+    requireDatabase();
+    const res = await supabaseClient.myOfficialSchedule();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async rateOfficial(assignmentId, rating, comment) {
+    requireDatabase();
+    const res = await supabaseClient.rateOfficial(assignmentId, rating, comment);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async raiseDispute(matchId, dispute) {
+    requireDatabase();
+    const res = await supabaseClient.raiseDispute(matchId, dispute);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async updateDispute(disputeId, status, resolution) {
+    requireDatabase();
+    const res = await supabaseClient.updateDispute(disputeId, status, resolution);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listMatchDisputes(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.listMatchDisputes(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCommentary(matchId) {
     requireDatabase();
     const res = await supabaseClient.getCommentary(matchId);

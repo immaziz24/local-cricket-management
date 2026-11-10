@@ -17,6 +17,7 @@ import { MatchCentreView } from './views/matches/MatchCentreView.jsx';
 import { StatsView } from './views/stats/StatsView.jsx';
 import { LawsView } from './views/rules/LawsView.jsx';
 import { ToolsView } from './views/tools/ToolsView.jsx';
+import { OfficialsView, OfficialProfileView } from './views/officials/OfficialsView.jsx';
 import { useDashboardData } from './hooks/useDashboardData.js';
 import { dataService, onAuthChange } from './services/dataService.js';
 
@@ -27,6 +28,7 @@ export function App() {
   const [selectedTeamId, setSelectedTeamId] = useState(null);
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [selectedMatchId, setSelectedMatchId] = useState(null);
+  const [selectedOfficialId, setSelectedOfficialId] = useState(null);
   const [liveCount, setLiveCount] = useState(0);
 
   // Keep the signed-in user in sync across the whole app (#255).
@@ -75,6 +77,9 @@ export function App() {
     if (tab === 'player-profile' && param) {
       setSelectedPlayerId(param);
     }
+    if (tab === 'official-profile' && param) {
+      setSelectedOfficialId(param);
+    }
     if (tab === 'match-centre' && param) {
       setSelectedMatchId(param);
     }
@@ -121,6 +126,12 @@ export function App() {
       {activeTab === 'laws' && <LawsView />}
 
       {activeTab === 'tools' && <ToolsView />}
+
+      {activeTab === 'officials' && <OfficialsView currentUser={currentUser} onNavigate={handleNavigate} />}
+
+      {activeTab === 'official-profile' && selectedOfficialId && (
+        <OfficialProfileView key={selectedOfficialId} userId={selectedOfficialId} onNavigate={handleNavigate} />
+      )}
 
       {activeTab === 'tournaments' && <TournamentsView onNavigate={handleNavigate} />}
 

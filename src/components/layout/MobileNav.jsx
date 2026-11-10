@@ -16,6 +16,7 @@ import {
   BarChart3,
   BookOpen,
   Wrench,
+  Flag,
   Users
 } from 'lucide-react';
 
@@ -37,6 +38,7 @@ export function MobileNav(props) {
     { id: 'password-recovery', label: 'Password Recovery', icon: KeyRound, tag: '#256' },
     { id: 'teams', label: 'My Teams', icon: Users, tag: 'New' },
     { id: 'matches', label: 'Matches', icon: Activity, badge: liveMatchCount > 0 ? `${liveMatchCount} Live` : null },
+    { id: 'officials', label: 'Umpires & Scorers', icon: Flag },
     { id: 'stats', label: 'Statistics', icon: BarChart3 },
     { id: 'laws', label: 'Laws & Rules', icon: BookOpen },
     { id: 'tools', label: 'Cricket Tools', icon: Wrench },

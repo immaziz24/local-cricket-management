@@ -18,6 +18,7 @@
 | Phase 3: playing conditions | 🟩 Tournament default rules + per-match rules (wide/no-ball runs, free hit, LBW on/off, byes/leg-byes, max overs per bowler, retire-at, powerplay, fielding limits, boundary, written local rules), version history with change notes, teams notified. Frozen when the match starts; the scoring screen follows them (free-hit/powerplay banners, bowler quota, LBW/leg-bye hidden when off). |
 | Phase 3: laws & match reports | 🟩 Laws & Rules page (own summaries + MCC/ICC links, dismissals, dead ball, overthrows, short runs, boundaries, follow-on, Super Over, penalty runs, time-wasting, umpire signals, revised-target helper). Super Over after a tie; penalty runs; follow-on; match Reports tab (decision log public; incident and disciplinary private, with notifications). |
 | Phase 3: cricket tools | 🟩 Cricket Tools page (#216–232): run rate, required rate, strike rate, averages, economy, NRR, rain target, toss, team generator, Playing XI generator, fixture generator, points table, budget, prizes, auction, ground size. Runs in the browser; generators can load a squad from my teams. |
+| Phase 4: officials | 🟩 Umpires & Scorers page (sign up, find by city/free date, my schedule, earnings, public profile with performance). Match page Officials: invite/accept/decline/cancel, accepted scorer gets scoring rights for that match, umpires can file reports, payments, ratings, disputes. |
 | Phase 2: players & teams | 🟨 #59–76: playing XI, substitutes and in-match replacements per match, player transfers between teams (#72–75); player ID, photo, DOB/age, contact privacy, team logo, team history, public player profile (#60–62, #66, #67, #69, #76) added on top of My Teams page, create team, add players by mobile number (or by name if not registered — they claim it later by registering with that number), captain / vice-captain / icon player. Awaiting owner check. |
 | Security & operations | 🟨 #267 audit log, #268 backup download, #269 privacy + my-data download + sign out everywhere, #270 notification inbox + send-to-all. Awaiting owner check. |
 | Reports & suspension | 🟨 #266 report a member, admin suspend/lift, notifications, audit log. Awaiting owner check. |
@@ -41,6 +42,7 @@
 | `20261106105506_phase1_user_management_foundation.sql` | Phase 1 tables, row-level security, profile trigger |
 | `20261106105529_phase1_security_and_fk_index_hardening.sql` | Indexes and deny-rules for audit logs and templates |
 | `20261110050000_phase1_profile_mobile_number.sql` | Saves name and unique mobile number on sign-up |
+| `20261110260000_phase4_officials.sql` | official_profiles, official_unavailability, match_officials, official_feedback, match_disputes; can_manage_match, is_match_official; can_score_match includes accepted scorers; official/dispute functions; reports open to umpires |
 | `20261110250000_phase3_laws_super_over_reports.sql` | innings.is_super_over / overs_limit / wickets_limit / penalty_runs, matches.pending_penalty, match_reports; start_super_over, award_penalty_runs, enforce_follow_on, add/close/list_match_reports; close_innings, sync_match_score, undo, record_ball, get_live_state, player_match_stats updated for Super Overs and penalties (applied to the database as two steps: phase3_laws_super_over_reports + phase3_laws_patches) |
 | `20261110240000_phase3_playing_conditions.sql` | tournaments.rules, matches.rules (frozen at start), balls.free_hit, rule_versions; get/save_playing_conditions, get_scoring_rules; bowler quota trigger; record_ball follows the rules |
 | `20261110230100_fix_player_profile_unregistered.sql` | Player profile works for players added by name only (no account) |
@@ -77,7 +79,7 @@
 ## 4. Next steps (in order)
 
 1. **Owner check of #265** (Category N → User Governance → Verification): request a badge, approve it. Push to GitHub (today's work is not on GitHub yet).
-2. **Phase 3:** Category A (live scoring #1–30) complete. **Category D statistics (#79–102) complete** on the real database, together with Phase 2 #57, #77, #78 (Statistics page, player profile stats, team record, match Analysis tab, tournament leaderboards, automatic Player of the Match). **Category E batch 1 – playing conditions (#105–112, #114, #118, #119, #129–134) complete; scoring follows them.** **Category E batch 2 complete** (laws reference, Super Over, follow-on, penalty runs, DLS helper, match reports). **Category L calculators (#216–232) built – Phase 3 complete.** **Next: Phase 4** – Category F officials (#135–146), Category G grounds (#147–159), Category Q late-arrival rules.
+2. **Phase 3:** Category A (live scoring #1–30) complete. **Category D statistics (#79–102) complete** on the real database, together with Phase 2 #57, #77, #78 (Statistics page, player profile stats, team record, match Analysis tab, tournament leaderboards, automatic Player of the Match). **Category E batch 1 – playing conditions (#105–112, #114, #118, #119, #129–134) complete; scoring follows them.** **Category E batch 2 complete** (laws reference, Super Over, follow-on, penalty runs, DLS helper, match reports). **Category L calculators (#216–232) built – Phase 3 complete.** **Phase 4 started – Category F officials (#135–146) complete.** **Next: Category G grounds (#147–159)**, then Category Q.
 3. **Phase 2** in number order: #31 Create a tournament (connect to database), #32 Tournament name and branding, #33, …
 
 ## 5. Known issues
@@ -113,6 +115,7 @@
 | :--- | :--- | :--- |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
+| 2026-11-10 | Claude | Phase 4 – Category F officials (12 features): sign-up, search, invitations, scoring rights, availability, schedule, payments, ratings, disputes, history |
 | 2026-11-10 | Claude | Category L: Cricket Tools page (17 calculators/generators) – Phase 3 complete |
 | 2026-11-10 | Claude | Category E batch 2 (15 features): Laws & Rules page, Super Over, penalty runs, follow-on, DLS helper, match Reports tab – Category E complete |
 | 2026-11-10 | Claude | Category E batch 1: playing conditions (17 features) – rules editor, versions, enforced in ball-by-ball scoring |
