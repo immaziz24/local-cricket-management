@@ -48,9 +48,9 @@ const BALL_TYPES = [
 ];
 
 const PENALTY_POLICIES = [
-  { value: 'overs_deduction', label: 'Overs Deduction', desc: 'Deduct 1 over per 4 minutes delayed past cutoff' },
-  { value: 'fielding_restriction', label: 'Fielding Restriction', desc: 'Max 3 fielders outside 30-yard ring during penalty overs' },
-  { value: 'penalty_runs', label: 'Penalty Runs', desc: 'Award 5 penalty runs to the non-offending team' }
+  { value: 'overs_deduction', label: 'Overs Deduction', desc: 'Late team loses overs (e.g. 1 over per 10 minutes late)' },
+  { value: 'fielding_restriction', label: 'Fielding Restriction', desc: 'Late team fields with restrictions (e.g. only 2 fielders outside the 30-yard circle)' },
+  { value: 'penalty_runs', label: 'Penalty Runs', desc: 'Opponent gets penalty runs (e.g. 5 runs per 10 minutes late)' }
 ];
 
 const INITIAL_FORM = {

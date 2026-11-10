@@ -17,6 +17,7 @@ import { createClient } from '@supabase/supabase-js';
  *   #266 User reporting and suspension
  *   #267–#270 Audit logs, backup export, privacy, notifications
  *   Phase 2 Category C: players and teams (add by mobile, unregistered players, captain/vice/icon)
+ *   Phase 2 Category B: tournaments (create, details, team registration and approval)
  *
  * Configuration comes from .env (never commit real secrets):
  *   VITE_SUPABASE_URL
@@ -736,6 +737,131 @@ export const supabaseClient = {
     const { data, error } = await supabase.rpc('get_team_history', { p_team_id: teamId });
     if (error) return { data: null, error: friendlyError(error, 'team history') };
     return { data: data || [], error: null };
+  },
+
+  // ==========================================
+  // Phase 2 – Category B: tournaments
+  // ==========================================
+  async getTournaments() {
+    const { data, error } = await supabase.from('tournaments').select('*').order('start_date', { ascending: false }).limit(200);
+    if (error) return { data: null, error: friendlyError(error, 'tournaments') };
+    return { data: data || [], error: null };
+  },
+
+  async getTournamentById(tournamentId) {
+    if (!/^[0-9a-f-]{36}$/i.test(String(tournamentId || ''))) return { data: null, error: 'Tournament not found.' };
+    const { data, error } = await supabase.from('tournaments').select('*').eq('id', tournamentId).maybeSingle();
+    if (error) return { data: null, error: friendlyError(error, 'tournament') };
+    if (!data) return { data: null, error: 'Tournament not found.' };
+    return { data, error: null };
+  },
+
+  async getTournamentMatches(tournamentId) {
+    if (!/^[0-9a-f-]{36}$/i.test(String(tournamentId || ''))) return { data: [], error: null };
+    const { data, error } = await supabase
+      .from('matches')
+      .select('*, team_a:teams!matches_team_a_id_fkey(id, name, short_name, logo_url), team_b:teams!matches_team_b_id_fkey(id, name, short_name, logo_url), group:tournament_groups(id, name)')
+      .eq('tournament_id', tournamentId)
+      .order('scheduled_at', { ascending: true, nullsFirst: false })
+      .order('match_no', { ascending: true });
+    if (error) return { data: null, error: friendlyError(error, 'fixtures') };
+    return { data: data || [], error: null };
+  },
+
+  async getTournamentStructure(tournamentId) {
+    const [groups, teams] = await Promise.all([
+      supabase.from('tournament_groups').select('id, name, sort_order').eq('tournament_id', tournamentId).order('sort_order'),
+      supabase.from('tournament_teams').select('team_id, group_id, teams(id, name, short_name, logo_url)').eq('tournament_id', tournamentId).eq('status', 'approved')
+    ]);
+    if (groups.error || teams.error) return { data: null, error: friendlyError(groups.error || teams.error, 'tournament structure') };
+    return {
+      data: {
+        groups: groups.data || [],
+        teams: (teams.data || []).map((t) => ({ ...t.teams, group_id: t.group_id })).sort((a, b) => a.name.localeCompare(b.name))
+      },
+      error: null
+    };
+  },
+
+  async createTournamentGroups({ tournamentId, count }) {
+    const { data, error } = await supabase.rpc('create_tournament_groups', { p_tournament_id: tournamentId, p_group_count: count });
+    if (error) return { data: null, error: friendlyError(error, 'groups') };
+    return { data, error: null };
+  },
+
+  async setTeamGroup({ tournamentId, teamId, groupId }) {
+    const { data, error } = await supabase.rpc('set_team_group', { p_tournament_id: tournamentId, p_team_id: teamId, p_group_id: groupId || null });
+    if (error) return { data: null, error: friendlyError(error, 'group') };
+    return { data, error: null };
+  },
+
+  async setTournamentStructure({ tournamentId, structure }) {
+    const { data, error } = await supabase.rpc('set_tournament_structure', { p_tournament_id: tournamentId, p_structure: structure });
+    if (error) return { data: null, error: friendlyError(error, 'format') };
+    return { data, error: null };
+  },
+
+  async saveGeneratedFixtures({ tournamentId, fixtures, replace }) {
+    const { data, error } = await supabase.rpc('save_generated_fixtures', { p_tournament_id: tournamentId, p_fixtures: fixtures, p_replace: replace !== false });
+    if (error) return { data: null, error: friendlyError(error, 'fixtures') };
+    return { data, error: null };
+  },
+
+  async createMatch({ tournamentId, teamA, teamB, scheduledAt, venue, stage, groupId }) {
+    const { data, error } = await supabase.rpc('create_match', {
+      p_tournament_id: tournamentId, p_team_a: teamA || null, p_team_b: teamB || null, p_scheduled_at: scheduledAt || null,
+      p_venue: venue || null, p_stage: stage || 'league', p_group_id: groupId || null
+    });
+    if (error) return { data: null, error: friendlyError(error, 'add match') };
+    return { data, error: null };
+  },
+
+  async rescheduleMatch({ matchId, scheduledAt, venue, reason }) {
+    const { data, error } = await supabase.rpc('reschedule_match', { p_match_id: matchId, p_scheduled_at: scheduledAt, p_venue: venue || null, p_reason: reason || null });
+    if (error) return { data: null, error: friendlyError(error, 'reschedule') };
+    return { data, error: null };
+  },
+
+  async deleteMatch(matchId) {
+    const { data, error } = await supabase.rpc('delete_match', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'delete match') };
+    return { data, error: null };
+  },
+
+  async createTournament(tournamentData) {
+    const { data, error } = await supabase.rpc('create_tournament', { p: tournamentData });
+    if (error) return { data: null, error: friendlyError(error, 'create tournament') };
+    return { data, error: null };
+  },
+
+  async updateTournament({ tournamentId, changes }) {
+    const { data, error } = await supabase.rpc('update_tournament', { p_id: tournamentId, p: changes });
+    if (error) return { data: null, error: friendlyError(error, 'update tournament') };
+    return { data, error: null };
+  },
+
+  async getTournamentRegistrations(tournamentId) {
+    const { data, error } = await supabase.rpc('get_tournament_registrations', { p_tournament_id: tournamentId });
+    if (error) return { data: null, error: friendlyError(error, 'registrations') };
+    return { data, error: null };
+  },
+
+  async registerTeamForTournament({ tournamentId, teamId }) {
+    const { data, error } = await supabase.rpc('register_team_for_tournament', { p_tournament_id: tournamentId, p_team_id: teamId });
+    if (error) return { data: null, error: friendlyError(error, 'team registration') };
+    return { data, error: null };
+  },
+
+  async decideTeamRegistration({ tournamentId, teamId, approve, note }) {
+    const { data, error } = await supabase.rpc('decide_team_registration', { p_tournament_id: tournamentId, p_team_id: teamId, p_approve: !!approve, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'team approval') };
+    return { data, error: null };
+  },
+
+  async withdrawTeamFromTournament({ tournamentId, teamId }) {
+    const { data, error } = await supabase.rpc('withdraw_team_from_tournament', { p_tournament_id: tournamentId, p_team_id: teamId });
+    if (error) return { data: null, error: friendlyError(error, 'withdraw team') };
+    return { data, error: null };
   },
 
   /** Public platform settings: maintenance flag and the active announcement (readable by everyone). */

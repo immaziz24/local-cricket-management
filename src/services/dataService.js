@@ -25,7 +25,7 @@ const authProvider = isSupabaseConfigured ? supabaseClient : mockClient;
 /** 'supabase' when real accounts are active, otherwise 'mock'. Screens use this to hide test hints. */
 export const authBackend = isSupabaseConfigured ? 'supabase' : 'mock';
 
-// Phase 1 #257 (Super-admin dashboard), #258 (Admin dashboard), #259–#264 (roles) and #265 (verification) and #266 (reports, suspensions) also run on Supabase when configured.
+// Phase 1 #257 (Super-admin dashboard), #258 (Admin dashboard), #259–#264 (roles) and #265 (verification) and #266 (reports, suspensions) and tournaments also run on Supabase when configured.
 const adminProvider = isSupabaseConfigured ? supabaseClient : mockClient;
 
 // ------------------------------------------------------------------
@@ -69,26 +69,26 @@ export const dataService = {
 
   // Tournaments (Feature #31 & Feature #32)
   async fetchTournaments() {
-    const res = await activeProvider.getTournaments();
+    const res = await adminProvider.getTournaments();
     if (res.error) throw new Error(res.error);
     return res.data;
   },
 
   // Feature #32: Tournament Details & Profile View
   async fetchTournamentById(tournamentId) {
-    const res = await activeProvider.getTournamentById(tournamentId);
+    const res = await adminProvider.getTournamentById(tournamentId);
     if (res.error) throw new Error(res.error);
     return res.data;
   },
 
   async fetchTournamentMatches(tournamentId) {
-    const res = await activeProvider.getTournamentMatches(tournamentId);
+    const res = await adminProvider.getTournamentMatches(tournamentId);
     if (res.error) throw new Error(res.error);
     return res.data;
   },
 
   async createTournament(tournamentData) {
-    const res = await activeProvider.createTournament(tournamentData);
+    const res = await adminProvider.createTournament(tournamentData);
     if (res.error) throw new Error(res.error);
     return res.data;
   },
@@ -392,6 +392,97 @@ export const dataService = {
   async fetchTeamHistory(teamId) {
     requireDatabase();
     const res = await supabaseClient.getTeamHistory(teamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async updateTournament(tournamentId, changes) {
+    requireDatabase();
+    const res = await supabaseClient.updateTournament({ tournamentId, changes });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchTournamentRegistrations(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.getTournamentRegistrations(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async registerTeamForTournament(tournamentId, teamId) {
+    requireDatabase();
+    const res = await supabaseClient.registerTeamForTournament({ tournamentId, teamId });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async decideTeamRegistration(tournamentId, teamId, approve, note) {
+    requireDatabase();
+    const res = await supabaseClient.decideTeamRegistration({ tournamentId, teamId, approve, note });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async withdrawTeamFromTournament(tournamentId, teamId) {
+    requireDatabase();
+    const res = await supabaseClient.withdrawTeamFromTournament({ tournamentId, teamId });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchTournamentStructure(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.getTournamentStructure(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async createTournamentGroups(tournamentId, count) {
+    requireDatabase();
+    const res = await supabaseClient.createTournamentGroups({ tournamentId, count });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setTeamGroup(tournamentId, teamId, groupId) {
+    requireDatabase();
+    const res = await supabaseClient.setTeamGroup({ tournamentId, teamId, groupId });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setTournamentStructure(tournamentId, structure) {
+    requireDatabase();
+    const res = await supabaseClient.setTournamentStructure({ tournamentId, structure });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveGeneratedFixtures(tournamentId, fixtures, replace) {
+    requireDatabase();
+    const res = await supabaseClient.saveGeneratedFixtures({ tournamentId, fixtures, replace });
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async createMatch(details) {
+    requireDatabase();
+    const res = await supabaseClient.createMatch(details);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async rescheduleMatch(details) {
+    requireDatabase();
+    const res = await supabaseClient.rescheduleMatch(details);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async deleteMatch(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.deleteMatch(matchId);
     if (res.error) throw new Error(res.error);
     return res.data;
   },

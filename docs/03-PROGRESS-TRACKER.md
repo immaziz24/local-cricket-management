@@ -79,28 +79,28 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 31 | Create a tournament | 🟨 | CreateTournamentView.jsx — saves to mock store only |
-| 32 | Tournament name and branding | ⬜ |  |
+| 31 | Create a tournament | 🟨 | **connected 2026-11-10** – CreateTournamentView.jsx on real database; creator becomes Organiser of that tournament. Awaiting owner check |
+| 32 | Tournament name and branding | 🟨 | **connected 2026-11-10** – name + short code + colour theme (logo/banner #33 later). Awaiting owner check |
 | 33 | Tournament logo and banner | ⬜ |  |
-| 34 | Tournament start and end dates | ⬜ |  |
-| 35 | Tournament location | ⬜ |  |
-| 36 | Tournament registration | ⬜ |  |
-| 37 | Registration fees | ⬜ |  |
-| 38 | Prize money details | ⬜ |  |
-| 39 | Tournament rules and regulations | ⬜ |  |
-| 40 | Team registration | ⬜ |  |
-| 41 | Team approval and rejection | ⬜ |  |
-| 42 | Group creation | ⬜ |  |
-| 43 | League format | ⬜ |  |
-| 44 | Knockout format | ⬜ |  |
-| 45 | Round-robin format | ⬜ |  |
+| 34 | Tournament start and end dates | 🟨 | **connected 2026-11-10** – start/end dates. Awaiting owner check |
+| 35 | Tournament location | 🟨 | **connected 2026-11-10** – venue (+ city). Awaiting owner check |
+| 36 | Tournament registration | 🟨 | **connected 2026-11-10** – registration open/closed per tournament. Awaiting owner check |
+| 37 | Registration fees | 🟨 | **connected 2026-11-10** – entry fee shown (paid offline; online payments in Phase 6). Awaiting owner check |
+| 38 | Prize money details | 🟨 | **connected 2026-11-10** – prize money text. Awaiting owner check |
+| 39 | Tournament rules and regulations | 🟨 | **connected 2026-11-10** – rules & regulations text. Awaiting owner check |
+| 40 | Team registration | 🟨 | **connected 2026-11-10** – tournament page → Teams tab: team owner applies with their team; organiser notified. Awaiting owner check |
+| 41 | Team approval and rejection | 🟨 | **connected 2026-11-10** – organiser approves / rejects with reason; team owner notified; capacity enforced. Awaiting owner check |
+| 42 | Group creation | 🟨 | **connected 2026-11-10** – tournament → Fixtures tab: create 2–8 groups (random draw), move teams between groups. Awaiting owner check |
+| 43 | League format | 🟨 | **connected 2026-11-10** – league: everyone plays everyone once. Awaiting owner check |
+| 44 | Knockout format | 🟨 | **connected 2026-11-10** – knockout first round with byes (full brackets with #56). Awaiting owner check |
+| 45 | Round-robin format | 🟨 | **connected 2026-11-10** – round-robin home & away. Awaiting owner check |
 | 46 | Double-elimination format | ⬜ |  |
-| 47 | Custom tournament formats | ⬜ |  |
-| 48 | Automatic fixture generation | ⬜ |  |
-| 49 | Manual fixture creation | ⬜ |  |
-| 50 | Match scheduling | ⬜ |  |
-| 51 | Match rescheduling | ⬜ |  |
-| 52 | Tournament calendar | ⬜ |  |
+| 47 | Custom tournament formats | 🟨 | **connected 2026-11-10** – custom: organiser adds matches by hand. Awaiting owner check |
+| 48 | Automatic fixture generation | 🟨 | **connected 2026-11-10** – automatic fixture generation (round-robin per group / league / knockout pairings), tested 3–6 teams. Awaiting owner check |
+| 49 | Manual fixture creation | 🟨 | **connected 2026-11-10** – add a match by hand (teams can be TBD). Awaiting owner check |
+| 50 | Match scheduling | 🟨 | **connected 2026-11-10** – automatic dates/times: first day, first time, matches per day, gap. Awaiting owner check |
+| 51 | Match rescheduling | 🟨 | **connected 2026-11-10** – reschedule date/time/ground with reason; both team owners notified. Awaiting owner check |
+| 52 | Tournament calendar | 🟨 | **connected 2026-11-10** – fixtures listed by day (tournament calendar). Awaiting owner check |
 | 53 | Points table | ⬜ |  |
 | 54 | Net Run Rate calculation | ⬜ |  |
 | 55 | Qualification management | ⬜ |  |

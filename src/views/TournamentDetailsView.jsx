@@ -4,6 +4,8 @@ import { Badge } from '../components/common/Badge.jsx';
 import { Button } from '../components/common/Button.jsx';
 import { LoadingSpinner } from '../components/common/LoadingSpinner.jsx';
 import { dataService } from '../services/dataService.js';
+import { TeamRegistrationPanel } from './tournaments/TeamRegistrationPanel.jsx';
+import { FixturesPanel } from './tournaments/FixturesPanel.jsx';
 import {
   Trophy,
   Calendar,
@@ -31,6 +33,7 @@ export function TournamentDetailsView(props) {
   const [allTournaments, setAllTournaments] = useState([]);
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [isOrganiser, setIsOrganiser] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState('overview'); // overview | teams | fixtures
@@ -43,18 +46,25 @@ export function TournamentDetailsView(props) {
       setLoading(true);
       setError(null);
       try {
-        const [trnList, targetTrn, trnMatches, allTeams] = await Promise.all([
+        const [trnList, targetTrn, trnMatches] = await Promise.all([
           dataService.fetchTournaments(),
           dataService.fetchTournamentById(tournamentId),
-          dataService.fetchTournamentMatches(tournamentId),
-          dataService.fetchTeams()
+          dataService.fetchTournamentMatches(tournamentId)
         ]);
+        let approvedTeams = [];
+        try {
+          const regs = await dataService.fetchTournamentRegistrations(tournamentId);
+          approvedTeams = (regs?.teams || []).filter((t) => t.status === 'approved');
+          if (isMounted) setIsOrganiser(!!regs?.is_organiser);
+        } catch {
+          approvedTeams = [];
+        }
 
         if (isMounted) {
           setAllTournaments(trnList || []);
           setTournament(targetTrn);
           setMatches(trnMatches || []);
-          setTeams(allTeams || []);
+          setTeams(approvedTeams);
         }
       } catch (err) {
         if (isMounted) {
@@ -527,230 +537,17 @@ export function TournamentDetailsView(props) {
         </div>
       )}
 
-      {/* TAB 2: PARTICIPATING CLUBS & TEAMS */}
+      {/* TAB 2: TEAMS — registration (#40) and approval (#41) */}
       {activeTab === 'teams' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.5rem' }}>
-            <div>
-              <h2 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: 'var(--color-text-main)' }}>
-                Rostered Participating Teams
-              </h2>
-              <p style={{ color: 'var(--color-text-muted)', fontSize: '0.82rem', margin: '0.2rem 0 0 0' }}>
-                Teams verified for {tournament.name} ({teams.length} clubs entered of {tournament.teams_count} quota)
-              </p>
-            </div>
-            <Badge variant="primary">{teams.length} / {tournament.teams_count} Teams</Badge>
-          </div>
-
-          <div style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-            gap: '1rem'
-          }}>
-            {teams.map((tm) => (
-              <Card
-                key={tm.id}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: '0.75rem',
-                  borderLeft: '4px solid ' + (tm.id === 'tm-01' ? '#DC2626' : tm.id === 'tm-02' ? '#2563EB' : tm.id === 'tm-03' ? '#059669' : '#D97706')
-                }}
-              >
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{
-                    fontSize: '0.75rem',
-                    fontWeight: 700,
-                    fontFamily: 'monospace',
-                    color: 'var(--color-primary-dark)',
-                    backgroundColor: 'var(--color-primary-light)',
-                    padding: '0.15rem 0.45rem',
-                    borderRadius: 'var(--radius-sm)'
-                  }}>
-                    {tm.short_code}
-                  </span>
-                  <Badge variant="primary">Verified Entry</Badge>
-                </div>
-
-                <div>
-                  <h3 style={{ fontSize: '1.05rem', fontWeight: 700, color: 'var(--color-text-main)', margin: '0 0 0.2rem 0' }}>
-                    {tm.name}
-                  </h3>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-                    Captain: <strong>{tm.captain}</strong>
-                  </div>
-                </div>
-
-                <div style={{
-                  fontSize: '0.78rem',
-                  color: 'var(--color-text-muted)',
-                  borderTop: '1px solid var(--color-border)',
-                  paddingTop: '0.5rem',
-                  display: 'flex',
-                  justifyContent: 'space-between'
-                }}>
-                  <span>Home: {tm.home_ground}</span>
-                  <span>{tm.titles} {tm.titles === 1 ? 'Title' : 'Titles'}</span>
-                </div>
-              </Card>
-            ))}
-          </div>
-        </div>
+        <TeamRegistrationPanel
+          tournament={tournament}
+          onChanged={(regs) => setTeams((regs?.teams || []).filter((t) => t.status === 'approved'))}
+        />
       )}
 
-      {/* TAB 3: FIXTURES & MATCH SCHEDULE */}
+      {/* TAB 3: FIXTURES, SCHEDULE & CALENDAR (#42–#52) */}
       {activeTab === 'fixtures' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          {/* Filter Bar */}
-          <div style={{
-            display: 'flex',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            gap: '0.75rem',
-            padding: '0.85rem 1rem',
-            backgroundColor: '#FFFFFF',
-            borderRadius: 'var(--radius-md)',
-            border: '1px solid var(--color-border)'
-          }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Filter size={15} color="var(--color-text-muted)" />
-              <span style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--color-text-main)' }}>
-                Filter Matches:
-              </span>
-            </div>
-
-            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-              {['all', 'live', 'upcoming', 'completed'].map((f) => (
-                <button
-                  key={f}
-                  type="button"
-                  onClick={() => setMatchFilter(f)}
-                  style={{
-                    padding: '0.35rem 0.85rem',
-                    borderRadius: 'var(--radius-sm)',
-                    fontSize: '0.78rem',
-                    fontWeight: 700,
-                    textTransform: 'capitalize',
-                    border: '1px solid ' + (matchFilter === f ? 'var(--color-primary)' : 'var(--color-border)'),
-                    backgroundColor: matchFilter === f ? 'var(--color-primary)' : '#FFFFFF',
-                    color: matchFilter === f ? '#FFFFFF' : 'var(--color-text-muted)',
-                    cursor: 'pointer'
-                  }}
-                >
-                  {f} {f === 'all' ? '(' + matches.length + ')' : ''}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Matches List */}
-          {filteredMatches.length === 0 ? (
-            <div style={{
-              padding: '2.5rem 1.5rem',
-              textAlign: 'center',
-              backgroundColor: '#FFFFFF',
-              borderRadius: 'var(--radius-md)',
-              border: '1px solid var(--color-border)',
-              color: 'var(--color-text-muted)'
-            }}>
-              <Calendar size={32} style={{ margin: '0 auto 0.75rem auto', color: 'var(--color-text-muted)' }} />
-              <h3 style={{ fontSize: '1rem', fontWeight: 700, margin: '0 0 0.25rem 0', color: 'var(--color-text-main)' }}>
-                No Fixtures in this Filter
-              </h3>
-              <p style={{ fontSize: '0.82rem', margin: 0 }}>
-                No matches currently match the selected status for {tournament.name}.
-              </p>
-            </div>
-          ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              {filteredMatches.map((m) => {
-                const isLive = m.status === 'live';
-                const isCompleted = m.status === 'completed';
-                return (
-                  <Card
-                    key={m.id}
-                    style={{
-                      borderLeft: '4px solid ' + (isLive ? '#DC2626' : isCompleted ? '#059669' : '#2563EB')
-                    }}
-                  >
-                    <div style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      flexWrap: 'wrap',
-                      gap: '0.5rem',
-                      marginBottom: '0.65rem'
-                    }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <Badge variant={isLive ? 'live' : isCompleted ? 'primary' : 'upcoming'}>
-                          {m.status.toUpperCase()}
-                        </Badge>
-                        <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--color-text-main)' }}>
-                          {m.stage}
-                        </span>
-                      </div>
-                      <span style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
-                        {m.match_date} • {m.match_time} • {m.venue}
-                      </span>
-                    </div>
-
-                    {/* Team Matchup details */}
-                    {isLive && m.batting_first_team && m.bowling_team && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-                        <div>
-                          <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-main)' }}>
-                            {m.batting_first_team.name} ({m.batting_first_team.short_code})
-                          </div>
-                          <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-                            vs {m.bowling_team.name} ({m.bowling_team.short_code})
-                          </div>
-                        </div>
-                        <div style={{ textAlign: 'right' }}>
-                          <span style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--color-primary-dark)' }}>
-                            {m.batting_first_team.score}/{m.batting_first_team.wickets}
-                          </span>
-                          <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', marginLeft: '0.35rem' }}>
-                            ({m.batting_first_team.overs} ov)
-                          </span>
-                        </div>
-                      </div>
-                    )}
-
-                    {isCompleted && m.team_a && m.team_b && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-                        <div>
-                          <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-main)' }}>
-                            {m.team_a.name} ({m.team_a.score}/{m.team_a.wickets}) vs {m.team_b.name} ({m.team_b.score}/{m.team_b.wickets})
-                          </div>
-                          <div style={{ fontSize: '0.8rem', color: '#047857', fontWeight: 600, marginTop: '0.2rem' }}>
-                            {m.result}
-                          </div>
-                        </div>
-                        {m.player_of_match && (
-                          <div style={{ fontSize: '0.78rem', color: 'var(--color-text-muted)' }}>
-                            Player of Match: <strong>{m.player_of_match}</strong>
-                          </div>
-                        )}
-                      </div>
-                    )}
-
-                    {!isLive && !isCompleted && m.team_a && m.team_b && (
-                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
-                        <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--color-text-main)' }}>
-                          {m.team_a.name} vs {m.team_b.name}
-                        </div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)' }}>
-                          {m.toss_summary}
-                        </div>
-                      </div>
-                    )}
-                  </Card>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        <FixturesPanel tournament={tournament} isOrganiser={isOrganiser} onChanged={(m) => setMatches(m)} />
       )}
     </div>
   );
