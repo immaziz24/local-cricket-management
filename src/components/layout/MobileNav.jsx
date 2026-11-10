@@ -13,6 +13,7 @@ import {
   KeyRound,
   ShieldCheck,
   PlusCircle,
+  BarChart3,
   Users
 } from 'lucide-react';
 
@@ -34,6 +35,7 @@ export function MobileNav(props) {
     { id: 'password-recovery', label: 'Password Recovery', icon: KeyRound, tag: '#256' },
     { id: 'teams', label: 'My Teams', icon: Users, tag: 'New' },
     { id: 'matches', label: 'Matches', icon: Activity, badge: liveMatchCount > 0 ? `${liveMatchCount} Live` : null },
+    { id: 'stats', label: 'Statistics', icon: BarChart3 },
     { id: 'tournaments', label: 'Tournaments', icon: Trophy, count: '4' },
     { id: 'create-tournament', label: 'Create Tournament', icon: PlusCircle, tag: '#31' },
     { id: 'penalties', label: 'Late Arrival Rules', icon: ShieldAlert, tag: 'Cat Q' }

@@ -3,7 +3,8 @@ import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
-import { Trophy, Medal, GitBranch, Settings2, AlertCircle, CheckCircle, BarChart3 } from 'lucide-react';
+import { Trophy, Medal, GitBranch, Settings2, AlertCircle, CheckCircle } from 'lucide-react';
+import { LeaderboardsPanel } from '../stats/LeaderboardsPanel.jsx';
 import { scheduleFixtures } from './fixtureGenerator.js';
 import { scoreLine } from './MatchResultForm.jsx';
 
@@ -134,7 +135,7 @@ function Notice({ msg }) {
   );
 }
 
-export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged }) {
+export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, onNavigate }) {
   const [table, setTable] = useState([]);
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState([]);
@@ -349,12 +350,8 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged })
         </Card>
       )}
 
-      {/* #57 needs player stats from ball-by-ball scoring */}
-      <Card title="Leaderboards">
-        <p style={{ margin: 0, fontSize: '0.82rem', color: '#64748b', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
-          <BarChart3 size={15} /> Top run-scorers and wicket-takers appear here once ball-by-ball scoring (Phase 3) is live.
-        </p>
-      </Card>
+      {/* #57 / #102 Tournament leaderboards */}
+      <LeaderboardsPanel tournamentId={tournament.id} onNavigate={onNavigate} title="Leaderboards & tournament statistics" />
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { ArrowLeft, Search, UserPlus, UserMinus, Crown, Star, Shield, AlertCircl
 import { ROLE_OPTIONS, BATTING_OPTIONS, BOWLING_OPTIONS, labelOf } from './playerOptions.js';
 import { Avatar } from './Avatar.jsx';
 import { TransfersPanel } from './TransfersPanel.jsx';
+import { TeamStatsCard } from '../stats/TeamStatsCard.jsx';
 
 /**
  * Phase 2 – Team page
@@ -344,6 +345,9 @@ export function TeamDetailView({ teamId, onNavigate }) {
           </Card>
         </>
       )}
+
+      {/* #99 Team record */}
+      <TeamStatsCard teamId={teamId} onNavigate={onNavigate} />
 
       {/* Player transfers (#75) */}
       {team.i_own && <TransfersPanel team={team} onChanged={load} />}

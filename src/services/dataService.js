@@ -530,6 +530,48 @@ export const dataService = {
     try { return supabaseClient.subscribeToMatch(matchId, onChange); } catch { return () => {}; }
   },
 
+  async fetchPlayerStats(playerId) {
+    requireDatabase();
+    const res = await supabaseClient.getPlayerStats(playerId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchLeaderboards(tournamentId, limit) {
+    requireDatabase();
+    const res = await supabaseClient.getLeaderboards(tournamentId, limit);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchTeamStats(teamId, vsTeamId) {
+    requireDatabase();
+    const res = await supabaseClient.getTeamStats(teamId, vsTeamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchMatchAnalysis(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getMatchAnalysis(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setPlayerOfMatch(matchId, playerId) {
+    requireDatabase();
+    const res = await supabaseClient.setPlayerOfMatch(matchId, playerId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async searchPlayers(query) {
+    requireDatabase();
+    const res = await supabaseClient.searchPlayers(query);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCommentary(matchId) {
     requireDatabase();
     const res = await supabaseClient.getCommentary(matchId);

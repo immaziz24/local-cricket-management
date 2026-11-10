@@ -14,6 +14,7 @@
 | Super-Admin | 🟩 #257 dashboard on real data; owner's account has the **super_admin** role. |
 | Admin | 🟨 #258 Admin dashboard connected (members, sign-ups, verification/report queues). Awaiting owner check. |
 | Phase 2: tournaments | 🟨 #31–56, #58: double elimination; logo and banner; result entry, points table, NRR, qualification, knockout bracket, winner;  groups, formats, automatic/manual fixtures, scheduling, rescheduling, calendar; and create tournament (creator = Organiser), details, team registration + organiser approval/rejection with notifications. Awaiting owner check. |
+| Phase 3: statistics | 🟩 #79–102 + #57, #77, #78: everything worked out from scored balls. Statistics page (site leaderboards, compare players, compare teams + head-to-head), career stats/awards/form chart on player profile, team record on team page, Analysis tab in each match (worm, runs per over, partnerships, Player of the Match – automatic, scorer can change), leaderboards in tournament Points Table tab. |
 | Phase 2: players & teams | 🟨 #59–76: playing XI, substitutes and in-match replacements per match, player transfers between teams (#72–75); player ID, photo, DOB/age, contact privacy, team logo, team history, public player profile (#60–62, #66, #67, #69, #76) added on top of My Teams page, create team, add players by mobile number (or by name if not registered — they claim it later by registering with that number), captain / vice-captain / icon player. Awaiting owner check. |
 | Security & operations | 🟨 #267 audit log, #268 backup download, #269 privacy + my-data download + sign out everywhere, #270 notification inbox + send-to-all. Awaiting owner check. |
 | Reports & suspension | 🟨 #266 report a member, admin suspend/lift, notifications, audit log. Awaiting owner check. |
@@ -37,6 +38,8 @@
 | `20261106105506_phase1_user_management_foundation.sql` | Phase 1 tables, row-level security, profile trigger |
 | `20261106105529_phase1_security_and_fk_index_hardening.sql` | Indexes and deny-rules for audit logs and templates |
 | `20261110050000_phase1_profile_mobile_number.sql` | Saves name and unique mobile number on sign-up |
+| `20261110230100_fix_player_profile_unregistered.sql` | Player profile works for players added by name only (no account) |
+| `20261110230000_phase3_statistics.sql` | player_match_stats, get_player_stats, get_leaderboards, get_team_stats, get_match_analysis, search_players; Player of the Match (auto trigger + set_player_of_match) |
 | `20261110220000_phase3_offline_sync.sql` | balls.client_id (unique) so re-sent offline balls are recorded once |
 | `20261110210000_phase3_pause_share_history.sql` | pause/resume, auto-resume trigger, match history, Realtime publication for matches/innings/balls |
 | `20261110200000_phase3_commentary_minutes.sql` | innings_crease (minutes batted), get_commentary, partnership + yet-to-bat in live state, lineup locked after start |
@@ -69,10 +72,12 @@
 ## 4. Next steps (in order)
 
 1. **Owner check of #265** (Category N → User Governance → Verification): request a badge, approve it. Push to GitHub (today's work is not on GitHub yet).
-2. **Phase 3 started:** #1–6 done (start a match, teams, Playing XI, substitutes, toss). **Category A (live scoring #1–30) complete.** **Next: Category D statistics (#79–102)** – career runs, averages, strike rates, wickets, economy, best figures, Player of the Match, comparisons, charts; also finishes Phase 2 #57, #77, #78. #57 leaderboards waits for Phase 3 scoring.
+2. **Phase 3:** Category A (live scoring #1–30) complete. **Category D statistics (#79–102) complete** on the real database, together with Phase 2 #57, #77, #78 (Statistics page, player profile stats, team record, match Analysis tab, tournament leaderboards, automatic Player of the Match). **Next: Category E laws (#103–…) and Category L calculators.**
 3. **Phase 2** in number order: #31 Create a tournament (connect to database), #32 Tournament name and branding, #33, …
 
 ## 5. Known issues
+
+- **Live test site:** https://localcricket.plateria.in (Hostinger, built from GitHub `main`; every push re-deploys automatically). Build settings: Node 22, Vite, `npm run build`, output `dist`. Hostinger holds VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY as build variables. Supabase Auth → URL Configuration must list this address for sign-up / password-reset links.
 
 - Offline scoring: the page itself opens offline only on the published site (service worker is off while developing). End innings / abandon / undo of uploaded balls need internet.
 
@@ -103,6 +108,8 @@
 | :--- | :--- | :--- |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
+| 2026-11-10 | Claude | Category D statistics #79–102 + #57, #77, #78 (Statistics page, MVP points, Player of the Match, comparisons, charts, match analysis). Fixed player profile error for players without an account |
+| 2026-11-10 | Claude | Deployed to https://localcricket.plateria.in via Hostinger Git auto-deploy (owner connected GitHub) |
 | 2026-11-10 | Claude | Offline scoring + auto sync (#26–27); live tab shows full batter/bowler tables; fixed a stale-file copy to the laptop |
 | 2026-11-10 | Claude | Pause/resume, continue scoring, share link (?match=), Realtime live updates (tested), History tab (#24, #25, #28–30) |
 | 2026-11-10 | Claude | Commentary tab, scorecard M (minutes) column, partnership, yet to bat, match summary; owner scored a real match |

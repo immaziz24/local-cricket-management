@@ -905,6 +905,42 @@ export const supabaseClient = {
     return () => { clearTimeout(timer); supabase.removeChannel(channel); };
   },
 
+  async getPlayerStats(playerId) {
+    const { data, error } = await supabase.rpc('get_player_stats', { p_player_id: playerId });
+    if (error) return { data: null, error: friendlyError(error, 'statistics') };
+    return { data, error: null };
+  },
+
+  async getLeaderboards(tournamentId, limit = 10) {
+    const { data, error } = await supabase.rpc('get_leaderboards', { p_tournament_id: tournamentId || null, p_limit: limit });
+    if (error) return { data: null, error: friendlyError(error, 'leaderboards') };
+    return { data, error: null };
+  },
+
+  async getTeamStats(teamId, vsTeamId) {
+    const { data, error } = await supabase.rpc('get_team_stats', { p_team_id: teamId, p_vs_team_id: vsTeamId || null });
+    if (error) return { data: null, error: friendlyError(error, 'team statistics') };
+    return { data, error: null };
+  },
+
+  async getMatchAnalysis(matchId) {
+    const { data, error } = await supabase.rpc('get_match_analysis', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'match analysis') };
+    return { data, error: null };
+  },
+
+  async setPlayerOfMatch(matchId, playerId) {
+    const { data, error } = await supabase.rpc('set_player_of_match', { p_match_id: matchId, p_player_id: playerId || null });
+    if (error) return { data: null, error: friendlyError(error, 'Player of the Match') };
+    return { data, error: null };
+  },
+
+  async searchPlayers(query) {
+    const { data, error } = await supabase.rpc('search_players', { p_query: query });
+    if (error) return { data: null, error: friendlyError(error, 'player search') };
+    return { data, error: null };
+  },
+
   async getCommentary(matchId) {
     const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'commentary') };

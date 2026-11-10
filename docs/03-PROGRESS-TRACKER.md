@@ -17,11 +17,13 @@
 | Status | Features |
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
-| 🟩 Working (real database) | 12 / 310 |
+| 🟩 Working (real database) | 39 / 310 |
 | 🟨 Built / connected, awaiting check | 80 / 310 |
-| ⬜ Not started | 218 / 310 |
+| ⬜ Not started | 191 / 310 |
 
-**Honest summary (2026-11-10, Phase 2):** Phase 1 done (17 connected). Phase 2: 45 of 48 built; #57, #77, #78 wait for Phase 3 ball-by-ball scoring.
+**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Next: Category E laws and Category L calculators.
+
+**Phase 2 summary:** 45 of 48 built; #57, #77, #78 waited for ball-by-ball scoring.
 
 **Phase 1 summary:** all 17 Phase 1 features are connected to the real database; #254, #255, #257 checked by owner, the rest await a quick owner check.
 
@@ -32,8 +34,8 @@
 | Phase | Categories | Total | ⬜ | 🟨 | 🟩 | ✅ |
 | :---: | :--- | :---: | :---: | :---: | :---: | :---: |
 | 1 | N | 17 | 0 | 14 | 3 | 0 |
-| 2 | B, C | 48 | 3 | 36 | 9 | 0 |
-| 3 | A, D, E, L | 103 | 73 | 30 | 0 | 0 |
+| 2 | B, C | 48 | 0 | 36 | 12 | 0 |
+| 3 | A, D, E, L | 103 | 49 | 30 | 24 | 0 |
 | 4 | F, G, Q | 37 | 37 | 0 | 0 | 0 |
 | 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
@@ -107,7 +109,7 @@
 | 54 | Net Run Rate calculation | 🟨 | **connected 2026-11-10** – NRR from entered scores; bowled-out team counts full overs; walkovers/no-results left out; tested (+0.500/−0.500). Awaiting owner check |
 | 55 | Qualification management | 🟨 | **connected 2026-11-10** – top N per group marked Q (N set by organiser); ties broken by points, NRR, wins. Awaiting owner check |
 | 56 | Knockout brackets | 🟨 | **connected 2026-11-10** – bracket view by round; "Create next round" seeds from the table (A1 v B2, 1 v 4) or pairs winners, byes for odd numbers. Awaiting owner check |
-| 57 | Tournament leaderboards | ⬜ | Waits for Phase 3 ball-by-ball scoring (player runs/wickets); placeholder card shown |
+| 57 | Tournament leaderboards | 🟩 | **connected 2026-11-10** – Points Table tab: leaderboards (runs, wickets, MVP, highest scores, best bowling, sixes, SR, economy, fielding) from scored balls |
 | 58 | Tournament completion and winner declaration | 🟨 | **connected 2026-11-10** – Finish tournament: winner/runner-up (filled from the final), all matches must be done, teams notified, champion banner. Awaiting owner check |
 
 **Category C – Player and team management**
@@ -132,8 +134,8 @@
 | 74 | Player replacements | 🟨 | **connected 2026-11-10** – in a match, swap a playing player for a substitute or squad player with a reason (injury, concussion, illness); other team notified; shown in team history. Tested in DB. Awaiting owner check |
 | 75 | Player transfers | 🟨 | **connected 2026-11-10** – team page → Player transfers: ask another team for a player; that team's owner accepts (player moves) or declines with a reason; requests can be withdrawn; completed transfers in team history. Tested in DB. Awaiting owner check |
 | 76 | Team history | 🟩 | **connected 2026-11-10** – team page timeline: created, joined/left, leadership, logo changes. Owner checked 2026-11-10 |
-| 77 | Player career statistics | ⬜ | Waiting: needs scored matches — Phase 3 |
-| 78 | Player awards and achievements | ⬜ | Waiting: needs matches/tournaments — Phase 3 |
+| 77 | Player career statistics | 🟩 | **connected 2026-11-10** – player profile: career batting/bowling/fielding + match-by-match list |
+| 78 | Player awards and achievements | 🟩 | **connected 2026-11-10** – player profile: Player of the Match, titles, 50s/100s, 3w/5w hauls |
 
 ### Phase 3 – Cricket Scoring and Intelligence Engine
 
@@ -176,30 +178,30 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 79 | Total runs | ⬜ |  |
-| 80 | Batting average | ⬜ |  |
-| 81 | Batting strike rate | ⬜ |  |
-| 82 | Fours and sixes | ⬜ |  |
-| 83 | Highest individual score | ⬜ |  |
-| 84 | Half-centuries | ⬜ |  |
-| 85 | Centuries | ⬜ |  |
-| 86 | Bowling wickets | ⬜ |  |
-| 87 | Bowling average | ⬜ |  |
-| 88 | Bowling economy | ⬜ |  |
-| 89 | Bowling strike rate | ⬜ |  |
-| 90 | Best bowling figures | ⬜ |  |
-| 91 | Maiden overs | ⬜ |  |
-| 92 | Dot balls | ⬜ |  |
-| 93 | Catches | ⬜ |  |
-| 94 | Run-outs | ⬜ |  |
-| 95 | Stumpings | ⬜ |  |
-| 96 | Player of the Match | ⬜ |  |
-| 97 | Most Valuable Player | ⬜ |  |
-| 98 | Player comparison | ⬜ |  |
-| 99 | Team comparison | ⬜ |  |
-| 100 | Performance charts | ⬜ |  |
-| 101 | Match analysis | ⬜ |  |
-| 102 | Tournament statistics and leaderboards | ⬜ |  |
+| 79 | Total runs | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 80 | Batting average | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 81 | Batting strike rate | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 82 | Fours and sixes | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 83 | Highest individual score | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 84 | Half-centuries | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 85 | Centuries | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 86 | Bowling wickets | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 87 | Bowling average | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 88 | Bowling economy | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 89 | Bowling strike rate | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 90 | Best bowling figures | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 91 | Maiden overs | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 92 | Dot balls | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 93 | Catches | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 94 | Run-outs | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 95 | Stumpings | 🟩 | **connected 2026-11-10** – worked out from scored balls (player profile, Statistics page, leaderboards) |
+| 96 | Player of the Match | 🟩 | **connected 2026-11-10** – picked automatically (most MVP points) when a match finishes; scorer can change it (Analysis tab) |
+| 97 | Most Valuable Player | 🟩 | **connected 2026-11-10** – MVP points system; MVP leaderboard |
+| 98 | Player comparison | 🟩 | **connected 2026-11-10** – Statistics page: compare two players side by side |
+| 99 | Team comparison | 🟩 | **connected 2026-11-10** – Statistics page: compare two teams + head-to-head; team record card on team page |
+| 100 | Performance charts | 🟩 | **connected 2026-11-10** – form bar chart (profile), runs-per-over and worm charts (match Analysis tab) |
+| 101 | Match analysis | 🟩 | **connected 2026-11-10** – match Analysis tab: runs per over, worm, partnerships, boundaries, top performers |
+| 102 | Tournament statistics and leaderboards | 🟩 | **connected 2026-11-10** – tournament leaderboards + totals; whole-site leaderboards on Statistics page |
 
 **Category E – Cricket laws, playing conditions and rules**
 

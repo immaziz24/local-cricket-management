@@ -13,7 +13,8 @@ import {
   LogIn,
   KeyRound,
   ShieldCheck,
-  PlusCircle
+  PlusCircle,
+  BarChart3
 } from 'lucide-react';
 
 export function Sidebar(props) {
@@ -26,6 +27,7 @@ export function Sidebar(props) {
     { id: 'password-recovery', label: 'Password Recovery', icon: KeyRound, tag: '#256' },
     { id: 'teams', label: 'My Teams', icon: Users, tag: 'New' },
     { id: 'matches', label: 'Matches', icon: Activity, badge: liveMatchCount > 0 ? `${liveMatchCount} Live` : null },
+    { id: 'stats', label: 'Statistics', icon: BarChart3 },
     { id: 'tournaments', label: 'Tournaments', icon: Trophy },
     { id: 'create-tournament', label: 'Create Tournament', icon: PlusCircle, tag: '#31' },
     { id: 'penalties', label: 'Late Arrival Rules', icon: ShieldAlert, tag: 'Cat Q' }

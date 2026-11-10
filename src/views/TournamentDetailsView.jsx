@@ -497,6 +497,7 @@ export function TournamentDetailsView(props) {
         <StandingsPanel
           tournament={tournament}
           isOrganiser={isOrganiser}
+          onNavigate={onNavigate}
           onTournamentChanged={async () => {
             const fresh = await dataService.fetchTournamentById(tournament.id);
             setTournament(fresh);

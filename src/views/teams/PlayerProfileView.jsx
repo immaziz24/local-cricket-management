@@ -6,6 +6,7 @@ import { dataService } from '../../services/dataService.js';
 import { ArrowLeft, Lock, Phone, Mail, ShieldCheck, AlertCircle } from 'lucide-react';
 import { ROLE_OPTIONS, BATTING_OPTIONS, BOWLING_OPTIONS, labelOf } from './playerOptions.js';
 import { Avatar } from './Avatar.jsx';
+import { PlayerStatsPanel } from '../stats/PlayerStatsPanel.jsx';
 
 /**
  * #60 Player profile (public view)
@@ -131,6 +132,9 @@ export function PlayerProfileView({ playerId, onNavigate }) {
           </div>
         )}
       </Card>
+
+      {/* #77 career statistics, #78 awards, Category D */}
+      <PlayerStatsPanel playerId={playerId} onNavigate={onNavigate} />
     </div>
   );
 }
