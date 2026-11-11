@@ -1013,6 +1013,49 @@ export const dataService = {
     return res.data;
   },
 
+  // Category I: media (#177–#188)
+  async addMedia(p) {
+    requireDatabase();
+    const res = await supabaseClient.addMedia(p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async updateMedia(mediaId, p) {
+    requireDatabase();
+    const res = await supabaseClient.updateMedia(mediaId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async deleteMedia(item) {
+    requireDatabase();
+    const res = await supabaseClient.deleteMedia(item);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listMedia(scope, scopeId, kind = null) {
+    requireDatabase();
+    const res = await supabaseClient.listMedia(scope, scopeId, kind);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async mediaFeed(p = {}) {
+    requireDatabase();
+    const res = await supabaseClient.mediaFeed(p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async uploadMedia(upload) {
+    requireDatabase();
+    const res = await supabaseClient.uploadMedia(upload);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCommentary(matchId) {
     requireDatabase();
     const res = await supabaseClient.getCommentary(matchId);

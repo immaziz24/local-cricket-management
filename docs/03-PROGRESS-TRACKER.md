@@ -17,11 +17,11 @@
 | Status | Features |
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
-| 🟩 Working (real database) | 142 / 310 |
-| 🟨 Built / connected, awaiting check | 80 / 310 |
-| ⬜ Not started | 88 / 310 |
+| 🟩 Working (real database) | 152 / 310 |
+| 🟨 Built / connected, awaiting check | 82 / 310 |
+| ⬜ Not started | 76 / 310 |
 
-**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5 started: Category H community & marketplace (17) connected.** Next: Category I – live streaming and media.
+**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5: Category H community & marketplace (17) and Category I live streaming & media (12) connected.** Next: Category J – branding, sponsorship and promotion.
 
 **Phase 2 summary:** 45 of 48 built; #57, #77, #78 waited for ball-by-ball scoring.
 
@@ -37,7 +37,7 @@
 | 2 | B, C | 48 | 0 | 36 | 12 | 0 |
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
 | 4 | F, G, Q | 37 | 0 | 0 | 37 | 0 |
-| 5 | H, I, J, K | 56 | 39 | 0 | 17 | 0 |
+| 5 | H, I, J, K | 56 | 27 | 2 | 27 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
 
 ## 4. Supporting screens (not numbered features)
@@ -344,18 +344,18 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 177 | Mobile live streaming | ⬜ |  |
-| 178 | YouTube live streaming integration | ⬜ |  |
-| 179 | Live score overlays | ⬜ |  |
-| 180 | Match highlights | ⬜ |  |
-| 181 | Match video uploads | ⬜ |  |
-| 182 | Player video profiles | ⬜ |  |
-| 183 | Tournament photo galleries | ⬜ |  |
-| 184 | Match photo galleries | ⬜ |  |
-| 185 | Promotional video creation | ⬜ |  |
-| 186 | Tournament posters | ⬜ |  |
-| 187 | Shareable scorecards and player cards | ⬜ |  |
-| 188 | Shareable match results | ⬜ |  |
+| 177 | Mobile live streaming | 🟨 | **built 2026-11-11, switched off by owner: "coming soon"** – only Admin/Super-Admin can add a stream until it is switched on. Match → Video & media: add a YouTube/Facebook live link streamed from a phone; plays on the match page and Live & Media page; team owners notified; step-by-step phone guide. The website does not encode video itself. Tested in DB |
+| 178 | YouTube live streaming integration | 🟨 | **built 2026-11-11, switched off by owner: "coming soon"** – only Admin/Super-Admin can add a stream until it is switched on. YouTube live/replay links embedded in the match page (link-based; no YouTube account connection). Tested in DB |
+| 179 | Live score overlays | 🟩 | **connected 2026-11-11** – Transparent score overlay page (?overlay=<match>, bar or corner box) refreshing every 5 s for Larix / Prism / StreamYard / OBS. Tested in DB |
+| 180 | Match highlights | 🟩 | **connected 2026-11-11** – Automatic key moments from ball-by-ball (wickets, 4s, 6s, 50s, 100s, 3/5-wicket hauls) + highlight clips with over. Tested in DB |
+| 181 | Match video uploads | 🟩 | **connected 2026-11-11** – Match videos: upload short clips (max 20 MB, 10 per person) or YouTube/Facebook/Instagram links; hide/delete. Tested in DB |
+| 182 | Player video profiles | 🟩 | **connected 2026-11-11** – Player profile → Video profile (player or their team owner adds clips). Tested in DB |
+| 183 | Tournament photo galleries | 🟩 | **connected 2026-11-11** – Tournament → Photos & Media: photo gallery (organiser + owners of approved teams), auto-shrunk uploads, lightbox. Tested in DB |
+| 184 | Match photo galleries | 🟩 | **connected 2026-11-11** – Match → Video & media: match photo gallery (organiser, officials, team owners, players). Tested in DB |
+| 185 | Promotional video creation | 🟩 | **connected 2026-11-11** – Tournament → 12-second vertical promo video recorded in the browser; share, download or save to tournament. Tested in DB |
+| 186 | Tournament posters | 🟩 | **connected 2026-11-11** – Tournament poster picture from tournament details, 5 colour themes; share / download / WhatsApp text. Tested in DB |
+| 187 | Shareable scorecards and player cards | 🟩 | **connected 2026-11-11** – Scorecard picture (match) and player card picture (player profile). Tested in DB |
+| 188 | Shareable match results | 🟩 | **connected 2026-11-11** – Result card picture with scores, winner, top batters/bowlers, Player of the Match; WhatsApp text + link. Tested in DB |
 
 **Category J – Branding, sponsorship and promotion**
 

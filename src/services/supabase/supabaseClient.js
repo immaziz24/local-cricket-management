@@ -1327,6 +1327,67 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  // ---------- Category I: media (#177–#188) ----------
+  async addMedia(p) {
+    const { data, error } = await supabase.rpc('add_media', { p });
+    if (error) return { data: null, error: friendlyError(error, 'media') };
+    return { data, error: null };
+  },
+
+  async updateMedia(mediaId, p) {
+    const { data, error } = await supabase.rpc('update_media', { p_media_id: mediaId, p });
+    if (error) return { data: null, error: friendlyError(error, 'media') };
+    return { data, error: null };
+  },
+
+  async deleteMedia(item) {
+    const m = (item.url || '').match(/\/storage\/v1\/object\/public\/(media|videos)\/(.+)$/);
+    if (m) await supabase.storage.from(m[1]).remove([decodeURIComponent(m[2])]);
+    const { data, error } = await supabase.rpc('delete_media', { p_media_id: item.id });
+    if (error) return { data: null, error: friendlyError(error, 'media') };
+    return { data, error: null };
+  },
+
+  async listMedia(scope, scopeId, kind = null) {
+    const { data, error } = await supabase.rpc('list_media', { p_scope: scope, p_scope_id: scopeId, p_kind: kind });
+    if (error) return { data: null, error: friendlyError(error, 'media') };
+    return { data, error: null };
+  },
+
+  async mediaFeed(p = {}) {
+    const { data, error } = await supabase.rpc('media_feed', { p });
+    if (error) return { data: null, error: friendlyError(error, 'media') };
+    return { data, error: null };
+  },
+
+  // Creates the media row, uploads the file into its own folder, then records the file address.
+  async uploadMedia({ scope, scopeId, kind, title, caption, moment, file }) {
+    if (!file) return { data: null, error: 'Choose a file first.' };
+    const isPhoto = kind === 'photo';
+    if (isPhoto) {
+      if (!['image/jpeg', 'image/png', 'image/webp'].includes(file.type)) return { data: null, error: 'Please choose a JPG, PNG or WEBP photo.' };
+      if (file.size > 2 * 1024 * 1024) return { data: null, error: 'The photo must be smaller than 2 MB.' };
+    } else {
+      if (!['video/mp4', 'video/webm', 'video/quicktime'].includes(file.type)) return { data: null, error: 'Please choose an MP4, WEBM or MOV video.' };
+      if (file.size > 20 * 1024 * 1024) return { data: null, error: 'Videos must be smaller than 20 MB. For longer videos upload to YouTube and paste the link.' };
+    }
+    const made = await this.addMedia({ scope, scope_id: scopeId, kind, source: 'upload', title, caption, moment });
+    if (made.error) return made;
+    const id = made.data.id;
+    const bucket = isPhoto ? 'media' : 'videos';
+    const ext = { 'image/png': 'png', 'image/webp': 'webp', 'image/jpeg': 'jpg', 'video/mp4': 'mp4', 'video/webm': 'webm', 'video/quicktime': 'mov' }[file.type];
+    const path = `${isPhoto ? 'gallery' : 'clips'}/${id}/${Date.now()}.${ext}`;
+    const up = await supabase.storage.from(bucket).upload(path, file, { contentType: file.type, cacheControl: '86400' });
+    if (up.error) {
+      await supabase.rpc('delete_media', { p_media_id: id });
+      return { data: null, error: friendlyError(up.error, 'upload') };
+    }
+    const { data: pub } = supabase.storage.from(bucket).getPublicUrl(path);
+    const { data, error } = await supabase.rpc('set_media_file', { p_media_id: id, p_url: pub.publicUrl, p_bytes: file.size });
+    if (error) return { data: null, error: friendlyError(error, 'upload') };
+    return { data, error: null };
+  },
+
   async getCommentary(matchId) {
     const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'commentary') };

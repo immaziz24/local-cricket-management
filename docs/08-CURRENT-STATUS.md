@@ -22,6 +22,7 @@
 | Phase 4: grounds | 🟩 Grounds page (register, search by city/facility, my bookings, requests at my grounds). Ground page: profile, photos, map + directions, pitch, boundary, facilities, charges, weekly calendar with booking requests/confirm/block/paid, pitch-preparation records, inspections, match history + stats. Match page: link match to a ground. |
 | Phase 4: punctuality | 🟩 Match day tab: readiness checklist, team check-in, player attendance, automatic delay + proposed penalty, approve/reject/waive/appeal/fine. One method per match in Playing conditions (overs cut, fielding restriction, penalty runs) with rates, grace, approver, repeat threshold. Effects applied only after approval (overs cut on the late team's innings, runs to opponent, fielding banner for scorer). Team punctuality + player fines on team page; Late-arrival rules page rewritten with real data + calculator. |
 | Phase 5: community | 🟩 Community page (#160–176): directory of academies, coaching, shops, nets, clubs, commentators, organisers; marketplace to sell or rent kit; find teams/players/tournaments/grounds/officials; community board; private enquiries with replies. |
+| Phase 5: live & media | 🟩 (live streaming #177/#178 switched off by owner – "coming soon", admins only) Match → Video & media tab: YouTube/Facebook live stream link, score overlay for streaming apps, automatic highlights + clips, match photos/videos, result & scorecard pictures. Tournament → Photos & Media: gallery, poster, 12-s promo video. Player profile: video profile + player card. Live & Media page. Videos bucket: 20 MB per clip, 10 uploads per person (free plan has 1 GB storage). |
 | Phase 2: players & teams | 🟨 #59–76: playing XI, substitutes and in-match replacements per match, player transfers between teams (#72–75); player ID, photo, DOB/age, contact privacy, team logo, team history, public player profile (#60–62, #66, #67, #69, #76) added on top of My Teams page, create team, add players by mobile number (or by name if not registered — they claim it later by registering with that number), captain / vice-captain / icon player. Awaiting owner check. |
 | Security & operations | 🟨 #267 audit log, #268 backup download, #269 privacy + my-data download + sign out everywhere, #270 notification inbox + send-to-all. Awaiting owner check. |
 | Reports & suspension | 🟨 #266 report a member, admin suspend/lift, notifications, audit log. Awaiting owner check. |
@@ -45,6 +46,8 @@
 | `20261106105506_phase1_user_management_foundation.sql` | Phase 1 tables, row-level security, profile trigger |
 | `20261106105529_phase1_security_and_fk_index_hardening.sql` | Indexes and deny-rules for audit logs and templates |
 | `20261110050000_phase1_profile_mobile_number.sql` | Saves name and unique mobile number on sign-up |
+| `20261111110000_phase5_live_coming_soon.sql` | live streams admin-only ("coming soon"); list_media.can_stream admin-only |
+| `20261111100000_phase5_media.sql` | videos storage bucket (20 MB, mp4/webm/mov); media_items (match/tournament/player photos, videos, highlights, live streams); can_add/can_moderate_media; add/set_file/update/delete/list_media, media_feed; gallery/ and clips/ upload folders |
 | `20261111090000_phase5_community.sql` | directory_listings, market_items, community_posts, enquiries; listing/item/post/enquiry functions, list_organisers, community_search; media uploads for listings/ and items/ |
 | `20261111080000_phase4_punctuality.sql` | late-arrival keys in playing conditions; matches.late_effects; match_arrivals, match_attendance, late_penalties, team_player_fines; check-in / attendance / readiness / propose / decide / appeal / fines / team punctuality; overs-cut trigger; scorer fielding-restriction banner |
 | `20261111070000_phase4_grounds.sql` | grounds, ground_photos, ground_bookings, ground_pitch_logs, ground_inspections, matches.ground_id; ground/booking/calendar/log/inspection functions; media uploads for grounds/<id>/; get_match_centre adds ground_name + can_manage (applied as phase4_grounds + phase4_match_centre_ground) |
@@ -84,7 +87,7 @@
 
 ## 4. Next steps (in order)
 
-0. **Phase 5 next:** Category I – live streaming and media (#177–188). Category H community (#160–176) done 2026-11-11.
+0. **Phase 5 next:** Category J – branding, sponsorship and promotion (#189–199). Categories H (#160–176) and I (#177–188) done 2026-11-11.
 1. **Owner check of #265** (Category N → User Governance → Verification): request a badge, approve it. Push to GitHub (today's work is not on GitHub yet).
 2. **Phase 3:** Category A (live scoring #1–30) complete. **Category D statistics (#79–102) complete** on the real database, together with Phase 2 #57, #77, #78 (Statistics page, player profile stats, team record, match Analysis tab, tournament leaderboards, automatic Player of the Match). **Category E batch 1 – playing conditions (#105–112, #114, #118, #119, #129–134) complete; scoring follows them.** **Category E batch 2 complete** (laws reference, Super Over, follow-on, penalty runs, DLS helper, match reports). **Category L calculators (#216–232) built – Phase 3 complete.** **Phase 4 started – Category F officials (#135–146) complete.** **Category G grounds (#147–159) complete.** **Category Q (#299–310) complete – Phase 4 complete.** **Next: Phase 5** (community and media).
 3. **Phase 2** in number order: #31 Create a tournament (connect to database), #32 Tournament name and branding, #33, …
@@ -124,6 +127,7 @@
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |
 | 2026-11-11 | Claude | Phase 5 – Category H community & marketplace (17 features) |
+| 2026-11-11 | Claude | Phase 5 – Category I live streaming & media (12 features); owner set live streaming to "coming soon" |
 | 2026-11-11 | Claude | Phase 4 – Category G grounds (13 features): register, photos, map, pitch/boundary/facilities, booking + calendar + prices, pitch records, inspections, match history |
 | 2026-11-10 | Claude | Phase 4 – Category F officials (12 features): sign-up, search, invitations, scoring rights, availability, schedule, payments, ratings, disputes, history |
 | 2026-11-10 | Claude | Category L: Cricket Tools page (17 calculators/generators) – Phase 3 complete |

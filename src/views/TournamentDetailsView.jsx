@@ -9,7 +9,10 @@ import { FixturesPanel } from './tournaments/FixturesPanel.jsx';
 import { StandingsPanel } from './tournaments/StandingsPanel.jsx';
 import { PlayingConditionsPanel } from './rules/PlayingConditionsPanel.jsx';
 import { BannerStrip, TournamentLogo, BrandingControls } from './tournaments/TournamentBranding.jsx';
+import { MediaGallery } from './media/MediaGallery.jsx';
+import { TournamentPromoStudio } from './media/ShareStudio.jsx';
 import {
+  Camera,
   Trophy,
   Calendar,
   MapPin,
@@ -425,6 +428,27 @@ export function TournamentDetailsView(props) {
           <Trophy size={15} />
           <span>Points Table & Knockouts</span>
         </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('media')}
+          style={{
+            padding: '0.65rem 1.25rem',
+            fontSize: '0.88rem',
+            fontWeight: 700,
+            border: 'none',
+            borderBottom: activeTab === 'media' ? '3px solid var(--color-primary)' : '3px solid transparent',
+            backgroundColor: 'transparent',
+            color: activeTab === 'media' ? 'var(--color-primary-dark)' : 'var(--color-text-muted)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem'
+          }}
+        >
+          <Camera size={15} />
+          <span>Photos & Media</span>
+        </button>
       </div>
 
       {/* TAB 1: ABOUT & RULES */}
@@ -496,6 +520,14 @@ export function TournamentDetailsView(props) {
       {/* TAB 3: FIXTURES, SCHEDULE & CALENDAR (#42–#52) */}
       {activeTab === 'fixtures' && (
         <FixturesPanel tournament={tournament} isOrganiser={isOrganiser} onNavigate={onNavigate} onChanged={(m) => setMatches(m)} />
+      )}
+
+      {/* TAB 5: PHOTOS, VIDEOS, POSTER, PROMO VIDEO (#183, #185, #186) */}
+      {activeTab === 'media' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <MediaGallery scope="tournament" scopeId={tournament.id} kinds={['photo', 'video']} title="Tournament photos & videos" subtitle="Photo gallery (#183) – the organiser and owners of teams in this tournament can add" />
+          <TournamentPromoStudio tournament={tournament} />
+        </div>
       )}
 
       {/* TAB 4: POINTS TABLE, NRR, QUALIFICATION, KNOCKOUTS, WINNER (#53–#58) */}

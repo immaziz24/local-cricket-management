@@ -19,6 +19,7 @@ import {
   Wrench,
   Flag,
   Store,
+  Clapperboard,
 } from 'lucide-react';
 
 export function Sidebar(props) {
@@ -34,6 +35,7 @@ export function Sidebar(props) {
     { id: 'officials', label: 'Umpires & Scorers', icon: Flag },
     { id: 'grounds', label: 'Grounds', icon: MapPin },
     { id: 'community', label: 'Community', icon: Store },
+    { id: 'media', label: 'Live & Media', icon: Clapperboard },
     { id: 'stats', label: 'Statistics', icon: BarChart3 },
     { id: 'laws', label: 'Laws & Rules', icon: BookOpen },
     { id: 'tools', label: 'Cricket Tools', icon: Wrench },

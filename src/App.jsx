@@ -21,6 +21,7 @@ import { OfficialsView, OfficialProfileView } from './views/officials/OfficialsV
 import { GroundsView } from './views/grounds/GroundsView.jsx';
 import { GroundDetailView } from './views/grounds/GroundDetailView.jsx';
 import { CommunityView } from './views/community/CommunityView.jsx';
+import { MediaView } from './views/media/MediaView.jsx';
 import { useDashboardData } from './hooks/useDashboardData.js';
 import { dataService, onAuthChange } from './services/dataService.js';
 
@@ -138,6 +139,7 @@ export function App() {
 
       {activeTab === 'grounds' && <GroundsView currentUser={currentUser} onNavigate={handleNavigate} />}
       {activeTab === 'community' && <CommunityView currentUser={currentUser} onNavigate={handleNavigate} />}
+      {activeTab === 'media' && <MediaView onNavigate={handleNavigate} />}
 
       {activeTab === 'ground' && selectedGroundId && (
         <GroundDetailView key={selectedGroundId} groundId={selectedGroundId} currentUser={currentUser} onNavigate={handleNavigate} />

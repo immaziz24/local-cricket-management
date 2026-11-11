@@ -7,6 +7,8 @@ import { ArrowLeft, Lock, Phone, Mail, ShieldCheck, AlertCircle } from 'lucide-r
 import { ROLE_OPTIONS, BATTING_OPTIONS, BOWLING_OPTIONS, labelOf } from './playerOptions.js';
 import { Avatar } from './Avatar.jsx';
 import { PlayerStatsPanel } from '../stats/PlayerStatsPanel.jsx';
+import { MediaGallery } from '../media/MediaGallery.jsx';
+import { PlayerShareCard } from '../media/ShareStudio.jsx';
 
 /**
  * #60 Player profile (public view)
@@ -20,6 +22,7 @@ export function PlayerProfileView({ playerId, onNavigate }) {
   const [p, setP] = useState(null);
   const [error, setError] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [stats, setStats] = useState(null);
 
   const load = async () => {
     try { setP(await dataService.fetchPlayerProfile(playerId)); setError(null); }
@@ -27,6 +30,7 @@ export function PlayerProfileView({ playerId, onNavigate }) {
   };
 
   useEffect(() => { if (playerId) load(); }, [playerId]);
+  useEffect(() => { if (playerId) dataService.fetchPlayerStats(playerId).then(setStats).catch(() => setStats(null)); }, [playerId]);
 
   const uploadPhoto = async (file) => {
     setBusy(true);
@@ -135,6 +139,10 @@ export function PlayerProfileView({ playerId, onNavigate }) {
 
       {/* #77 career statistics, #78 awards, Category D */}
       <PlayerStatsPanel playerId={playerId} onNavigate={onNavigate} />
+
+      {/* #182 player video profile, #187 player card */}
+      <MediaGallery scope="player" scopeId={playerId} kinds={['video']} title="Video profile" subtitle="Batting, bowling and fielding clips – added by the player or their team owner" />
+      <PlayerShareCard profile={p} stats={stats} />
     </div>
   );
 }
