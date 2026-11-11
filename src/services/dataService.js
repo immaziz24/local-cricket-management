@@ -1380,6 +1380,125 @@ export const dataService = {
     return res.data;
   },
 
+  async saveArticle(articleId, p) {
+    requireDatabase();
+    const res = await supabaseClient.saveArticle(articleId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getArticle(articleId) {
+    requireDatabase();
+    const res = await supabaseClient.getArticle(articleId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async recordArticleView(articleId) {
+    requireDatabase();
+    const res = await supabaseClient.recordArticleView(articleId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listArticles(p = {}) {
+    requireDatabase();
+    const res = await supabaseClient.listArticles(p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async deleteArticle(articleId) {
+    requireDatabase();
+    const res = await supabaseClient.deleteArticle(articleId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async moderateArticle(articleId, p) {
+    requireDatabase();
+    const res = await supabaseClient.moderateArticle(articleId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async likeArticle(articleId, like) {
+    requireDatabase();
+    const res = await supabaseClient.likeArticle(articleId, like);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async reportArticle(articleId, reason) {
+    requireDatabase();
+    const res = await supabaseClient.reportArticle(articleId, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listReportedArticles() {
+    requireDatabase();
+    const res = await supabaseClient.listReportedArticles();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveQuiz(quizId, p) {
+    requireDatabase();
+    const res = await supabaseClient.saveQuiz(quizId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listQuizzes(p = {}) {
+    requireDatabase();
+    const res = await supabaseClient.listQuizzes(p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getQuiz(quizId) {
+    requireDatabase();
+    const res = await supabaseClient.getQuiz(quizId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async submitQuiz(quizId, answers) {
+    requireDatabase();
+    const res = await supabaseClient.submitQuiz(quizId, answers);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async deleteQuiz(quizId) {
+    requireDatabase();
+    const res = await supabaseClient.deleteQuiz(quizId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async moderateQuiz(quizId, status) {
+    requireDatabase();
+    const res = await supabaseClient.moderateQuiz(quizId, status);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setArticleCover(upload) {
+    requireDatabase();
+    const res = await supabaseClient.setArticleCover(upload);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async removeArticleCover(articleId) {
+    requireDatabase();
+    const res = await supabaseClient.removeArticleCover(articleId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCommentary(matchId) {
     requireDatabase();
     const res = await supabaseClient.getCommentary(matchId);

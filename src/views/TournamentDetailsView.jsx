@@ -16,7 +16,9 @@ import { AdsPanel } from './brand/AdsPanel.jsx';
 import { AwardsPanel } from './brand/AwardsPanel.jsx';
 import { MerchPanel } from './brand/MerchPanel.jsx';
 import { SponsorStrip, AdSlot, trackOnce } from './brand/brandShared.jsx';
+import { ArticleFeed } from './news/newsShared.jsx';
 import {
+  Newspaper,
   Handshake,
   Camera,
   Trophy,
@@ -462,6 +464,27 @@ export function TournamentDetailsView(props) {
 
         <button
           type="button"
+          onClick={() => setActiveTab('news')}
+          style={{
+            padding: '0.65rem 1.25rem',
+            fontSize: '0.88rem',
+            fontWeight: 700,
+            border: 'none',
+            borderBottom: activeTab === 'news' ? '3px solid var(--color-primary)' : '3px solid transparent',
+            backgroundColor: 'transparent',
+            color: activeTab === 'news' ? 'var(--color-primary-dark)' : 'var(--color-text-muted)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem'
+          }}
+        >
+          <Newspaper size={15} />
+          <span>News</span>
+        </button>
+
+        <button
+          type="button"
           onClick={() => setActiveTab('promotion')}
           style={{
             padding: '0.65rem 1.25rem',
@@ -487,6 +510,8 @@ export function TournamentDetailsView(props) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
           <SponsorStrip tournamentId={tournament.id} onNavigate={onNavigate} />
           <AdSlot slot="tournament_page" tournamentId={tournament.id} />
+          <ArticleFeed title="Announcements" filter={{ tournament_id: tournament.id, kinds: ['announcement'] }} limit={2} compact hideWhenEmpty
+            writeKinds={isOrganiser ? ['announcement'] : []} defaults={{ tournament_id: tournament.id }} currentUser={currentUser} onNavigate={onNavigate} />
         </div>
       )}
       {activeTab === 'overview' && (
@@ -569,6 +594,14 @@ export function TournamentDetailsView(props) {
           <AwardsPanel tournament={tournament} teams={teams.map((t) => ({ id: t.team_id || t.id, name: t.name }))} />
           <MerchPanel tournament={tournament} currentUser={currentUser} onNavigate={onNavigate} />
         </div>
+      )}
+
+      {/* NEWS: announcements, previews, reports and stories about this tournament (#200–#205) */}
+      {activeTab === 'news' && /^[0-9a-f-]{36}$/i.test(tournament.id) && (
+        <ArticleFeed title="Tournament news" subtitle={isOrganiser ? 'Post announcements for teams and fans. Match previews and reports appear here too.' : 'Announcements, match previews, reports and stories'}
+          filter={{ tournament_id: tournament.id }} limit={24} currentUser={currentUser} onNavigate={onNavigate}
+          writeKinds={isOrganiser ? ['announcement', 'news', 'story'] : ['news', 'story']} defaults={{ tournament_id: tournament.id }}
+          emptyText={isOrganiser ? 'No news yet – post the first announcement.' : 'No news yet.'} />
       )}
 
       {/* TAB 5: PHOTOS, VIDEOS, POSTER, PROMO VIDEO (#183, #185, #186) */}

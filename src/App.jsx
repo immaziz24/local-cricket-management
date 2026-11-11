@@ -27,6 +27,9 @@ import { HomeView } from './views/site/HomeView.jsx';
 import { MemberHomeView } from './views/site/MemberHomeView.jsx';
 import { AboutView, ContactView, PrivacyView, TermsView, GuidelinesView, RefundView, FaqView } from './views/site/InfoPages.jsx';
 import { SettingsView, AdminPanelView } from './views/site/AccountViews.jsx';
+import { NewsView, LearnView } from './views/news/NewsLearnViews.jsx';
+import { ArticleView } from './views/news/ArticleView.jsx';
+import { QuizView } from './views/news/QuizViews.jsx';
 import { dataService, onAuthChange } from './services/dataService.js';
 
 export function App() {
@@ -41,6 +44,8 @@ export function App() {
   const [selectedSponsorId, setSelectedSponsorId] = useState(null);
   const [siteRef, setSiteRef] = useState(null);
   const [verifyCode, setVerifyCode] = useState(null);
+  const [selectedArticleId, setSelectedArticleId] = useState(null);
+  const [selectedQuizId, setSelectedQuizId] = useState(null);
   const [liveCount, setLiveCount] = useState(0);
   const isSuperAdmin = currentUser?.role === 'Super-Admin';
   const isAdmin = isSuperAdmin || currentUser?.role === 'Admin';
@@ -72,11 +77,15 @@ export function App() {
     const site = q.get('t');
     const verify = q.get('verify');
     const sponsor = q.get('sponsor');
+    const article = q.get('article');
+    const quiz = q.get('quiz');
     if (matchId && /^[0-9a-f-]{36}$/i.test(matchId)) { setSelectedMatchId(matchId); setActiveTab('match-centre'); }
     else if (tournamentId && /^[0-9a-f-]{36}$/i.test(tournamentId)) { setSelectedTournamentId(tournamentId); setActiveTab('tournament-details'); }
     else if (site && /^[A-Za-z0-9-]{2,40}$/.test(site)) { setSiteRef(site); setActiveTab('tournament-site'); }
     else if (verify && /^[A-Za-z0-9-]{4,20}$/.test(verify)) { setVerifyCode(verify.toUpperCase()); setActiveTab('verify'); }
     else if (sponsor && /^[0-9a-f-]{36}$/i.test(sponsor)) { setSelectedSponsorId(sponsor); setActiveTab('sponsor'); }
+    else if (article && /^[0-9a-f-]{36}$/i.test(article)) { setSelectedArticleId(article); setActiveTab('article'); }
+    else if (quiz && /^[0-9a-f-]{36}$/i.test(quiz)) { setSelectedQuizId(quiz); setActiveTab('quiz'); }
   }, []);
   useEffect(() => {
     const url = activeTab === 'match-centre' && selectedMatchId ? `?match=${selectedMatchId}`
@@ -84,17 +93,19 @@ export function App() {
       : activeTab === 'tournament-site' && siteRef ? `?t=${siteRef}`
       : activeTab === 'verify' && verifyCode ? `?verify=${verifyCode}`
       : activeTab === 'sponsor' && selectedSponsorId ? `?sponsor=${selectedSponsorId}`
+      : activeTab === 'article' && selectedArticleId ? `?article=${selectedArticleId}`
+      : activeTab === 'quiz' && selectedQuizId ? `?quiz=${selectedQuizId}`
       : window.location.pathname;
     if (`${window.location.pathname}${window.location.search}` !== (url.startsWith('?') ? `${window.location.pathname}${url}` : url)) {
       window.history.replaceState(null, '', url);
     }
-  }, [activeTab, selectedMatchId, selectedTournamentId, siteRef, verifyCode, selectedSponsorId]);
+  }, [activeTab, selectedMatchId, selectedTournamentId, siteRef, verifyCode, selectedSponsorId, selectedArticleId, selectedQuizId]);
 
   // Browser tab title for each page
   useEffect(() => {
     const names = { dashboard: currentUser ? 'My cricket' : 'Live scores, tournaments & teams', matches: 'Matches', 'match-centre': 'Match', tournaments: 'Tournaments', 'tournament-details': 'Tournament',
       stats: 'Players & stats', community: 'Community', media: 'Live & Media', grounds: 'Grounds', officials: 'Umpires & scorers', laws: 'Laws & Rules', tools: 'Cricket tools',
-      teams: 'My teams', sponsors: 'Sponsors', sponsor: 'Sponsor', verify: 'Check a certificate', login: 'Log in', register: 'Register', about: 'About us', contact: 'Contact us', privacy: 'Privacy Policy', terms: 'Terms of Use', faq: 'FAQ', settings: 'Settings', admin: 'Admin panel' };
+      teams: 'My teams', sponsors: 'Sponsors', sponsor: 'Sponsor', verify: 'Check a certificate', login: 'Log in', register: 'Register', about: 'About us', contact: 'Contact us', privacy: 'Privacy Policy', terms: 'Terms of Use', faq: 'FAQ', settings: 'Settings', admin: 'Admin panel', news: 'Cricket news', learn: 'Learn cricket', article: 'Article', quiz: 'Quiz' };
     document.title = `${names[activeTab] || 'Local Cricket'} · Local Cricket`;
   }, [activeTab, currentUser]);
 
@@ -124,6 +135,12 @@ export function App() {
     }
     if (tab === 'verify') {
       setVerifyCode(param || null);
+    }
+    if (tab === 'article' && param) {
+      setSelectedArticleId(param);
+    }
+    if (tab === 'quiz' && param) {
+      setSelectedQuizId(param);
     }
     if (tab === 'match-centre' && param) {
       setSelectedMatchId(param);
@@ -181,6 +198,10 @@ export function App() {
       {activeTab === 'grounds' && <GroundsView currentUser={currentUser} onNavigate={handleNavigate} />}
       {activeTab === 'community' && <CommunityView currentUser={currentUser} onNavigate={handleNavigate} />}
       {activeTab === 'media' && <MediaView onNavigate={handleNavigate} />}
+      {activeTab === 'news' && <NewsView key={currentUser ? currentUser.id : 'guest'} currentUser={currentUser} onNavigate={handleNavigate} />}
+      {activeTab === 'learn' && <LearnView key={currentUser ? currentUser.id : 'guest'} currentUser={currentUser} onNavigate={handleNavigate} />}
+      {activeTab === 'article' && selectedArticleId && <ArticleView key={selectedArticleId} articleId={selectedArticleId} currentUser={currentUser} onNavigate={handleNavigate} />}
+      {activeTab === 'quiz' && selectedQuizId && <QuizView key={selectedQuizId} quizId={selectedQuizId} currentUser={currentUser} onNavigate={handleNavigate} />}
       {activeTab === 'sponsors' && <SponsorsView key={currentUser ? currentUser.id : 'guest'} currentUser={currentUser} onNavigate={handleNavigate} />}
       {activeTab === 'sponsor' && selectedSponsorId && <SponsorProfileView key={`${selectedSponsorId}-${currentUser?.id || 'guest'}`} sponsorId={selectedSponsorId} onNavigate={handleNavigate} />}
       {activeTab === 'tournament-site' && siteRef && <TournamentSiteView key={`${siteRef}-${currentUser?.id || 'guest'}`} refCode={siteRef} currentUser={currentUser} onNavigate={handleNavigate} />}

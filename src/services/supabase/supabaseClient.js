@@ -1674,6 +1674,110 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async saveArticle(articleId, p) {
+    const { data, error } = await supabase.rpc('save_article', { p_article_id: articleId || null, p: p || {} });
+    if (error) return { data: null, error: friendlyError(error, 'article') };
+    return { data, error: null };
+  },
+
+  async getArticle(articleId) {
+    const { data, error } = await supabase.rpc('get_article', { p_article_id: articleId });
+    if (error) return { data: null, error: friendlyError(error, 'article') };
+    return { data, error: null };
+  },
+
+  async recordArticleView(articleId) {
+    const { data, error } = await supabase.rpc('record_article_view', { p_article_id: articleId });
+    if (error) return { data: null, error: friendlyError(error, 'article') };
+    return { data, error: null };
+  },
+
+  async listArticles(p = {}) {
+    const { data, error } = await supabase.rpc('list_articles', { p });
+    if (error) return { data: null, error: friendlyError(error, 'articles') };
+    return { data, error: null };
+  },
+
+  async deleteArticle(articleId) {
+    const { data, error } = await supabase.rpc('delete_article', { p_article_id: articleId });
+    if (error) return { data: null, error: friendlyError(error, 'article') };
+    return { data, error: null };
+  },
+
+  async moderateArticle(articleId, p) {
+    const { data, error } = await supabase.rpc('moderate_article', { p_article_id: articleId, p: p || {} });
+    if (error) return { data: null, error: friendlyError(error, 'article') };
+    return { data, error: null };
+  },
+
+  async likeArticle(articleId, like) {
+    const { data, error } = await supabase.rpc('like_article', { p_article_id: articleId, p_like: !!like });
+    if (error) return { data: null, error: friendlyError(error, 'like') };
+    return { data, error: null };
+  },
+
+  async reportArticle(articleId, reason) {
+    const { data, error } = await supabase.rpc('report_article', { p_article_id: articleId, p_reason: reason || '' });
+    if (error) return { data: null, error: friendlyError(error, 'report') };
+    return { data, error: null };
+  },
+
+  async listReportedArticles() {
+    const { data, error } = await supabase.rpc('list_reported_articles', {});
+    if (error) return { data: null, error: friendlyError(error, 'reports') };
+    return { data, error: null };
+  },
+
+  async saveQuiz(quizId, p) {
+    const { data, error } = await supabase.rpc('save_quiz', { p_quiz_id: quizId || null, p: p || {} });
+    if (error) return { data: null, error: friendlyError(error, 'quiz') };
+    return { data, error: null };
+  },
+
+  async listQuizzes(p = {}) {
+    const { data, error } = await supabase.rpc('list_quizzes', { p });
+    if (error) return { data: null, error: friendlyError(error, 'quizzes') };
+    return { data, error: null };
+  },
+
+  async getQuiz(quizId) {
+    const { data, error } = await supabase.rpc('get_quiz', { p_quiz_id: quizId });
+    if (error) return { data: null, error: friendlyError(error, 'quiz') };
+    return { data, error: null };
+  },
+
+  async submitQuiz(quizId, answers) {
+    const { data, error } = await supabase.rpc('submit_quiz', { p_quiz_id: quizId, p_answers: answers || [] });
+    if (error) return { data: null, error: friendlyError(error, 'quiz') };
+    return { data, error: null };
+  },
+
+  async deleteQuiz(quizId) {
+    const { data, error } = await supabase.rpc('delete_quiz', { p_quiz_id: quizId });
+    if (error) return { data: null, error: friendlyError(error, 'quiz') };
+    return { data, error: null };
+  },
+
+  async moderateQuiz(quizId, status) {
+    const { data, error } = await supabase.rpc('moderate_quiz', { p_quiz_id: quizId, p_status: status });
+    if (error) return { data: null, error: friendlyError(error, 'quiz') };
+    return { data, error: null };
+  },
+
+  async setArticleCover({ articleId, file }) {
+    const up = await this.uploadImage('articles', articleId, file);
+    if (up.error) return up;
+    const { data, error } = await supabase.rpc('set_article_cover', { p_article_id: articleId, p_url: up.data.url });
+    if (error) return { data: null, error: friendlyError(error, 'picture') };
+    return { data, error: null };
+  },
+
+  async removeArticleCover(articleId) {
+    const { data, error } = await supabase.rpc('set_article_cover', { p_article_id: articleId, p_url: null });
+    if (error) return { data: null, error: friendlyError(error, 'picture') };
+    return { data, error: null };
+  },
+
   async getCommentary(matchId) {
     const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'commentary') };

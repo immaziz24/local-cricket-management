@@ -1,5 +1,6 @@
 import { AdSlot } from '../brand/brandShared.jsx';
 import { PromotedCampaigns } from '../brand/PromotionPanels.jsx';
+import { HomeNewsSection } from '../news/newsShared.jsx';
 import React, { useEffect, useState } from 'react';
 import { dataService } from '../../services/dataService.js';
 import { Radio, Trophy, Users, BarChart3, Landmark, Flag, Smartphone, ArrowRight, CalendarDays, MapPin, Zap, ShieldCheck, Share2 } from 'lucide-react';
@@ -134,6 +135,8 @@ export function HomeView({ onNavigate }) {
           </div>
         )}
       </section>
+
+      <HomeNewsSection go={go} />
 
       {top.length > 0 && (
         <section className="home-section">

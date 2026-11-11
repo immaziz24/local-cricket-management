@@ -3,6 +3,7 @@ import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
+import { ArticleFeed } from '../news/newsShared.jsx';
 import { ArrowLeft, Coins, MapPin, Clock, Trophy, AlertCircle, CheckCircle, Share2, Copy, PauseCircle, PlayCircle } from 'lucide-react';
 import { LineupPanel } from '../tournaments/LineupPanel.jsx';
 import { ScoringPanel } from './ScoringPanel.jsx';
@@ -176,7 +177,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       {/* Tabs once the match has started */}
       {m.status !== 'scheduled' && (
         <div style={{ display: 'flex', gap: '0.4rem', borderBottom: '1px solid #e2e8f0', flexWrap: 'wrap' }}>
-          {[['live', m.status === 'live' ? 'Live' : 'Summary'], ['scorecard', 'Scorecard'], ['commentary', 'Commentary'], ['analysis', 'Analysis'], ['lineups', 'Playing XI'], ['matchday', 'Match day'], ['officials', 'Ground & officials'], ['rules', 'Rules'], ['media', 'Video & media'], ['reports', 'Reports'], ['history', 'History']].map(([v, l]) => (
+          {[['live', m.status === 'live' ? 'Live' : 'Summary'], ['scorecard', 'Scorecard'], ['commentary', 'Commentary'], ['analysis', 'Analysis'], ['lineups', 'Playing XI'], ['matchday', 'Match day'], ['officials', 'Ground & officials'], ['rules', 'Rules'], ['media', 'Video & media'], ['news', 'Previews & reports'], ['reports', 'Reports'], ['history', 'History']].map(([v, l]) => (
             <button key={v} type="button" onClick={() => setTab(v)}
               style={{ padding: '0.55rem 1rem', border: 'none', borderBottom: `3px solid ${tab === v ? '#059669' : 'transparent'}`, background: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', color: tab === v ? '#065f46' : '#64748b' }}>
               {l}
@@ -235,6 +236,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       {m.status === 'scheduled' && <PlayingConditionsPanel matchId={m.id} />}
       {m.status === 'scheduled' && <LiveStreamPanel matchId={m.id} matchStatus={m.status} />}
       {m.status === 'scheduled' && <MatchShareCards matchId={m.id} refreshKey={refreshKey} />}
+      {m.status === 'scheduled' && <ArticleFeed title="Match previews" filter={{ match_id: m.id }} writeKinds={['preview']} defaults={{ match_id: m.id }} onNavigate={onNavigate} limit={6} emptyText="No preview yet – write one." />}
 
       {m.status === 'scheduled' && !data.can_score && (
         <Card><p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>This match has not started yet. Only the scorer or the tournament organiser can start it.</p></Card>
@@ -255,6 +257,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       {m.status !== 'scheduled' && tab === 'media' && <HighlightsPanel matchId={m.id} refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'media' && <MediaGallery scope="match" scopeId={m.id} kinds={['photo', 'video']} title="Match photos & videos" subtitle="Photo gallery and video uploads" refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'media' && <MatchShareCards matchId={m.id} refreshKey={refreshKey} />}
+      {m.status !== 'scheduled' && tab === 'news' && <ArticleFeed title="Match previews & reports" subtitle="Write a report – it starts from the scorecard" filter={{ match_id: m.id }} writeKinds={['match_report', 'preview']} defaults={{ match_id: m.id, kind: 'match_report' }} onNavigate={onNavigate} limit={12} emptyText="No report yet – be the first to write one." />}
     </div>
   );
 }

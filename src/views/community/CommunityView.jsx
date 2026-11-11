@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
+import { ArticleFeed } from '../news/newsShared.jsx';
 import { Users2, Store, Search, Megaphone, Mail, Plus, X, MapPin, Phone, Globe, Camera, Trash2, ExternalLink } from 'lucide-react';
 
 /**
@@ -86,7 +87,7 @@ function ListingForm({ listing, onSaved, onCancel }) {
   );
 }
 
-function ListingDetail({ id, signedIn, onClose, onChanged }) {
+function ListingDetail({ id, signedIn, onClose, onChanged, onNavigate }) {
   const [d, setD] = useState(null);
   const [edit, setEdit] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -95,6 +96,7 @@ function ListingDetail({ id, signedIn, onClose, onChanged }) {
   const l = d.listing;
   if (edit) return <ListingForm listing={l} onCancel={() => setEdit(false)} onSaved={(r) => { setD(r); setEdit(false); onChanged(); }} />;
   return (
+    <>
     <Card>
       <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem' }}>
         <div>
@@ -135,6 +137,12 @@ function ListingDetail({ id, signedIn, onClose, onChanged }) {
         {msg && <div style={{ color: '#b91c1c', fontSize: '0.8rem', marginTop: '0.3rem' }}>{msg}</div>}
       </div>
     </Card>
+    {/* #213 academy updates – written by the owner of an academy, coaching centre, club or nets */}
+    {['academy', 'coaching', 'club', 'nets'].includes(l.kind) && (
+      <ArticleFeed title={`Updates from ${l.name}`} filter={{ listing_id: l.id }} writeKinds={d.is_owner ? ['academy_update'] : []} defaults={{ listing_id: l.id }}
+        onNavigate={onNavigate} limit={4} compact hideWhenEmpty={!d.is_owner} emptyText="No updates yet – post news about trials, camps or results." />
+    )}
+    </>
   );
 }
 
@@ -187,7 +195,7 @@ function Directory({ signedIn, onNavigate }) {
             {signedIn && !adding && <Button variant="primary" onClick={() => setAdding(true)} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Plus size={14} /> Add listing</Button>}
           </div>
           {adding && <ListingForm onCancel={() => setAdding(false)} onSaved={(r) => { setAdding(false); setOpen(r.listing.id); load(); }} />}
-          {open && <ListingDetail id={open} signedIn={signedIn} onClose={() => setOpen(null)} onChanged={load} />}
+          {open && <ListingDetail id={open} signedIn={signedIn} onClose={() => setOpen(null)} onChanged={load} onNavigate={onNavigate} />}
           {list === null ? <div style={{ color: '#64748b' }}>Loading…</div> : list.length === 0 ? <Card><p style={{ margin: 0, color: '#64748b', fontSize: '0.86rem' }}>Nothing listed here yet.{signedIn ? ' Be the first – add yours.' : ''}</p></Card> : (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '0.8rem' }}>
               {list.map((l) => (

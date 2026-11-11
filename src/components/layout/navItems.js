@@ -1,6 +1,6 @@
 import {
   Home, Users, Activity, Trophy, PlusCircle, BarChart3, Store, Clapperboard, MapPin, Flag, BookOpen, Wrench,
-  ShieldAlert, Settings, Shield, Handshake
+  ShieldAlert, Settings, Shield, Handshake, Newspaper, GraduationCap
 } from 'lucide-react';
 
 // Signed-in members: grouped menu. Admin group only for Admin / Super-Admin.
@@ -16,12 +16,14 @@ export function memberNav({ isAdmin, liveMatchCount = 0 }) {
     { title: 'Explore', items: [
       { id: 'stats', label: 'Players & Stats', icon: BarChart3, also: ['player-profile'] },
       { id: 'community', label: 'Community', icon: Store },
+      { id: 'news', label: 'News', icon: Newspaper, also: ['article'] },
       { id: 'media', label: 'Live & Media', icon: Clapperboard },
       { id: 'sponsors', label: 'Sponsors', icon: Handshake, also: ['sponsor'] },
       { id: 'grounds', label: 'Grounds', icon: MapPin, also: ['ground'] },
       { id: 'officials', label: 'Umpires & Scorers', icon: Flag, also: ['official-profile'] }
     ] },
     { title: 'Help', items: [
+      { id: 'learn', label: 'Learn & Quizzes', icon: GraduationCap, also: ['quiz'] },
       { id: 'laws', label: 'Laws & Rules', icon: BookOpen },
       { id: 'tools', label: 'Cricket Tools', icon: Wrench },
       { id: 'penalties', label: 'Late-arrival Rules', icon: ShieldAlert }

@@ -17,11 +17,11 @@
 | Status | Features |
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
-| 🟩 Working (real database) | 163 / 310 |
+| 🟩 Working (real database) | 179 / 310 |
 | 🟨 Built / connected, awaiting check | 82 / 310 |
-| ⬜ Not started | 65 / 310 |
+| ⬜ Not started | 49 / 310 |
 
-**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5: Category H community & marketplace (17) Category I live streaming & media (12) and Category J branding, sponsorship & promotion (11) connected.** Next: Category K – local cricket news and learning.
+**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5: Category H community & marketplace (17) Category I live streaming & media (12) Category J branding, sponsorship & promotion (11) and Category K news & learning (16) connected – Phase 5 complete (56/56 built).** Next: Phase 6, Category M.
 
 **Phase 2 summary:** 45 of 48 built; #57, #77, #78 waited for ball-by-ball scoring.
 
@@ -37,7 +37,7 @@
 | 2 | B, C | 48 | 0 | 36 | 12 | 0 |
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
 | 4 | F, G, Q | 37 | 0 | 0 | 37 | 0 |
-| 5 | H, I, J, K | 56 | 16 | 2 | 38 | 0 |
+| 5 | H, I, J, K | 56 | 0 | 2 | 54 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
 
 ## 4. Supporting screens (not numbered features)
@@ -377,22 +377,22 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 200 | Local cricket news | ⬜ |  |
-| 201 | Tournament announcements | ⬜ |  |
-| 202 | Match previews | ⬜ |  |
-| 203 | Match reports | ⬜ |  |
-| 204 | Player interviews | ⬜ |  |
-| 205 | Local cricket stories | ⬜ |  |
-| 206 | Coaching tutorials | ⬜ |  |
-| 207 | Cricket learning guides | ⬜ |  |
-| 208 | Equipment guides | ⬜ |  |
-| 209 | Cricket rules guides | ⬜ |  |
-| 210 | Umpiring tutorials | ⬜ |  |
-| 211 | Scoring tutorials | ⬜ |  |
-| 212 | Cricket quizzes | ⬜ |  |
-| 213 | Player success stories | ⬜ |  |
-| 214 | Academy updates | ⬜ |  |
-| 215 | Community cricket updates | ⬜ |  |
+| 200 | Local cricket news | 🟩 | **connected 2026-11-11** – News page: anyone writes local news; feed with filters, search, featured first; like, share, report. Tested in DB |
+| 201 | Tournament announcements | 🟩 | **connected 2026-11-11** – tournament News tab + overview: only the organiser can post (marked Official). Tested in DB |
+| 202 | Match previews | 🟩 | **connected 2026-11-11** – match page: write a preview, auto-filled from fixture details; official if written by the match manager/official. Tested in DB |
+| 203 | Match reports | 🟩 | **connected 2026-11-11** – match page "Previews & reports": report auto-drafted from the real scorecard (top batters, bowlers, Player of the Match). Tested in DB |
+| 204 | Player interviews | 🟩 | **connected 2026-11-11** – player profile: interviews; the player is notified and can hide an article about them. Tested in DB |
+| 205 | Local cricket stories | 🟩 | **connected 2026-11-11** – News: stories and local news, with town/city, cover picture and YouTube video. Tested in DB |
+| 206 | Coaching tutorials | 🟩 | **connected 2026-11-11** – Learn page: coaching tips (starter: batting and bowling basics), level filter. Tested in DB |
+| 207 | Cricket learning guides | 🟩 | **connected 2026-11-11** – Learn: guides (starter: cricket in five minutes, planning a tournament). Tested in DB |
+| 208 | Equipment guides | 🟩 | **connected 2026-11-11** – Learn: equipment (starter: choosing a bat, balls and safety gear). Tested in DB |
+| 209 | Cricket rules guides | 🟩 | **connected 2026-11-11** – Learn: rules (starter: ways to be out, wides/no-balls/free hits). Tested in DB |
+| 210 | Umpiring tutorials | 🟩 | **connected 2026-11-11** – Learn: umpiring (starter: signals, positioning & LBW checklist). Tested in DB |
+| 211 | Scoring tutorials | 🟩 | **connected 2026-11-11** – Learn: scoring (starter: how to score on Local Cricket, reading a scorecard/NRR). Tested in DB |
+| 212 | Cricket quizzes | 🟩 | **connected 2026-11-11** – quizzes: anyone plays, members' best scores on a leaderboard, answers shown after finishing; members make quizzes; 3 official starter quizzes. Tested in DB |
+| 213 | Player success stories | 🟩 | **connected 2026-11-11** – player profile: success stories; player notified. Tested in DB |
+| 214 | Academy updates | 🟩 | **connected 2026-11-11** – Community listing (academy, coaching centre, club, nets): only the owner posts updates (Official). Tested in DB |
+| 215 | Community cricket updates | 🟩 | **connected 2026-11-11** – community updates on News; admins hide/feature; reported articles in Admin panel. Tested in DB |
 
 ### Phase 6 – Business, International References and Mobile Expansion
 

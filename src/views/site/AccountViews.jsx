@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Lock, Bell, BadgeCheck, Flag, LayoutDashboard, Mail, Shield, FileText, Database, Megaphone, Users } from 'lucide-react';
+import { Lock, Bell, BadgeCheck, Flag, LayoutDashboard, Mail, Shield, FileText, Database, Megaphone, Users, Newspaper } from 'lucide-react';
 import { dataService } from '../../services/dataService.js';
 import { SuperAdminDashboardView } from '../admin/SuperAdminDashboardView.jsx';
 import { AdminDashboardView } from '../admin/AdminDashboardView.jsx';
@@ -12,6 +12,7 @@ import { SecurityPrivacyView } from '../admin/SecurityPrivacyView.jsx';
 import { NotificationsManagementView } from '../admin/NotificationsManagementView.jsx';
 import { AdsPanel } from '../brand/AdsPanel.jsx';
 import { CampaignModeration } from '../brand/CampaignModeration.jsx';
+import { ReportedArticlesPanel } from '../news/NewsLearnViews.jsx';
 
 /** Settings & Privacy (every member) and Admin Panel (Admin / Super-Admin). */
 function Tabs({ tabs, tab, setTab }) {
@@ -91,7 +92,7 @@ export function AdminPanelView({ currentUser, isAdmin, isSuperAdmin, onNavigate 
   const [tab, setTab] = useState('overview');
   if (!isAdmin) return <div className="info-box">This page is only for administrators.</div>;
   const tabs = [['overview', 'Overview', LayoutDashboard], ['messages', 'Contact messages', Mail], ['roles', 'Roles & admins', Shield], ['verify', 'Verification requests', BadgeCheck],
-    ['reports', 'Reports & suspensions', Users], ['notify', 'Message all members', Megaphone], ['ads', 'Adverts & campaigns', Megaphone], ['audit', 'Audit log', FileText], ...(isSuperAdmin ? [['backup', 'Backups', Database]] : [])];
+    ['reports', 'Reports & suspensions', Users], ['notify', 'Message all members', Megaphone], ['ads', 'Adverts & campaigns', Megaphone], ['articles', 'Reported articles', Newspaper], ['audit', 'Audit log', FileText], ...(isSuperAdmin ? [['backup', 'Backups', Database]] : [])];
   return (
     <div>
       <PageTitle title="Admin Panel" sub={`Signed in as ${currentUser?.full_name || ''} (${currentUser?.role || 'Admin'})`} />
@@ -103,6 +104,7 @@ export function AdminPanelView({ currentUser, isAdmin, isSuperAdmin, onNavigate 
       {tab === 'reports' && <UserReportingSuspensionView />}
       {tab === 'notify' && <NotificationsManagementView />}
       {tab === 'audit' && <AuditLogsView />}
+      {tab === 'articles' && <ReportedArticlesPanel onNavigate={onNavigate} />}
       {tab === 'ads' && <><AdsPanel scope="site" /><div style={{ height: '1rem' }} /><CampaignModeration onNavigate={onNavigate} /></>}
       {tab === 'backup' && isSuperAdmin && <DatabaseBackupView />}
     </div>

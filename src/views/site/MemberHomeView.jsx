@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { dataService } from '../../services/dataService.js';
+import { ArticleFeed } from '../news/newsShared.jsx';
 import { Activity, Trophy, Users, Landmark, ArrowRight, Bell, Radio, Plus, Flag, Store } from 'lucide-react';
 
 /** Home page for signed-in members: "My cricket". */
@@ -104,6 +105,8 @@ export function MemberHomeView({ currentUser, onNavigate }) {
             ))}
         </Panel>
       </div>
+
+      <ArticleFeed title="Latest news & tips" filter={{ featured_first: true }} limit={3} onNavigate={go} currentUser={currentUser} hideWhenEmpty />
     </div>
   );
 }

@@ -17,6 +17,8 @@ export const PUBLIC_NAV = [
   ['community', 'Community']
 ];
 export const MORE_NAV = [
+  ['news', 'News', 'Local news, previews, reports and stories'],
+  ['learn', 'Learn & Quizzes', 'Coaching, rules, umpiring and scoring'],
   ['grounds', 'Grounds', 'Find and book cricket grounds'],
   ['officials', 'Umpires & Scorers', 'Hire officials for your match'],
   ['media', 'Live & Media', 'Highlights, photos and videos'],

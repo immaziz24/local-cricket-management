@@ -25,6 +25,7 @@
 | Phase 5: live & media | 🟩 (live streaming #177/#178 switched off by owner – "coming soon", admins only) Match → Video & media tab: YouTube/Facebook live stream link, score overlay for streaming apps, automatic highlights + clips, match photos/videos, result & scorecard pictures. Tournament → Photos & Media: gallery, poster, 12-s promo video. Player profile: video profile + player card. Live & Media page. Videos bucket: 20 MB per clip, 10 uploads per person (free plan has 1 GB storage). |
 | Website layout (not a blueprint feature) | 🟩 Visitors: top menu (Home, Matches, Tournaments, Players, Community, More), search with "Near me" (location asked only when tapped, 30 km), Log in / Register, visitor home page, footer (Explore, For organisers, Help, Legal) + About, Contact, FAQ, Privacy, Terms, Community Guidelines, Refund pages. Members: grouped sidebar, Create menu, notifications, profile menu, My cricket home, Settings, Admin panel (admins only). Feature numbers and developer badges removed from all pages. Contact details: fill `src/config/site.js` (empty values are hidden). |
 | Phase 5: branding & sponsors | 🟩 Tournament → Sponsors & promotion tab: tournament website (?t=CODE) + QR, sponsors (invite/offer/accept, logos, banners, report), adverts, campaigns, awards + certificates (?verify=CODE), merchandise shop. Sponsors page in More menu. Admin panel → Adverts & campaigns. Player profile → Trophy cabinet. |
+| Phase 5: news & learning | 🟩 News page (local news, announcements, previews, reports, interviews, stories, academy and community updates; filters, search, like, share, report). Learn page (coaching, guides, equipment, rules, umpiring, scoring; levels) + quizzes with leaderboard. Tournament → News tab (organiser announcements), match → Previews & reports (auto-draft from scorecard), player profile → Interviews & stories, Community listing → Updates. Admin panel → Reported articles. 13 starter articles + 3 quizzes by the Local Cricket Coaching Desk. |
 | Phase 2: players & teams | 🟨 #59–76: playing XI, substitutes and in-match replacements per match, player transfers between teams (#72–75); player ID, photo, DOB/age, contact privacy, team logo, team history, public player profile (#60–62, #66, #67, #69, #76) added on top of My Teams page, create team, add players by mobile number (or by name if not registered — they claim it later by registering with that number), captain / vice-captain / icon player. Awaiting owner check. |
 | Security & operations | 🟨 #267 audit log, #268 backup download, #269 privacy + my-data download + sign out everywhere, #270 notification inbox + send-to-all. Awaiting owner check. |
 | Reports & suspension | 🟨 #266 report a member, admin suspend/lift, notifications, audit log. Awaiting owner check. |
@@ -48,6 +49,8 @@
 | `20261106105506_phase1_user_management_foundation.sql` | Phase 1 tables, row-level security, profile trigger |
 | `20261106105529_phase1_security_and_fk_index_hardening.sql` | Indexes and deny-rules for audit logs and templates |
 | `20261110050000_phase1_profile_mobile_number.sql` | Saves name and unique mobile number on sign-up |
+| `20261111141000_phase5_learning_starter_content.sql` | 12 learning articles, 1 community update and 3 official quizzes (24 questions) under the Super-Admin account |
+| `20261111140000_phase5_news_learning.sql` | articles, article_likes, article_reports, quizzes, quiz_questions, quiz_attempts; save/get/list/like/report/moderate articles, quizzes (answers hidden until submitted), leaderboard; upload folder articles/ |
 | `20261111131000_phase5_certificates_awards_merch.sql` | tournament_awards, certificates (code + verify), merch_items, merch_orders; set/remove/list awards, player_awards, issue/revoke/verify/list certificates, merchandise and orders, sponsor_report; upload folders sponsors/, sponsorships/, ads/, merch/ |
 | `20261111130000_phase5_branding_sponsors.sql` | tournaments.site, page_views, sponsors, tournament_sponsors, ad_placements, promo_campaigns; tournament website, sponsors, sponsorships, adverts, campaigns functions |
 | `20261111121000_site_contact_messages.sql` | contact_messages; send_contact_message (visitors and members), list_contact_messages / set_contact_message_status (admins) |
@@ -93,7 +96,7 @@
 
 ## 4. Next steps (in order)
 
-0. **Phase 5 next:** Category K – local cricket news and learning (#200–215). Categories H, I and J done 2026-11-11.
+0. **Phase 6 next:** Category M (21 features), then O (13) and P (15). Phase 5 (Categories H, I, J, K) done 2026-11-11.
 1. **Owner check of #265** (Category N → User Governance → Verification): request a badge, approve it. Push to GitHub (today's work is not on GitHub yet).
 2. **Phase 3:** Category A (live scoring #1–30) complete. **Category D statistics (#79–102) complete** on the real database, together with Phase 2 #57, #77, #78 (Statistics page, player profile stats, team record, match Analysis tab, tournament leaderboards, automatic Player of the Match). **Category E batch 1 – playing conditions (#105–112, #114, #118, #119, #129–134) complete; scoring follows them.** **Category E batch 2 complete** (laws reference, Super Over, follow-on, penalty runs, DLS helper, match reports). **Category L calculators (#216–232) built – Phase 3 complete.** **Phase 4 started – Category F officials (#135–146) complete.** **Category G grounds (#147–159) complete.** **Category Q (#299–310) complete – Phase 4 complete.** **Next: Phase 5** (community and media).
 3. **Phase 2** in number order: #31 Create a tournament (connect to database), #32 Tournament name and branding, #33, …
@@ -136,6 +139,7 @@
 | 2026-11-11 | Claude | Phase 5 – Category I live streaming & media (12 features); owner set live streaming to "coming soon" |
 | 2026-11-11 | Claude | Website layout: premium header with search + Near me (30 km), visitor and member layouts, home pages, footer and info pages, contact messages; feature numbers removed from pages |
 | 2026-11-11 | Claude | Phase 5 – Category J branding, sponsorship & promotion (11 features) |
+| 2026-11-11 | Claude | Phase 5 – Category K news & learning (16 features): News and Learn pages, articles, quizzes, starter content – Phase 5 complete |
 | 2026-11-11 | Claude | Phase 4 – Category G grounds (13 features): register, photos, map, pitch/boundary/facilities, booking + calendar + prices, pitch records, inspections, match history |
 | 2026-11-10 | Claude | Phase 4 – Category F officials (12 features): sign-up, search, invitations, scoring rights, availability, schedule, payments, ratings, disputes, history |
 | 2026-11-10 | Claude | Category L: Cricket Tools page (17 calculators/generators) – Phase 3 complete |

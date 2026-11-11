@@ -10,6 +10,7 @@ import { PlayerStatsPanel } from '../stats/PlayerStatsPanel.jsx';
 import { MediaGallery } from '../media/MediaGallery.jsx';
 import { PlayerShareCard } from '../media/ShareStudio.jsx';
 import { PlayerAwardsCard } from '../brand/AwardsPanel.jsx';
+import { ArticleFeed } from '../news/newsShared.jsx';
 
 /**
  * #60 Player profile (public view)
@@ -145,6 +146,10 @@ export function PlayerProfileView({ playerId, onNavigate }) {
       {/* #182 player video profile, #187 player card */}
       <MediaGallery scope="player" scopeId={playerId} kinds={['video']} title="Video profile" subtitle="Batting, bowling and fielding clips – added by the player or their team owner" />
       <PlayerShareCard profile={p} stats={stats} />
+
+      {/* #204 interviews, #205 success stories */}
+      <ArticleFeed title="Interviews & stories" subtitle={`Articles about ${p.display_name || 'this player'}`} filter={{ player_id: playerId }}
+        writeKinds={['interview', 'success_story']} defaults={{ player_id: playerId }} onNavigate={onNavigate} limit={6} emptyText="No interviews or stories yet." />
     </div>
   );
 }
