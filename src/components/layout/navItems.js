@@ -1,6 +1,6 @@
 import {
   Home, Users, Activity, Trophy, PlusCircle, BarChart3, Store, Clapperboard, MapPin, Flag, BookOpen, Wrench,
-  ShieldAlert, Settings, Shield
+  ShieldAlert, Settings, Shield, Handshake
 } from 'lucide-react';
 
 // Signed-in members: grouped menu. Admin group only for Admin / Super-Admin.
@@ -17,6 +17,7 @@ export function memberNav({ isAdmin, liveMatchCount = 0 }) {
       { id: 'stats', label: 'Players & Stats', icon: BarChart3, also: ['player-profile'] },
       { id: 'community', label: 'Community', icon: Store },
       { id: 'media', label: 'Live & Media', icon: Clapperboard },
+      { id: 'sponsors', label: 'Sponsors', icon: Handshake, also: ['sponsor'] },
       { id: 'grounds', label: 'Grounds', icon: MapPin, also: ['ground'] },
       { id: 'officials', label: 'Umpires & Scorers', icon: Flag, also: ['official-profile'] }
     ] },

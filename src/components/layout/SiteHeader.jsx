@@ -20,6 +20,7 @@ export const MORE_NAV = [
   ['grounds', 'Grounds', 'Find and book cricket grounds'],
   ['officials', 'Umpires & Scorers', 'Hire officials for your match'],
   ['media', 'Live & Media', 'Highlights, photos and videos'],
+  ['sponsors', 'Sponsors', 'Businesses backing local cricket'],
   ['laws', 'Laws & Rules', 'Cricket laws in simple words'],
   ['tools', 'Cricket Tools', 'Run rate, NRR, rain target and more'],
   ['penalties', 'Late-arrival Rules', 'How late teams are penalised']

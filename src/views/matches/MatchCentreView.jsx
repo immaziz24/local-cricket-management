@@ -19,6 +19,7 @@ import { LiveStreamPanel } from '../media/LiveStreamPanel.jsx';
 import { HighlightsPanel } from '../media/HighlightsPanel.jsx';
 import { MediaGallery } from '../media/MediaGallery.jsx';
 import { MatchShareCards } from '../media/ShareStudio.jsx';
+import { SponsorStrip, AdSlot } from '../brand/brandShared.jsx';
 
 /**
  * Match page: details, #3 Playing XI, #4 substitutes, #5 toss winner, #6 bat or bowl.
@@ -168,6 +169,9 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
           {msg.ok ? <CheckCircle size={15} /> : <AlertCircle size={15} />} {msg.text}
         </div>
       )}
+
+      {data.tournament?.id && <SponsorStrip tournamentId={data.tournament.id} showBanner={false} onNavigate={onNavigate} />}
+      <AdSlot slot="match_page" tournamentId={data.tournament?.id || null} />
 
       {/* Tabs once the match has started */}
       {m.status !== 'scheduled' && (

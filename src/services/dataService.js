@@ -1085,6 +1085,301 @@ export const dataService = {
     return res.data;
   },
 
+  // Category J: branding, sponsorship and promotion (#189–#199)
+  async saveTournamentSite(tournamentId, p) {
+    requireDatabase();
+    const res = await supabaseClient.saveTournamentSite(tournamentId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getTournamentSite(ref) {
+    requireDatabase();
+    const res = await supabaseClient.getTournamentSite(ref);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async recordView(kind, refId) {
+    requireDatabase();
+    const res = await supabaseClient.recordView(kind, refId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveSponsor(sponsorId, p) {
+    requireDatabase();
+    const res = await supabaseClient.saveSponsor(sponsorId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getSponsor(sponsorId) {
+    requireDatabase();
+    const res = await supabaseClient.getSponsor(sponsorId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listSponsors(p = {}) {
+    requireDatabase();
+    const res = await supabaseClient.listSponsors(p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async inviteSponsor(tournamentId, sponsorId, tier, amount, note) {
+    requireDatabase();
+    const res = await supabaseClient.inviteSponsor(tournamentId, sponsorId, tier, amount, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async applyToSponsor(tournamentId, sponsorId, tier, note) {
+    requireDatabase();
+    const res = await supabaseClient.applyToSponsor(tournamentId, sponsorId, tier, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async respondSponsorship(sponsorshipId, accept) {
+    requireDatabase();
+    const res = await supabaseClient.respondSponsorship(sponsorshipId, accept);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async updateSponsorship(sponsorshipId, p) {
+    requireDatabase();
+    const res = await supabaseClient.updateSponsorship(sponsorshipId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async removeSponsorship(sponsorshipId) {
+    requireDatabase();
+    const res = await supabaseClient.removeSponsorship(sponsorshipId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listTournamentSponsors(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.listTournamentSponsors(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveAd(adId, p) {
+    requireDatabase();
+    const res = await supabaseClient.saveAd(adId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async deleteAd(adId) {
+    requireDatabase();
+    const res = await supabaseClient.deleteAd(adId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listAds(p = {}) {
+    requireDatabase();
+    const res = await supabaseClient.listAds(p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getAds(slot, tournamentId = null) {
+    requireDatabase();
+    const res = await supabaseClient.getAds(slot, tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async recordAdEvent(adId, kind) {
+    requireDatabase();
+    const res = await supabaseClient.recordAdEvent(adId, kind);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveCampaign(campaignId, p) {
+    requireDatabase();
+    const res = await supabaseClient.saveCampaign(campaignId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listCampaigns(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.listCampaigns(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async activeCampaigns(p = {}) {
+    requireDatabase();
+    const res = await supabaseClient.activeCampaigns(p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async recordCampaignEvent(campaignId, kind) {
+    requireDatabase();
+    const res = await supabaseClient.recordCampaignEvent(campaignId, kind);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async hideCampaign(campaignId, hidden) {
+    requireDatabase();
+    const res = await supabaseClient.hideCampaign(campaignId, hidden);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async issueCertificates(p) {
+    requireDatabase();
+    const res = await supabaseClient.issueCertificates(p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async revokeCertificate(certificateId, reason) {
+    requireDatabase();
+    const res = await supabaseClient.revokeCertificate(certificateId, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async verifyCertificate(code) {
+    requireDatabase();
+    const res = await supabaseClient.verifyCertificate(code);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listCertificates(p) {
+    requireDatabase();
+    const res = await supabaseClient.listCertificates(p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setAward(tournamentId, p) {
+    requireDatabase();
+    const res = await supabaseClient.setAward(tournamentId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async removeAward(awardId) {
+    requireDatabase();
+    const res = await supabaseClient.removeAward(awardId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listAwards(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.listAwards(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async playerAwards(playerId) {
+    requireDatabase();
+    const res = await supabaseClient.playerAwards(playerId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveMerchItem(itemId, p) {
+    requireDatabase();
+    const res = await supabaseClient.saveMerchItem(itemId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async deleteMerchItem(itemId) {
+    requireDatabase();
+    const res = await supabaseClient.deleteMerchItem(itemId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listMerch(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.listMerch(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async orderMerch(itemId, p) {
+    requireDatabase();
+    const res = await supabaseClient.orderMerch(itemId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async updateMerchOrder(orderId, status) {
+    requireDatabase();
+    const res = await supabaseClient.updateMerchOrder(orderId, status);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listMerchOrders(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.listMerchOrders(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async myMerchOrders() {
+    requireDatabase();
+    const res = await supabaseClient.myMerchOrders();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async sponsorReport(sponsorshipId) {
+    requireDatabase();
+    const res = await supabaseClient.sponsorReport(sponsorshipId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setSponsorLogo(upload) {
+    requireDatabase();
+    const res = await supabaseClient.setSponsorLogo(upload);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setSponsorshipBanner(upload) {
+    requireDatabase();
+    const res = await supabaseClient.setSponsorshipBanner(upload);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setAdImage(upload) {
+    requireDatabase();
+    const res = await supabaseClient.setAdImage(upload);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setMerchPhoto(upload) {
+    requireDatabase();
+    const res = await supabaseClient.setMerchPhoto(upload);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCommentary(matchId) {
     requireDatabase();
     const res = await supabaseClient.getCommentary(matchId);

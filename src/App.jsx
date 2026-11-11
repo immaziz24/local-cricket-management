@@ -20,6 +20,9 @@ import { GroundsView } from './views/grounds/GroundsView.jsx';
 import { GroundDetailView } from './views/grounds/GroundDetailView.jsx';
 import { CommunityView } from './views/community/CommunityView.jsx';
 import { MediaView } from './views/media/MediaView.jsx';
+import { SponsorsView, SponsorProfileView } from './views/brand/SponsorsView.jsx';
+import { TournamentSiteView } from './views/brand/TournamentSiteView.jsx';
+import { CertificateVerifyView } from './views/brand/AwardsPanel.jsx';
 import { HomeView } from './views/site/HomeView.jsx';
 import { MemberHomeView } from './views/site/MemberHomeView.jsx';
 import { AboutView, ContactView, PrivacyView, TermsView, GuidelinesView, RefundView, FaqView } from './views/site/InfoPages.jsx';
@@ -35,6 +38,9 @@ export function App() {
   const [selectedMatchId, setSelectedMatchId] = useState(null);
   const [selectedOfficialId, setSelectedOfficialId] = useState(null);
   const [selectedGroundId, setSelectedGroundId] = useState(null);
+  const [selectedSponsorId, setSelectedSponsorId] = useState(null);
+  const [siteRef, setSiteRef] = useState(null);
+  const [verifyCode, setVerifyCode] = useState(null);
   const [liveCount, setLiveCount] = useState(0);
   const isSuperAdmin = currentUser?.role === 'Super-Admin';
   const isAdmin = isSuperAdmin || currentUser?.role === 'Admin';
@@ -63,23 +69,32 @@ export function App() {
     const q = new URLSearchParams(window.location.search);
     const matchId = q.get('match');
     const tournamentId = q.get('tournament');
+    const site = q.get('t');
+    const verify = q.get('verify');
+    const sponsor = q.get('sponsor');
     if (matchId && /^[0-9a-f-]{36}$/i.test(matchId)) { setSelectedMatchId(matchId); setActiveTab('match-centre'); }
     else if (tournamentId && /^[0-9a-f-]{36}$/i.test(tournamentId)) { setSelectedTournamentId(tournamentId); setActiveTab('tournament-details'); }
+    else if (site && /^[A-Za-z0-9-]{2,40}$/.test(site)) { setSiteRef(site); setActiveTab('tournament-site'); }
+    else if (verify && /^[A-Za-z0-9-]{4,20}$/.test(verify)) { setVerifyCode(verify.toUpperCase()); setActiveTab('verify'); }
+    else if (sponsor && /^[0-9a-f-]{36}$/i.test(sponsor)) { setSelectedSponsorId(sponsor); setActiveTab('sponsor'); }
   }, []);
   useEffect(() => {
     const url = activeTab === 'match-centre' && selectedMatchId ? `?match=${selectedMatchId}`
       : activeTab === 'tournament-details' && selectedTournamentId && /^[0-9a-f-]{36}$/i.test(selectedTournamentId) ? `?tournament=${selectedTournamentId}`
+      : activeTab === 'tournament-site' && siteRef ? `?t=${siteRef}`
+      : activeTab === 'verify' && verifyCode ? `?verify=${verifyCode}`
+      : activeTab === 'sponsor' && selectedSponsorId ? `?sponsor=${selectedSponsorId}`
       : window.location.pathname;
     if (`${window.location.pathname}${window.location.search}` !== (url.startsWith('?') ? `${window.location.pathname}${url}` : url)) {
       window.history.replaceState(null, '', url);
     }
-  }, [activeTab, selectedMatchId, selectedTournamentId]);
+  }, [activeTab, selectedMatchId, selectedTournamentId, siteRef, verifyCode, selectedSponsorId]);
 
   // Browser tab title for each page
   useEffect(() => {
     const names = { dashboard: currentUser ? 'My cricket' : 'Live scores, tournaments & teams', matches: 'Matches', 'match-centre': 'Match', tournaments: 'Tournaments', 'tournament-details': 'Tournament',
       stats: 'Players & stats', community: 'Community', media: 'Live & Media', grounds: 'Grounds', officials: 'Umpires & scorers', laws: 'Laws & Rules', tools: 'Cricket tools',
-      teams: 'My teams', login: 'Log in', register: 'Register', about: 'About us', contact: 'Contact us', privacy: 'Privacy Policy', terms: 'Terms of Use', faq: 'FAQ', settings: 'Settings', admin: 'Admin panel' };
+      teams: 'My teams', sponsors: 'Sponsors', sponsor: 'Sponsor', verify: 'Check a certificate', login: 'Log in', register: 'Register', about: 'About us', contact: 'Contact us', privacy: 'Privacy Policy', terms: 'Terms of Use', faq: 'FAQ', settings: 'Settings', admin: 'Admin panel' };
     document.title = `${names[activeTab] || 'Local Cricket'} · Local Cricket`;
   }, [activeTab, currentUser]);
 
@@ -100,6 +115,15 @@ export function App() {
     }
     if (tab === 'official-profile' && param) {
       setSelectedOfficialId(param);
+    }
+    if (tab === 'sponsor' && param) {
+      setSelectedSponsorId(param);
+    }
+    if (tab === 'tournament-site' && param) {
+      setSiteRef(param);
+    }
+    if (tab === 'verify') {
+      setVerifyCode(param || null);
     }
     if (tab === 'match-centre' && param) {
       setSelectedMatchId(param);
@@ -124,7 +148,7 @@ export function App() {
       currentUser={currentUser}
       isAdmin={isAdmin}
       onSignOut={handleSignOut}
-      fullBleed={activeTab === 'dashboard' && !currentUser}
+      fullBleed={(activeTab === 'dashboard' && !currentUser) || activeTab === 'tournament-site'}
     >
       {activeTab === 'dashboard' && (currentUser
         ? <MemberHomeView currentUser={currentUser} onNavigate={handleNavigate} />
@@ -157,6 +181,10 @@ export function App() {
       {activeTab === 'grounds' && <GroundsView currentUser={currentUser} onNavigate={handleNavigate} />}
       {activeTab === 'community' && <CommunityView currentUser={currentUser} onNavigate={handleNavigate} />}
       {activeTab === 'media' && <MediaView onNavigate={handleNavigate} />}
+      {activeTab === 'sponsors' && <SponsorsView key={currentUser ? currentUser.id : 'guest'} currentUser={currentUser} onNavigate={handleNavigate} />}
+      {activeTab === 'sponsor' && selectedSponsorId && <SponsorProfileView key={`${selectedSponsorId}-${currentUser?.id || 'guest'}`} sponsorId={selectedSponsorId} onNavigate={handleNavigate} />}
+      {activeTab === 'tournament-site' && siteRef && <TournamentSiteView key={`${siteRef}-${currentUser?.id || 'guest'}`} refCode={siteRef} currentUser={currentUser} onNavigate={handleNavigate} />}
+      {activeTab === 'verify' && <CertificateVerifyView key={verifyCode || 'none'} code={verifyCode} onNavigate={handleNavigate} />}
 
       {activeTab === 'ground' && selectedGroundId && (
         <GroundDetailView key={selectedGroundId} groundId={selectedGroundId} currentUser={currentUser} onNavigate={handleNavigate} />
@@ -170,7 +198,9 @@ export function App() {
 
       {activeTab === 'tournament-details' && (
         <TournamentDetailsView
+          key={selectedTournamentId}
           tournamentId={selectedTournamentId}
+          currentUser={currentUser}
           onNavigate={handleNavigate}
         />
       )}

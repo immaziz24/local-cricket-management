@@ -11,7 +11,13 @@ import { PlayingConditionsPanel } from './rules/PlayingConditionsPanel.jsx';
 import { BannerStrip, TournamentLogo, BrandingControls } from './tournaments/TournamentBranding.jsx';
 import { MediaGallery } from './media/MediaGallery.jsx';
 import { TournamentPromoStudio } from './media/ShareStudio.jsx';
+import { SiteSettingsCard, TournamentSponsorsPanel, CampaignsPanel } from './brand/PromotionPanels.jsx';
+import { AdsPanel } from './brand/AdsPanel.jsx';
+import { AwardsPanel } from './brand/AwardsPanel.jsx';
+import { MerchPanel } from './brand/MerchPanel.jsx';
+import { SponsorStrip, AdSlot, trackOnce } from './brand/brandShared.jsx';
 import {
+  Handshake,
   Camera,
   Trophy,
   Calendar,
@@ -34,7 +40,7 @@ import {
 } from 'lucide-react';
 
 export function TournamentDetailsView(props) {
-  const { tournamentId = 'trn-001', onNavigate = () => {} } = props || {};
+  const { tournamentId = 'trn-001', onNavigate = () => {}, currentUser = null } = props || {};
   const [tournament, setTournament] = useState(null);
   const [allTournaments, setAllTournaments] = useState([]);
   const [matches, setMatches] = useState([]);
@@ -94,6 +100,10 @@ export function TournamentDetailsView(props) {
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 2000);
   };
+
+  useEffect(() => {
+    if (tournament?.id && /^[0-9a-f-]{36}$/i.test(tournament.id)) trackOnce('tournament', tournament.id, () => dataService.recordView('tournament', tournament.id));
+  }, [tournament?.id]);
 
   if (loading) {
     return <LoadingSpinner message="Loading tournament profile and specifications..." />;
@@ -449,9 +459,36 @@ export function TournamentDetailsView(props) {
           <Camera size={15} />
           <span>Photos & Media</span>
         </button>
+
+        <button
+          type="button"
+          onClick={() => setActiveTab('promotion')}
+          style={{
+            padding: '0.65rem 1.25rem',
+            fontSize: '0.88rem',
+            fontWeight: 700,
+            border: 'none',
+            borderBottom: activeTab === 'promotion' ? '3px solid var(--color-primary)' : '3px solid transparent',
+            backgroundColor: 'transparent',
+            color: activeTab === 'promotion' ? 'var(--color-primary-dark)' : 'var(--color-text-muted)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem'
+          }}
+        >
+          <Handshake size={15} />
+          <span>Sponsors & promotion</span>
+        </button>
       </div>
 
       {/* TAB 1: ABOUT & RULES */}
+      {activeTab === 'overview' && /^[0-9a-f-]{36}$/i.test(tournament.id) && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
+          <SponsorStrip tournamentId={tournament.id} onNavigate={onNavigate} />
+          <AdSlot slot="tournament_page" tournamentId={tournament.id} />
+        </div>
+      )}
       {activeTab === 'overview' && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
           <Card title="About this tournament">
@@ -520,6 +557,18 @@ export function TournamentDetailsView(props) {
       {/* TAB 3: FIXTURES, SCHEDULE & CALENDAR (#42–#52) */}
       {activeTab === 'fixtures' && (
         <FixturesPanel tournament={tournament} isOrganiser={isOrganiser} onNavigate={onNavigate} onChanged={(m) => setMatches(m)} />
+      )}
+
+      {/* TAB 6: WEBSITE, QR, SPONSORS, ADVERTS, CAMPAIGNS, AWARDS, CERTIFICATES, MERCHANDISE (#189–#199) */}
+      {activeTab === 'promotion' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+          <SiteSettingsCard tournament={tournament} isOrganiser={isOrganiser} onNavigate={onNavigate} />
+          <TournamentSponsorsPanel tournament={tournament} currentUser={currentUser} onNavigate={onNavigate} />
+          {isOrganiser && <AdsPanel scope="tournament" tournament={tournament} />}
+          {isOrganiser && <CampaignsPanel tournament={tournament} />}
+          <AwardsPanel tournament={tournament} teams={teams.map((t) => ({ id: t.team_id || t.id, name: t.name }))} />
+          <MerchPanel tournament={tournament} currentUser={currentUser} onNavigate={onNavigate} />
+        </div>
       )}
 
       {/* TAB 5: PHOTOS, VIDEOS, POSTER, PROMO VIDEO (#183, #185, #186) */}

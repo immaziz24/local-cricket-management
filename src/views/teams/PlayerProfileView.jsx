@@ -9,6 +9,7 @@ import { Avatar } from './Avatar.jsx';
 import { PlayerStatsPanel } from '../stats/PlayerStatsPanel.jsx';
 import { MediaGallery } from '../media/MediaGallery.jsx';
 import { PlayerShareCard } from '../media/ShareStudio.jsx';
+import { PlayerAwardsCard } from '../brand/AwardsPanel.jsx';
 
 /**
  * #60 Player profile (public view)
@@ -139,6 +140,7 @@ export function PlayerProfileView({ playerId, onNavigate }) {
 
       {/* #77 career statistics, #78 awards, Category D */}
       <PlayerStatsPanel playerId={playerId} onNavigate={onNavigate} />
+      <PlayerAwardsCard playerId={playerId} onNavigate={onNavigate} />
 
       {/* #182 player video profile, #187 player card */}
       <MediaGallery scope="player" scopeId={playerId} kinds={['video']} title="Video profile" subtitle="Batting, bowling and fielding clips – added by the player or their team owner" />

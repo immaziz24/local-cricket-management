@@ -1413,6 +1413,267 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  // ---------- Category J: branding, sponsorship and promotion (#189–#199) ----------
+  async saveTournamentSite(tournamentId, p) {
+    const { data, error } = await supabase.rpc('save_tournament_site', { p_tournament_id: tournamentId, p });
+    if (error) return { data: null, error: friendlyError(error, 'tournament website') };
+    return { data, error: null };
+  },
+
+  async getTournamentSite(ref) {
+    const { data, error } = await supabase.rpc('get_tournament_site', { p_ref: String(ref || '') });
+    if (error) return { data: null, error: friendlyError(error, 'tournament website') };
+    return { data, error: null };
+  },
+
+  async recordView(kind, refId) {
+    const { data, error } = await supabase.rpc('record_view', { p_kind: kind, p_ref: refId });
+    if (error) return { data: null, error: friendlyError(error, 'view') };
+    return { data, error: null };
+  },
+
+  async saveSponsor(sponsorId, p) {
+    const { data, error } = await supabase.rpc('save_sponsor', { p_sponsor_id: sponsorId || null, p });
+    if (error) return { data: null, error: friendlyError(error, 'sponsor') };
+    return { data, error: null };
+  },
+
+  async getSponsor(sponsorId) {
+    const { data, error } = await supabase.rpc('get_sponsor', { p_sponsor_id: sponsorId });
+    if (error) return { data: null, error: friendlyError(error, 'sponsor') };
+    return { data, error: null };
+  },
+
+  async listSponsors(p = {}) {
+    const { data, error } = await supabase.rpc('list_sponsors', { p });
+    if (error) return { data: null, error: friendlyError(error, 'sponsors') };
+    return { data, error: null };
+  },
+
+  async inviteSponsor(tournamentId, sponsorId, tier, amount, note) {
+    const { data, error } = await supabase.rpc('invite_sponsor', { p_tournament_id: tournamentId, p_sponsor_id: sponsorId, p_tier: tier || 'partner', p_amount: amount === '' || amount == null ? null : Number(amount), p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'sponsor') };
+    return { data, error: null };
+  },
+
+  async applyToSponsor(tournamentId, sponsorId, tier, note) {
+    const { data, error } = await supabase.rpc('apply_to_sponsor', { p_tournament_id: tournamentId, p_sponsor_id: sponsorId, p_tier: tier || 'partner', p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'sponsor') };
+    return { data, error: null };
+  },
+
+  async respondSponsorship(sponsorshipId, accept) {
+    const { data, error } = await supabase.rpc('respond_sponsorship', { p_sponsorship_id: sponsorshipId, p_accept: !!accept });
+    if (error) return { data: null, error: friendlyError(error, 'sponsorship') };
+    return { data, error: null };
+  },
+
+  async updateSponsorship(sponsorshipId, p) {
+    const { data, error } = await supabase.rpc('update_sponsorship', { p_sponsorship_id: sponsorshipId, p });
+    if (error) return { data: null, error: friendlyError(error, 'sponsorship') };
+    return { data, error: null };
+  },
+
+  async removeSponsorship(sponsorshipId) {
+    const { data, error } = await supabase.rpc('remove_sponsorship', { p_sponsorship_id: sponsorshipId });
+    if (error) return { data: null, error: friendlyError(error, 'sponsorship') };
+    return { data, error: null };
+  },
+
+  async listTournamentSponsors(tournamentId) {
+    const { data, error } = await supabase.rpc('list_tournament_sponsors', { p_tournament_id: tournamentId });
+    if (error) return { data: null, error: friendlyError(error, 'sponsors') };
+    return { data, error: null };
+  },
+
+  async saveAd(adId, p) {
+    const { data, error } = await supabase.rpc('save_ad', { p_ad_id: adId || null, p });
+    if (error) return { data: null, error: friendlyError(error, 'advert') };
+    return { data, error: null };
+  },
+
+  async deleteAd(adId) {
+    const { data, error } = await supabase.rpc('delete_ad', { p_ad_id: adId });
+    if (error) return { data: null, error: friendlyError(error, 'advert') };
+    return { data, error: null };
+  },
+
+  async listAds(p = {}) {
+    const { data, error } = await supabase.rpc('list_ads', { p });
+    if (error) return { data: null, error: friendlyError(error, 'adverts') };
+    return { data, error: null };
+  },
+
+  async getAds(slot, tournamentId = null) {
+    const { data, error } = await supabase.rpc('get_ads', { p_slot: slot, p_tournament_id: tournamentId || null });
+    if (error) return { data: null, error: friendlyError(error, 'adverts') };
+    return { data, error: null };
+  },
+
+  async recordAdEvent(adId, kind) {
+    const { data, error } = await supabase.rpc('record_ad_event', { p_ad_id: adId, p_kind: kind });
+    if (error) return { data: null, error: friendlyError(error, 'advert') };
+    return { data, error: null };
+  },
+
+  async saveCampaign(campaignId, p) {
+    const { data, error } = await supabase.rpc('save_campaign', { p_campaign_id: campaignId || null, p });
+    if (error) return { data: null, error: friendlyError(error, 'campaign') };
+    return { data, error: null };
+  },
+
+  async listCampaigns(tournamentId) {
+    const { data, error } = await supabase.rpc('list_campaigns', { p_tournament_id: tournamentId });
+    if (error) return { data: null, error: friendlyError(error, 'campaigns') };
+    return { data, error: null };
+  },
+
+  async activeCampaigns(p = {}) {
+    const { data, error } = await supabase.rpc('active_campaigns', { p });
+    if (error) return { data: null, error: friendlyError(error, 'campaigns') };
+    return { data, error: null };
+  },
+
+  async recordCampaignEvent(campaignId, kind) {
+    const { data, error } = await supabase.rpc('record_campaign_event', { p_campaign_id: campaignId, p_kind: kind });
+    if (error) return { data: null, error: friendlyError(error, 'campaign') };
+    return { data, error: null };
+  },
+
+  async hideCampaign(campaignId, hidden) {
+    const { data, error } = await supabase.rpc('hide_campaign', { p_campaign_id: campaignId, p_hidden: !!hidden });
+    if (error) return { data: null, error: friendlyError(error, 'campaign') };
+    return { data, error: null };
+  },
+
+  async issueCertificates(p) {
+    const { data, error } = await supabase.rpc('issue_certificates', { p });
+    if (error) return { data: null, error: friendlyError(error, 'certificates') };
+    return { data, error: null };
+  },
+
+  async revokeCertificate(certificateId, reason) {
+    const { data, error } = await supabase.rpc('revoke_certificate', { p_certificate_id: certificateId, p_reason: reason });
+    if (error) return { data: null, error: friendlyError(error, 'certificate') };
+    return { data, error: null };
+  },
+
+  async verifyCertificate(code) {
+    const { data, error } = await supabase.rpc('verify_certificate', { p_code: code });
+    if (error) return { data: null, error: friendlyError(error, 'certificate') };
+    return { data, error: null };
+  },
+
+  async listCertificates(p) {
+    const { data, error } = await supabase.rpc('list_certificates', { p });
+    if (error) return { data: null, error: friendlyError(error, 'certificates') };
+    return { data, error: null };
+  },
+
+  async setAward(tournamentId, p) {
+    const { data, error } = await supabase.rpc('set_award', { p_tournament_id: tournamentId, p });
+    if (error) return { data: null, error: friendlyError(error, 'award') };
+    return { data, error: null };
+  },
+
+  async removeAward(awardId) {
+    const { data, error } = await supabase.rpc('remove_award', { p_award_id: awardId });
+    if (error) return { data: null, error: friendlyError(error, 'award') };
+    return { data, error: null };
+  },
+
+  async listAwards(tournamentId) {
+    const { data, error } = await supabase.rpc('list_awards', { p_tournament_id: tournamentId });
+    if (error) return { data: null, error: friendlyError(error, 'awards') };
+    return { data, error: null };
+  },
+
+  async playerAwards(playerId) {
+    const { data, error } = await supabase.rpc('player_awards', { p_player_id: playerId });
+    if (error) return { data: null, error: friendlyError(error, 'awards') };
+    return { data, error: null };
+  },
+
+  async saveMerchItem(itemId, p) {
+    const { data, error } = await supabase.rpc('save_merch_item', { p_item_id: itemId || null, p });
+    if (error) return { data: null, error: friendlyError(error, 'merchandise') };
+    return { data, error: null };
+  },
+
+  async deleteMerchItem(itemId) {
+    const { data, error } = await supabase.rpc('delete_merch_item', { p_item_id: itemId });
+    if (error) return { data: null, error: friendlyError(error, 'merchandise') };
+    return { data, error: null };
+  },
+
+  async listMerch(tournamentId) {
+    const { data, error } = await supabase.rpc('list_merch', { p_tournament_id: tournamentId });
+    if (error) return { data: null, error: friendlyError(error, 'merchandise') };
+    return { data, error: null };
+  },
+
+  async orderMerch(itemId, p) {
+    const { data, error } = await supabase.rpc('order_merch', { p_item_id: itemId, p });
+    if (error) return { data: null, error: friendlyError(error, 'order') };
+    return { data, error: null };
+  },
+
+  async updateMerchOrder(orderId, status) {
+    const { data, error } = await supabase.rpc('update_merch_order', { p_order_id: orderId, p_status: status });
+    if (error) return { data: null, error: friendlyError(error, 'order') };
+    return { data, error: null };
+  },
+
+  async listMerchOrders(tournamentId) {
+    const { data, error } = await supabase.rpc('list_merch_orders', { p_tournament_id: tournamentId });
+    if (error) return { data: null, error: friendlyError(error, 'orders') };
+    return { data, error: null };
+  },
+
+  async myMerchOrders() {
+    const { data, error } = await supabase.rpc('my_merch_orders', {});
+    if (error) return { data: null, error: friendlyError(error, 'orders') };
+    return { data, error: null };
+  },
+
+  async sponsorReport(sponsorshipId) {
+    const { data, error } = await supabase.rpc('sponsor_report', { p_sponsorship_id: sponsorshipId });
+    if (error) return { data: null, error: friendlyError(error, 'report') };
+    return { data, error: null };
+  },
+
+  async setSponsorLogo({ sponsorId, file }) {
+    const up = await this.uploadImage('sponsors', sponsorId, file);
+    if (up.error) return up;
+    const { data, error } = await supabase.rpc('set_sponsor_logo', { p_sponsor_id: sponsorId, p_url: up.data.url });
+    if (error) return { data: null, error: friendlyError(error, 'picture') };
+    return { data, error: null };
+  },
+
+  async setSponsorshipBanner({ sponsorshipId, file }) {
+    const up = await this.uploadImage('sponsorships', sponsorshipId, file);
+    if (up.error) return up;
+    const { data, error } = await supabase.rpc('set_sponsorship_banner', { p_sponsorship_id: sponsorshipId, p_url: up.data.url });
+    if (error) return { data: null, error: friendlyError(error, 'picture') };
+    return { data, error: null };
+  },
+
+  async setAdImage({ adId, file }) {
+    const up = await this.uploadImage('ads', adId, file);
+    if (up.error) return up;
+    const { data, error } = await supabase.rpc('set_ad_image', { p_ad_id: adId, p_url: up.data.url });
+    if (error) return { data: null, error: friendlyError(error, 'picture') };
+    return { data, error: null };
+  },
+
+  async setMerchPhoto({ itemId, file }) {
+    const up = await this.uploadImage('merch', itemId, file);
+    if (up.error) return up;
+    const { data, error } = await supabase.rpc('set_merch_photo', { p_item_id: itemId, p_url: up.data.url });
+    if (error) return { data: null, error: friendlyError(error, 'picture') };
+    return { data, error: null };
+  },
+
   async getCommentary(matchId) {
     const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'commentary') };

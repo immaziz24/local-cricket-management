@@ -102,6 +102,7 @@
   .hdr-icon-btn { padding: 0.35rem; }
 }
 @media (max-width: 380px) { .is-public .hdr-btn-ghost { display: none; } }
+@media (max-width: 400px) { .site-header .site-logo-text { display: none; } }
 
 /* ---------- search ---------- */
 .gs-box { display: flex; align-items: center; gap: 0.5rem; height: 44px; padding: 0 0.35rem 0 0.9rem; border-radius: 999px; background: #f1f5f9; border: 1px solid transparent; transition: border .15s, background .15s, box-shadow .15s; }
@@ -253,3 +254,7 @@
   .is-public .hdr-mobile-search { display: flex; }
   .is-public .hdr-link { padding: 0.5rem 0.5rem; }
 }
+
+/* small action buttons (Category J panels) */
+.btn-mini { display: inline-flex; align-items: center; gap: 4px; padding: 0.3rem 0.6rem; border: 1px solid #e2e8f0; border-radius: 0.45rem; background: #fff; font-size: 0.78rem; font-weight: 600; color: #0f172a; cursor: pointer; text-decoration: none; line-height: 1.2; }
+.btn-mini:hover { background: #f8fafc; border-color: #cbd5e1; }

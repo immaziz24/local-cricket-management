@@ -17,11 +17,11 @@
 | Status | Features |
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
-| 🟩 Working (real database) | 152 / 310 |
+| 🟩 Working (real database) | 163 / 310 |
 | 🟨 Built / connected, awaiting check | 82 / 310 |
-| ⬜ Not started | 76 / 310 |
+| ⬜ Not started | 65 / 310 |
 
-**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5: Category H community & marketplace (17) and Category I live streaming & media (12) connected.** Next: Category J – branding, sponsorship and promotion.
+**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5: Category H community & marketplace (17) Category I live streaming & media (12) and Category J branding, sponsorship & promotion (11) connected.** Next: Category K – local cricket news and learning.
 
 **Phase 2 summary:** 45 of 48 built; #57, #77, #78 waited for ball-by-ball scoring.
 
@@ -37,7 +37,7 @@
 | 2 | B, C | 48 | 0 | 36 | 12 | 0 |
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
 | 4 | F, G, Q | 37 | 0 | 0 | 37 | 0 |
-| 5 | H, I, J, K | 56 | 27 | 2 | 27 | 0 |
+| 5 | H, I, J, K | 56 | 16 | 2 | 38 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
 
 ## 4. Supporting screens (not numbered features)
@@ -361,17 +361,17 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 189 | Tournament website | ⬜ |  |
-| 190 | Tournament QR code | ⬜ |  |
-| 191 | Sponsor registration | ⬜ |  |
-| 192 | Sponsor logos | ⬜ |  |
-| 193 | Sponsor banners | ⬜ |  |
-| 194 | Advertising placements | ⬜ |  |
-| 195 | Promotional campaigns | ⬜ |  |
-| 196 | Digital certificates | ⬜ |  |
-| 197 | Digital trophies and awards | ⬜ |  |
-| 198 | Tournament merchandise | ⬜ |  |
-| 199 | Tournament reports for sponsors | ⬜ |  |
+| 189 | Tournament website | 🟩 | **connected 2026-11-11** – Tournament website at ?t=CODE: hero, live/fixtures, results, points table, top players, teams, awards, photos, shop, contact; organiser picks theme, sections, contact and social links. Tested in DB |
+| 190 | Tournament QR code | 🟩 | **connected 2026-11-11** – QR code for the tournament website (own QR generator, verified by decoding); copy, download, print, share; certificates carry a verify QR too. Tested in DB |
+| 191 | Sponsor registration | 🟩 | **connected 2026-11-11** – Sponsors page: businesses register free (logo, website, phone, city), sponsor profile with tournaments sponsored; up to 5 per person. Tested in DB |
+| 192 | Sponsor logos | 🟩 | **connected 2026-11-11** – Sponsor logos with tier (title, powered by, gold…) on tournament page, website and match pages; organiser invites → sponsor accepts, or sponsor offers → organiser accepts. Tested in DB |
+| 193 | Sponsor banners | 🟩 | **connected 2026-11-11** – Sponsor banner per sponsorship (organiser or sponsor uploads); shown at the top of tournament page and website. Tested in DB |
+| 194 | Advertising placements | 🟩 | **connected 2026-11-11** – Advert placements: admins on home page / matches / match pages / footer, organisers on their tournament page, website and match pages; dates, pause, views and clicks counted. Tested in DB |
+| 195 | Promotional campaigns | 🟩 | **connected 2026-11-11** – Promotional campaigns (up to 3 at a time, max 60 days) shown in “Promoted” on the home page, local city first; views/clicks; admins can hide. Tested in DB |
+| 196 | Digital certificates | 🟩 | **connected 2026-11-11** – Digital certificates (participation, winners, awards…) as printable A4 pictures with code + QR; public check page ?verify=CODE; organiser can withdraw. Tested in DB |
+| 197 | Digital trophies and awards | 🟩 | **connected 2026-11-11** – Tournament awards (champions, runners-up, player of the tournament, best batter/bowler/fielder…) with suggestions from stats; trophy cabinet on player profile; certificates issued automatically. Tested in DB |
+| 198 | Tournament merchandise | 🟩 | **connected 2026-11-11** – Tournament merchandise shop: items with photo, sizes, stock; order requests; organiser confirms / paid / ready / delivered; stock cannot be oversold; payment directly to organiser for now. Tested in DB |
+| 199 | Tournament reports for sponsors | 🟩 | **connected 2026-11-11** – Sponsor report (organiser and sponsor only): page views, advert impressions/clicks, campaign views, photos, certificates, runs/sixes/wickets, awards; print / save as PDF. Tested in DB |
 
 **Category K – Local cricket news and learning**
 

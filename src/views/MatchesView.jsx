@@ -6,6 +6,7 @@ import { dataService } from '../services/dataService.js';
 import { Activity, PlusCircle, MapPin, Clock, Trophy, AlertCircle } from 'lucide-react';
 import { NewMatchForm } from './matches/NewMatchForm.jsx';
 import { scoreLine } from './tournaments/MatchResultForm.jsx';
+import { AdSlot } from './brand/brandShared.jsx';
 
 /**
  * Matches page (Phase 3): live, upcoming and finished matches from the real database,
@@ -50,6 +51,7 @@ export function MatchesView({ onNavigate = () => {}, currentUser }) {
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      <AdSlot slot="matches" />
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
           <Activity size={24} color="#dc2626" />

@@ -1,3 +1,5 @@
+import { AdSlot } from '../brand/brandShared.jsx';
+import { PromotedCampaigns } from '../brand/PromotionPanels.jsx';
 import React, { useEffect, useState } from 'react';
 import { dataService } from '../../services/dataService.js';
 import { Radio, Trophy, Users, BarChart3, Landmark, Flag, Smartphone, ArrowRight, CalendarDays, MapPin, Zap, ShieldCheck, Share2 } from 'lucide-react';
@@ -32,6 +34,22 @@ function MatchCard({ m, onOpen }) {
       </div>
     </button>
   );
+}
+
+function PromotedSection({ go }) {
+  const [has, setHas] = React.useState(true);
+  if (!has) return null;
+  return (
+    <section className="home-section">
+      <div className="home-section-head"><div><h2>Promoted</h2><p>Tournaments looking for teams, fans and players</p></div></div>
+      <PromotedWatch onEmpty={() => setHas(false)} go={go} />
+    </section>
+  );
+}
+function PromotedWatch({ onEmpty, go }) {
+  const [n, setN] = React.useState(null);
+  React.useEffect(() => { dataService.activeCampaigns({ limit: 3 }).then((l) => { setN((l || []).length); if (!(l || []).length) onEmpty(); }).catch(() => onEmpty()); }, []);
+  return n ? <PromotedCampaigns onNavigate={go} limit={3} /> : null;
 }
 
 export function HomeView({ onNavigate }) {
@@ -90,11 +108,16 @@ export function HomeView({ onNavigate }) {
         </div>
       </section>
 
+      <AdSlot slot="home_top" className="home-section" />
+      <PromotedSection go={go} />
+
       <section className="home-section">
         <div className="home-section-head"><div><h2>Matches</h2><p>Live, upcoming and latest results</p></div><button type="button" className="home-link" onClick={() => go('matches')}>All matches <ArrowRight size={15} /></button></div>
         {matches === null ? <div style={{ color: '#64748b' }}>Loading…</div> : show.length === 0 ? <div className="info-box" style={{ color: '#64748b' }}>No matches yet – be the first to score one.</div>
           : <div className="home-grid">{show.map((m) => <MatchCard key={m.id} m={m} onOpen={(id) => go('match-centre', id)} />)}</div>}
       </section>
+
+      <AdSlot slot="home_mid" className="home-section" />
 
       <section className="home-section">
         <div className="home-section-head"><div><h2>Tournaments</h2><p>Open for registration and in progress</p></div><button type="button" className="home-link" onClick={() => go('tournaments')}>All tournaments <ArrowRight size={15} /></button></div>

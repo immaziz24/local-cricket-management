@@ -6,8 +6,8 @@ import { SITE } from '../../config/site.js';
 /** Site footer – shown on every page for visitors and members. Empty contact details are simply hidden. */
 const COLS = [
   ['Explore', [['matches', 'Live & recent matches'], ['tournaments', 'Tournaments'], ['stats', 'Players & leaderboards'], ['community', 'Community & marketplace'], ['media', 'Live & Media']]],
-  ['For organisers', [['create-tournament', 'Create a tournament'], ['teams', 'Register a team'], ['grounds', 'Find or list a ground'], ['officials', 'Become an umpire or scorer'], ['penalties', 'Late-arrival rules']]],
-  ['Help', [['about', 'About us'], ['contact', 'Contact us'], ['faq', 'FAQ'], ['laws', 'Laws & Rules'], ['tools', 'Cricket tools']]],
+  ['For organisers', [['create-tournament', 'Create a tournament'], ['teams', 'Register a team'], ['grounds', 'Find or list a ground'], ['officials', 'Become an umpire or scorer'], ['sponsors', 'Find or become a sponsor'], ['penalties', 'Late-arrival rules']]],
+  ['Help', [['about', 'About us'], ['contact', 'Contact us'], ['faq', 'FAQ'], ['laws', 'Laws & Rules'], ['tools', 'Cricket tools'], ['verify', 'Check a certificate']]],
   ['Legal', [['privacy', 'Privacy Policy'], ['terms', 'Terms of Use'], ['guidelines', 'Community Guidelines'], ['refunds', 'Refund Policy']]]
 ];
 
