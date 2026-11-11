@@ -8,6 +8,7 @@ import { ROLE_OPTIONS, BATTING_OPTIONS, BOWLING_OPTIONS, labelOf } from './playe
 import { Avatar } from './Avatar.jsx';
 import { TransfersPanel } from './TransfersPanel.jsx';
 import { TeamStatsCard } from '../stats/TeamStatsCard.jsx';
+import { TeamPunctualityCard } from '../punctuality/TeamPunctualityCard.jsx';
 
 /**
  * Phase 2 – Team page
@@ -348,6 +349,9 @@ export function TeamDetailView({ teamId, onNavigate }) {
 
       {/* #99 Team record */}
       <TeamStatsCard teamId={teamId} onNavigate={onNavigate} />
+
+      {/* #308 #310 punctuality + player fines */}
+      <TeamPunctualityCard teamId={teamId} squad={squad} onNavigate={onNavigate} />
 
       {/* Player transfers (#75) */}
       {team.i_own && <TransfersPanel team={team} onChanged={load} />}

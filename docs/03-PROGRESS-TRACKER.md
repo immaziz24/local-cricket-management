@@ -17,11 +17,11 @@
 | Status | Features |
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
-| 🟩 Working (real database) | 113 / 310 |
+| 🟩 Working (real database) | 125 / 310 |
 | 🟨 Built / connected, awaiting check | 80 / 310 |
-| ⬜ Not started | 117 / 310 |
+| ⬜ Not started | 105 / 310 |
 
-**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. Phase 4: Category F officials (12) and Category G grounds (13) connected. Next: Category Q punctuality & late-arrival rules (#299–310) – the last part of Phase 4.
+**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. Next: Phase 5 – community and media.
 
 **Phase 2 summary:** 45 of 48 built; #57, #77, #78 waited for ball-by-ball scoring.
 
@@ -36,7 +36,7 @@
 | 1 | N | 17 | 0 | 14 | 3 | 0 |
 | 2 | B, C | 48 | 0 | 36 | 12 | 0 |
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
-| 4 | F, G, Q | 37 | 12 | 0 | 25 | 0 |
+| 4 | F, G, Q | 37 | 0 | 0 | 37 | 0 |
 | 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
 
@@ -303,18 +303,18 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 299 | Team arrival check-in | ⬜ |  |
-| 300 | Player attendance tracking | ⬜ |  |
-| 301 | Match readiness status | ⬜ |  |
-| 302 | Automatic delay calculator | ⬜ |  |
-| 303 | Over deduction penalty – configurable rate (example: 1 over per 10 minutes) | ⬜ |  |
-| 304 | Fielding restriction penalty – configurable outside-circle limit (example: only 2 fielders outside the 30-yard circle) | ⬜ |  |
-| 305 | Penalty runs – configurable rate (example: 5 runs per 10 minutes awarded to the opponent) | ⬜ |  |
-| 306 | One penalty method per match – only one of the three methods can be active | ⬜ |  |
-| 307 | Penalty approval and opponent selection – select late team, benefiting opponent and authorised approver | ⬜ |  |
-| 308 | Repeat offender and owner accountability | ⬜ |  |
-| 309 | Penalty payments, appeals and exemptions | ⬜ |  |
-| 310 | Delay history and automatic notifications | ⬜ |  |
+| 299 | Team arrival check-in | 🟩 | **connected 2026-11-11** – Match day: team check-in (now or set time, players present) by team owner, match owner or official; other team notified |
+| 300 | Player attendance tracking | 🟩 | **connected 2026-11-11** – player attendance: present / late / absent from squad + Playing XI |
+| 301 | Match readiness status | 🟩 | **connected 2026-11-11** – readiness checklist (both teams in, enough players, XIs, scorer, umpire, ground, no penalty waiting) |
+| 302 | Automatic delay calculator | 🟩 | **connected 2026-11-11** – delay worked out from scheduled start; penalty proposed automatically at check-in; delay calculator on Late-arrival rules page |
+| 303 | Over deduction penalty – configurable rate (example: 1 over per 10 minutes) | 🟩 | **connected 2026-11-11** – overs cut for the late team (e.g. 1 over / 10 min) – applied to its innings when approved |
+| 304 | Fielding restriction penalty – configurable outside-circle limit (example: only 2 fielders outside the 30-yard circle) | 🟩 | **connected 2026-11-11** – fielding restriction (e.g. 1 over / 5 min, max 2 outside circle) – banner for the scorer |
+| 305 | Penalty runs – configurable rate (example: 5 runs per 10 minutes awarded to the opponent) | 🟩 | **connected 2026-11-11** – penalty runs to the opponent (e.g. 5 / 10 min) – added to their innings (or when they bat) |
+| 306 | One penalty method per match – only one of the three methods can be active | 🟩 | **connected 2026-11-11** – only one method per match (playing conditions; falls back to tournament penalty policy) |
+| 307 | Penalty approval and opponent selection – select late team, benefiting opponent and authorised approver | 🟩 | **connected 2026-11-11** – late team + benefiting opponent recorded; approval by organiser (or umpire if allowed) before it affects the match; logged in Reports |
+| 308 | Repeat offender and owner accountability | 🟩 | **connected 2026-11-11** – repeat-offender count and flag (threshold in rules); organiser fines the late team; team owner fines players |
+| 309 | Penalty payments, appeals and exemptions | 🟩 | **connected 2026-11-11** – appeal by late team owner; uphold or waive (exemption with reason, effect reversed); fines paid/unpaid |
+| 310 | Delay history and automatic notifications | 🟩 | **connected 2026-11-11** – team punctuality history (team page, Late-arrival rules page) + notifications at check-in, proposal, approval, appeal, waive, fines |
 
 ### Phase 5 – Cricket Community and Media Ecosystem
 

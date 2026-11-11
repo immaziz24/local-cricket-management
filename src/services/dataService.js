@@ -817,6 +817,76 @@ export const dataService = {
     return res.data;
   },
 
+  async checkInTeam(matchId, teamId, arrivedAt, players, note) {
+    requireDatabase();
+    const res = await supabaseClient.checkInTeam(matchId, teamId, arrivedAt, players, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setAttendance(matchId, playerId, status) {
+    requireDatabase();
+    const res = await supabaseClient.setAttendance(matchId, playerId, status);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getMatchReadiness(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getMatchReadiness(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async proposeLatePenalty(matchId, lateTeamId, minutes) {
+    requireDatabase();
+    const res = await supabaseClient.proposeLatePenalty(matchId, lateTeamId, minutes);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async decideLatePenalty(penaltyId, action, note) {
+    requireDatabase();
+    const res = await supabaseClient.decideLatePenalty(penaltyId, action, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async appealLatePenalty(penaltyId, reason) {
+    requireDatabase();
+    const res = await supabaseClient.appealLatePenalty(penaltyId, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setLateFine(penaltyId, amount, paid) {
+    requireDatabase();
+    const res = await supabaseClient.setLateFine(penaltyId, amount, paid);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async addPlayerFine(teamId, playerId, amount, reason, matchId) {
+    requireDatabase();
+    const res = await supabaseClient.addPlayerFine(teamId, playerId, amount, reason, matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setPlayerFinePaid(fineId, paid) {
+    requireDatabase();
+    const res = await supabaseClient.setPlayerFinePaid(fineId, paid);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getTeamPunctuality(teamId) {
+    requireDatabase();
+    const res = await supabaseClient.getTeamPunctuality(teamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCommentary(matchId) {
     requireDatabase();
     const res = await supabaseClient.getCommentary(matchId);

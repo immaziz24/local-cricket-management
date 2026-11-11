@@ -1154,6 +1154,66 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async checkInTeam(matchId, teamId, arrivedAt, players, note) {
+    const { data, error } = await supabase.rpc('check_in_team', { p_match_id: matchId, p_team_id: teamId, p_arrived_at: arrivedAt || null, p_players: players === '' || players == null ? null : Number(players), p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'punctuality') };
+    return { data, error: null };
+  },
+
+  async setAttendance(matchId, playerId, status) {
+    const { data, error } = await supabase.rpc('set_attendance', { p_match_id: matchId, p_player_id: playerId, p_status: status || null });
+    if (error) return { data: null, error: friendlyError(error, 'punctuality') };
+    return { data, error: null };
+  },
+
+  async getMatchReadiness(matchId) {
+    const { data, error } = await supabase.rpc('get_match_readiness', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'punctuality') };
+    return { data, error: null };
+  },
+
+  async proposeLatePenalty(matchId, lateTeamId, minutes) {
+    const { data, error } = await supabase.rpc('propose_late_penalty', { p_match_id: matchId, p_late_team_id: lateTeamId, p_minutes: minutes === '' || minutes == null ? null : Number(minutes) });
+    if (error) return { data: null, error: friendlyError(error, 'punctuality') };
+    return { data, error: null };
+  },
+
+  async decideLatePenalty(penaltyId, action, note) {
+    const { data, error } = await supabase.rpc('decide_late_penalty', { p_penalty_id: penaltyId, p_action: action, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'punctuality') };
+    return { data, error: null };
+  },
+
+  async appealLatePenalty(penaltyId, reason) {
+    const { data, error } = await supabase.rpc('appeal_late_penalty', { p_penalty_id: penaltyId, p_reason: reason });
+    if (error) return { data: null, error: friendlyError(error, 'punctuality') };
+    return { data, error: null };
+  },
+
+  async setLateFine(penaltyId, amount, paid) {
+    const { data, error } = await supabase.rpc('set_late_fine', { p_penalty_id: penaltyId, p_amount: amount === '' || amount == null ? null : Number(amount), p_paid: !!paid });
+    if (error) return { data: null, error: friendlyError(error, 'punctuality') };
+    return { data, error: null };
+  },
+
+  async addPlayerFine(teamId, playerId, amount, reason, matchId) {
+    const { data, error } = await supabase.rpc('add_player_fine', { p_team_id: teamId, p_player_id: playerId, p_amount: Number(amount), p_reason: reason, p_match_id: matchId || null });
+    if (error) return { data: null, error: friendlyError(error, 'punctuality') };
+    return { data, error: null };
+  },
+
+  async setPlayerFinePaid(fineId, paid) {
+    const { data, error } = await supabase.rpc('set_player_fine_paid', { p_fine_id: fineId, p_paid: !!paid });
+    if (error) return { data: null, error: friendlyError(error, 'punctuality') };
+    return { data, error: null };
+  },
+
+  async getTeamPunctuality(teamId) {
+    const { data, error } = await supabase.rpc('get_team_punctuality', { p_team_id: teamId });
+    if (error) return { data: null, error: friendlyError(error, 'punctuality') };
+    return { data, error: null };
+  },
+
   async getCommentary(matchId) {
     const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'commentary') };

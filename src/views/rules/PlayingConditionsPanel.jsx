@@ -20,6 +20,19 @@ const yesNo = (v) => (v ? 'Yes' : 'No');
 const label = { fontSize: '0.75rem', color: '#64748b', display: 'flex', flexDirection: 'column', gap: '0.2rem' };
 const input = { padding: '0.45rem 0.55rem', border: '1px solid #cbd5e1', borderRadius: '0.4rem', fontSize: '0.85rem', backgroundColor: '#fff' };
 
+// Category Q – one late-arrival method per match (#306); local rule, not an ICC sanction.
+const LATE_METHODS = [['', 'Same as the tournament'], ['none', 'No penalty'], ['overs_deduction', 'Overs cut'], ['penalty_runs', 'Penalty runs to the opponent'], ['fielding_restriction', 'Fielding restriction']];
+function lateText(r) {
+  const m = r.late_method;
+  if (!m) return 'Tournament setting';
+  if (m === 'none') return 'No penalty';
+  const g = r.late_grace_min ? ` (after ${r.late_grace_min} min grace)` : '';
+  const who = r.late_approver === 'umpire' ? 'organiser or umpire approves' : 'organiser approves';
+  if (m === 'overs_deduction') return `${r.late_overs_per_step} over(s) cut per ${r.late_step_min} min late${g}; ${who}`;
+  if (m === 'penalty_runs') return `${r.late_runs_per_step} runs to the opponent per ${r.late_step_min} min late${g}; ${who}`;
+  return `1 over with max ${r.late_field_max_outside} fielders outside the circle per ${r.late_field_step_min} min late${g}; ${who}`;
+}
+
 function summaryRows(r, facts) {
   return [
     ['Format', [facts?.overs_per_innings && `${facts.overs_per_innings} overs`, facts?.players_per_side && `${facts.players_per_side} a side`,
@@ -34,7 +47,8 @@ function summaryRows(r, facts) {
     ['Fielders outside the circle', `Max ${r.fielders_outside} after the powerplay`],
     ['Boundary size', r.boundary_size_m ? `About ${r.boundary_size_m} m` : 'Not set'],
     ...(facts?.match_type === 'two_innings' ? [['Follow-on', `Lead of ${r.follow_on_lead || 75} runs or more`]] : []),
-    ...(facts?.max_substitutes != null ? [['Substitutes', `Up to ${facts.max_substitutes} per team`]] : [])
+    ...(facts?.max_substitutes != null ? [['Substitutes', `Up to ${facts.max_substitutes} per team`]] : []),
+    ['Late arrival', lateText(r)]
   ];
 }
 
@@ -136,6 +150,27 @@ export function PlayingConditionsPanel({ tournamentId = null, matchId = null }) 
               <label style={label}>Boundary size (metres){num('boundary_size_m', 'Not set')}</label>
               {facts?.match_type === 'two_innings' && <label style={label}>Follow-on lead (runs){num('follow_on_lead', '75')}</label>}
             </div>
+          </section>
+          <section>
+            <h4 style={{ margin: '0 0 0.4rem', fontSize: '0.85rem' }}>Late arrival (only one method per match)</h4>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: '0.6rem' }}>
+              <label style={label}>Method
+                <select value={edit.late_method || ''} onChange={(e) => set('late_method', e.target.value || null)} style={input}>{LATE_METHODS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}</select>
+              </label>
+              {edit.late_method && edit.late_method !== 'none' && <>
+                <label style={label}>Grace period (min){num('late_grace_min', '0')}</label>
+                {edit.late_method !== 'fielding_restriction' && <label style={label}>Every … minutes late{num('late_step_min', '10')}</label>}
+                {edit.late_method === 'overs_deduction' && <label style={label}>Overs cut each time{num('late_overs_per_step', '1')}</label>}
+                {edit.late_method === 'penalty_runs' && <label style={label}>Runs each time{num('late_runs_per_step', '5')}</label>}
+                {edit.late_method === 'fielding_restriction' && <label style={label}>1 restricted over per … min{num('late_field_step_min', '5')}</label>}
+                {edit.late_method === 'fielding_restriction' && <label style={label}>Max fielders outside circle{num('late_field_max_outside', '2')}</label>}
+                <label style={label}>Who approves
+                  <select value={edit.late_approver || 'organiser'} onChange={(e) => set('late_approver', e.target.value)} style={input}><option value="organiser">Organiser only</option><option value="umpire">Organiser or match umpire</option></select>
+                </label>
+                <label style={label}>Repeat offender after … penalties{num('late_repeat_threshold', '3')}</label>
+              </>}
+            </div>
+            <p style={{ margin: '0.3rem 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>Publish this before the match. It is a local tournament rule, not an ICC sanction.</p>
           </section>
           <section>
             <h4 style={{ margin: '0 0 0.4rem', fontSize: '0.85rem' }}>Your own rules (written)</h4>

@@ -156,7 +156,7 @@ export function App() {
 
       {activeTab === 'create-tournament' && <CreateTournamentView onNavigate={handleNavigate} />}
 
-      {activeTab === 'penalties' && <PenaltyRulesView />}
+      {activeTab === 'penalties' && <PenaltyRulesView currentUser={currentUser} onNavigate={handleNavigate} />}
 
       {activeTab === 'teams' && <TeamsView key={currentUser ? currentUser.id : 'guest'} onNavigate={handleNavigate} />}
 

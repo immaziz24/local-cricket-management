@@ -302,6 +302,11 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                     {cur.this_over.length > 0 && <span style={{ fontSize: '0.78rem', color: '#334155', marginLeft: '0.3rem', fontWeight: 700 }}>= {cur.this_over.reduce((t, b) => t + b.runs + b.extra_runs, 0)} runs</span>}
                   </div>
                 </div>
+                {rs?.late_restriction && (
+                  <div style={{ padding: '0.4rem 0.7rem', borderRadius: '0.5rem', backgroundColor: '#fef3c7', color: '#92400e', fontWeight: 700, fontSize: '0.8rem' }}>
+                    Late-arrival penalty: {rs.late_restriction.team} may have only {rs.late_restriction.max_outside} fielders outside the circle until over {rs.late_restriction.overs} is finished.
+                  </div>
+                )}
                 {(freeHit || powerplay || mustRetire.length > 0) && (
                   <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
                     {freeHit && <span style={{ padding: '0.3rem 0.7rem', borderRadius: '999px', backgroundColor: '#dc2626', color: '#fff', fontWeight: 900, fontSize: '0.8rem' }}>FREE HIT – only a run out counts</span>}
