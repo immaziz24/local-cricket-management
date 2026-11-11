@@ -17,11 +17,11 @@
 | Status | Features |
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
-| 🟩 Working (real database) | 100 / 310 |
+| 🟩 Working (real database) | 113 / 310 |
 | 🟨 Built / connected, awaiting check | 80 / 310 |
-| ⬜ Not started | 130 / 310 |
+| ⬜ Not started | 117 / 310 |
 
-**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. Phase 4 started: Category F officials (12) connected. Next: Category G grounds (#147–159), then Q.
+**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. Phase 4: Category F officials (12) and Category G grounds (13) connected. Next: Category Q punctuality & late-arrival rules (#299–310) – the last part of Phase 4.
 
 **Phase 2 summary:** 45 of 48 built; #57, #77, #78 waited for ball-by-ball scoring.
 
@@ -36,7 +36,7 @@
 | 1 | N | 17 | 0 | 14 | 3 | 0 |
 | 2 | B, C | 48 | 0 | 36 | 12 | 0 |
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
-| 4 | F, G, Q | 37 | 25 | 0 | 12 | 0 |
+| 4 | F, G, Q | 37 | 12 | 0 | 25 | 0 |
 | 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
 
@@ -285,19 +285,19 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 147 | Ground registration | ⬜ |  |
-| 148 | Ground profile | ⬜ |  |
-| 149 | Ground photographs | ⬜ |  |
-| 150 | Ground location and map | ⬜ |  |
-| 151 | Pitch information | ⬜ |  |
-| 152 | Boundary dimensions | ⬜ |  |
-| 153 | Ground facilities | ⬜ |  |
-| 154 | Ground booking | ⬜ |  |
-| 155 | Ground availability calendar | ⬜ |  |
-| 156 | Ground rental charges | ⬜ |  |
-| 157 | Pitch preparation records | ⬜ |  |
-| 158 | Ground inspection reports | ⬜ |  |
-| 159 | Ground match history | ⬜ |  |
+| 147 | Ground registration | 🟩 | **connected 2026-11-11** – Grounds page: anyone registers a ground and manages it (open platform) |
+| 148 | Ground profile | 🟩 | **connected 2026-11-11** – ground profile: address, contact, description, owner, stats |
+| 149 | Ground photographs | 🟩 | **connected 2026-11-11** – photo upload to storage (grounds/<id>/), cover photo, delete; max 20 |
+| 150 | Ground location and map | 🟩 | **connected 2026-11-11** – latitude/longitude (or "use my location"), OpenStreetMap map, Google Maps directions |
+| 151 | Pitch information | 🟩 | **connected 2026-11-11** – pitch type, number of pitches, pitch notes |
+| 152 | Boundary dimensions | 🟩 | **connected 2026-11-11** – straight/square boundary (m) + boundary notes |
+| 153 | Ground facilities | 🟩 | **connected 2026-11-11** – 14 facilities to tick; search by facility |
+| 154 | Ground booking | 🟩 | **connected 2026-11-11** – request booking → owner confirms/rejects; owner can add bookings and block slots; cancel; mark paid; overlap checks; notifications; requests list |
+| 155 | Ground availability calendar | 🟩 | **connected 2026-11-11** – weekly availability calendar (busy slots public, details only for owner/booker) |
+| 156 | Ground rental charges | 🟩 | **connected 2026-11-11** – hourly / half-day / full-day rates + evening extra; price worked out per booking |
+| 157 | Pitch preparation records | 🟩 | **connected 2026-11-11** – pitch preparation records (rolled, watered, mowed… + condition) |
+| 158 | Ground inspection reports | 🟩 | **connected 2026-11-11** – inspection reports with 4 ratings + fit for play (owner, or organiser/officials of a match there); owner notified if unfit |
+| 159 | Ground match history | 🟩 | **connected 2026-11-11** – match owner links a match to a ground; ground match history + stats (avg 1st-innings score, highest total, batting first vs chasing) |
 
 **Category Q – Team punctuality, attendance and match delay management**
 

@@ -1079,6 +1079,81 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async saveGround(groundId, ground) {
+    const { data, error } = await supabase.rpc('save_ground', { p_ground_id: groundId || null, p: ground });
+    if (error) return { data: null, error: friendlyError(error, 'ground') };
+    return { data, error: null };
+  },
+
+  async listGrounds(filters) {
+    const { data, error } = await supabase.rpc('list_grounds', { p: filters || {} });
+    if (error) return { data: null, error: friendlyError(error, 'ground') };
+    return { data, error: null };
+  },
+
+  async getGround(groundId) {
+    const { data, error } = await supabase.rpc('get_ground', { p_ground_id: groundId });
+    if (error) return { data: null, error: friendlyError(error, 'ground') };
+    return { data, error: null };
+  },
+
+  async removeGroundPhoto(photoId, makeCover) {
+    const { data, error } = await supabase.rpc('remove_ground_photo', { p_photo_id: photoId, p_make_cover: !!makeCover });
+    if (error) return { data: null, error: friendlyError(error, 'ground') };
+    return { data, error: null };
+  },
+
+  async requestGroundBooking(groundId, booking) {
+    const { data, error } = await supabase.rpc('request_ground_booking', { p_ground_id: groundId, p: booking });
+    if (error) return { data: null, error: friendlyError(error, 'ground') };
+    return { data, error: null };
+  },
+
+  async decideGroundBooking(bookingId, action, note) {
+    const { data, error } = await supabase.rpc('decide_ground_booking', { p_booking_id: bookingId, p_action: action, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'ground') };
+    return { data, error: null };
+  },
+
+  async getGroundCalendar(groundId, from, to) {
+    const { data, error } = await supabase.rpc('get_ground_calendar', { p_ground_id: groundId, p_from: from, p_to: to });
+    if (error) return { data: null, error: friendlyError(error, 'ground') };
+    return { data, error: null };
+  },
+
+  async myGroundBookings() {
+    const { data, error } = await supabase.rpc('my_ground_bookings', {});
+    if (error) return { data: null, error: friendlyError(error, 'ground') };
+    return { data, error: null };
+  },
+
+  async addPitchLog(groundId, log) {
+    const { data, error } = await supabase.rpc('add_pitch_log', { p_ground_id: groundId, p: log });
+    if (error) return { data: null, error: friendlyError(error, 'ground') };
+    return { data, error: null };
+  },
+
+  async addGroundInspection(groundId, report) {
+    const { data, error } = await supabase.rpc('add_ground_inspection', { p_ground_id: groundId, p: report });
+    if (error) return { data: null, error: friendlyError(error, 'ground') };
+    return { data, error: null };
+  },
+
+  async setMatchGround(matchId, groundId) {
+    const { data, error } = await supabase.rpc('set_match_ground', { p_match_id: matchId, p_ground_id: groundId || null });
+    if (error) return { data: null, error: friendlyError(error, 'ground') };
+    return { data, error: null };
+  },
+
+  // #149 ground photo: upload to grounds/<id>/ then register it
+  async addGroundPhoto({ groundId, file, caption, makeCover }) {
+    const up = await this.uploadImage('grounds', groundId, file);
+    if (up.error) return up;
+    const { data, error } = await supabase.rpc('add_ground_photo', { p_ground_id: groundId, p_url: up.data.url, p_caption: caption || null, p_make_cover: !!makeCover });
+    if (error) return { data: null, error: friendlyError(error, 'ground photo') };
+    return { data, error: null };
+  },
+
   async getCommentary(matchId) {
     const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'commentary') };

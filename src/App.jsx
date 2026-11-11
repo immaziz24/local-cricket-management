@@ -18,6 +18,8 @@ import { StatsView } from './views/stats/StatsView.jsx';
 import { LawsView } from './views/rules/LawsView.jsx';
 import { ToolsView } from './views/tools/ToolsView.jsx';
 import { OfficialsView, OfficialProfileView } from './views/officials/OfficialsView.jsx';
+import { GroundsView } from './views/grounds/GroundsView.jsx';
+import { GroundDetailView } from './views/grounds/GroundDetailView.jsx';
 import { useDashboardData } from './hooks/useDashboardData.js';
 import { dataService, onAuthChange } from './services/dataService.js';
 
@@ -29,6 +31,7 @@ export function App() {
   const [selectedPlayerId, setSelectedPlayerId] = useState(null);
   const [selectedMatchId, setSelectedMatchId] = useState(null);
   const [selectedOfficialId, setSelectedOfficialId] = useState(null);
+  const [selectedGroundId, setSelectedGroundId] = useState(null);
   const [liveCount, setLiveCount] = useState(0);
 
   // Keep the signed-in user in sync across the whole app (#255).
@@ -76,6 +79,9 @@ export function App() {
     }
     if (tab === 'player-profile' && param) {
       setSelectedPlayerId(param);
+    }
+    if (tab === 'ground' && param) {
+      setSelectedGroundId(param);
     }
     if (tab === 'official-profile' && param) {
       setSelectedOfficialId(param);
@@ -128,6 +134,12 @@ export function App() {
       {activeTab === 'tools' && <ToolsView />}
 
       {activeTab === 'officials' && <OfficialsView currentUser={currentUser} onNavigate={handleNavigate} />}
+
+      {activeTab === 'grounds' && <GroundsView currentUser={currentUser} onNavigate={handleNavigate} />}
+
+      {activeTab === 'ground' && selectedGroundId && (
+        <GroundDetailView key={selectedGroundId} groundId={selectedGroundId} currentUser={currentUser} onNavigate={handleNavigate} />
+      )}
 
       {activeTab === 'official-profile' && selectedOfficialId && (
         <OfficialProfileView key={selectedOfficialId} userId={selectedOfficialId} onNavigate={handleNavigate} />

@@ -733,6 +733,90 @@ export const dataService = {
     return res.data;
   },
 
+  async saveGround(groundId, ground) {
+    requireDatabase();
+    const res = await supabaseClient.saveGround(groundId, ground);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listGrounds(filters) {
+    requireDatabase();
+    const res = await supabaseClient.listGrounds(filters);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getGround(groundId) {
+    requireDatabase();
+    const res = await supabaseClient.getGround(groundId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async removeGroundPhoto(photoId, makeCover) {
+    requireDatabase();
+    const res = await supabaseClient.removeGroundPhoto(photoId, makeCover);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async requestGroundBooking(groundId, booking) {
+    requireDatabase();
+    const res = await supabaseClient.requestGroundBooking(groundId, booking);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async decideGroundBooking(bookingId, action, note) {
+    requireDatabase();
+    const res = await supabaseClient.decideGroundBooking(bookingId, action, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getGroundCalendar(groundId, from, to) {
+    requireDatabase();
+    const res = await supabaseClient.getGroundCalendar(groundId, from, to);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async myGroundBookings() {
+    requireDatabase();
+    const res = await supabaseClient.myGroundBookings();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async addPitchLog(groundId, log) {
+    requireDatabase();
+    const res = await supabaseClient.addPitchLog(groundId, log);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async addGroundInspection(groundId, report) {
+    requireDatabase();
+    const res = await supabaseClient.addGroundInspection(groundId, report);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setMatchGround(matchId, groundId) {
+    requireDatabase();
+    const res = await supabaseClient.setMatchGround(matchId, groundId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async addGroundPhoto(upload) {
+    requireDatabase();
+    const res = await supabaseClient.addGroundPhoto(upload);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCommentary(matchId) {
     requireDatabase();
     const res = await supabaseClient.getCommentary(matchId);
