@@ -139,7 +139,6 @@ export function UserVerificationView() {
       {/* Header */}
       <div style={{ padding: '1.25rem 1.5rem', backgroundColor: '#ffffff', border: '1px solid #e2e8f0', borderRadius: '0.75rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-          <Badge variant="success">FEATURE #265</Badge>
           <span style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
             Optional verified badges
           </span>

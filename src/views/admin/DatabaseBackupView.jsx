@@ -42,7 +42,6 @@ export function DatabaseBackupView() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <div style={{ padding: '1.25rem 1.5rem', backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.75rem' }}>
-        <Badge variant="success">FEATURE #268</Badge>
         <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0.35rem 0 0.25rem' }}>Database Backup</h2>
         <p style={{ fontSize: '0.825rem', color: '#64748b', margin: 0 }}>Download a copy of all platform data whenever you want.</p>
       </div>

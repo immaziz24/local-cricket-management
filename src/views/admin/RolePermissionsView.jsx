@@ -196,7 +196,6 @@ export function RolePermissionsView(props) {
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <Badge variant="success">FEATURES #259–#264</Badge>
             <span style={{ fontSize: '0.75rem', color: '#64748b', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Role-Based Access Control (RBAC) Matrix
             </span>
@@ -302,7 +301,7 @@ export function RolePermissionsView(props) {
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <h3 style={{ fontSize: '1.15rem', fontWeight: 700, margin: 0, color: '#0f172a' }}>
-                Feature #{currentRoleMeta.id}: {currentRoleMeta.title}
+                {currentRoleMeta.title}
               </h3>
               <Badge variant="primary">Automatic</Badge>
             </div>
@@ -350,7 +349,7 @@ export function RolePermissionsView(props) {
                         gap: '0.25rem'
                       }}
                     >
-                      <span>Launch Feature #31</span>
+                      <span>Create a tournament</span>
                       <ArrowRight size={11} />
                     </button>
                   )}

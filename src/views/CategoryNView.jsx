@@ -86,11 +86,11 @@ export function CategoryNView(props) {
 
   const tabPillars = [
     { id: 'overview', label: 'All 17 Features Grid', icon: Layers, count: 17 },
-    { id: 'auth', label: 'Auth & Access (#254-#256)', icon: UserPlus, count: 3 },
-    { id: 'dashboards', label: 'Dashboards (#257-#258)', icon: LayoutDashboard, count: 2 },
-    { id: 'rbac', label: 'Role Permissions (#259-#264)', icon: Shield, count: 6 },
-    { id: 'governance', label: 'User Governance (#265-#266)', icon: UserX, count: 2 },
-    { id: 'secops', label: 'Security & Operations (#267-#270)', icon: Lock, count: 4 }
+    { id: 'auth', label: 'Auth & Access', icon: UserPlus, count: 3 },
+    { id: 'dashboards', label: 'Dashboards', icon: LayoutDashboard, count: 2 },
+    { id: 'rbac', label: 'Role Permissions', icon: Shield, count: 6 },
+    { id: 'governance', label: 'User Governance', icon: UserX, count: 2 },
+    { id: 'secops', label: 'Security & Operations', icon: Lock, count: 4 }
   ];
 
   // Quick sub-tabs within pillars
@@ -131,7 +131,7 @@ export function CategoryNView(props) {
             </span>
           </div>
           <h1 style={{ fontSize: '1.85rem', fontWeight: 800, margin: '0 0 0.35rem 0', letterSpacing: '-0.02em' }}>
-            Phase 1 Coordination Hub (Features #254–270)
+            Phase 1 Coordination Hub
           </h1>
           <p style={{ fontSize: '0.875rem', color: '#94a3b8', margin: 0 }}>
             Unified administrative control, authentication suite, 6-persona RBAC, audit logging, and data protection.
@@ -232,7 +232,7 @@ export function CategoryNView(props) {
           </div>
 
           {/* Master 17-Slot Grid */}
-          <Card title="Phase 1 Feature Inventory (#254–#270)">
+          <Card title="Phase 1 Feature Inventory">
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
               {slots.map((slot) => (
                 <div key={slot.id} style={{

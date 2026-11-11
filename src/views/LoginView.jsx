@@ -186,9 +186,8 @@ export function LoginView(props) {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
-          <Badge variant="primary">Phase 1 • Category N</Badge>
           <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>
-            Feature #255 — User Login
+            Welcome back to Local Cricket
           </span>
         </div>
         <h1 style={{ fontSize: '1.5rem', color: '#FFFFFF', marginBottom: '0.25rem' }}>
@@ -300,10 +299,10 @@ export function LoginView(props) {
                 <span>Sign Out</span>
               </Button>
               <Button variant="primary" onClick={() => onNavigate('dashboard')}>
-                Go to Match Center
+                Go to My cricket
               </Button>
-              <Button variant="secondary" onClick={() => onNavigate('category-n')}>
-                Category N Hub (#254–270)
+              <Button variant="secondary" onClick={() => onNavigate('settings')}>
+                Settings &amp; Privacy
               </Button>
             </div>
           </div>
@@ -423,7 +422,7 @@ export function LoginView(props) {
                   padding: 0
                 }}
               >
-                Forgot password? (#256)
+                Forgot password?
               </button>
             </div>
 
@@ -523,7 +522,7 @@ export function LoginView(props) {
                   padding: 0
                 }}
               >
-                Register here (Feature #254)
+                Register here
               </button>
             </div>
           </form>

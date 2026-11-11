@@ -66,7 +66,7 @@ export function DashboardOverview(props) {
               onClick={() => onNavigate('create-tournament')}
               style={{ backgroundColor: '#059669', borderColor: '#059669' }}
             >
-              Create Tournament (#31)
+              Create Tournament
             </Button>
             <Button
               variant="outline"
@@ -82,7 +82,7 @@ export function DashboardOverview(props) {
               onClick={() => onNavigate('category-n')}
               style={{ backgroundColor: '#10B981' }}
             >
-              Category N Hub (#254–270)
+              Category N Hub
             </Button>
             <Button
               variant="outline"
@@ -90,7 +90,7 @@ export function DashboardOverview(props) {
               onClick={() => onNavigate('login')}
               style={{ borderColor: 'rgba(255, 255, 255, 0.25)', color: '#0F172A', backgroundColor: '#FFFFFF' }}
             >
-              Sign In (#255)
+              Sign In
             </Button>
             <Button
               variant="outline"
@@ -268,7 +268,7 @@ export function DashboardOverview(props) {
             action={
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                 <Button variant="outline" size="sm" onClick={() => onNavigate('create-tournament')}>
-                  + Create (#31)
+                  + Create
                 </Button>
                 <Button variant="ghost" size="sm" onClick={() => onNavigate('tournaments')}>
                   <span>View All</span>

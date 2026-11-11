@@ -131,7 +131,6 @@ export function AdminDashboardView() {
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <Badge variant="warning">FEATURE #258</Badge>
             <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Admin Operations Desk
             </span>
@@ -157,8 +156,8 @@ export function AdminDashboardView() {
       {/* KPI cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem' }}>
         <StatCard label="Total Members" value={data?.total_users ?? 0} note={`+${data?.new_users_7d ?? 0} joined in the last 7 days`} icon={Users} color="#0284c7" />
-        <StatCard label="Verification Requests" value={data?.pending_verifications ?? 0} note="Waiting for review (#265)" icon={BadgeCheck} color="#16a34a" />
-        <StatCard label="Open User Reports" value={data?.open_reports ?? 0} note="Waiting for review (#266)" icon={AlertTriangle} color="#d97706" />
+        <StatCard label="Verification Requests" value={data?.pending_verifications ?? 0} note="Waiting for review" icon={BadgeCheck} color="#16a34a" />
+        <StatCard label="Open User Reports" value={data?.open_reports ?? 0} note="Waiting for review" icon={AlertTriangle} color="#d97706" />
         <StatCard label="Suspended Accounts" value={data?.suspended_users ?? 0} note="Currently suspended" icon={ShieldCheck} color="#8b5cf6" />
       </div>
 
@@ -211,7 +210,7 @@ export function AdminDashboardView() {
 
       {/* Queues */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
-        <Card title="Verification Requests (#265)">
+        <Card title="Verification Requests">
           {verifications.length === 0 ? (
             <EmptyRow>No verification requests waiting.</EmptyRow>
           ) : (
@@ -227,11 +226,11 @@ export function AdminDashboardView() {
             </div>
           )}
           <p style={{ margin: '0.75rem 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>
-            Approve or reject in the User Governance tab once #265 is connected.
+            Approve or reject in the Verification requests tab.
           </p>
         </Card>
 
-        <Card title="Open User Reports (#266)">
+        <Card title="Open User Reports">
           {reports.length === 0 ? (
             <EmptyRow>No open reports.</EmptyRow>
           ) : (
@@ -250,7 +249,7 @@ export function AdminDashboardView() {
             </div>
           )}
           <p style={{ margin: '0.75rem 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>
-            Review and suspend in the User Governance tab once #266 is connected.
+            Review and suspend in the Reports & suspensions tab.
           </p>
         </Card>
       </div>
@@ -259,9 +258,9 @@ export function AdminDashboardView() {
       <Card title="Coming with later phases">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.75rem' }}>
           {[
-            { icon: Trophy, title: 'Tournament approvals', when: 'Phase 2 · tournament management (#31–58)' },
-            { icon: Users, title: 'Team registrations to approve', when: 'Phase 2 · team approval (#41)' },
-            { icon: AlertTriangle, title: 'Match disputes', when: 'Phase 4 · dispute management (#143)' }
+            { icon: Trophy, title: 'Tournament approvals', when: 'Coming later' },
+            { icon: Users, title: 'Team registrations to approve', when: 'Coming later' },
+            { icon: AlertTriangle, title: 'Match disputes', when: 'On each match page' }
           ].map(({ icon: Icon, title, when }) => (
             <div key={title} style={{ padding: '0.85rem', border: '1px dashed #cbd5e1', borderRadius: '0.5rem', color: '#64748b', fontSize: '0.85rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontWeight: 600, color: '#334155' }}>

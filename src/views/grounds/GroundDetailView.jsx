@@ -47,7 +47,7 @@ function Calendar({ groundId, isOwner, signedIn, ground, onChanged }) {
     return amt;
   })();
   return (
-    <Card title="Availability & booking (#154, #155)" subtitle={cal && cal.open_time ? `Open ${String(cal.open_time).slice(0, 5)}–${String(cal.close_time || '').slice(0, 5)}` : null}>
+    <Card title="Availability & booking" subtitle={cal && cal.open_time ? `Open ${String(cal.open_time).slice(0, 5)}–${String(cal.close_time || '').slice(0, 5)}` : null}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.6rem' }}>
         <button onClick={() => setStart(addDays(start, -7))} aria-label="Previous week" style={{ background: 'none', border: '1px solid #e2e8f0', borderRadius: 6, cursor: 'pointer' }}><ChevronLeft size={16} /></button>
         <strong style={{ fontSize: '0.86rem' }}>{days[0].toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })} – {days[6].toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</strong>
@@ -147,7 +147,7 @@ export function GroundDetailView({ groundId, currentUser, onNavigate }) {
       {g.description && <Card><p style={{ margin: 0, fontSize: '0.88rem', whiteSpace: 'pre-wrap' }}>{g.description}</p></Card>}
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem' }}>
-        <Card title="Pitch & boundary (#151, #152)">
+        <Card title="Pitch & boundary">
           <div style={{ fontSize: '0.86rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
             <span>Pitch: <strong>{(PITCH_TYPES.find((p) => p[0] === g.pitch_type) || [null, 'Not set'])[1]}</strong>{g.pitch_count ? ` · ${g.pitch_count} pitch${g.pitch_count > 1 ? 'es' : ''}` : ''}</span>
             {g.pitch_notes && <span style={{ color: '#475569' }}>{g.pitch_notes}</span>}
@@ -155,12 +155,12 @@ export function GroundDetailView({ groundId, currentUser, onNavigate }) {
             {g.boundary_notes && <span style={{ color: '#475569' }}>{g.boundary_notes}</span>}
           </div>
         </Card>
-        <Card title="Facilities (#153)">
+        <Card title="Facilities">
           {(g.facilities || []).length === 0 ? <span style={{ fontSize: '0.84rem', color: '#94a3b8' }}>Not listed.</span> : (
             <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>{g.facilities.map((x) => <span key={x} style={{ padding: '0.25rem 0.6rem', borderRadius: '999px', backgroundColor: '#f0fdf4', fontSize: '0.78rem' }}>{(FACILITIES.find((f) => f[0] === x) || [x, x])[1]}</span>)}</div>
           )}
         </Card>
-        <Card title="Charges (#156)">
+        <Card title="Charges">
           <div style={{ fontSize: '0.86rem', display: 'flex', flexDirection: 'column', gap: '0.25rem' }}>
             <span>Per hour: <strong>{money(g.hourly_rate)}</strong></span>
             <span>Half day (4+ hrs): <strong>{money(g.half_day_rate)}</strong> · Full day (8+ hrs): <strong>{money(g.full_day_rate)}</strong></span>
@@ -172,7 +172,7 @@ export function GroundDetailView({ groundId, currentUser, onNavigate }) {
       </div>
 
       {/* #150 map */}
-      <Card title="Location (#150)">
+      <Card title="Location">
         {hasMap ? (
           <>
             <iframe title="Ground map" loading="lazy" style={{ width: '100%', height: 260, border: 0, borderRadius: '0.5rem' }}
@@ -186,7 +186,7 @@ export function GroundDetailView({ groundId, currentUser, onNavigate }) {
       </Card>
 
       {/* #149 photos */}
-      <Card title="Photos (#149)">
+      <Card title="Photos">
         {d.photos.length === 0 ? <span style={{ fontSize: '0.84rem', color: '#94a3b8' }}>No photos yet.</span> : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '0.5rem' }}>
             {d.photos.map((p) => (
@@ -217,7 +217,7 @@ export function GroundDetailView({ groundId, currentUser, onNavigate }) {
       <Calendar groundId={g.id} isOwner={own} signedIn={!!currentUser} ground={g} onChanged={load} />
 
       {/* #157 pitch preparation */}
-      <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Sprout size={16} /> Pitch preparation (#157)</span>}
+      <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Sprout size={16} /> Pitch preparation</span>}
         action={own && !log ? <Button size="sm" variant="secondary" onClick={() => setLog({ prepared_on: ymd(new Date()), pitch_label: '', work: [], condition: 'good', notes: '' })}>Add record</Button> : null}>
         {log && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginBottom: '0.8rem', padding: '0.6rem', backgroundColor: '#f8fafc', borderRadius: '0.5rem' }}>
@@ -250,7 +250,7 @@ export function GroundDetailView({ groundId, currentUser, onNavigate }) {
       </Card>
 
       {/* #158 inspections */}
-      <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><ClipboardCheck size={16} /> Inspection reports (#158)</span>}
+      <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><ClipboardCheck size={16} /> Inspection reports</span>}
         subtitle="Filed by the ground owner, or by the organiser / officials of a match played here"
         action={currentUser && !insp ? <Button size="sm" variant="secondary" onClick={() => setInsp({ pitch_rating: 4, outfield_rating: 4, facilities_rating: 4, safety_rating: 4, fit_for_play: true, notes: '', match_id: '' })}>File a report</Button> : null}>
         {insp && (
@@ -293,7 +293,7 @@ export function GroundDetailView({ groundId, currentUser, onNavigate }) {
       </Card>
 
       {/* #159 match history */}
-      <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><History size={16} /> Match history (#159)</span>}>
+      <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><History size={16} /> Match history</span>}>
         <div style={{ display: 'flex', gap: '1.2rem', flexWrap: 'wrap', fontSize: '0.84rem', marginBottom: '0.6rem' }}>
           <span>Matches <strong>{s.matches}</strong></span>
           <span>Avg 1st-innings score <strong>{s.average_first_innings ?? '–'}</strong></span>

@@ -104,7 +104,7 @@ export function PlayerProfileView({ playerId, onNavigate }) {
         </div>
         {p.is_me && (
           <p style={{ margin: '0.75rem 0 0', fontSize: '0.78rem', color: '#64748b' }}>
-            Edit these in <button onClick={() => onNavigate && onNavigate('teams')} style={{ background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', padding: 0, fontSize: '0.78rem' }}>My Teams → My player profile</button>. Career statistics appear here once match scoring is live (Phase 3).
+            Edit these in <button onClick={() => onNavigate && onNavigate('teams')} style={{ background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', padding: 0, fontSize: '0.78rem' }}>My Teams → My player profile</button>.
           </p>
         )}
       </Card>
@@ -114,7 +114,7 @@ export function PlayerProfileView({ playerId, onNavigate }) {
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.875rem' }}>
             {p.mobile_number && <span style={{ display: 'inline-flex', gap: '0.4rem', alignItems: 'center' }}><Phone size={14} /> {p.mobile_number}</span>}
             {p.email && <span style={{ display: 'inline-flex', gap: '0.4rem', alignItems: 'center' }}><Mail size={14} /> {p.email}</span>}
-            {p.is_me && <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Only you see these unless you allow it in <strong>Category N → Security &amp; Privacy</strong>.</span>}
+            {p.is_me && <span style={{ fontSize: '0.78rem', color: '#64748b' }}>Only you see these unless you allow it in <strong>Settings &amp; Privacy</strong>.</span>}
           </div>
         </Card>
       )}

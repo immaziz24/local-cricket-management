@@ -28,7 +28,7 @@ function DelayCalculator() {
   }
   const field = (k, label) => <label style={{ fontSize: '0.72rem', color: '#64748b', display: 'flex', flexDirection: 'column', gap: 2 }}>{label}<input type="number" min="0" value={s[k]} onChange={(e) => setS({ ...s, [k]: e.target.value })} style={{ padding: '0.4rem', border: '1px solid #cbd5e1', borderRadius: '0.4rem' }} /></label>;
   return (
-    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Calculator size={16} /> Delay calculator (#302)</span>}>
+    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Calculator size={16} /> Delay calculator</span>}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.5rem' }}>
         <label style={{ fontSize: '0.72rem', color: '#64748b', display: 'flex', flexDirection: 'column', gap: 2 }}>Method
           <select value={s.method} onChange={(e) => setS({ ...s, method: e.target.value })} style={{ padding: '0.4rem', border: '1px solid #cbd5e1', borderRadius: '0.4rem' }}>
@@ -95,7 +95,7 @@ export function PenaltyRulesView({ currentUser, onNavigate }) {
       <DelayCalculator />
 
       {records.length > 0 && (
-        <Card title="My teams’ punctuality (#308, #310)">
+        <Card title="My teams’ punctuality">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
             {records.map(({ team, p }) => (
               <button key={team.id} onClick={() => onNavigate && onNavigate('team-details', team.id)} style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', alignItems: 'center', padding: '0.5rem 0.7rem', border: '1px solid #e2e8f0', borderRadius: '0.5rem', background: '#fff', cursor: 'pointer', textAlign: 'left', fontSize: '0.85rem' }}>

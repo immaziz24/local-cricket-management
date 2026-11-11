@@ -14,12 +14,12 @@ import { LineupPanel } from './LineupPanel.jsx';
  */
 
 const STRUCTURES = [
-  ['league', 'League (everyone plays everyone once)', '#43'],
-  ['double_round_robin', 'Round-robin, home & away (twice)', '#45'],
-  ['groups_knockout', 'Groups, then knockouts', '#42'],
-  ['knockout', 'Knockout (lose and you are out)', '#44'],
-  ['double_elimination', 'Double elimination (out after 2 defeats)', '#46'],
-  ['custom', 'Custom (add matches by hand)', '#47']
+  ['league', 'League (everyone plays everyone once)'],
+  ['double_round_robin', 'Round-robin, home & away (twice)'],
+  ['groups_knockout', 'Groups, then knockouts'],
+  ['knockout', 'Knockout (lose and you are out)'],
+  ['double_elimination', 'Double elimination (out after 2 defeats)'],
+  ['custom', 'Custom (add matches by hand)']
 ];
 
 const STAGE_LABEL = { league: 'League', group: 'Group', knockout: 'Knockout', quarter_final: 'Quarter-final', semi_final: 'Semi-final', final: 'Final', third_place: '3rd place' };

@@ -122,7 +122,7 @@ export function MatchShareCards({ matchId, refreshKey }) {
   const m = data?.c?.match;
   const text = m ? `🏏 ${data.c.team_a?.name} vs ${data.c.team_b?.name}: ${m.status === 'completed' ? (m.result_summary || 'match finished') : m.status === 'live' ? `LIVE ${m.team_a_runs ?? m.team_b_runs ?? ''}` : 'coming up'}` : '';
   return (
-    <Card title="Share this match" subtitle="Result card (#188) and scorecard (#187) as pictures for WhatsApp, Instagram and Facebook">
+    <Card title="Share this match" subtitle="Result card and scorecard as pictures for WhatsApp, Instagram and Facebook">
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.6rem' }}>
         {[['result', 'Result card'], ['scorecard', 'Scorecard']].map(([k, l]) => <button key={k} type="button" onClick={() => setKind(k)} style={{ padding: '0.3rem 0.75rem', borderRadius: 999, cursor: 'pointer', fontSize: '0.8rem', border: `1px solid ${kind === k ? '#16a34a' : '#e2e8f0'}`, backgroundColor: kind === k ? '#dcfce7' : '#fff', fontWeight: kind === k ? 700 : 500 }}>{l}</button>)}
       </div>
@@ -171,7 +171,7 @@ export function PlayerShareCard({ profile, stats }) {
   if (!profile) return null;
   const bt = stats?.batting || {};
   return (
-    <Card title="Player card" subtitle="Share career numbers as a picture (#187)">
+    <Card title="Player card" subtitle="Share career numbers as a picture">
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.6rem' }}>
         {Object.entries(PALETTES).map(([k, [a, b]]) => <button key={k} type="button" aria-label={k} onClick={() => setPalette(k)} style={{ width: 28, height: 28, borderRadius: 14, cursor: 'pointer', border: palette === k ? '3px solid #0f172a' : '2px solid #fff', background: `linear-gradient(135deg, ${a}, ${b})`, boxShadow: '0 0 0 1px #cbd5e1' }} />)}
       </div>
@@ -298,7 +298,7 @@ export function TournamentPromoStudio({ tournament }) {
     } catch (e) { setMsg(e.message); }
   };
   return (
-    <Card title="Poster & promo video" subtitle="Made from the tournament details – share on WhatsApp status, Instagram and Facebook (#185, #186)">
+    <Card title="Poster & promo video" subtitle="Made from the tournament details – share on WhatsApp status, Instagram and Facebook">
       <div style={{ display: 'flex', gap: '0.35rem', marginBottom: '0.6rem' }}>
         {Object.entries(PALETTES).map(([k, [a, b]]) => <button key={k} type="button" aria-label={k} onClick={() => setPalette(k)} style={{ width: 28, height: 28, borderRadius: 14, cursor: 'pointer', border: palette === k ? '3px solid #0f172a' : '2px solid #fff', background: `linear-gradient(135deg, ${a}, ${b})`, boxShadow: '0 0 0 1px #cbd5e1' }} />)}
       </div>

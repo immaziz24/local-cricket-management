@@ -252,9 +252,8 @@ export function RegisterView(props) {
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
-          <Badge variant="primary">Phase 1 • Category N</Badge>
           <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>
-            Feature #254 — User Registration
+            Free for players, teams and organisers
           </span>
         </div>
         <h1 style={{ fontSize: '1.5rem', color: '#FFFFFF', marginBottom: '0.25rem' }}>
@@ -362,13 +361,10 @@ export function RegisterView(props) {
             {/* Next Actions */}
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center', width: '100%', marginTop: '0.5rem' }}>
               <Button variant="primary" onClick={() => onNavigate && onNavigate('login')}>
-                Sign In to Account (Feature #255)
+                Sign In to Account
               </Button>
               <Button variant="outline" onClick={handleReset}>
                 Register Another User
-              </Button>
-              <Button variant="secondary" onClick={() => onNavigate && onNavigate('category-n')}>
-                Category N Hub (#254–270)
               </Button>
             </div>
           </div>
@@ -610,7 +606,7 @@ export function RegisterView(props) {
                   padding: 0
                 }}
               >
-                Sign In here (Feature #255)
+                Sign In here
               </button>
             </div>
           </form>

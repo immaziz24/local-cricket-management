@@ -525,7 +525,7 @@ export function TournamentDetailsView(props) {
       {/* TAB 5: PHOTOS, VIDEOS, POSTER, PROMO VIDEO (#183, #185, #186) */}
       {activeTab === 'media' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <MediaGallery scope="tournament" scopeId={tournament.id} kinds={['photo', 'video']} title="Tournament photos & videos" subtitle="Photo gallery (#183) – the organiser and owners of teams in this tournament can add" />
+          <MediaGallery scope="tournament" scopeId={tournament.id} kinds={['photo', 'video']} title="Tournament photos & videos" subtitle="Photo gallery – the organiser and owners of teams in this tournament can add" />
           <TournamentPromoStudio tournament={tournament} />
         </div>
       )}

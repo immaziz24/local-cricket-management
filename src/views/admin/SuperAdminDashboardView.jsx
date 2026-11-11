@@ -134,7 +134,6 @@ export function SuperAdminDashboardView() {
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <Badge variant="warning">FEATURE #257</Badge>
             <span style={{ fontSize: '0.75rem', color: '#94a3b8', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
               Platform Master Console
             </span>
@@ -227,7 +226,7 @@ export function SuperAdminDashboardView() {
             {metrics?.pending_verifications ?? 0}
           </div>
           <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
-            Awaiting review (#265)
+            Awaiting review
           </div>
         </Card>
 
@@ -240,7 +239,7 @@ export function SuperAdminDashboardView() {
             {metrics?.suspended_users ?? 0}
           </div>
           <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
-            Open reports: {metrics?.open_reports ?? 0} (#266)
+            Open reports: {metrics?.open_reports ?? 0}
           </div>
         </Card>
 
@@ -253,7 +252,6 @@ export function SuperAdminDashboardView() {
             {metrics?.active_matches ?? 0}
           </div>
           <div style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.25rem' }}>
-            Live scoring arrives in Phase 3
           </div>
         </Card>
       </div>

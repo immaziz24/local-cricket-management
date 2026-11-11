@@ -101,7 +101,7 @@ function MyProfile({ profile, onSaved }) {
       </Card>
 
       {profile && (
-        <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><CalendarDays size={16} /> Days I can’t make it (#140)</span>}>
+        <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><CalendarDays size={16} /> Days I can’t make it</span>}>
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'flex-end' }}>
             <label style={{ ...lbl, width: 170 }}>Date<input type="date" value={off.day} onChange={(e) => setOff({ ...off, day: e.target.value })} style={inp} /></label>
             <label style={{ ...lbl, flex: 1, minWidth: 160 }}>Note (only you see it)<input value={off.note} maxLength={120} onChange={(e) => setOff({ ...off, note: e.target.value })} style={inp} /></label>
@@ -147,10 +147,10 @@ function MySchedule({ data, reload, onNavigate }) {
   return (
     <>
       {msg && <div style={{ color: '#b91c1c', fontSize: '0.84rem' }}>{msg}</div>}
-      <Card title="My schedule (#141)">
+      <Card title="My schedule">
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>{upcoming.length ? upcoming.map(row) : <span style={{ fontSize: '0.84rem', color: '#94a3b8' }}>No upcoming matches.</span>}</div>
       </Card>
-      <Card title="Earnings (#145)">
+      <Card title="Earnings">
         <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.9rem' }}>
           <span>Paid <strong style={{ color: '#15803d' }}>{money(data?.earnings?.paid)}</strong></span>
           <span>Due <strong style={{ color: '#b45309' }}>{money(data?.earnings?.due)}</strong></span>
@@ -208,7 +208,7 @@ export function OfficialProfileView({ userId, onNavigate }) {
         <div style={{ color: '#cbd5e1', fontSize: '0.8rem', marginTop: '0.3rem' }}>Usually available: {(p.available_days || []).map((d) => DAYS[d]).join(', ') || '—'}</div>
       </div>
       {p.bio && <Card title="About"><p style={{ margin: 0, fontSize: '0.88rem', whiteSpace: 'pre-wrap' }}>{p.bio}</p></Card>}
-      <Card title="Performance (#146)">
+      <Card title="Performance">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(120px, 1fr))', gap: '0.5rem' }}>
           {[['Matches', s.matches], ['As umpire', s.as_umpire], ['As scorer', s.as_scorer], ['Upcoming', s.upcoming], ['Rating', s.rating != null ? `${s.rating} ★ (${s.ratings})` : '–'], ['Reports filed', s.decisions_logged], ['Disputes', s.disputes]].map(([k, v]) => (
             <div key={k} style={{ padding: '0.55rem', borderRadius: '0.5rem', backgroundColor: '#f8fafc', border: '1px solid #e2e8f0' }}>

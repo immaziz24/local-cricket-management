@@ -92,7 +92,6 @@ export function AuditLogsView() {
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <div style={{ padding: '1.25rem 1.5rem', backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.75rem' }}>
-        <Badge variant="success">FEATURE #267</Badge>
         <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0.35rem 0 0.25rem' }}>Activity & Audit Log</h2>
         <p style={{ fontSize: '0.825rem', color: '#64748b', margin: 0 }}>
           Every important change — roles, badges, reports, suspensions, settings — is recorded here and cannot be edited.

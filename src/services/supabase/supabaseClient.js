@@ -1388,6 +1388,31 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  // ---------- Site: header search and contact page ----------
+  async globalSearch(p = {}) {
+    const { data, error } = await supabase.rpc('global_search', { p });
+    if (error) return { data: null, error: friendlyError(error, 'search') };
+    return { data, error: null };
+  },
+
+  async sendContactMessage(p) {
+    const { data, error } = await supabase.rpc('send_contact_message', { p });
+    if (error) return { data: null, error: friendlyError(error, 'message') };
+    return { data, error: null };
+  },
+
+  async listContactMessages(status = null) {
+    const { data, error } = await supabase.rpc('list_contact_messages', { p_status: status });
+    if (error) return { data: null, error: friendlyError(error, 'messages') };
+    return { data, error: null };
+  },
+
+  async setContactMessageStatus(id, status) {
+    const { data, error } = await supabase.rpc('set_contact_message_status', { p_id: id, p_status: status });
+    if (error) return { data: null, error: friendlyError(error, 'messages') };
+    return { data, error: null };
+  },
+
   async getCommentary(matchId) {
     const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'commentary') };

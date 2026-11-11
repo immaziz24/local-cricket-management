@@ -133,7 +133,7 @@ export function PasswordRecoveryView(props) {
           marginBottom: '0.75rem'
         }}>
           <KeyRound size={14} />
-          FEATURE #256 • PHASE 1 (CATEGORY N)
+          Reset your password
         </div>
         <h1 style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-main, #0f172a)', margin: '0 0 0.5rem 0' }}>
           Password Recovery
@@ -516,12 +516,6 @@ export function PasswordRecoveryView(props) {
               >
                 Proceed to Sign In
               </Button>
-              <Button
-                variant="secondary"
-                onClick={() => onNavigate && onNavigate('category-n')}
-              >
-                Category N Hub
-              </Button>
             </div>
           </div>
         )}
@@ -548,7 +542,7 @@ export function PasswordRecoveryView(props) {
                 padding: 0
               }}
             >
-              ← Back to Sign In (#255)
+              ← Back to Sign In
             </button>
             <button
               type="button"
@@ -561,7 +555,7 @@ export function PasswordRecoveryView(props) {
                 padding: 0
               }}
             >
-              Need an Account? Register (#254)
+              Need an Account? Register
             </button>
           </div>
         )}

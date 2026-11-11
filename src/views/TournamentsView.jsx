@@ -45,7 +45,6 @@ export function TournamentsView(props) {
       }}>
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-            <Badge variant="primary">CATEGORY B & C • PHASE 2</Badge>
             <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
               Tournament Registries & Fixtures
             </span>
@@ -64,7 +63,7 @@ export function TournamentsView(props) {
           onClick={() => onNavigate && onNavigate('create-tournament')}
           style={{ backgroundColor: '#059669' }}
         >
-          Create Tournament (#31)
+          Create Tournament
         </Button>
       </div>
 
@@ -146,7 +145,7 @@ export function TournamentsView(props) {
                     onClick={() => onNavigate && onNavigate('tournament-details', trn.id)}
                     style={{ width: '100%', marginTop: '0.75rem', justifyContent: 'center' }}
                   >
-                    View Details (#32)
+                    View Details
                   </Button>
                 </div>
               </Card>

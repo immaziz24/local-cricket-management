@@ -249,7 +249,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       {m.status !== 'scheduled' && tab === 'history' && <MatchHistoryPanel matchId={m.id} refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'media' && <LiveStreamPanel matchId={m.id} matchStatus={m.status} />}
       {m.status !== 'scheduled' && tab === 'media' && <HighlightsPanel matchId={m.id} refreshKey={refreshKey} />}
-      {m.status !== 'scheduled' && tab === 'media' && <MediaGallery scope="match" scopeId={m.id} kinds={['photo', 'video']} title="Match photos & videos" subtitle="Photo gallery (#184) and video uploads (#181)" refreshKey={refreshKey} />}
+      {m.status !== 'scheduled' && tab === 'media' && <MediaGallery scope="match" scopeId={m.id} kinds={['photo', 'video']} title="Match photos & videos" subtitle="Photo gallery and video uploads" refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'media' && <MatchShareCards matchId={m.id} refreshKey={refreshKey} />}
     </div>
   );

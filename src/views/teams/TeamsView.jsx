@@ -105,7 +105,6 @@ export function TeamsView({ onNavigate }) {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '0.75rem', padding: '1.25rem 1.5rem', backgroundColor: '#0f172a', borderRadius: '0.75rem', color: '#fff' }}>
         <div>
-          <Badge variant="warning">PHASE 2 · TEAMS</Badge>
           <h2 style={{ fontSize: '1.5rem', fontWeight: 800, margin: '0.35rem 0 0.2rem' }}>My Teams</h2>
           <p style={{ margin: 0, fontSize: '0.85rem', color: '#cbd5e1' }}>Create a team, add players by mobile number, choose your captain.</p>
         </div>
@@ -163,27 +162,27 @@ export function TeamsView({ onNavigate }) {
             <Avatar url={me.photo_url} name={me.display_name} size={64} onPick={uploadMyPhoto} busy={busy} />
             <div style={{ flex: 1 }}>
               <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{me.display_name}</strong>
-              <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Player ID (#62): <strong style={{ fontFamily: 'monospace', color: '#0f172a' }}>{me.player_code}</strong> · this is how you appear in every team.</div>
+              <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Player ID: <strong style={{ fontFamily: 'monospace', color: '#0f172a' }}>{me.player_code}</strong> · this is how you appear in every team.</div>
               <button type="button" onClick={() => onNavigate && onNavigate('player-profile', me.id)} style={{ background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', padding: 0, fontSize: '0.8rem', marginTop: '0.2rem' }}>View my public profile →</button>
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.6rem' }}>
-            <label style={{ fontSize: '0.8rem', color: '#475569' }}>Date of birth (#66) – others see only your age
+            <label style={{ fontSize: '0.8rem', color: '#475569' }}>Date of birth – others see only your age
               <input type="date" value={me.date_of_birth || ''} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setMe({ ...me, date_of_birth: e.target.value })} style={field} />
             </label>
-            <label style={{ fontSize: '0.8rem', color: '#475569' }}>Playing role (#65)
+            <label style={{ fontSize: '0.8rem', color: '#475569' }}>Playing role
               <select value={me.player_role || ''} onChange={(e) => setMe({ ...me, player_role: e.target.value })} style={field}>
                 <option value="">Not set</option>
                 {ROLE_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
               </select>
             </label>
-            <label style={{ fontSize: '0.8rem', color: '#475569' }}>Batting style (#63)
+            <label style={{ fontSize: '0.8rem', color: '#475569' }}>Batting style
               <select value={me.batting_style || ''} onChange={(e) => setMe({ ...me, batting_style: e.target.value })} style={field}>
                 <option value="">Not set</option>
                 {BATTING_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
               </select>
             </label>
-            <label style={{ fontSize: '0.8rem', color: '#475569' }}>Bowling style (#64)
+            <label style={{ fontSize: '0.8rem', color: '#475569' }}>Bowling style
               <select value={me.bowling_style || ''} onChange={(e) => setMe({ ...me, bowling_style: e.target.value })} style={field}>
                 <option value="">Not set</option>
                 {BOWLING_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}

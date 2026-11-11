@@ -10,8 +10,8 @@ import { Users2, Store, Search, Megaphone, Mail, Plus, X, MapPin, Phone, Globe, 
  * kit rental), Find (grounds, umpires, scorers, teams, players, tournaments), community board and private enquiries.
  */
 const KINDS = [
-  ['academy', 'Academies', '#160'], ['coaching', 'Coaching centres', '#161'], ['shop', 'Cricket shops', '#162'],
-  ['nets', 'Net practice', '#166'], ['club', 'Clubs', '#167'], ['commentator', 'Commentators', '#172']
+  ['academy', 'Academies'], ['coaching', 'Coaching centres'], ['shop', 'Cricket shops'],
+  ['nets', 'Net practice'], ['club', 'Clubs'], ['commentator', 'Commentators']
 ];
 const KIND_LABEL = Object.fromEntries(KINDS.map(([k, l]) => [k, l.replace(/s$/, '').replace('Coaching centre', 'Coaching centre')]));
 const CATS = [['bat', 'Bat'], ['ball', 'Ball'], ['pads', 'Pads'], ['gloves', 'Gloves'], ['helmet', 'Helmet'], ['kit_bag', 'Kit bag'], ['shoes', 'Shoes'],
@@ -144,7 +144,7 @@ function Organisers({ onNavigate }) {
   const load = () => dataService.listOrganisers(q).then(setList).catch(() => setList([]));
   useEffect(() => { load(); }, []);
   return (
-    <Card title="Tournament organisers (#168)" subtitle="Everyone who has run a tournament on this website">
+    <Card title="Tournament organisers" subtitle="Everyone who has run a tournament on this website">
       <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '0.6rem' }}>
         <input placeholder="Name or city" value={q} onChange={(e) => setQ(e.target.value)} onKeyDown={(e) => e.key === 'Enter' && load()} style={inp} />
         <Button variant="secondary" onClick={load}>Search</Button>
@@ -175,7 +175,7 @@ function Directory({ signedIn, onNavigate }) {
   return (
     <>
       <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-        {[...KINDS, ['organisers', 'Tournament organisers', '#168']].map(([k, l]) => <button key={k} onClick={() => setKind(k)} style={chip(kind === k)}>{l}</button>)}
+        {[...KINDS, ['organisers', 'Tournament organisers']].map(([k, l]) => <button key={k} onClick={() => setKind(k)} style={chip(kind === k)}>{l}</button>)}
       </div>
       {kind === 'organisers' ? <Organisers onNavigate={onNavigate} /> : (
         <>
@@ -295,10 +295,10 @@ function Marketplace({ signedIn }) {
   return (
     <>
       <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-        {[['', 'All equipment (#163)'], ['bat_ball', 'Bats & balls (#164)'], ...CATS.filter(([k]) => !['bat', 'ball'].includes(k))].map(([k, l]) => <button key={k || 'all'} onClick={() => setF({ ...f, category: k })} style={chip(f.category === k)}>{l}</button>)}
+        {[['', 'All equipment'], ['bat_ball', 'Bats & balls'], ...CATS.filter(([k]) => !['bat', 'ball'].includes(k))].map(([k, l]) => <button key={k || 'all'} onClick={() => setF({ ...f, category: k })} style={chip(f.category === k)}>{l}</button>)}
       </div>
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
-        <select value={f.mode} onChange={(e) => setF({ ...f, mode: e.target.value })} style={{ ...inp, width: 'auto' }}><option value="">Buy or rent</option><option value="sale">For sale</option><option value="rent">Kit for rent (#165)</option></select>
+        <select value={f.mode} onChange={(e) => setF({ ...f, mode: e.target.value })} style={{ ...inp, width: 'auto' }}><option value="">Buy or rent</option><option value="sale">For sale</option><option value="rent">Kit for rent</option></select>
         <input placeholder="Search" value={f.query} onChange={(e) => setF({ ...f, query: e.target.value })} onKeyDown={(e) => e.key === 'Enter' && load()} style={{ ...inp, width: 160 }} />
         <input placeholder="City" value={f.city} onChange={(e) => setF({ ...f, city: e.target.value })} onKeyDown={(e) => e.key === 'Enter' && load()} style={{ ...inp, width: 130 }} />
         <input type="number" placeholder="Max ₹" value={f.max_price} onChange={(e) => setF({ ...f, max_price: e.target.value })} style={{ ...inp, width: 100 }} />
@@ -333,13 +333,13 @@ function Find({ onNavigate }) {
   const [list, setList] = useState(null);
   const load = () => dataService.communitySearch({ ...f, kind }).then(setList).catch(() => setList([]));
   useEffect(() => { setList(null); if (['teams', 'players', 'tournaments'].includes(kind)) load(); }, [kind]);
-  const LINKS = [['grounds', 'Grounds (#169)', 'grounds'], ['umpires', 'Umpires (#170)', 'officials'], ['scorers', 'Scorers (#171)', 'officials']];
+  const LINKS = [['grounds', 'Grounds', 'grounds'], ['umpires', 'Umpires', 'officials'], ['scorers', 'Scorers', 'officials']];
   return (
     <>
       <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
-        {[['teams', 'Teams (#173)'], ['players', 'Players (#174)'], ['tournaments', 'Tournaments (#175)']].map(([k, l]) => <button key={k} onClick={() => { setKind(k); setF({ query: '', city: '', role: '' }); }} style={chip(kind === k)}>{l}</button>)}
+        {[['teams', 'Teams'], ['players', 'Players'], ['tournaments', 'Tournaments']].map(([k, l]) => <button key={k} onClick={() => { setKind(k); setF({ query: '', city: '', role: '' }); }} style={chip(kind === k)}>{l}</button>)}
         {LINKS.map(([k, l, route]) => <button key={k} onClick={() => onNavigate && onNavigate(route)} style={{ ...chip(false), display: 'inline-flex', alignItems: 'center', gap: 4 }}>{l} <ExternalLink size={11} /></button>)}
-        <button onClick={() => setKind('commentators')} style={chip(kind === 'commentators')}>Commentators (#172)</button>
+        <button onClick={() => setKind('commentators')} style={chip(kind === 'commentators')}>Commentators</button>
       </div>
       {kind === 'commentators' ? <Card><p style={{ margin: 0, fontSize: '0.86rem' }}>Commentators list themselves in the <strong>Directory → Commentators</strong> tab.</p></Card> : (
         <>

@@ -39,11 +39,11 @@ function RateTools() {
   const bw = M.bowlingAverage(s.wRuns, s.wWkts, s.wOvers);
   return (
     <>
-      <Card title="Run rate (#216)">
+      <Card title="Run rate">
         <div style={grid}><Field label="Runs" type="number" value={s.runs} onChange={set('runs')} /><Field label="Overs" value={s.overs} onChange={set('overs')} placeholder="e.g. 8.4" /></div>
         <Result hint={OVERS_HINT}>{rr !== null ? <>Run rate: <strong>{rr}</strong> per over</> : 'Enter runs and overs.'}</Result>
       </Card>
-      <Card title="Required run rate (#217)">
+      <Card title="Required run rate">
         <div style={grid}>
           <Field label="Target" type="number" value={s.target} onChange={set('target')} />
           <Field label="Current score" type="number" value={s.score} onChange={set('score')} />
@@ -53,7 +53,7 @@ function RateTools() {
         <Result hint={OVERS_HINT}>{!req ? 'Enter the target, score and overs.' : req.won ? 'Target reached!' : req.ballsLeft === 0 ? `Innings over – fell short by ${req.need - 1 >= 0 ? req.need - 1 : 0} run(s).`
           : <>Need <strong>{req.need}</strong> from <strong>{req.ballsLeft}</strong> balls · required rate <strong>{req.rrr}</strong></>}</Result>
       </Card>
-      <Card title="Batting strike rate & average (#218, #219)">
+      <Card title="Batting strike rate & average">
         <div style={grid}>
           <Field label="Runs" type="number" value={s.bRuns} onChange={set('bRuns')} />
           <Field label="Balls faced" type="number" value={s.bBalls} onChange={set('bBalls')} />
@@ -63,7 +63,7 @@ function RateTools() {
           Strike rate <strong>{M.strikeRate(s.bRuns, s.bBalls) ?? '–'}</strong> · Average <strong>{M.battingAverage(s.bRuns, s.bOuts) ?? (s.bRuns && s.bOuts === '0' ? 'not out every time' : '–')}</strong>
         </Result>
       </Card>
-      <Card title="Bowling economy, average & strike rate (#220, #221)">
+      <Card title="Bowling economy, average & strike rate">
         <div style={grid}>
           <Field label="Runs conceded" type="number" value={s.wRuns} onChange={set('wRuns')} />
           <Field label="Overs bowled" value={s.wOvers} onChange={set('wOvers')} />
@@ -85,7 +85,7 @@ function NrrTool() {
   const upd = (i, k, v) => setRows(rows.map((r, j) => (j === i ? { ...r, [k]: v } : r)));
   const res = M.netRunRate(rows.map((r) => ({ ...r, quota })));
   return (
-    <Card title="Net Run Rate (#222)" subtitle="One row per match for your team">
+    <Card title="Net Run Rate" subtitle="One row per match for your team">
       <div style={{ maxWidth: 180 }}><Field label="Overs per innings" value={quota} onChange={setQuota} /></div>
       <div style={{ overflowX: 'auto', marginTop: '0.6rem' }}>
         <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 560 }}>
@@ -128,7 +128,7 @@ function TossTool() {
     }, 900);
   };
   return (
-    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Coins size={16} /> Toss (#224)</span>} subtitle="A fair digital coin – uses your device’s secure random numbers">
+    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Coins size={16} /> Toss</span>} subtitle="A fair digital coin – uses your device’s secure random numbers">
       <div style={grid}>
         <Field label="Team that flips (home)" value={teams.a} onChange={(v) => setTeams({ ...teams, a: v })} placeholder="Team A" />
         <Field label="Team that calls (away)" value={teams.b} onChange={(v) => setTeams({ ...teams, b: v })} placeholder="Team B" />
@@ -177,7 +177,7 @@ function TeamGenerator() {
   const players = M.parsePlayers(text);
   const share = teams ? teams.map((t) => `${t.name}: ${t.players.map((p) => p.name).join(', ')}`).join('\n') : '';
   return (
-    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Shuffle size={16} /> Team generator (#225)</span>} subtitle="Split a group of players into fair teams">
+    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Shuffle size={16} /> Team generator</span>} subtitle="Split a group of players into fair teams">
       <SquadLoader onLoad={setText} />
       <label style={{ ...lbl, marginTop: '0.5rem' }}>Players ({players.length})<textarea rows={7} value={text} onChange={(e) => setText(e.target.value)} placeholder={'Aziz, wk, 4\nMunna, bowler, 5\nRahul, bat\n…'} style={{ ...inp, resize: 'vertical' }} /></label>
       <p style={{ margin: '0.2rem 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>{PLAYERS_HINT}</p>
@@ -214,7 +214,7 @@ function XiGenerator() {
   const players = M.parsePlayers(text);
   const roleName = { batter: 'Batter', bowler: 'Bowler', all_rounder: 'All-rounder', wicket_keeper: 'Wicket-keeper' };
   return (
-    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Users size={16} /> Playing XI generator (#226)</span>} subtitle="Suggests a balanced side and batting order from your squad">
+    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Users size={16} /> Playing XI generator</span>} subtitle="Suggests a balanced side and batting order from your squad">
       <SquadLoader onLoad={setText} />
       <label style={{ ...lbl, marginTop: '0.5rem' }}>Squad ({players.length})<textarea rows={7} value={text} onChange={(e) => setText(e.target.value)} style={{ ...inp, resize: 'vertical' }} placeholder={'Aziz, wk, 4\nMunna, bowler, 5\n…'} /></label>
       <p style={{ margin: '0.2rem 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>{PLAYERS_HINT}</p>
@@ -255,7 +255,7 @@ function FixtureTool() {
   };
   const text2 = list ? list.map((f, i) => `${i + 1}. ${f.team_a_id} vs ${f.team_b_id}${f.scheduled_at ? ' – ' + new Date(f.scheduled_at).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''}`).join('\n') : '';
   return (
-    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><CalendarDays size={16} /> Fixture generator (#227)</span>} subtitle="Quick fixture list for any set of teams (tournaments on this site make their own fixtures)">
+    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><CalendarDays size={16} /> Fixture generator</span>} subtitle="Quick fixture list for any set of teams (tournaments on this site make their own fixtures)">
       <label style={lbl}>Teams ({names.length}) – one per line<textarea rows={5} value={text} onChange={(e) => setText(e.target.value)} style={{ ...inp, resize: 'vertical' }} /></label>
       <div style={{ ...grid, marginTop: '0.5rem' }}>
         <label style={lbl}>Format<select value={format} onChange={(e) => setFormat(e.target.value)} style={inp}>
@@ -289,7 +289,7 @@ function PointsTool() {
   const upd = (i, k, v) => setResults(results.map((r, j) => (j === i ? { ...r, [k]: v } : r)));
   const table = teams.length >= 2 ? M.pointsTable(teams, results, { quota: cfg.quota, win: Number(cfg.win), tie: Number(cfg.tie), noResult: Number(cfg.nr) }) : [];
   return (
-    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Table2 size={16} /> Points table calculator (#228)</span>} subtitle="Enter results to see the standings with net run rate">
+    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Table2 size={16} /> Points table calculator</span>} subtitle="Enter results to see the standings with net run rate">
       <div style={grid}>
         <label style={{ ...lbl, gridColumn: '1 / -1' }}>Teams – one per line<textarea rows={3} value={teamsText} onChange={(e) => setTeamsText(e.target.value)} style={{ ...inp, resize: 'vertical' }} /></label>
         <Field label="Overs per innings" value={cfg.quota} onChange={(v) => setCfg({ ...cfg, quota: v })} />
@@ -341,7 +341,7 @@ function BudgetTool() {
   const res = M.budget({ items, teams: s.teams, entryFee: s.fee, matches: s.matches, sponsorship: s.sponsor });
   const upd = (i, k, v) => setItems(items.map((x, j) => (j === i ? { ...x, [k]: v } : x)));
   return (
-    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Wallet size={16} /> Tournament budget (#229)</span>}>
+    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Wallet size={16} /> Tournament budget</span>}>
       <div style={grid}>
         <Field label="Teams" type="number" value={s.teams} onChange={(v) => setS({ ...s, teams: v })} />
         <Field label="Entry fee per team (₹)" type="number" value={s.fee} onChange={(v) => setS({ ...s, fee: v })} />
@@ -376,7 +376,7 @@ function PrizeTool() {
   const res = M.splitPrizes(pool, shares, roundTo);
   const upd = (i, k, v) => setShares(shares.map((x, j) => (j === i ? { ...x, [k]: v } : x)));
   return (
-    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Trophy size={16} /> Prize distribution (#230)</span>}>
+    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Trophy size={16} /> Prize distribution</span>}>
       <div style={grid}>
         <Field label="Prize money (₹)" type="number" value={pool} onChange={setPool} />
         <Field label="Round to (₹)" type="number" value={roundTo} onChange={setRoundTo} />
@@ -406,7 +406,7 @@ function AuctionTool() {
   const set = (k) => (v) => setS({ ...s, [k]: v });
   const r = M.auctionBudget(s);
   return (
-    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Gavel size={16} /> Player auction (#231)</span>} subtitle="How much can a team still bid without running out of money?">
+    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Gavel size={16} /> Player auction</span>} subtitle="How much can a team still bid without running out of money?">
       <div style={grid}>
         <Field label="Total purse (₹ or points)" type="number" value={s.purse} onChange={set('purse')} />
         <Field label="Spent so far" type="number" value={s.spent} onChange={set('spent')} />
@@ -427,7 +427,7 @@ function GroundTool() {
   const [s, setS] = useState({ straight: '', square: '' });
   const g = M.groundSize(s.straight, s.square);
   return (
-    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Ruler size={16} /> Ground dimensions (#232)</span>} subtitle="Distances from the middle of the pitch to the boundary">
+    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Ruler size={16} /> Ground dimensions</span>} subtitle="Distances from the middle of the pitch to the boundary">
       <div style={grid}>
         <Field label="Straight boundary (m)" type="number" value={s.straight} onChange={(v) => setS({ ...s, straight: v })} />
         <Field label="Square boundary (m)" type="number" value={s.square} onChange={(v) => setS({ ...s, square: v })} placeholder="same as straight" />
@@ -440,18 +440,18 @@ function GroundTool() {
 }
 
 const TOOLS = [
-  ['rates', 'Run rate, strike rate & averages', Gauge, '#216–221', RateTools],
-  ['nrr', 'Net Run Rate', Activity, '#222', NrrTool],
-  ['dls', 'Rain target (DLS help)', Target, '#223', DlsHelper],
-  ['toss', 'Toss', Coins, '#224', TossTool],
-  ['teams', 'Team generator', Shuffle, '#225', TeamGenerator],
-  ['xi', 'Playing XI generator', Users, '#226', XiGenerator],
-  ['fixtures', 'Fixture generator', CalendarDays, '#227', FixtureTool],
-  ['points', 'Points table', Table2, '#228', PointsTool],
-  ['budget', 'Tournament budget', Wallet, '#229', BudgetTool],
-  ['prizes', 'Prize distribution', Trophy, '#230', PrizeTool],
-  ['auction', 'Player auction', Gavel, '#231', AuctionTool],
-  ['ground', 'Ground dimensions', Ruler, '#232', GroundTool]
+  ['rates', 'Run rate, strike rate & averages', Gauge, '', RateTools],
+  ['nrr', 'Net Run Rate', Activity, '', NrrTool],
+  ['dls', 'Rain target (DLS help)', Target, '', DlsHelper],
+  ['toss', 'Toss', Coins, '', TossTool],
+  ['teams', 'Team generator', Shuffle, '', TeamGenerator],
+  ['xi', 'Playing XI generator', Users, '', XiGenerator],
+  ['fixtures', 'Fixture generator', CalendarDays, '', FixtureTool],
+  ['points', 'Points table', Table2, '', PointsTool],
+  ['budget', 'Tournament budget', Wallet, '', BudgetTool],
+  ['prizes', 'Prize distribution', Trophy, '', PrizeTool],
+  ['auction', 'Player auction', Gavel, '', AuctionTool],
+  ['ground', 'Ground dimensions', Ruler, '', GroundTool]
 ];
 
 export function ToolsView() {

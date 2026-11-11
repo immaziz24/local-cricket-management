@@ -1056,6 +1056,35 @@ export const dataService = {
     return res.data;
   },
 
+  // Site: header search and contact page
+  async globalSearch(p = {}) {
+    requireDatabase();
+    const res = await supabaseClient.globalSearch(p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async sendContactMessage(p) {
+    requireDatabase();
+    const res = await supabaseClient.sendContactMessage(p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listContactMessages(status = null) {
+    requireDatabase();
+    const res = await supabaseClient.listContactMessages(status);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setContactMessageStatus(id, status) {
+    requireDatabase();
+    const res = await supabaseClient.setContactMessageStatus(id, status);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCommentary(matchId) {
     requireDatabase();
     const res = await supabaseClient.getCommentary(matchId);

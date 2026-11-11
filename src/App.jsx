@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { AppLayout } from './components/layout/AppLayout.jsx';
-import { DashboardOverview } from './views/DashboardOverview.jsx';
 import { MatchesView } from './views/MatchesView.jsx';
 import { TournamentsView } from './views/TournamentsView.jsx';
 import { CreateTournamentView } from './views/CreateTournamentView.jsx';
@@ -9,7 +8,6 @@ import { PenaltyRulesView } from './views/PenaltyRulesView.jsx';
 import { RegisterView } from './views/RegisterView.jsx';
 import { LoginView } from './views/LoginView.jsx';
 import { PasswordRecoveryView } from './views/auth/PasswordRecoveryView.jsx';
-import { CategoryNView } from './views/CategoryNView.jsx';
 import { TeamsView } from './views/teams/TeamsView.jsx';
 import { TeamDetailView } from './views/teams/TeamDetailView.jsx';
 import { PlayerProfileView } from './views/teams/PlayerProfileView.jsx';
@@ -22,7 +20,10 @@ import { GroundsView } from './views/grounds/GroundsView.jsx';
 import { GroundDetailView } from './views/grounds/GroundDetailView.jsx';
 import { CommunityView } from './views/community/CommunityView.jsx';
 import { MediaView } from './views/media/MediaView.jsx';
-import { useDashboardData } from './hooks/useDashboardData.js';
+import { HomeView } from './views/site/HomeView.jsx';
+import { MemberHomeView } from './views/site/MemberHomeView.jsx';
+import { AboutView, ContactView, PrivacyView, TermsView, GuidelinesView, RefundView, FaqView } from './views/site/InfoPages.jsx';
+import { SettingsView, AdminPanelView } from './views/site/AccountViews.jsx';
 import { dataService, onAuthChange } from './services/dataService.js';
 
 export function App() {
@@ -35,6 +36,8 @@ export function App() {
   const [selectedOfficialId, setSelectedOfficialId] = useState(null);
   const [selectedGroundId, setSelectedGroundId] = useState(null);
   const [liveCount, setLiveCount] = useState(0);
+  const isSuperAdmin = currentUser?.role === 'Super-Admin';
+  const isAdmin = isSuperAdmin || currentUser?.role === 'Admin';
 
   // Keep the signed-in user in sync across the whole app (#255).
   useEffect(() => {
@@ -51,7 +54,7 @@ export function App() {
       await dataService.logoutUser();
     } finally {
       setCurrentUser(null);
-      setActiveTab('login');
+      setActiveTab('dashboard');
     }
   };
 
@@ -72,7 +75,17 @@ export function App() {
     }
   }, [activeTab, selectedMatchId, selectedTournamentId]);
 
+  // Browser tab title for each page
+  useEffect(() => {
+    const names = { dashboard: currentUser ? 'My cricket' : 'Live scores, tournaments & teams', matches: 'Matches', 'match-centre': 'Match', tournaments: 'Tournaments', 'tournament-details': 'Tournament',
+      stats: 'Players & stats', community: 'Community', media: 'Live & Media', grounds: 'Grounds', officials: 'Umpires & scorers', laws: 'Laws & Rules', tools: 'Cricket tools',
+      teams: 'My teams', login: 'Log in', register: 'Register', about: 'About us', contact: 'Contact us', privacy: 'Privacy Policy', terms: 'Terms of Use', faq: 'FAQ', settings: 'Settings', admin: 'Admin panel' };
+    document.title = `${names[activeTab] || 'Local Cricket'} · Local Cricket`;
+  }, [activeTab, currentUser]);
+
   const handleNavigate = (tab, param = null) => {
+    if (tab === 'category-n') tab = isAdmin ? 'admin' : 'settings';
+    if (tab === 'password-recovery' && currentUser) tab = 'settings';
     if (tab === 'tournament-details' && param) {
       setSelectedTournamentId(param);
     }
@@ -93,7 +106,6 @@ export function App() {
     }
     setActiveTab(tab);
   };
-  const { stats, liveMatches, tournaments, penaltyPolicy, loading } = useDashboardData();
 
   // Real number of live matches (refreshed every minute)
   useEffect(() => {
@@ -107,21 +119,26 @@ export function App() {
   return (
     <AppLayout
       activeTab={activeTab}
-      onSelectTab={setActiveTab}
+      onSelectTab={(t) => handleNavigate(t)}
       liveMatchCount={liveCount}
       currentUser={currentUser}
+      isAdmin={isAdmin}
       onSignOut={handleSignOut}
+      fullBleed={activeTab === 'dashboard' && !currentUser}
     >
-      {activeTab === 'dashboard' && (
-        <DashboardOverview
-          stats={stats}
-          liveMatches={liveMatches}
-          tournaments={tournaments}
-          penaltyPolicy={penaltyPolicy}
-          loading={loading}
-          onNavigate={handleNavigate}
-        />
-      )}
+      {activeTab === 'dashboard' && (currentUser
+        ? <MemberHomeView currentUser={currentUser} onNavigate={handleNavigate} />
+        : <HomeView onNavigate={handleNavigate} />)}
+
+      {activeTab === 'about' && <AboutView onNavigate={handleNavigate} />}
+      {activeTab === 'contact' && <ContactView key={currentUser ? currentUser.id : 'guest'} currentUser={currentUser} />}
+      {activeTab === 'privacy' && <PrivacyView />}
+      {activeTab === 'terms' && <TermsView />}
+      {activeTab === 'guidelines' && <GuidelinesView />}
+      {activeTab === 'refunds' && <RefundView />}
+      {activeTab === 'faq' && <FaqView onNavigate={handleNavigate} />}
+      {activeTab === 'settings' && <SettingsView currentUser={currentUser} onNavigate={handleNavigate} />}
+      {activeTab === 'admin' && <AdminPanelView currentUser={currentUser} isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} onNavigate={handleNavigate} />}
 
       {activeTab === 'matches' && <MatchesView key={currentUser ? currentUser.id : 'guest'} currentUser={currentUser} onNavigate={handleNavigate} />}
 
@@ -171,8 +188,6 @@ export function App() {
       {activeTab === 'player-profile' && selectedPlayerId && (
         <PlayerProfileView key={selectedPlayerId} playerId={selectedPlayerId} onNavigate={handleNavigate} />
       )}
-
-      {activeTab === 'category-n' && <CategoryNView onNavigate={handleNavigate} />}
 
       {activeTab === 'register' && <RegisterView onNavigate={handleNavigate} />}
 
