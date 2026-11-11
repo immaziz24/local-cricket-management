@@ -1214,6 +1214,119 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async saveListing(listingId, listing) {
+    const { data, error } = await supabase.rpc('save_listing', { p_listing_id: listingId || null, p: listing });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async deleteListing(listingId) {
+    const { data, error } = await supabase.rpc('delete_listing', { p_listing_id: listingId });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async getListing(listingId) {
+    const { data, error } = await supabase.rpc('get_listing', { p_listing_id: listingId });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async listListings(filters) {
+    const { data, error } = await supabase.rpc('list_listings', { p: filters || {} });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async listOrganisers(query) {
+    const { data, error } = await supabase.rpc('list_organisers', { p_query: query || null });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async saveItem(itemId, item) {
+    const { data, error } = await supabase.rpc('save_item', { p_item_id: itemId || null, p: item });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async deleteItem(itemId) {
+    const { data, error } = await supabase.rpc('delete_item', { p_item_id: itemId });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async getItem(itemId) {
+    const { data, error } = await supabase.rpc('get_item', { p_item_id: itemId });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async listItems(filters) {
+    const { data, error } = await supabase.rpc('list_items', { p: filters || {} });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async savePost(postId, post) {
+    const { data, error } = await supabase.rpc('save_post', { p_post_id: postId || null, p: post });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async deletePost(postId) {
+    const { data, error } = await supabase.rpc('delete_post', { p_post_id: postId });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async listPosts(filters) {
+    const { data, error } = await supabase.rpc('list_posts', { p: filters || {} });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async sendEnquiry(targetType, targetId, message, contact) {
+    const { data, error } = await supabase.rpc('send_enquiry', { p_target_type: targetType, p_target_id: targetId, p_message: message, p_contact: contact || null });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async replyEnquiry(enquiryId, reply, close) {
+    const { data, error } = await supabase.rpc('reply_enquiry', { p_enquiry_id: enquiryId, p_reply: reply || null, p_close: !!close });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async myEnquiries() {
+    const { data, error } = await supabase.rpc('my_enquiries', {});
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  async communitySearch(filters) {
+    const { data, error } = await supabase.rpc('community_search', { p: filters });
+    if (error) return { data: null, error: friendlyError(error, 'community') };
+    return { data, error: null };
+  },
+
+  // #160–#165 photos for listings and marketplace items
+  async setListingPhoto({ listingId, file }) {
+    const up = await this.uploadImage('listings', listingId, file);
+    if (up.error) return up;
+    const { data, error } = await supabase.rpc('set_listing_photo', { p_listing_id: listingId, p_url: up.data.url });
+    if (error) return { data: null, error: friendlyError(error, 'photo') };
+    return { data, error: null };
+  },
+
+  async setItemPhoto({ itemId, file }) {
+    const up = await this.uploadImage('items', itemId, file);
+    if (up.error) return up;
+    const { data, error } = await supabase.rpc('set_item_photo', { p_item_id: itemId, p_url: up.data.url });
+    if (error) return { data: null, error: friendlyError(error, 'photo') };
+    return { data, error: null };
+  },
+
   async getCommentary(matchId) {
     const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'commentary') };

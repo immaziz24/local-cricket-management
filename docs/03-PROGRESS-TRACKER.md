@@ -17,11 +17,11 @@
 | Status | Features |
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
-| 🟩 Working (real database) | 125 / 310 |
+| 🟩 Working (real database) | 142 / 310 |
 | 🟨 Built / connected, awaiting check | 80 / 310 |
-| ⬜ Not started | 105 / 310 |
+| ⬜ Not started | 88 / 310 |
 
-**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. Next: Phase 5 – community and media.
+**Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5 started: Category H community & marketplace (17) connected.** Next: Category I – live streaming and media.
 
 **Phase 2 summary:** 45 of 48 built; #57, #77, #78 waited for ball-by-ball scoring.
 
@@ -37,7 +37,7 @@
 | 2 | B, C | 48 | 0 | 36 | 12 | 0 |
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
 | 4 | F, G, Q | 37 | 0 | 0 | 37 | 0 |
-| 5 | H, I, J, K | 56 | 56 | 0 | 0 | 0 |
+| 5 | H, I, J, K | 56 | 39 | 0 | 17 | 0 |
 | 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
 
 ## 4. Supporting screens (not numbered features)
@@ -322,23 +322,23 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 160 | Cricket academies directory | ⬜ |  |
-| 161 | Coaching centres directory | ⬜ |  |
-| 162 | Cricket shops directory | ⬜ |  |
-| 163 | Cricket equipment listings | ⬜ |  |
-| 164 | Bat and ball listings | ⬜ |  |
-| 165 | Cricket kit rental | ⬜ |  |
-| 166 | Net practice facilities | ⬜ |  |
-| 167 | Local cricket clubs directory | ⬜ |  |
-| 168 | Tournament organisers directory | ⬜ |  |
-| 169 | Find cricket grounds | ⬜ |  |
-| 170 | Find umpires | ⬜ |  |
-| 171 | Find scorers | ⬜ |  |
-| 172 | Find commentators | ⬜ |  |
-| 173 | Find teams | ⬜ |  |
-| 174 | Find players | ⬜ |  |
-| 175 | Find tournaments | ⬜ |  |
-| 176 | Community listings and enquiries | ⬜ |  |
+| 160 | Cricket academies directory | 🟩 | **connected 2026-11-11** – Community → Directory → Academies. Tested in DB |
+| 161 | Coaching centres directory | 🟩 | **connected 2026-11-11** – Directory → Coaching centres. Tested in DB |
+| 162 | Cricket shops directory | 🟩 | **connected 2026-11-11** – Directory → Cricket shops (shop items shown on listing). Tested in DB |
+| 163 | Cricket equipment listings | 🟩 | **connected 2026-11-11** – Community → Marketplace: sell/rent equipment with photo, status, enquiries. Tested in DB |
+| 164 | Bat and ball listings | 🟩 | **connected 2026-11-11** – Marketplace → Bats & balls filter. Tested in DB |
+| 165 | Cricket kit rental | 🟩 | **connected 2026-11-11** – Marketplace → Kit for rent (rent per day + deposit). Tested in DB |
+| 166 | Net practice facilities | 🟩 | **connected 2026-11-11** – Directory → Net practice. Tested in DB |
+| 167 | Local cricket clubs directory | 🟩 | **connected 2026-11-11** – Directory → Clubs. Tested in DB |
+| 168 | Tournament organisers directory | 🟩 | **connected 2026-11-11** – Directory → Tournament organisers (from real tournaments). Tested in DB |
+| 169 | Find cricket grounds | 🟩 | **connected 2026-11-11** – Community → Find → Grounds page. Tested in DB |
+| 170 | Find umpires | 🟩 | **connected 2026-11-11** – Find → Umpires (officials page). Tested in DB |
+| 171 | Find scorers | 🟩 | **connected 2026-11-11** – Find → Scorers (officials page). Tested in DB |
+| 172 | Find commentators | 🟩 | **connected 2026-11-11** – Directory → Commentators. Tested in DB |
+| 173 | Find teams | 🟩 | **connected 2026-11-11** – Find → Teams (name/city). Tested in DB |
+| 174 | Find players | 🟩 | **connected 2026-11-11** – Find → Players (name/ID/role/city; private profiles hidden). Tested in DB |
+| 175 | Find tournaments | 🟩 | **connected 2026-11-11** – Find → Tournaments (status / registration open). Tested in DB |
+| 176 | Community listings and enquiries | 🟩 | **connected 2026-11-11** – Community board (players/team/match/ground/officials wanted) + private enquiries with replies and notifications. Tested in DB |
 
 **Category I – Live streaming and media**
 

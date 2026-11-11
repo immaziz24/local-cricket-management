@@ -18,7 +18,8 @@ import {
   Wrench,
   Flag,
   MapPin,
-  Users
+  Users,
+  Store,
 } from 'lucide-react';
 
 export function MobileNav(props) {
@@ -41,6 +42,7 @@ export function MobileNav(props) {
     { id: 'matches', label: 'Matches', icon: Activity, badge: liveMatchCount > 0 ? `${liveMatchCount} Live` : null },
     { id: 'officials', label: 'Umpires & Scorers', icon: Flag },
     { id: 'grounds', label: 'Grounds', icon: MapPin },
+    { id: 'community', label: 'Community', icon: Store },
     { id: 'stats', label: 'Statistics', icon: BarChart3 },
     { id: 'laws', label: 'Laws & Rules', icon: BookOpen },
     { id: 'tools', label: 'Cricket Tools', icon: Wrench },

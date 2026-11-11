@@ -20,6 +20,7 @@ import { ToolsView } from './views/tools/ToolsView.jsx';
 import { OfficialsView, OfficialProfileView } from './views/officials/OfficialsView.jsx';
 import { GroundsView } from './views/grounds/GroundsView.jsx';
 import { GroundDetailView } from './views/grounds/GroundDetailView.jsx';
+import { CommunityView } from './views/community/CommunityView.jsx';
 import { useDashboardData } from './hooks/useDashboardData.js';
 import { dataService, onAuthChange } from './services/dataService.js';
 
@@ -136,6 +137,7 @@ export function App() {
       {activeTab === 'officials' && <OfficialsView currentUser={currentUser} onNavigate={handleNavigate} />}
 
       {activeTab === 'grounds' && <GroundsView currentUser={currentUser} onNavigate={handleNavigate} />}
+      {activeTab === 'community' && <CommunityView currentUser={currentUser} onNavigate={handleNavigate} />}
 
       {activeTab === 'ground' && selectedGroundId && (
         <GroundDetailView key={selectedGroundId} groundId={selectedGroundId} currentUser={currentUser} onNavigate={handleNavigate} />

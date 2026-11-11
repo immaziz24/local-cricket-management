@@ -887,6 +887,132 @@ export const dataService = {
     return res.data;
   },
 
+  async saveListing(listingId, listing) {
+    requireDatabase();
+    const res = await supabaseClient.saveListing(listingId, listing);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async deleteListing(listingId) {
+    requireDatabase();
+    const res = await supabaseClient.deleteListing(listingId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getListing(listingId) {
+    requireDatabase();
+    const res = await supabaseClient.getListing(listingId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listListings(filters) {
+    requireDatabase();
+    const res = await supabaseClient.listListings(filters);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listOrganisers(query) {
+    requireDatabase();
+    const res = await supabaseClient.listOrganisers(query);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveItem(itemId, item) {
+    requireDatabase();
+    const res = await supabaseClient.saveItem(itemId, item);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async deleteItem(itemId) {
+    requireDatabase();
+    const res = await supabaseClient.deleteItem(itemId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getItem(itemId) {
+    requireDatabase();
+    const res = await supabaseClient.getItem(itemId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listItems(filters) {
+    requireDatabase();
+    const res = await supabaseClient.listItems(filters);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async savePost(postId, post) {
+    requireDatabase();
+    const res = await supabaseClient.savePost(postId, post);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async deletePost(postId) {
+    requireDatabase();
+    const res = await supabaseClient.deletePost(postId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listPosts(filters) {
+    requireDatabase();
+    const res = await supabaseClient.listPosts(filters);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async sendEnquiry(targetType, targetId, message, contact) {
+    requireDatabase();
+    const res = await supabaseClient.sendEnquiry(targetType, targetId, message, contact);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async replyEnquiry(enquiryId, reply, close) {
+    requireDatabase();
+    const res = await supabaseClient.replyEnquiry(enquiryId, reply, close);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async myEnquiries() {
+    requireDatabase();
+    const res = await supabaseClient.myEnquiries();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async communitySearch(filters) {
+    requireDatabase();
+    const res = await supabaseClient.communitySearch(filters);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setListingPhoto(upload) {
+    requireDatabase();
+    const res = await supabaseClient.setListingPhoto(upload);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setItemPhoto(upload) {
+    requireDatabase();
+    const res = await supabaseClient.setItemPhoto(upload);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCommentary(matchId) {
     requireDatabase();
     const res = await supabaseClient.getCommentary(matchId);
