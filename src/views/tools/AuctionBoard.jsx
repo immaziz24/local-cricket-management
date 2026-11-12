@@ -23,24 +23,76 @@ const BOWL_WORDS = { rf: 'right_arm_fast', rmf: 'right_arm_medium', rm: 'right_a
 const BAT_WORDS = { rhb: 'right_hand', right: 'right_hand', 'right-hand': 'right_hand', lhb: 'left_hand', left: 'left_hand', 'left-hand': 'left_hand' };
 export const playerDetails = (p) => [p.role && ROLE_SHORT[p.role], BAT_SHORT[p.batting_style], p.batting_position && labelOf(BAT_POSITIONS, p.batting_position), p.bowling_style && p.bowling_style !== 'none' && labelOf(BOWLING_OPTIONS, p.bowling_style)].filter(Boolean).join(' · ');
 
-/** "50, Rahim, bat, rhb, rf, 500, LC-000214" – any order after the number and name. Or just "Rahim". */
-export function parseAuctionPlayers(text) {
-  return String(text || '').split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
-    const parts = l.split(/[,\t|]/).map((x) => x.trim()).filter(Boolean);
-    const p = {};
-    if (/^\d{1,4}$/.test(parts[0]) && parts.length > 1) p.number = parts.shift();
-    if (/^LC-?\d+$/i.test(parts[0] || '')) p.player_code = parts.shift();
-    p.name = (parts[0] && !/^LC-?\d+$/i.test(parts[0])) ? parts.shift() : '';
-    parts.forEach((x) => {
-      const k = x.toLowerCase().replace(/\s+/g, '');
-      if (ROLE[k]) p.role = ROLE[k];
-      else if (BAT_WORDS[k]) p.batting_style = BAT_WORDS[k];
-      else if (BOWL_WORDS[k]) p.bowling_style = BOWL_WORDS[k];
-      else if (/^LC-?\d+$/i.test(x)) p.player_code = x;
-      else if (/^\d+$/.test(x)) p.base_price = x;
+const ROLE_WORDS = { ...ROLE, batsman: 'batter', batsmen: 'batter', batting: 'batter', bowling: 'bowler', allrounder: 'all_rounder', battingallrounder: 'all_rounder', bowlingallrounder: 'all_rounder',
+  wicketkeeper: 'wicket_keeper', wicketkeeperbatsman: 'wicket_keeper', wicketkeeperbatter: 'wicket_keeper', wkbatsman: 'wicket_keeper', keeperbatsman: 'wicket_keeper' };
+const HAND_WORDS = { ...BAT_WORDS, righthand: 'right_hand', righthanded: 'right_hand', righthandbat: 'right_hand', righthandbatsman: 'right_hand',
+  lefthand: 'left_hand', lefthanded: 'left_hand', lefthandbat: 'left_hand', lefthandbatsman: 'left_hand' };
+const BOWL_LONG = { ...BOWL_WORDS, rightarmfast: 'right_arm_fast', rightarmmedium: 'right_arm_medium', rightarmoffspin: 'right_arm_off_spin', rightarmlegspin: 'right_arm_leg_spin',
+  leftarmfast: 'left_arm_fast', leftarmmedium: 'left_arm_medium', leftarmspin: 'left_arm_orthodox', leftarmorthodox: 'left_arm_orthodox' };
+const IS_LC = /^LC-?\d+$/i;
+const IS_DATE = /^\d{1,4}[/.-]\d{1,2}[/.-]\d{1,4}(\s+\d{1,2}:\d{2}(:\d{2})?(\s*[ap]m)?)?$|^\d{1,2}:\d{2}(:\d{2})?(\s*[ap]m)?$/i;
+const IS_CODE = /^[A-Za-z]{1,10}[A-Za-z0-9/_-]*\d[A-Za-z0-9/_-]*$/;
+const HEADER = /^(name|player|player name|full name|timestamp|mobile|phone|role|id)$/i;
+
+/**
+ * Reads pasted players, one per line. Works with "50, Rahim, bat, rhb, rf, 500, LC-000214" and with rows copied
+ * from a registration sheet (Google Form / Excel): ID, timestamp, name, mobile, village, area, role, batting hand.
+ * Dates and mobile numbers are left out (the auction page is public); village / area go into the note.
+ * A sheet ID like TPL11/25-005 gives the auction number 5, so typing 5 brings that player up.
+ */
+export function readAuctionPlayers(text) {
+  const seen = new Set();
+  let repeats = 0;
+  const list = [];
+  String(text || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean).forEach((line) => {
+    const parts = (line.includes('\t') ? line.split('\t') : line.split(/[,|]/)).map((x) => x.trim().replace(/\s+/g, ' ')).filter(Boolean);
+    if (parts.some((x) => HEADER.test(x)) && !parts.some((x) => /\d{5,}/.test(x))) return; // header row
+    const p = {}; const extra = []; let phone = ''; let phones = 0; let firstPhoneAt = -1; let nameAt = -1;
+    parts.forEach((x, i) => {
+      const k = x.toLowerCase().replace(/[\s_-]+/g, '');
+      const digits = x.replace(/[\s+()-]/g, '');
+      if (IS_LC.test(x)) { if (!p.player_code) p.player_code = x.toUpperCase(); return; }
+      if (IS_DATE.test(x)) return;
+      if (/^\d{10,13}$/.test(digits)) { phones += 1; if (!phone) { phone = digits.slice(-10); firstPhoneAt = i; } return; }
+      if (/^\d{1,8}$/.test(x)) { if (i === 0 && !p.number && x.length <= 4) p.number = String(Number(x)); else if (!p.base_price) p.base_price = String(Number(x)); return; }
+      if (ROLE_WORDS[k]) { if (!p.role) p.role = ROLE_WORDS[k]; return; }
+      if (HAND_WORDS[k]) { if (!p.batting_style) p.batting_style = HAND_WORDS[k]; return; }
+      if (BOWL_LONG[k]) { if (!p.bowling_style) p.bowling_style = BOWL_LONG[k]; return; }
+      if (!p.player_code && !p.name && !x.includes(' ') && IS_CODE.test(x)) { p.player_code = x.toUpperCase(); return; }
+      if (!p.name) { p.name = x.replace(/^@+/, '').slice(0, 80); nameAt = i; }
+      else extra.push(x);
     });
-    return p;
-  }).filter((p) => p.name || p.player_code);
+    // the mobile number was typed in the name column too: the next word is the village, not the name
+    if (phones >= 2 && firstPhoneAt >= 0 && firstPhoneAt < nameAt) { extra.unshift(p.name); p.name = ''; }
+    if (!p.name && p.player_code && !IS_LC.test(p.player_code)) p.name = p.player_code;
+    if (!p.name && !p.player_code) return;
+    if (!p.number && p.player_code && !IS_LC.test(p.player_code)) {
+      const m = p.player_code.match(/(\d{1,4})$/);
+      if (m && Number(m[1]) > 0) p.number = String(Number(m[1]));
+    }
+    const notes = [...new Set(extra)];
+    if (notes.length) p.note = notes.join(', ').slice(0, 200);
+    const key = `${(p.name || '').toLowerCase().replace(/[^a-z0-9]/g, '')}|${phone}`;
+    if (phone && p.name && seen.has(key)) { repeats += 1; return; }
+    seen.add(key);
+    list.push(p);
+  });
+  return { list, repeats };
+}
+export const parseAuctionPlayers = (text) => readAuctionPlayers(text).list;
+
+/** Small line under a paste box: how many players were read, and the first one as a check. */
+function PasteSummary({ text }) {
+  const { list, repeats } = readAuctionPlayers(text);
+  if (!String(text || '').trim()) return null;
+  const f = list[0];
+  return (
+    <span style={{ fontSize: '0.76rem', color: list.length ? '#065f46' : '#b91c1c' }}>
+      {list.length ? `${list.length} player${list.length === 1 ? '' : 's'} found` : 'No players found yet'}
+      {repeats ? ` · ${repeats} repeated row${repeats === 1 ? '' : 's'} (same name and mobile) left out` : ''}
+      {f ? ` · first: ${f.number ? `${f.number}. ` : ''}${f.name || f.player_code}${f.player_code && f.name !== f.player_code ? ` (${f.player_code})` : ''}${playerDetails(f) ? ` · ${playerDetails(f)}` : ''}` : ''}
+    </span>
+  );
 }
 
 /** One player: ID / Local Cricket ID, name, role, batting hand and position, bowling style, base price. */
@@ -56,7 +108,7 @@ function PlayerForm({ player = null, basePrice, onSave, onCancel, busy }) {
       <strong style={{ fontSize: '0.88rem' }}>{player ? `Edit player ${player.number}` : 'Add a player'}</strong>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '0.55rem' }}>
         <label style={lbl}>Auction number<input style={inp} type="number" min={1} value={f.number} onChange={set('number')} placeholder="Auto" /></label>
-        <label style={lbl}>Player ID (e.g. LC-000214)<input style={inp} value={f.player_code} onChange={set('player_code')} placeholder="Optional" maxLength={40} /></label>
+        <label style={lbl}>Player ID (LC-000214 or your sheet ID)<input style={inp} value={f.player_code} onChange={set('player_code')} placeholder="Optional" maxLength={40} /></label>
         <label style={{ ...lbl, gridColumn: 'span 2' }}>Name<input style={inp} value={f.name} onChange={set('name')} placeholder="Filled in from the ID if left empty" maxLength={80} /></label>
         <label style={lbl}>Role<select style={inp} value={f.role} onChange={set('role')}>{opt(ROLE_OPTIONS, 'Choose role')}</select></label>
         <label style={lbl}>Batting<select style={inp} value={f.batting_style} onChange={set('batting_style')}>{opt(BATTING_OPTIONS, 'Right / left hand')}</select></label>
@@ -65,7 +117,7 @@ function PlayerForm({ player = null, basePrice, onSave, onCancel, busy }) {
         <label style={lbl}>Base price<input style={inp} type="number" min={1} value={f.base_price} onChange={set('base_price')} placeholder={`Default ${money(basePrice)}`} /></label>
         <label style={{ ...lbl, gridColumn: 'span 2' }}>Note<input style={inp} value={f.note} onChange={set('note')} placeholder="Optional" maxLength={200} /></label>
       </div>
-      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Type a Local Cricket player ID (shown on their profile) and their name, role, batting and bowling are filled in for you.</span>
+      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Type a Local Cricket player ID (LC-…, shown on their profile) and their name, role, batting and bowling are filled in for you.</span>
       <div style={{ display: 'flex', gap: '0.45rem' }}>
         <Button variant="primary" size="sm" disabled={busy || !ok} onClick={() => onSave({ ...f, number: f.number === '' ? undefined : String(f.number), base_price: f.base_price === '' ? undefined : String(f.base_price) })}>{player ? 'Save player' : 'Add player'}</Button>
         {onCancel && <Button variant="secondary" size="sm" onClick={onCancel}>Cancel</Button>}
@@ -137,8 +189,9 @@ function AuctionForm({ auction = null, tournamentId = null, onSaved, onCancel })
         {teams.length < 32 && <button type="button" className="btn-mini" onClick={() => setTeams((ts) => [...ts, { name: '', short_name: '', owner_name: '', budget: '' }])} style={{ alignSelf: 'flex-start' }}>+ Add team</button>}
       </div>
       {!auction && (
-        <label style={lbl}>Players (optional now – you can add them one by one later). One per line: number, name, role, batting, bowling, base price, ID
+        <label style={lbl}>Players (optional now – you can add them later). One per line, or copy the rows straight from your registration sheet (ID, name, mobile, village, role, batting hand)
           <textarea rows={4} style={{ ...inp, resize: 'vertical', fontFamily: 'inherit' }} value={players} onChange={(e) => setPlayers(e.target.value)} placeholder="One player per line" />
+          <PasteSummary text={players} />
         </label>
       )}
       {err && <div style={{ color: '#b91c1c', fontSize: '0.84rem' }}>{err}</div>}
@@ -225,6 +278,9 @@ export function AuctionBoard({ auctionId, currentUser, onNavigate }) {
     const q = String(q0 || '').trim();
     if (!q) return { list: [] };
     const digits = q.replace(/\D/g, '');
+    const norm = (x) => String(x || '').toUpperCase().replace(/\s+/g, '');
+    const exact = a.players.filter((p) => p.player_code && norm(p.player_code) === norm(q));
+    if (exact.length) return { list: exact };
     const byNumber = /^\d{1,4}$/.test(q) ? a.players.filter((p) => String(p.number) === q) : [];
     if (byNumber.length) return { list: byNumber };
     const byCode = digits ? a.players.filter((p) => p.player_code && p.player_code.replace(/\D/g, '').replace(/^0+/, '') === digits.replace(/^0+/, '')) : [];
@@ -463,8 +519,9 @@ export function AuctionBoard({ auctionId, currentUser, onNavigate }) {
         )}
         {a.can_run && bulk && (
           <div style={{ marginTop: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <label style={lbl}>Paste players – one per line: number, name, role (bat / bowler / all / wk), batting (rhb / lhb), bowling (rf, rm, ob, lb, lf, lm, sla), base price, ID (LC-…)
+            <label style={lbl}>Paste players – copy the rows from your registration sheet (ID, name, mobile, village, role, batting hand), or type one per line: number, name, role (bat / bowler / all / wk), batting (rhb / lhb), bowling (rf, rm, ob, lb, lf, lm, sla), base price
               <textarea rows={4} style={{ ...inp, resize: 'vertical', fontFamily: 'inherit' }} value={adding} onChange={(e) => setAdding(e.target.value)} placeholder="One player per line" />
+              <PasteSummary text={adding} />
             </label>
             <Button variant="primary" size="sm" disabled={busy || !parseAuctionPlayers(adding).length} onClick={async () => { const r = await run(() => dataService.addAuctionPlayers(a.id, parseAuctionPlayers(adding)), 'Players added.'); if (r) setAdding(''); }} style={{ alignSelf: 'flex-start' }}>
               Add {parseAuctionPlayers(adding).length || ''} player{parseAuctionPlayers(adding).length === 1 ? '' : 's'}
