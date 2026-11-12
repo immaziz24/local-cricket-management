@@ -1688,6 +1688,13 @@ export const dataService = {
     return res.data;
   },
 
+  async updateAuctionPlayer(playerId, p) {
+    requireDatabase();
+    const res = await supabaseClient.updateAuctionPlayer(playerId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCommentary(matchId) {
     requireDatabase();
     const res = await supabaseClient.getCommentary(matchId);

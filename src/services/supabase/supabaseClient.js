@@ -1943,6 +1943,12 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async updateAuctionPlayer(playerId, p) {
+    const { data, error } = await supabase.rpc('update_auction_player', { p_player_id: playerId, p: p || {} });
+    if (error) return { data: null, error: friendlyError(error, 'auction') };
+    return { data, error: null };
+  },
+
   async getCommentary(matchId) {
     const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'commentary') };

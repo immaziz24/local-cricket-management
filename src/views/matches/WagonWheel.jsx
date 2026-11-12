@@ -26,14 +26,22 @@ function Field({ children, onClick, svgRef }) {
   );
 }
 
-/** Scorer taps where the ball went. Boundaries (4, 6) always reach the rope. */
-export function WagonWheelPicker({ runs, onPick, onSkip, busy }) {
+/** Scorer taps where the ball went. Boundaries (4, 6) always reach the rope.
+ *  Tapping outside the box (or Cancel) closes it without saving anything; the runs can be changed inside. */
+export function WagonWheelPicker({ runs, onPick, onSkip, onCancel, onChangeRuns, busy, leftHanded = false }) {
   const ref = useRef(null);
   const [mark, setMark] = useState(null);
+  useEffect(() => {
+    const esc = (e) => { if (e.key === 'Escape' && onCancel) onCancel(); };
+    window.addEventListener('keydown', esc);
+    return () => window.removeEventListener('keydown', esc);
+  }, [onCancel]);
   const tap = (e) => {
+    e.stopPropagation();
     if (busy || !ref.current) return;
     const box = ref.current.getBoundingClientRect();
     const x = ((e.clientX - box.left) / box.width) * SIZE - C; const y = ((e.clientY - box.top) / box.height) * SIZE - C;
+    if (Math.sqrt(x * x + y * y) > R + 10) return; // outside the field
     const angle = Math.round(((Math.atan2(x, -y) * 180) / Math.PI + 360) % 360) % 360;
     let dist = Math.max(5, Math.min(100, Math.round((Math.sqrt(x * x + y * y) / R) * 100)));
     if (runs === 4 || runs === 6) dist = 100;
@@ -41,13 +49,28 @@ export function WagonWheelPicker({ runs, onPick, onSkip, busy }) {
     onPick({ angle, dist });
   };
   const end = mark ? pt(mark.angle, mark.dist) : null;
+  const chip = (on) => ({ minWidth: 40, padding: '0.35rem 0.6rem', borderRadius: 8, fontWeight: 800, cursor: 'pointer', border: `2px solid ${on ? '#16a34a' : '#cbd5e1'}`, backgroundColor: on ? '#dcfce7' : '#fff' });
   return (
-    <div style={{ border: '2px solid #16a34a', borderRadius: '0.8rem', padding: '0.7rem', backgroundColor: '#f0fdf4', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-      <div style={{ fontWeight: 800, textAlign: 'center' }}>Where did the {runs === 4 ? 'FOUR' : runs === 6 ? 'SIX' : `${runs} run${runs === 1 ? '' : 's'}`} go? Tap the field</div>
-      <Field onClick={tap} svgRef={ref}>
-        {end && <line x1={C} y1={C} x2={end[0]} y2={end[1]} stroke={RUN_COLOR[runs] || '#0f172a'} strokeWidth="3" strokeLinecap="round" />}
-      </Field>
-      <button type="button" disabled={busy} onClick={onSkip} style={{ alignSelf: 'center', border: '1px solid #cbd5e1', backgroundColor: '#fff', borderRadius: 999, padding: '0.35rem 1rem', cursor: 'pointer', fontSize: '0.84rem' }}>Skip – save without direction</button>
+    <div onClick={() => onCancel && onCancel()} style={{ position: 'fixed', inset: 0, zIndex: 1000, backgroundColor: 'rgba(15,23,42,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.75rem' }}>
+      <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxWidth: 360, border: '2px solid #16a34a', borderRadius: '0.9rem', padding: '0.8rem', backgroundColor: '#f0fdf4', display: 'flex', flexDirection: 'column', gap: '0.55rem', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
+        <div style={{ fontWeight: 800, textAlign: 'center' }}>Where did the {runs === 4 ? 'FOUR' : runs === 6 ? 'SIX' : `${runs} run${runs === 1 ? '' : 's'}`} go? Tap the field</div>
+        {onChangeRuns && (
+          <div style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.74rem', color: '#475569' }}>Wrong runs?</span>
+            {[1, 2, 3, 4, 6].map((r) => <button key={r} type="button" disabled={busy} onClick={() => { setMark(null); onChangeRuns(r); }} style={chip(r === runs)}>{r}</button>)}
+          </div>
+        )}
+        <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: '#475569', padding: '0 0.4rem' }}>
+          <span>{leftHanded ? 'Off side' : 'Leg side'}</span><span>{leftHanded ? 'left-hander' : 'right-hander'}</span><span>{leftHanded ? 'Leg side' : 'Off side'}</span>
+        </div>
+        <Field onClick={tap} svgRef={ref}>
+          {end && <line x1={C} y1={C} x2={end[0]} y2={end[1]} stroke={RUN_COLOR[runs] || '#0f172a'} strokeWidth="3" strokeLinecap="round" />}
+        </Field>
+        <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap' }}>
+          <button type="button" disabled={busy} onClick={onSkip} style={{ border: '1px solid #cbd5e1', backgroundColor: '#fff', borderRadius: 999, padding: '0.4rem 0.9rem', cursor: 'pointer', fontSize: '0.82rem' }}>Save without direction</button>
+          {onCancel && <button type="button" disabled={busy} onClick={onCancel} style={{ border: '1px solid #fecaca', backgroundColor: '#fff', color: '#b91c1c', borderRadius: 999, padding: '0.4rem 0.9rem', cursor: 'pointer', fontSize: '0.82rem', fontWeight: 700 }}>Cancel – don't save</button>}
+        </div>
+      </div>
     </div>
   );
 }

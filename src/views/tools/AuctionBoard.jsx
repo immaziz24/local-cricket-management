@@ -2,7 +2,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
-import { Gavel, Plus, Undo2, Share2, Download, Printer, ArrowLeft, Shuffle, ChevronRight, Trash2, Pencil, Users } from 'lucide-react';
+import { Gavel, Plus, Undo2, Share2, Download, Printer, ArrowLeft, Shuffle, ChevronRight, Trash2, Pencil, Users, X } from 'lucide-react';
+import { ROLE_OPTIONS, BATTING_OPTIONS, BOWLING_OPTIONS, labelOf } from '../teams/playerOptions.js';
 
 /**
  * #231 Player auction – a saved auction board like a local league auction sheet:
@@ -15,37 +16,85 @@ const money = (n) => (n == null ? '–' : Number(n).toLocaleString('en-IN'));
 const ROLE = { bat: 'batter', batter: 'batter', bowl: 'bowler', bowler: 'bowler', all: 'all_rounder', ar: 'all_rounder', allrounder: 'all_rounder', 'all-rounder': 'all_rounder', wk: 'wicket_keeper', keeper: 'wicket_keeper' };
 const ROLE_SHORT = { batter: 'BAT', bowler: 'BOWL', all_rounder: 'AR', wicket_keeper: 'WK' };
 
-/** "50, Rahim, bat, 500"  or  "Rahim"  or  "Rahim, wk" → player rows */
+export const BAT_POSITIONS = [['opener', 'Opener'], ['top_order', 'Top order'], ['middle_order', 'Middle order'], ['finisher', 'Finisher'], ['lower_order', 'Lower order']];
+const BAT_SHORT = { right_hand: 'RHB', left_hand: 'LHB' };
+const BOWL_WORDS = { rf: 'right_arm_fast', rmf: 'right_arm_medium', rm: 'right_arm_medium', ob: 'right_arm_off_spin', offspin: 'right_arm_off_spin', lb: 'right_arm_leg_spin', legspin: 'right_arm_leg_spin',
+  lf: 'left_arm_fast', lm: 'left_arm_medium', lmf: 'left_arm_medium', sla: 'left_arm_orthodox', lo: 'left_arm_orthodox', chinaman: 'left_arm_chinaman' };
+const BAT_WORDS = { rhb: 'right_hand', right: 'right_hand', 'right-hand': 'right_hand', lhb: 'left_hand', left: 'left_hand', 'left-hand': 'left_hand' };
+export const playerDetails = (p) => [p.role && ROLE_SHORT[p.role], BAT_SHORT[p.batting_style], p.batting_position && labelOf(BAT_POSITIONS, p.batting_position), p.bowling_style && p.bowling_style !== 'none' && labelOf(BOWLING_OPTIONS, p.bowling_style)].filter(Boolean).join(' · ');
+
+/** "50, Rahim, bat, rhb, rf, 500, LC-000214" – any order after the number and name. Or just "Rahim". */
 export function parseAuctionPlayers(text) {
   return String(text || '').split('\n').map((l) => l.trim()).filter(Boolean).map((l) => {
-    const parts = l.split(/[,\t]/).map((x) => x.trim()).filter(Boolean);
+    const parts = l.split(/[,\t|]/).map((x) => x.trim()).filter(Boolean);
     const p = {};
     if (/^\d{1,4}$/.test(parts[0]) && parts.length > 1) p.number = parts.shift();
-    p.name = parts.shift() || '';
-    parts.forEach((x) => { const r = ROLE[x.toLowerCase()]; if (r) p.role = r; else if (/^\d+$/.test(x)) p.base_price = x; });
+    if (/^LC-?\d+$/i.test(parts[0] || '')) p.player_code = parts.shift();
+    p.name = (parts[0] && !/^LC-?\d+$/i.test(parts[0])) ? parts.shift() : '';
+    parts.forEach((x) => {
+      const k = x.toLowerCase().replace(/\s+/g, '');
+      if (ROLE[k]) p.role = ROLE[k];
+      else if (BAT_WORDS[k]) p.batting_style = BAT_WORDS[k];
+      else if (BOWL_WORDS[k]) p.bowling_style = BOWL_WORDS[k];
+      else if (/^LC-?\d+$/i.test(x)) p.player_code = x;
+      else if (/^\d+$/.test(x)) p.base_price = x;
+    });
     return p;
-  }).filter((p) => p.name);
+  }).filter((p) => p.name || p.player_code);
+}
+
+/** One player: ID / Local Cricket ID, name, role, batting hand and position, bowling style, base price. */
+function PlayerForm({ player = null, basePrice, onSave, onCancel, busy }) {
+  const [f, setF] = useState(() => ({ number: player?.number ?? '', player_code: player?.player_code || '', name: player?.name || '', role: player?.role || '',
+    batting_style: player?.batting_style || '', batting_position: player?.batting_position || '', bowling_style: player?.bowling_style || '',
+    base_price: player?.base_price && player.base_price !== basePrice ? player.base_price : '', note: player?.note || '' }));
+  const set = (k) => (e) => setF((x) => ({ ...x, [k]: e.target.value }));
+  const opt = (list, empty) => [<option key="" value="">{empty}</option>, ...list.map(([v, l]) => <option key={v} value={v}>{l}</option>)];
+  const ok = f.name.trim() || /^LC-?\d+$/i.test(f.player_code.trim());
+  return (
+    <div style={{ border: '1px solid #cbd5e1', borderRadius: '0.6rem', padding: '0.75rem', backgroundColor: '#f8fafc', display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+      <strong style={{ fontSize: '0.88rem' }}>{player ? `Edit player ${player.number}` : 'Add a player'}</strong>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '0.55rem' }}>
+        <label style={lbl}>Auction number<input style={inp} type="number" min={1} value={f.number} onChange={set('number')} placeholder="Auto" /></label>
+        <label style={lbl}>Player ID (e.g. LC-000214)<input style={inp} value={f.player_code} onChange={set('player_code')} placeholder="Optional" maxLength={40} /></label>
+        <label style={{ ...lbl, gridColumn: 'span 2' }}>Name<input style={inp} value={f.name} onChange={set('name')} placeholder="Filled in from the ID if left empty" maxLength={80} /></label>
+        <label style={lbl}>Role<select style={inp} value={f.role} onChange={set('role')}>{opt(ROLE_OPTIONS, 'Choose role')}</select></label>
+        <label style={lbl}>Batting<select style={inp} value={f.batting_style} onChange={set('batting_style')}>{opt(BATTING_OPTIONS, 'Right / left hand')}</select></label>
+        <label style={lbl}>Batting position<select style={inp} value={f.batting_position} onChange={set('batting_position')}>{opt(BAT_POSITIONS, 'Any')}</select></label>
+        <label style={lbl}>Bowling<select style={inp} value={f.bowling_style} onChange={set('bowling_style')}>{opt(BOWLING_OPTIONS, 'Bowling style')}</select></label>
+        <label style={lbl}>Base price<input style={inp} type="number" min={1} value={f.base_price} onChange={set('base_price')} placeholder={`Default ${money(basePrice)}`} /></label>
+        <label style={{ ...lbl, gridColumn: 'span 2' }}>Note<input style={inp} value={f.note} onChange={set('note')} placeholder="e.g. Captain of last year's winners" maxLength={200} /></label>
+      </div>
+      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Type a Local Cricket player ID (shown on their profile) and their name, role, batting and bowling are filled in for you.</span>
+      <div style={{ display: 'flex', gap: '0.45rem' }}>
+        <Button variant="primary" size="sm" disabled={busy || !ok} onClick={() => onSave({ ...f, number: f.number === '' ? undefined : String(f.number), base_price: f.base_price === '' ? undefined : String(f.base_price) })}>{player ? 'Save player' : 'Add player'}</Button>
+        {onCancel && <Button variant="secondary" size="sm" onClick={onCancel}>Cancel</Button>}
+      </div>
+    </div>
+  );
 }
 
 function AuctionForm({ auction = null, tournamentId = null, onSaved, onCancel }) {
-  const [f, setF] = useState(() => ({
-    name: auction?.name || '', base_price: auction?.base_price ?? 300, bid_step: auction?.bid_step ?? 50, squad_size: auction?.squad_size ?? 14,
-    budget: auction?.teams?.[0]?.budget ?? 10000,
-    teams: auction ? auction.teams.map((t) => `${t.name}, ${t.budget}`).join('\n') : ''
-  }));
+  const [f, setF] = useState(() => ({ name: auction?.name || '', base_price: auction?.base_price ?? 300, bid_step: auction?.bid_step ?? 50, squad_size: auction?.squad_size ?? 14, budget: auction?.teams?.[0]?.budget ?? 10000 }));
+  const [teams, setTeams] = useState(() => (auction ? auction.teams.map((t) => ({ id: t.id, name: t.name, short_name: t.short_name || '', owner_name: t.owner_name || '', budget: t.budget, team_id: t.team_id || '' }))
+    : [{ name: '', short_name: '', owner_name: '', budget: '' }, { name: '', short_name: '', owner_name: '', budget: '' }]));
+  const [mine, setMine] = useState([]);
   const [players, setPlayers] = useState('');
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState(null);
+  useEffect(() => { dataService.fetchMyTeams().then((r) => setMine(r || [])).catch(() => setMine([])); }, []);
   const set = (k) => (e) => setF((x) => ({ ...x, [k]: e.target.value }));
+  const setT = (i, k, v) => setTeams((ts) => ts.map((t, j) => (j === i ? { ...t, [k]: v } : t)));
+  const addMine = (t) => setTeams((ts) => {
+    if (ts.some((x) => x.team_id === t.id)) return ts;
+    const empty = ts.findIndex((x) => !x.name.trim());
+    const row = { name: t.name, short_name: t.short_name || '', owner_name: '', budget: '', team_id: t.id };
+    return empty >= 0 ? ts.map((x, j) => (j === empty ? row : x)) : [...ts, row];
+  });
   const save = async () => {
     setBusy(true); setErr(null);
     try {
-      const rows = f.teams.split('\n').map((l) => l.trim()).filter(Boolean).map((l, i) => {
-        const m = l.match(/^(.*?)[,\t]\s*(\d+)\s*$/);
-        const name = (m ? m[1] : l).trim();
-        const old = auction?.teams?.find((t) => t.name === name) || (auction?.teams?.[i] && !m ? auction.teams[i] : null);
-        return { id: old?.id, name, budget: m ? Number(m[2]) : Number(f.budget) };
-      });
+      const rows = teams.filter((t) => t.name.trim()).map((t) => ({ id: t.id, name: t.name.trim(), short_name: t.short_name, owner_name: t.owner_name, team_id: t.team_id || null, budget: t.budget === '' ? Number(f.budget) : Number(t.budget) }));
       let a = await dataService.saveAuction(auction?.id || null, { name: f.name, base_price: Number(f.base_price), bid_step: Number(f.bid_step), squad_size: Number(f.squad_size), tournament_id: auction?.tournament_id || tournamentId || null, teams: rows });
       const list = parseAuctionPlayers(players);
       if (list.length) a = await dataService.addAuctionPlayers(a.id, list);
@@ -53,8 +102,9 @@ function AuctionForm({ auction = null, tournamentId = null, onSaved, onCancel })
     } catch (e) { setErr(e.message); }
     setBusy(false);
   };
+  const cell = { ...inp, padding: '0.4rem 0.5rem' };
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: '0.6rem' }}>
         <label style={{ ...lbl, gridColumn: '1 / -1' }}>Auction name<input style={inp} value={f.name} onChange={set('name')} placeholder="e.g. Gully Cricket Premier League 2026" maxLength={120} /></label>
         <label style={lbl}>Purse per team<input style={inp} type="number" min={0} value={f.budget} onChange={set('budget')} /></label>
@@ -62,12 +112,33 @@ function AuctionForm({ auction = null, tournamentId = null, onSaved, onCancel })
         <label style={lbl}>Bid step<input style={inp} type="number" min={1} value={f.bid_step} onChange={set('bid_step')} /></label>
         <label style={lbl}>Players per team<input style={inp} type="number" min={1} max={40} value={f.squad_size} onChange={set('squad_size')} /></label>
       </div>
-      <label style={lbl}>Teams – one per line (add “, 5000” for a different purse)
-        <textarea rows={5} style={{ ...inp, resize: 'vertical', fontFamily: 'inherit' }} value={f.teams} onChange={set('teams')} placeholder={'Meherapur 11\nSakib 11\nGolapganj 11, 5000'} />
-      </label>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+        <span style={{ ...lbl, flexDirection: 'row' }}>Teams</span>
+        {mine.length > 0 && (
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', fontSize: '0.76rem', color: '#64748b' }}>
+            Add your team:
+            {mine.map((t) => <button key={t.id} type="button" className="btn-mini" disabled={teams.some((x) => x.team_id === t.id)} onClick={() => addMine(t)}>+ {t.name}</button>)}
+          </div>
+        )}
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ borderCollapse: 'collapse', width: '100%', minWidth: 560 }}>
+            <thead><tr style={{ fontSize: '0.74rem', color: '#475569', textAlign: 'left' }}><th style={{ padding: 4 }}>Team name</th><th style={{ padding: 4 }}>Short</th><th style={{ padding: 4 }}>Owner / captain</th><th style={{ padding: 4 }}>Purse</th><th /></tr></thead>
+            <tbody>{teams.map((t, i) => (
+              <tr key={i}>
+                <td style={{ padding: 3 }}><input style={cell} value={t.name} onChange={(e) => setT(i, 'name', e.target.value)} placeholder={`Team ${i + 1}`} maxLength={80} /></td>
+                <td style={{ padding: 3, width: 80 }}><input style={cell} value={t.short_name} onChange={(e) => setT(i, 'short_name', e.target.value)} placeholder="MEH" maxLength={10} /></td>
+                <td style={{ padding: 3 }}><input style={cell} value={t.owner_name} onChange={(e) => setT(i, 'owner_name', e.target.value)} placeholder="Optional" maxLength={80} /></td>
+                <td style={{ padding: 3, width: 110 }}><input style={cell} type="number" min={0} value={t.budget} onChange={(e) => setT(i, 'budget', e.target.value)} placeholder={String(f.budget)} /></td>
+                <td style={{ padding: 3, width: 30 }}>{teams.length > 2 && <button type="button" onClick={() => setTeams((ts) => ts.filter((_, j) => j !== i))} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#b91c1c' }}><X size={15} /></button>}</td>
+              </tr>
+            ))}</tbody>
+          </table>
+        </div>
+        {teams.length < 32 && <button type="button" className="btn-mini" onClick={() => setTeams((ts) => [...ts, { name: '', short_name: '', owner_name: '', budget: '' }])} style={{ alignSelf: 'flex-start' }}>+ Add team</button>}
+      </div>
       {!auction && (
-        <label style={lbl}>Players (optional now – you can add later). One per line: number, name, role, base price
-          <textarea rows={5} style={{ ...inp, resize: 'vertical', fontFamily: 'inherit' }} value={players} onChange={(e) => setPlayers(e.target.value)} placeholder={'1, Rahim, bat\n2, Karim, bowler, 500\nSabbir, wk'} />
+        <label style={lbl}>Players (optional now – you can add them one by one later). One per line: number, name, role, batting, bowling, base price, ID
+          <textarea rows={4} style={{ ...inp, resize: 'vertical', fontFamily: 'inherit' }} value={players} onChange={(e) => setPlayers(e.target.value)} placeholder={'1, Rahim, bat, rhb, 500\n2, Karim, bowler, lhb, lf\n3, Sabbir, wk, LC-000214'} />
         </label>
       )}
       {err && <div style={{ color: '#b91c1c', fontSize: '0.84rem' }}>{err}</div>}
@@ -120,6 +191,9 @@ export function AuctionBoard({ auctionId, currentUser, onNavigate }) {
   const [adding, setAdding] = useState('');
   const [editing, setEditing] = useState(false);
   const [filter, setFilter] = useState('all');
+  const [editP, setEditP] = useState(null); // player id, or 'new'
+  const [bulk, setBulk] = useState(false);
+  const [formKey, setFormKey] = useState(0);
 
   const load = () => dataService.getAuction(auctionId).then((r) => { if (!r) setErr('Auction not found.'); else { setA(r); setErr(null); } }).catch((e) => setErr(e.message));
   useEffect(() => { load(); }, [auctionId, currentUser?.id]);
@@ -150,8 +224,11 @@ export function AuctionBoard({ auctionId, currentUser, onNavigate }) {
   const link = `${window.location.origin}${window.location.pathname}?auction=${a.id}`;
   const share = async () => { if (navigator.share) { try { await navigator.share({ title: a.name, url: link }); return; } catch { /* cancelled */ } } try { await navigator.clipboard.writeText(link); setMsg({ ok: true, text: 'Link copied.' }); } catch { window.prompt('Copy this link', link); } };
   const csv = () => {
-    const rows = [['Team', 'No.', 'Player', 'Role', 'Price']];
-    a.teams.forEach((t) => byTeam[t.id].forEach((p) => rows.push([t.name, p.number, p.name, p.role || '', p.price])));
+    const rows = [['Team', 'No.', 'Player', 'Player ID', 'Role', 'Batting', 'Batting position', 'Bowling', 'Price']];
+    const det = (p) => [p.player_code || '', labelOf(ROLE_OPTIONS, p.role), labelOf(BATTING_OPTIONS, p.batting_style), labelOf(BAT_POSITIONS, p.batting_position), labelOf(BOWLING_OPTIONS, p.bowling_style)];
+    a.teams.forEach((t) => byTeam[t.id].forEach((p) => rows.push([t.name, p.number, p.name, ...det(p), p.price])));
+    rows.push([]); rows.push(['Not sold', 'No.', 'Player', 'Player ID', 'Role', 'Batting', 'Batting position', 'Bowling', 'Base price']);
+    a.players.filter((p) => p.status !== 'sold').forEach((p) => rows.push([p.status, p.number, p.name, ...det(p), p.base_price]));
     rows.push([]); rows.push(['Team', 'Budget', 'Used', 'Remaining', 'Players bought', 'Places left', 'Average', 'Max next bid', 'Minimum required']);
     a.teams.forEach((t) => rows.push([t.name, t.budget, t.used, t.remaining, t.bought, t.places_left, t.average, t.max_bid, t.min_required]));
     const blob = new Blob(['﻿' + rows.map((r) => r.map((c) => `"${String(c ?? '').replace(/"/g, '""')}"`).join(',')).join('\n')], { type: 'text/csv' });
@@ -191,7 +268,7 @@ export function AuctionBoard({ auctionId, currentUser, onNavigate }) {
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem', flexWrap: 'wrap' }}>
                 <span style={{ width: 58, height: 58, borderRadius: 14, background: 'linear-gradient(135deg,#065f46,#10b981)', color: '#fff', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.4rem', fontWeight: 900 }}>{cur.number}</span>
-                <div><div style={{ fontSize: '1.35rem', fontWeight: 900 }}>{cur.name}</div><div style={{ fontSize: '0.84rem', color: '#64748b' }}>{cur.role ? ROLE_SHORT[cur.role] + ' · ' : ''}Base price {money(cur.base_price)}{cur.status === 'unsold' ? ' · was unsold' : ''}</div></div>
+                <div><div style={{ fontSize: '1.35rem', fontWeight: 900 }}>{cur.name}</div><div style={{ fontSize: '0.84rem', color: '#64748b' }}>{playerDetails(cur) ? `${playerDetails(cur)} · ` : ''}{cur.player_code ? `${cur.player_code} · ` : ''}Base price {money(cur.base_price)}{cur.status === 'unsold' ? ' · was unsold' : ''}</div>{cur.note && <div style={{ fontSize: '0.8rem', color: '#475569' }}>{cur.note}</div>}</div>
               </div>
               {a.can_run && (
                 <>
@@ -245,7 +322,7 @@ export function AuctionBoard({ auctionId, currentUser, onNavigate }) {
         <div style={{ overflowX: 'auto' }}>
           <table style={{ borderCollapse: 'collapse', minWidth: '100%' }}>
             <thead>
-              <tr><th style={{ ...th, position: 'sticky', left: 0 }}>#</th>{a.teams.map((t) => <th key={t.id} colSpan={2} style={th}>{t.name}</th>)}</tr>
+              <tr><th style={{ ...th, position: 'sticky', left: 0 }}>#</th>{a.teams.map((t) => <th key={t.id} colSpan={2} style={th}>{t.name}{t.owner_name ? <div style={{ fontWeight: 500, fontSize: '0.7rem', opacity: 0.85 }}>{t.owner_name}</div> : null}</th>)}</tr>
               <tr><th style={{ ...th, backgroundColor: '#ecfdf5', color: '#065f46', position: 'sticky', left: 0 }} />{a.teams.map((t) => <React.Fragment key={t.id}><th style={{ ...th, backgroundColor: '#ecfdf5', color: '#065f46' }}>Player</th><th style={{ ...th, backgroundColor: '#ecfdf5', color: '#065f46' }}>Price</th></React.Fragment>)}</tr>
             </thead>
             <tbody>
@@ -284,18 +361,32 @@ export function AuctionBoard({ auctionId, currentUser, onNavigate }) {
           {a.players.filter((p) => filter === 'all' || p.status === filter).map((p) => (
             <div key={p.id} style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '0.4rem 0.55rem', border: '1px solid #e2e8f0', borderRadius: '0.5rem', fontSize: '0.82rem', backgroundColor: p.status === 'sold' ? '#f0fdf4' : p.status === 'unsold' ? '#fff7ed' : '#fff' }}>
               <strong style={{ color: '#94a3b8', minWidth: 26 }}>{p.number}</strong>
-              <span style={{ flex: 1, minWidth: 0 }}>{p.name}{p.role ? <span style={{ color: '#94a3b8', fontSize: '0.7rem' }}> {ROLE_SHORT[p.role]}</span> : null}<br />
+              <span style={{ flex: 1, minWidth: 0 }}>{p.name}{p.player_code ? <span style={{ color: '#94a3b8', fontSize: '0.68rem' }}> {p.player_code}</span> : null}
+                {playerDetails(p) && <><br /><span style={{ fontSize: '0.7rem', color: '#475569' }}>{playerDetails(p)}</span></>}<br />
                 <span style={{ fontSize: '0.72rem', color: '#64748b' }}>{p.status === 'sold' ? `${teamName(p.team_id)} · ${money(p.price)}` : p.status === 'unsold' ? 'Unsold' : `Base ${money(p.base_price)}`}</span></span>
               {a.can_run && p.status !== 'sold' && a.status !== 'finished' && <button type="button" title="Put on the block" onClick={() => choose(p.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#059669' }}><Gavel size={14} /></button>}
               {a.can_run && p.status === 'sold' && <button type="button" title="Undo this sale" onClick={() => window.confirm(`Undo the sale of ${p.name}?`) && run(() => dataService.undoAuctionSale(a.id, p.id), 'Sale undone.')} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#64748b' }}><Undo2 size={14} /></button>}
+              {a.can_run && <button type="button" title="Edit player" onClick={() => setEditP(p.id)} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#334155' }}><Pencil size={13} /></button>}
               {a.can_run && p.status !== 'sold' && <button type="button" title="Remove" onClick={() => window.confirm(`Remove ${p.name}?`) && run(() => dataService.removeAuctionPlayer(p.id))} style={{ border: 'none', background: 'none', cursor: 'pointer', color: '#b91c1c' }}><Trash2 size={13} /></button>}
             </div>
           ))}
         </div>
-        {a.can_run && (
+        {a.can_run && editP && (
+          <div style={{ marginTop: '0.9rem' }}>
+            <PlayerForm key={`${editP}-${formKey}`} player={editP === 'new' ? null : a.players.find((p) => p.id === editP)} basePrice={a.base_price} busy={busy} onCancel={() => setEditP(null)}
+              onSave={async (v) => { const r = await run(() => (editP === 'new' ? dataService.addAuctionPlayers(a.id, [v]) : dataService.updateAuctionPlayer(editP, v)), editP === 'new' ? `${v.name || v.player_code} added.` : 'Player saved.'); if (r) { if (editP === 'new') setFormKey((k) => k + 1); else setEditP(null); } }} />
+          </div>
+        )}
+        {a.can_run && !editP && (
+          <div style={{ display: 'flex', gap: '0.45rem', marginTop: '0.9rem', flexWrap: 'wrap' }}>
+            <Button variant="primary" size="sm" onClick={() => setEditP('new')} style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}><Plus size={14} /> Add a player</Button>
+            <Button variant="secondary" size="sm" onClick={() => setBulk((v) => !v)}>{bulk ? 'Hide paste box' : 'Paste many players'}</Button>
+          </div>
+        )}
+        {a.can_run && bulk && (
           <div style={{ marginTop: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
-            <label style={lbl}>Add players – one per line: number, name, role (bat / bowler / all / wk), base price
-              <textarea rows={4} style={{ ...inp, resize: 'vertical', fontFamily: 'inherit' }} value={adding} onChange={(e) => setAdding(e.target.value)} placeholder={'60, Rahim, bat\nKarim, bowler, 500'} />
+            <label style={lbl}>Paste players – one per line: number, name, role (bat / bowler / all / wk), batting (rhb / lhb), bowling (rf, rm, ob, lb, lf, lm, sla), base price, ID (LC-…)
+              <textarea rows={4} style={{ ...inp, resize: 'vertical', fontFamily: 'inherit' }} value={adding} onChange={(e) => setAdding(e.target.value)} placeholder={'60, Rahim, bat, rhb\nKarim, bowler, lhb, lf, 500\nLC-000214'} />
             </label>
             <Button variant="primary" size="sm" disabled={busy || !parseAuctionPlayers(adding).length} onClick={async () => { const r = await run(() => dataService.addAuctionPlayers(a.id, parseAuctionPlayers(adding)), 'Players added.'); if (r) setAdding(''); }} style={{ alignSelf: 'flex-start' }}>
               Add {parseAuctionPlayers(adding).length || ''} player{parseAuctionPlayers(adding).length === 1 ? '' : 's'}

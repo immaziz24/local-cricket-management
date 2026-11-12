@@ -4,6 +4,7 @@ import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { Undo2, AlertCircle, Flag, CloudRain, WifiOff, RefreshCw } from 'lucide-react';
 import { WagonWheelPicker } from './WagonWheel.jsx';
+import { makeCommentary } from './commentary.js';
 import { loadQueue, saveQueue, loadCachedState, saveCachedState, newClientId, isNetworkError, applyQueue } from './offlineScoring.js';
 
 /**
@@ -180,13 +181,33 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
     if (wheelOn && runs > 0 && (!extra || extra === 'no_ball')) { setShot({ runs }); return; }
     sendNow(runs, null);
   };
+  // #19 every ball gets automatic commentary (25+ words); the scorer's own note is added at the end
+  const autoComment = (p, dir) => {
+    if (!cur) return comment;
+    const isLegal = !p.extra || p.extra === 'bye' || p.extra === 'leg_bye';
+    const exRuns = p.extra === 'wide' ? (rules.wide_runs ?? 1) + (p.extras || 0) : p.extra === 'no_ball' ? (rules.no_ball_runs ?? 1) + (p.extras || 0) : (p.extras || 0);
+    const lb = cur.legal_balls || 0;
+    const outId = p.wicket ? (p.out === 'non_striker' ? cur.non_striker_id : cur.striker_id) : null;
+    const strikerInfo = cur.batting_side?.find((x) => x.player_id === cur.striker_id);
+    try {
+      return makeCommentary({
+        over: `${Math.floor(lb / 6)}.${(lb % 6) + 1}`, bowler: nameIn(cur.bowling_side, cur.bowler_id), batter: strikerInfo?.name || '',
+        runs: p.runs || 0, extra: p.extra || null, extraRuns: exRuns, wicket: p.wicket || null, outName: outId ? nameIn(cur.batting_side, outId) : '',
+        fielder: p.fielder_id ? nameIn(cur.bowling_side, p.fielder_id) : '', angle: dir ? dir.angle : null, dist: dir ? dir.dist : null,
+        leftHanded: /left/i.test(strikerInfo?.batting_style || ''), team: curInn?.batting_team?.name, total: (cur.runs || 0) + (p.runs || 0) + exRuns,
+        wickets: (cur.wickets || 0) + (p.wicket && p.wicket !== 'retired_hurt' ? 1 : 0), legalAfter: lb + (isLegal ? 1 : 0), target: cur.target || null,
+        freeHitNext: p.extra === 'no_ball' && rules.free_hit !== false, note: comment
+      });
+    } catch { return comment; }
+  };
   const sendNow = (runs, dir) => {
-    const p = { runs: 0, extras: 0, commentary: comment };
+    const p = { runs: 0, extras: 0 };
     if (dir) { p.shot_angle = dir.angle; p.shot_dist = dir.dist; }
     if (extra === 'wide') p.extras = runs;
     else if (extra === 'bye' || extra === 'leg_bye') { if (!runs) { setErr('Byes / leg-byes need at least 1 run.'); return; } p.extras = runs; }
     else p.runs = runs;
     if (extra) p.extra = extra;
+    p.commentary = autoComment(p, dir);
     submit('ball', p, () => { setExtra(null); setComment(''); });
     setShot(null);
   };
@@ -196,6 +217,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
     const r = Number(wk.runs || 0);
     if (extra) { p.extra = extra; if (extra === 'no_ball') p.extras = r; else p.extras = extra === 'wide' ? r : Math.max(r, 1); }
     else p.runs = r;
+    p.commentary = autoComment(p, null);
     submit('ball', p, () => { setWk(null); setExtra(null); setComment(''); });
   };
 
@@ -364,6 +386,12 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
             )}
             <Button variant="primary" disabled={busy} onClick={() => submit('players', { striker: pick.striker || null, nonStriker: pick.non_striker || null, bowler: pick.bowler || null },
               () => setPick({ striker: '', non_striker: '', bowler: '' }))}>Continue</Button>
+            {cur && (cur.innings_no > 1 || cur.legal_balls > 0 || (curInn?.batting || []).length > 0 || queue.length > 0) && (
+              <button type="button" disabled={busy || syncing} onClick={() => (queue.length ? updateQueue(queue.slice(0, -1)) : act(() => dataService.undoLastBall(matchId)))}
+                style={{ padding: '0.55rem 0.9rem', fontWeight: 700, borderRadius: '0.5rem', cursor: 'pointer', border: '1px solid #cbd5e1', backgroundColor: '#fff', display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                <Undo2 size={15} /> Undo last ball
+              </button>
+            )}
           </div>
         </Card>
       )}
@@ -385,7 +413,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                 : extra === 'no_ball' ? `No ball: ${rules.no_ball_runs ?? 1} run${(rules.no_ball_runs ?? 1) === 1 ? ' is' : 's are'} added${rules.free_hit !== false ? ' and the next ball is a free hit' : ''}. Tap the runs hit off the bat (4 / 6 for a boundary).`
                 : extra ? 'Tap how many runs were run.' : 'Tap the runs scored off this ball.'}
             </div>
-            {shot && <WagonWheelPicker runs={shot.runs} busy={busy} onPick={(d) => sendNow(shot.runs, d)} onSkip={() => sendNow(shot.runs, null)} />}
+            {shot && <WagonWheelPicker runs={shot.runs} busy={busy} leftHanded={/left/i.test(cur.batting_side?.find((x) => x.player_id === cur.striker_id)?.batting_style || '')} onPick={(d) => sendNow(shot.runs, d)} onSkip={() => sendNow(shot.runs, null)} onCancel={() => setShot(null)} onChangeRuns={(r) => setShot({ runs: r })} />}
             {!shot && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
               {[0, 1, 2, 3, 4, 6, 5, 7].map((r) => (
                 <button key={r} type="button" disabled={busy} onClick={() => send(r)}
@@ -442,7 +470,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
               </div>
             )}
 
-            <input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Commentary for this ball (optional)" style={{ ...field, width: '100%', boxSizing: 'border-box' }} />
+            <input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Commentary is written automatically – add your own note here (optional)" style={{ ...field, width: '100%', boxSizing: 'border-box' }} />
 
             <div>
               <button type="button" onClick={() => setMenu(!menu)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '0.8rem', padding: 0 }}>{menu ? 'Hide more options' : 'More options (penalty runs, end innings, abandon)'}</button>
