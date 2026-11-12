@@ -456,7 +456,9 @@ const TOOLS = [
 ];
 
 export function ToolsView({ currentUser, onNavigate } = {}) {
-  const [tool, setTool] = useState(() => (new URLSearchParams(window.location.search).get('tool') === 'auction' ? 'auction' : 'rates'));
+  const [tool, setToolState] = useState(() => { const t = new URLSearchParams(window.location.search).get('tool'); return TOOLS.some((x) => x[0] === t) ? t : 'rates'; });
+  // remember the open tool in the address, so a refresh stays on it
+  const setTool = (id) => { setToolState(id); try { window.history.replaceState(null, '', `${window.location.pathname}?page=tools&tool=${id}`); } catch { /* ignore */ } };
   const T = TOOLS.find((t) => t[0] === tool) || TOOLS[0];
   const Comp = T[4];
   return (
@@ -474,8 +476,7 @@ export function ToolsView({ currentUser, onNavigate } = {}) {
           </button>
         ))}
       </div>
-      {tool === 'auction' && onNavigate && <AuctionsHome currentUser={currentUser} onNavigate={onNavigate} />}
-      <Comp />
+      {tool === 'auction' && onNavigate ? <AuctionsHome currentUser={currentUser} onNavigate={onNavigate} /> : <Comp />}
     </div>
   );
 }

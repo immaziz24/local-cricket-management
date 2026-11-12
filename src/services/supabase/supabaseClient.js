@@ -1949,6 +1949,12 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async editBall(matchId, seq, p) {
+    const { data, error } = await supabase.rpc('edit_ball', { p_match_id: matchId, p_seq: seq, p: p || {} });
+    if (error) return { data: null, error: friendlyError(error, 'score correction') };
+    return { data, error: null };
+  },
+
   async getCommentary(matchId) {
     const { data, error } = await supabase.rpc('get_commentary', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'commentary') };

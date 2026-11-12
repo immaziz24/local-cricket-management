@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AppLayout } from './components/layout/AppLayout.jsx';
 import { MatchesView } from './views/MatchesView.jsx';
 import { TournamentsView } from './views/TournamentsView.jsx';
@@ -71,9 +71,13 @@ export function App() {
     }
   };
 
-  // #28 Shareable links: ?match=<id> or ?tournament=<id> open that page directly.
-  useEffect(() => {
+  // #28 Shareable links, and every page keeps its own address: a refresh (or Back / Forward) stays on the same page.
+  // ?match=<id>, ?tournament=<id>, ?t=CODE, ?verify=CODE, ?sponsor=<id>, ?article=<id>, ?quiz=<id>, ?auction=<id>,
+  // and ?page=<page>[&id=<id>] for every other page.
+  const ID_PAGES = { 'team-details': setSelectedTeamId, 'player-profile': setSelectedPlayerId, ground: setSelectedGroundId, 'official-profile': setSelectedOfficialId };
+  const applyUrl = () => {
     const q = new URLSearchParams(window.location.search);
+    const uuid = (v) => v && /^[0-9a-f-]{36}$/i.test(v);
     const matchId = q.get('match');
     const tournamentId = q.get('tournament');
     const site = q.get('t');
@@ -82,16 +86,31 @@ export function App() {
     const article = q.get('article');
     const quiz = q.get('quiz');
     const auction = q.get('auction');
-    if (matchId && /^[0-9a-f-]{36}$/i.test(matchId)) { setSelectedMatchId(matchId); setActiveTab('match-centre'); }
-    else if (tournamentId && /^[0-9a-f-]{36}$/i.test(tournamentId)) { setSelectedTournamentId(tournamentId); setActiveTab('tournament-details'); }
+    const page = q.get('page');
+    const pid = q.get('id');
+    if (uuid(matchId)) { setSelectedMatchId(matchId); setActiveTab('match-centre'); }
+    else if (uuid(tournamentId)) { setSelectedTournamentId(tournamentId); setActiveTab('tournament-details'); }
     else if (site && /^[A-Za-z0-9-]{2,40}$/.test(site)) { setSiteRef(site); setActiveTab('tournament-site'); }
     else if (verify && /^[A-Za-z0-9-]{4,20}$/.test(verify)) { setVerifyCode(verify.toUpperCase()); setActiveTab('verify'); }
-    else if (sponsor && /^[0-9a-f-]{36}$/i.test(sponsor)) { setSelectedSponsorId(sponsor); setActiveTab('sponsor'); }
-    else if (article && /^[0-9a-f-]{36}$/i.test(article)) { setSelectedArticleId(article); setActiveTab('article'); }
-    else if (quiz && /^[0-9a-f-]{36}$/i.test(quiz)) { setSelectedQuizId(quiz); setActiveTab('quiz'); }
-    else if (auction && /^[0-9a-f-]{36}$/i.test(auction)) { setSelectedAuctionId(auction); setActiveTab('auction'); }
-  }, []);
+    else if (uuid(sponsor)) { setSelectedSponsorId(sponsor); setActiveTab('sponsor'); }
+    else if (uuid(article)) { setSelectedArticleId(article); setActiveTab('article'); }
+    else if (uuid(quiz)) { setSelectedQuizId(quiz); setActiveTab('quiz'); }
+    else if (uuid(auction)) { setSelectedAuctionId(auction); setActiveTab('auction'); }
+    else if (page && /^[a-z-]{2,40}$/.test(page)) {
+      if (ID_PAGES[page]) { if (pid) { ID_PAGES[page](pid); setActiveTab(page); } else setActiveTab('dashboard'); }
+      else setActiveTab(page);
+    } else setActiveTab('dashboard');
+  };
   useEffect(() => {
+    applyUrl();
+    const back = () => applyUrl();
+    window.addEventListener('popstate', back);
+    return () => window.removeEventListener('popstate', back);
+  }, []);
+  const firstUrlRun = useRef(true);
+  const idFor = { 'team-details': selectedTeamId, 'player-profile': selectedPlayerId, ground: selectedGroundId, 'official-profile': selectedOfficialId };
+  useEffect(() => {
+    if (firstUrlRun.current) { firstUrlRun.current = false; return; } // the address is read first, then kept in step
     const url = activeTab === 'match-centre' && selectedMatchId ? `?match=${selectedMatchId}`
       : activeTab === 'tournament-details' && selectedTournamentId && /^[0-9a-f-]{36}$/i.test(selectedTournamentId) ? `?tournament=${selectedTournamentId}`
       : activeTab === 'tournament-site' && siteRef ? `?t=${siteRef}`
@@ -100,11 +119,17 @@ export function App() {
       : activeTab === 'article' && selectedArticleId ? `?article=${selectedArticleId}`
       : activeTab === 'quiz' && selectedQuizId ? `?quiz=${selectedQuizId}`
       : activeTab === 'auction' && selectedAuctionId ? `?auction=${selectedAuctionId}`
+      : idFor[activeTab] ? `?page=${activeTab}&id=${encodeURIComponent(idFor[activeTab])}`
+      : activeTab && activeTab !== 'dashboard' ? `?page=${activeTab}`
       : window.location.pathname;
-    if (`${window.location.pathname}${window.location.search}` !== (url.startsWith('?') ? `${window.location.pathname}${url}` : url)) {
-      window.history.replaceState(null, '', url);
+    const now = `${window.location.pathname}${window.location.search}`;
+    const next = url.startsWith('?') ? `${window.location.pathname}${url}` : url;
+    if (now !== next) {
+      // a new page goes into the browser history so Back works; the same page with a new id just replaces it
+      const samePage = new URLSearchParams(window.location.search).get('page') === activeTab;
+      if (samePage) window.history.replaceState(null, '', url); else window.history.pushState(null, '', url);
     }
-  }, [activeTab, selectedMatchId, selectedTournamentId, siteRef, verifyCode, selectedSponsorId, selectedArticleId, selectedQuizId, selectedAuctionId]);
+  }, [activeTab, selectedMatchId, selectedTournamentId, siteRef, verifyCode, selectedSponsorId, selectedArticleId, selectedQuizId, selectedAuctionId, selectedTeamId, selectedPlayerId, selectedGroundId, selectedOfficialId]);
 
   // Browser tab title for each page
   useEffect(() => {

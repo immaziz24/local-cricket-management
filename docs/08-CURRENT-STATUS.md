@@ -50,6 +50,7 @@
 | `20261106105506_phase1_user_management_foundation.sql` | Phase 1 tables, row-level security, profile trigger |
 | `20261106105529_phase1_security_and_fk_index_hardening.sql` | Indexes and deny-rules for audit logs and templates |
 | `20261110050000_phase1_profile_mobile_number.sql` | Saves name and unique mobile number on sign-up |
+| `20261112120000_scorer_edit_ball.sql` | edit_ball (scorer corrects a ball of the live innings); recent balls carry shot direction |
 | `20261112111000_auction_player_details.sql` | auction player ID/LC link, role, batting hand & position, bowling style, note; update_auction_player; team short name and owner |
 | `20261112110000_commentary_and_batting_hand.sql` | ball commentary up to 600 characters; live state batting_side includes batting_style |
 | `20261112103000_super_admin_control.sql` | admin_search, admin_get/update/delete_user, admin team/tournament/match edit + delete, admin_list_balls, admin_update_ball / admin_delete_ball (bigint ids) with innings recompute |
@@ -147,6 +148,7 @@
 | 2026-11-11 | Claude | Website layout: premium header with search + Near me (30 km), visitor and member layouts, home pages, footer and info pages, contact messages; feature numbers removed from pages |
 | 2026-11-11 | Claude | Phase 5 – Category J branding, sponsorship & promotion (11 features) |
 | 2026-11-11 | Claude | Phase 5 – Category K news & learning (16 features): News and Learn pages, articles, quizzes, starter content – Phase 5 complete |
+| 2026-11-12 | Claude | Owner requests (3): every page keeps its address (refresh / Back stay on the page, ?page=…&id=…), new-version Refresh banner, scorer Edit ball, auction in four steps with player number / ID search and team result cards |
 | 2026-11-12 | Claude | Owner requests (2): automatic 25+ word commentary for every ball, Undo also between overs / at innings break, wagon wheel pop-up with cancel and change-runs, full auction player details and team rows |
 | 2026-11-12 | Claude | Owner requests: admin Control centre (fix any user/match/ball), sign-up email code, international scorecard + wagon wheel, match rules on creation, generators in matches/tournaments, saved auction board, no auto squad for team creator |
 | 2026-11-11 | Claude | Phase 4 – Category G grounds (13 features): register, photos, map, pitch/boundary/facilities, booking + calendar + prices, pitch records, inspections, match history |

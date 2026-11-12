@@ -59,6 +59,47 @@ function BallChip({ b }) {
   return <span style={{ minWidth: 30, height: 30, borderRadius: '50%', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', fontWeight: 800, backgroundColor: bg, color, padding: '0 4px' }}>{l}</span>;
 }
 
+/** #18 Score correction: the scorer fixes one ball of this innings (runs, bye / leg bye, wide / no-ball runs). */
+function BallEditor({ b, rules, busy, onSave, onCancel }) {
+  const [extra, setExtra] = useState(b.extra || '');
+  const [runs, setRuns] = useState(b.extra === 'wide' || b.extra === 'bye' || b.extra === 'leg_bye' ? 0 : b.runs);
+  const [ran, setRan] = useState(() => {
+    if (b.extra === 'wide') return Math.max(0, (b.extra_runs || 0) - (rules.wide_runs ?? 1));
+    if (b.extra === 'no_ball') return Math.max(0, (b.extra_runs || 0) - (rules.no_ball_runs ?? 1));
+    if (b.extra === 'bye' || b.extra === 'leg_bye') return b.extra_runs || 1;
+    return 0;
+  });
+  const legal = !b.extra || b.extra === 'bye' || b.extra === 'leg_bye';
+  const choices = legal ? [['', 'Runs off the bat'], ['bye', 'Byes'], ['leg_bye', 'Leg byes']] : [['wide', 'Wide'], ['no_ball', 'No ball']];
+  const batRuns = !extra || extra === 'no_ball';
+  const chip = (on) => ({ minWidth: 38, padding: '0.4rem 0.55rem', borderRadius: 8, fontWeight: 800, cursor: 'pointer', border: `2px solid ${on ? '#16a34a' : '#cbd5e1'}`, backgroundColor: on ? '#dcfce7' : '#fff' });
+  return (
+    <div style={{ border: '2px solid #f59e0b', backgroundColor: '#fffbeb', borderRadius: '0.6rem', padding: '0.65rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '0.2rem 0 0.4rem' }}>
+      <strong style={{ fontSize: '0.84rem' }}>Correct ball {b.over} – {b.bowler} to {b.batter}</strong>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+        {choices.map(([v, l]) => <button key={v || 'bat'} type="button" style={chip(extra === v)} onClick={() => { setExtra(v); if (v === 'bye' || v === 'leg_bye') setRan((x) => Math.max(1, x)); }}>{l}</button>)}
+      </div>
+      {batRuns && (
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.78rem', color: '#475569' }}>Off the bat:</span>
+          {[0, 1, 2, 3, 4, 5, 6, 7].map((r) => <button key={r} type="button" style={chip(runs === r)} onClick={() => setRuns(r)}>{r}</button>)}
+        </div>
+      )}
+      {extra && extra !== 'no_ball' && (
+        <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
+          <span style={{ fontSize: '0.78rem', color: '#475569' }}>{extra === 'wide' ? 'Runs run (or 4 for a wide to the boundary):' : 'Runs:'}</span>
+          {(extra === 'wide' ? [0, 1, 2, 3, 4] : [1, 2, 3, 4]).map((r) => <button key={r} type="button" style={chip(ran === r)} onClick={() => setRan(r)}>{r}</button>)}
+        </div>
+      )}
+      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>To change a wicket, or to turn a legal ball into a wide / no-ball, use Undo.</span>
+      <div style={{ display: 'flex', gap: 6 }}>
+        <Button variant="primary" size="sm" disabled={busy} onClick={() => onSave({ extra: extra || null, runs: batRuns ? runs : 0, extras: extra && extra !== 'no_ball' ? ran : 0 })}>Save correction</Button>
+        <Button variant="secondary" size="sm" disabled={busy} onClick={onCancel}>Cancel</Button>
+      </div>
+    </div>
+  );
+}
+
 export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0 }) {
   const [base, setBase] = useState(null);            // last state from the server
   const [queue, setQueue] = useState(() => loadQueue(matchId)); // actions waiting to be sent
@@ -76,6 +117,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   const [extra, setExtra] = useState(null); // wide | no_ball | bye | leg_bye
   const [wk, setWk] = useState(null); // { type, out, fielder, runs }
   const [shot, setShot] = useState(null); // runs waiting for a wagon-wheel tap
+  const [editSeq, setEditSeq] = useState(null); // ball being corrected
   const [wheelOn, setWheelOn] = useState(() => { try { return localStorage.getItem('lcm-wagon') !== 'off'; } catch { return true; } });
   const [pick, setPick] = useState({ striker: '', non_striker: '', bowler: '' });
   const [comment, setComment] = useState('');
@@ -541,7 +583,8 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
         <Card title="Recent balls">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.84rem' }}>
             {cur.recent.map((b) => (
-              <div key={b.seq} style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
+              <React.Fragment key={b.seq}>
+              <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
                 <span style={{ width: 34, color: '#94a3b8', fontSize: '0.75rem' }}>{b.over}</span>
                 <BallChip b={b} />
                 <span>
@@ -550,7 +593,22 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                   {b.commentary ? <span style={{ color: '#64748b' }}> – {b.commentary}</span> : null}
                   {b.pending ? <span style={{ color: '#b45309', fontSize: '0.72rem' }}> (not uploaded yet)</span> : null}
                 </span>
+                {scoring && !b.pending && !queue.length && st.status === 'live' && editSeq !== b.seq && (
+                  <button type="button" onClick={() => setEditSeq(b.seq)} style={{ marginLeft: 'auto', flexShrink: 0, border: '1px solid #cbd5e1', backgroundColor: '#fff', borderRadius: 999, padding: '0.2rem 0.6rem', fontSize: '0.72rem', cursor: 'pointer' }}>Edit</button>
+                )}
               </div>
+              {editSeq === b.seq && (
+                <BallEditor b={b} rules={rules} busy={busy} onCancel={() => setEditSeq(null)}
+                  onSave={(v) => act(async () => {
+                    const commentary = makeCommentary({ over: b.over, bowler: b.bowler, batter: b.batter, runs: v.runs, extra: v.extra,
+                      extraRuns: v.extra === 'wide' ? (rules.wide_runs ?? 1) + v.extras : v.extra === 'no_ball' ? (rules.no_ball_runs ?? 1) : v.extras,
+                      angle: b.shot_angle, dist: b.shot_dist, freeHitNext: v.extra === 'no_ball' && rules.free_hit !== false });
+                    const r = await dataService.editBall(matchId, b.seq, { ...v, commentary });
+                    setEditSeq(null);
+                    return r;
+                  })} />
+              )}
+              </React.Fragment>
             ))}
           </div>
         </Card>

@@ -1695,6 +1695,13 @@ export const dataService = {
     return res.data;
   },
 
+  async editBall(matchId, seq, p) {
+    requireDatabase();
+    const res = await supabaseClient.editBall(matchId, seq, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCommentary(matchId) {
     requireDatabase();
     const res = await supabaseClient.getCommentary(matchId);
