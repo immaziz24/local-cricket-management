@@ -277,6 +277,20 @@ export const dataService = {
   // ==========================================
   // Phase 2 – Category C: players and teams (real database only)
   // ==========================================
+  async verifySignupCode(args) {
+    requireDatabase();
+    const res = await supabaseClient.verifySignupCode(args);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async resendSignupCode(email) {
+    requireDatabase();
+    const res = await supabaseClient.resendSignupCode(email);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchMyPlayer() {
     requireDatabase();
     const res = await supabaseClient.getMyPlayer();
@@ -1495,6 +1509,181 @@ export const dataService = {
   async removeArticleCover(articleId) {
     requireDatabase();
     const res = await supabaseClient.removeArticleCover(articleId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getWagonWheel(matchId, inningsNo, batterId) {
+    requireDatabase();
+    const res = await supabaseClient.getWagonWheel(matchId, inningsNo, batterId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveAuction(auctionId, p) {
+    requireDatabase();
+    const res = await supabaseClient.saveAuction(auctionId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async addAuctionPlayers(auctionId, players) {
+    requireDatabase();
+    const res = await supabaseClient.addAuctionPlayers(auctionId, players);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async removeAuctionPlayer(playerId) {
+    requireDatabase();
+    const res = await supabaseClient.removeAuctionPlayer(playerId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setAuctionCurrent(auctionId, playerId) {
+    requireDatabase();
+    const res = await supabaseClient.setAuctionCurrent(auctionId, playerId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async sellAuctionPlayer(playerId, teamId, price) {
+    requireDatabase();
+    const res = await supabaseClient.sellAuctionPlayer(playerId, teamId, price);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async markAuctionUnsold(playerId) {
+    requireDatabase();
+    const res = await supabaseClient.markAuctionUnsold(playerId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async undoAuctionSale(auctionId, playerId) {
+    requireDatabase();
+    const res = await supabaseClient.undoAuctionSale(auctionId, playerId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async finishAuction(auctionId, finished) {
+    requireDatabase();
+    const res = await supabaseClient.finishAuction(auctionId, finished);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async deleteAuction(auctionId) {
+    requireDatabase();
+    const res = await supabaseClient.deleteAuction(auctionId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getAuction(auctionId) {
+    requireDatabase();
+    const res = await supabaseClient.getAuction(auctionId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listAuctions(p = {}) {
+    requireDatabase();
+    const res = await supabaseClient.listAuctions(p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adminSearch(query, kind) {
+    requireDatabase();
+    const res = await supabaseClient.adminSearch(query, kind);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adminGetUser(userId) {
+    requireDatabase();
+    const res = await supabaseClient.adminGetUser(userId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adminUpdateUser(userId, p) {
+    requireDatabase();
+    const res = await supabaseClient.adminUpdateUser(userId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adminDeleteUser(userId, reason) {
+    requireDatabase();
+    const res = await supabaseClient.adminDeleteUser(userId, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adminUpdateTeam(teamId, p) {
+    requireDatabase();
+    const res = await supabaseClient.adminUpdateTeam(teamId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adminDeleteTeam(teamId) {
+    requireDatabase();
+    const res = await supabaseClient.adminDeleteTeam(teamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adminUpdateTournament(tournamentId, p) {
+    requireDatabase();
+    const res = await supabaseClient.adminUpdateTournament(tournamentId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adminDeleteTournament(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.adminDeleteTournament(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adminUpdateMatch(matchId, p) {
+    requireDatabase();
+    const res = await supabaseClient.adminUpdateMatch(matchId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adminDeleteMatch(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.adminDeleteMatch(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adminListBalls(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.adminListBalls(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adminUpdateBall(ballId, p) {
+    requireDatabase();
+    const res = await supabaseClient.adminUpdateBall(ballId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adminDeleteBall(ballId) {
+    requireDatabase();
+    const res = await supabaseClient.adminDeleteBall(ballId);
     if (res.error) throw new Error(res.error);
     return res.data;
   },

@@ -3,6 +3,7 @@ import { Button } from '../../components/common/Button.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
 import { dataService } from '../../services/dataService.js';
 import { ArrowUp, ArrowDown, Repeat, Users, AlertCircle, CheckCircle } from 'lucide-react';
+import { pickPlayingXI } from '../tools/cricketMath.js';
 
 /**
  * #72 Playing XI, #73 Substitutes, #74 Player replacements — per match, per team.
@@ -35,6 +36,16 @@ function TeamLineup({ match, team, perSide, maxSubs, onSaved }) {
     setMsg(null); setEditing(true);
   };
 
+  // #226 Playing XI generator, right where the XI is picked
+  const suggest = () => {
+    const roleMap = { batter: 'batter', bowler: 'bowler', all_rounder: 'all_rounder', wicket_keeper: 'wicket_keeper' };
+    const pool = team.squad.map((p) => ({ name: p.player_id, role: roleMap[p.player_role] || 'batter', rating: 3 }));
+    const res = pickPlayingXI(pool, { size: perSide, bowlersNeeded: Math.min(5, Math.max(2, Math.round(perSide / 2))) });
+    const xi = res.xi.map((p) => p.name);
+    setPlaying(xi); setSubs((s0) => s0.filter((id) => !xi.includes(id)).slice(0, maxSubs));
+    const wk = res.xi.find((p) => p.role === 'wicket_keeper'); if (wk) setKeeper(wk.name);
+    setMsg({ ok: true, text: `Suggested ${xi.length} players${res.notes.length ? ` – ${res.notes.join(' ')}` : ''}. Change anything, then Save lineup.` });
+  };
   const nameOf = (id) => team.squad.find((p) => p.player_id === id)?.name || lineup.find((p) => p.player_id === id)?.name || '?';
   const setRole = (id, role) => {
     setPlaying((l) => l.filter((x) => x !== id).concat(role === 'playing' ? [id] : []));
@@ -92,6 +103,11 @@ function TeamLineup({ match, team, perSide, maxSubs, onSaved }) {
             Playing <strong>{playing.length}/{perSide}</strong> · Substitutes <strong>{subs.length}/{maxSubs}</strong> · Squad {team.squad.length}
           </div>
           {team.squad.length === 0 && <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>This team has no players yet. Add them on the team page.</span>}
+          {team.squad.length > 0 && (
+            <button type="button" onClick={suggest} style={{ alignSelf: 'flex-start', border: '1px dashed #059669', backgroundColor: '#ecfdf5', color: '#065f46', borderRadius: 999, padding: '0.3rem 0.8rem', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}>
+              ✨ Suggest a Playing XI (generator)
+            </button>
+          )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', maxHeight: 320, overflowY: 'auto' }}>
             {team.squad.map((p) => {
               const role = playing.includes(p.player_id) ? 'playing' : subs.includes(p.player_id) ? 'sub' : '';

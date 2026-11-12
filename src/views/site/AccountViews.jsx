@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Lock, Bell, BadgeCheck, Flag, LayoutDashboard, Mail, Shield, FileText, Database, Megaphone, Users, Newspaper } from 'lucide-react';
+import { Lock, Bell, BadgeCheck, Flag, LayoutDashboard, Mail, Shield, FileText, Database, Megaphone, Users, Newspaper, ShieldCheck } from 'lucide-react';
 import { dataService } from '../../services/dataService.js';
 import { SuperAdminDashboardView } from '../admin/SuperAdminDashboardView.jsx';
 import { AdminDashboardView } from '../admin/AdminDashboardView.jsx';
@@ -13,6 +13,7 @@ import { NotificationsManagementView } from '../admin/NotificationsManagementVie
 import { AdsPanel } from '../brand/AdsPanel.jsx';
 import { CampaignModeration } from '../brand/CampaignModeration.jsx';
 import { ReportedArticlesPanel } from '../news/NewsLearnViews.jsx';
+import { AdminControlCentre } from '../admin/AdminControlCentre.jsx';
 
 /** Settings & Privacy (every member) and Admin Panel (Admin / Super-Admin). */
 function Tabs({ tabs, tab, setTab }) {
@@ -89,14 +90,15 @@ export function ContactMessagesPanel() {
 }
 
 export function AdminPanelView({ currentUser, isAdmin, isSuperAdmin, onNavigate }) {
-  const [tab, setTab] = useState('overview');
+  const [tab, setTab] = useState('control');
   if (!isAdmin) return <div className="info-box">This page is only for administrators.</div>;
-  const tabs = [['overview', 'Overview', LayoutDashboard], ['messages', 'Contact messages', Mail], ['roles', 'Roles & admins', Shield], ['verify', 'Verification requests', BadgeCheck],
+  const tabs = [['control', 'Control centre', ShieldCheck], ['overview', 'Overview', LayoutDashboard], ['messages', 'Contact messages', Mail], ['roles', 'Roles & admins', Shield], ['verify', 'Verification requests', BadgeCheck],
     ['reports', 'Reports & suspensions', Users], ['notify', 'Message all members', Megaphone], ['ads', 'Adverts & campaigns', Megaphone], ['articles', 'Reported articles', Newspaper], ['audit', 'Audit log', FileText], ...(isSuperAdmin ? [['backup', 'Backups', Database]] : [])];
   return (
     <div>
       <PageTitle title="Admin Panel" sub={`Signed in as ${currentUser?.full_name || ''} (${currentUser?.role || 'Admin'})`} />
       <Tabs tab={tab} setTab={setTab} tabs={tabs} />
+      {tab === 'control' && <AdminControlCentre currentUser={currentUser} onNavigate={onNavigate} />}
       {tab === 'overview' && (isSuperAdmin ? <SuperAdminDashboardView /> : <AdminDashboardView />)}
       {tab === 'messages' && <ContactMessagesPanel />}
       {tab === 'roles' && <RolePermissionsView onNavigate={onNavigate} />}

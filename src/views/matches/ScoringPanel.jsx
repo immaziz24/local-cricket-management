@@ -3,6 +3,7 @@ import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { Undo2, AlertCircle, Flag, CloudRain, WifiOff, RefreshCw } from 'lucide-react';
+import { WagonWheelPicker } from './WagonWheel.jsx';
 import { loadQueue, saveQueue, loadCachedState, saveCachedState, newClientId, isNetworkError, applyQueue } from './offlineScoring.js';
 
 /**
@@ -73,6 +74,8 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   const [busy, setBusy] = useState(false);
   const [extra, setExtra] = useState(null); // wide | no_ball | bye | leg_bye
   const [wk, setWk] = useState(null); // { type, out, fielder, runs }
+  const [shot, setShot] = useState(null); // runs waiting for a wagon-wheel tap
+  const [wheelOn, setWheelOn] = useState(() => { try { return localStorage.getItem('lcm-wagon') !== 'off'; } catch { return true; } });
   const [pick, setPick] = useState({ striker: '', non_striker: '', bowler: '' });
   const [comment, setComment] = useState('');
   const [menu, setMenu] = useState(false);
@@ -174,12 +177,18 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   const rrr = cur && cur.target && cur.balls_left ? ((cur.runs_needed * 6) / cur.balls_left).toFixed(2) : null;
 
   const send = (runs) => {
+    if (wheelOn && runs > 0 && (!extra || extra === 'no_ball')) { setShot({ runs }); return; }
+    sendNow(runs, null);
+  };
+  const sendNow = (runs, dir) => {
     const p = { runs: 0, extras: 0, commentary: comment };
+    if (dir) { p.shot_angle = dir.angle; p.shot_dist = dir.dist; }
     if (extra === 'wide') p.extras = runs;
     else if (extra === 'bye' || extra === 'leg_bye') { if (!runs) { setErr('Byes / leg-byes need at least 1 run.'); return; } p.extras = runs; }
     else p.runs = runs;
     if (extra) p.extra = extra;
     submit('ball', p, () => { setExtra(null); setComment(''); });
+    setShot(null);
   };
   const sendWicket = () => {
     if (!wk?.type) { setErr('Choose how the batter got out.'); return; }
@@ -376,7 +385,8 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                 : extra === 'no_ball' ? `No ball: ${rules.no_ball_runs ?? 1} run${(rules.no_ball_runs ?? 1) === 1 ? ' is' : 's are'} added${rules.free_hit !== false ? ' and the next ball is a free hit' : ''}. Tap the runs hit off the bat (4 / 6 for a boundary).`
                 : extra ? 'Tap how many runs were run.' : 'Tap the runs scored off this ball.'}
             </div>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
+            {shot && <WagonWheelPicker runs={shot.runs} busy={busy} onPick={(d) => sendNow(shot.runs, d)} onSkip={() => sendNow(shot.runs, null)} />}
+            {!shot && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
               {[0, 1, 2, 3, 4, 6, 5, 7].map((r) => (
                 <button key={r} type="button" disabled={busy} onClick={() => send(r)}
                   style={{ padding: '0.9rem 0', fontSize: '1.3rem', fontWeight: 900, borderRadius: '0.6rem', cursor: 'pointer', border: '1px solid #cbd5e1',
@@ -384,7 +394,11 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                   {r}
                 </button>
               ))}
-            </div>
+            </div>}
+            <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem', color: '#64748b', cursor: 'pointer' }}>
+              <input type="checkbox" checked={wheelOn} onChange={(e) => { setWheelOn(e.target.checked); setShot(null); try { localStorage.setItem('lcm-wagon', e.target.checked ? 'on' : 'off'); } catch { /* ignore */ } }} />
+              Ask where the ball went (wagon wheel)
+            </label>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               <button type="button" disabled={busy} onClick={() => setWk(wk ? null : { type: '', out: 'striker', fielder: '', runs: 0 })}
                 style={{ flex: 1, padding: '0.8rem', fontWeight: 900, fontSize: '1rem', borderRadius: '0.6rem', cursor: 'pointer', border: 'none', backgroundColor: '#dc2626', color: '#fff' }}>

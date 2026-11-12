@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { AuctionsHome } from './AuctionBoard.jsx';
 import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
@@ -113,7 +114,7 @@ function NrrTool() {
 }
 
 /* #224 Toss */
-function TossTool() {
+export function TossTool() {
   const [teams, setTeams] = useState({ a: '', b: '', call: 'Heads' });
   const [res, setRes] = useState(null);
   const [spinning, setSpinning] = useState(false);
@@ -170,8 +171,8 @@ function SquadLoader({ onLoad }) {
 const PLAYERS_HINT = 'One player per line. Optional: role (bat, bowler, all, wk) and rating 1–5, e.g. “Aziz, wk, 4”.';
 
 /* #225 Team generator */
-function TeamGenerator() {
-  const [text, setText] = useState('');
+export function TeamGenerator({ initialText = '' } = {}) {
+  const [text, setText] = useState(initialText);
   const [n, setN] = useState(2);
   const [teams, setTeams] = useState(null);
   const players = M.parsePlayers(text);
@@ -206,8 +207,8 @@ function TeamGenerator() {
 }
 
 /* #226 Playing XI generator */
-function XiGenerator() {
-  const [text, setText] = useState('');
+export function XiGenerator({ initialText = '' } = {}) {
+  const [text, setText] = useState(initialText);
   const [size, setSize] = useState(11);
   const [bowlers, setBowlers] = useState(5);
   const [res, setRes] = useState(null);
@@ -242,8 +243,8 @@ function XiGenerator() {
 }
 
 /* #227 Fixture generator */
-function FixtureTool() {
-  const [text, setText] = useState('');
+export function FixtureTool({ initialNames = [], note } = {}) {
+  const [text, setText] = useState(initialNames.join('\n'));
   const [format, setFormat] = useState('round_robin');
   const [sched, setSched] = useState({ start: '', time: '09:00', perDay: 3, gap: 90 });
   const [list, setList] = useState(null);
@@ -255,7 +256,7 @@ function FixtureTool() {
   };
   const text2 = list ? list.map((f, i) => `${i + 1}. ${f.team_a_id} vs ${f.team_b_id}${f.scheduled_at ? ' – ' + new Date(f.scheduled_at).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' }) : ''}`).join('\n') : '';
   return (
-    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><CalendarDays size={16} /> Fixture generator</span>} subtitle="Quick fixture list for any set of teams (tournaments on this site make their own fixtures)">
+    <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><CalendarDays size={16} /> Fixture generator</span>} subtitle={note || "Quick fixture list for any set of teams (tournaments on this site make their own fixtures)"}>
       <label style={lbl}>Teams ({names.length}) – one per line<textarea rows={5} value={text} onChange={(e) => setText(e.target.value)} style={{ ...inp, resize: 'vertical' }} /></label>
       <div style={{ ...grid, marginTop: '0.5rem' }}>
         <label style={lbl}>Format<select value={format} onChange={(e) => setFormat(e.target.value)} style={inp}>
@@ -454,15 +455,15 @@ const TOOLS = [
   ['ground', 'Ground dimensions', Ruler, '', GroundTool]
 ];
 
-export function ToolsView() {
-  const [tool, setTool] = useState('rates');
+export function ToolsView({ currentUser, onNavigate } = {}) {
+  const [tool, setTool] = useState(() => (new URLSearchParams(window.location.search).get('tool') === 'auction' ? 'auction' : 'rates'));
   const T = TOOLS.find((t) => t[0] === tool) || TOOLS[0];
   const Comp = T[4];
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <div>
         <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.5rem' }}><Wrench size={22} /> Cricket tools</h2>
-        <p style={{ margin: '0.25rem 0 0', color: '#64748b', fontSize: '0.875rem' }}>Calculators and generators for organisers, captains and scorers. Nothing here is saved.</p>
+        <p style={{ margin: '0.25rem 0 0', color: '#64748b', fontSize: '0.875rem' }}>Calculators and generators for organisers, captains and scorers. Only auctions are saved; the other tools work in your browser.</p>
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(165px, 1fr))', gap: '0.5rem' }}>
         {TOOLS.map(([id, label, Icon, tag]) => (
@@ -473,6 +474,7 @@ export function ToolsView() {
           </button>
         ))}
       </div>
+      {tool === 'auction' && onNavigate && <AuctionsHome currentUser={currentUser} onNavigate={onNavigate} />}
       <Comp />
     </div>
   );

@@ -51,16 +51,74 @@ function TeamPicker({ title, value, onPick, myTeams, exclude }) {
   );
 }
 
+
+// #105–#132 match rules asked at creation: the main ones are always shown, the rest are optional.
+const PRESETS = {
+  gully: { label: 'Gully / tennis ball', r: { wide_runs: 1, no_ball_runs: 1, free_hit: true, lbw: false, byes: true, leg_byes: false, powerplay_overs: 0, retire_at: null } },
+  local: { label: 'Local leather ball', r: { wide_runs: 1, no_ball_runs: 1, free_hit: true, lbw: true, byes: true, leg_byes: true, powerplay_overs: null, retire_at: null } },
+  icc: { label: 'ICC T20 style', r: { wide_runs: 1, no_ball_runs: 1, free_hit: true, lbw: true, byes: true, leg_byes: true, powerplay_overs: null, retire_at: null } }
+};
+const defaultRules = (overs) => ({ preset: 'gully', max_overs_per_bowler: overs ? Math.max(1, Math.ceil(Number(overs) / 5)) : null, ...PRESETS.gully.r, fielders_outside: null, boundary_size_m: null, local_rules: '' });
+
+function RulesStep({ rules, setRules, overs, matchType }) {
+  const [more, setMore] = useState(false);
+  const set = (k, v) => setRules((r) => ({ ...r, [k]: v }));
+  const num = (k, ph, max = 999) => <input type="number" min={0} max={max} value={rules[k] ?? ''} placeholder={ph} onChange={(e) => set(k, e.target.value === '' ? null : Math.min(max, Number(e.target.value)))} style={{ ...field, width: 90 }} />;
+  const yes = (k, text) => (
+    <label style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.84rem', cursor: 'pointer' }}>
+      <input type="checkbox" checked={!!rules[k]} onChange={(e) => set(k, e.target.checked)} /> {text}
+    </label>
+  );
+  const pick = (k) => setRules((r) => ({ ...r, preset: k, ...PRESETS[k].r, powerplay_overs: k === 'icc' && overs ? Math.max(1, Math.round(Number(overs) * 0.3)) : PRESETS[k].r.powerplay_overs }));
+  return (
+    <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.6rem', padding: '0.85rem', display: 'flex', flexDirection: 'column', gap: '0.8rem', backgroundColor: '#f8fafc' }}>
+      <div>
+        <span style={label}>Match rules</span>
+        <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap' }}>
+          {Object.entries(PRESETS).map(([k, p]) => <button key={k} type="button" style={chip(rules.preset === k)} onClick={() => pick(k)}>{p.label}</button>)}
+        </div>
+        <span style={{ fontSize: '0.74rem', color: '#64748b' }}>Pick the closest style, then change anything below. The scorer's screen follows these rules.</span>
+      </div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.7rem', alignItems: 'end' }}>
+        {matchType !== 'two_innings' && <label><span style={label}>Max overs per bowler *</span>{num('max_overs_per_bowler', 'No limit', 50)}</label>}
+        <label><span style={label}>Runs for a wide *</span>{num('wide_runs', '1', 5)}</label>
+        <label><span style={label}>Runs for a no-ball *</span>{num('no_ball_runs', '1', 5)}</label>
+        <div style={{ paddingBottom: 6 }}>{yes('free_hit', 'Free hit after a no-ball')}</div>
+      </div>
+      <button type="button" onClick={() => setMore((v) => !v)} style={{ alignSelf: 'flex-start', background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', fontSize: '0.82rem', padding: 0 }}>
+        {more ? 'Hide optional rules' : 'More rules (optional): LBW, byes, powerplay, retire, boundary, local rules'}
+      </button>
+      {more && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.7rem' }}>
+          <div style={{ display: 'flex', gap: '1.1rem', flexWrap: 'wrap' }}>
+            {yes('lbw', 'LBW is used')}{yes('byes', 'Byes count')}{yes('leg_byes', 'Leg-byes count')}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.7rem' }}>
+            {matchType !== 'two_innings' && <label><span style={label}>Powerplay overs</span>{num('powerplay_overs', 'None', 20)}</label>}
+            <label><span style={label}>Batter retires at (runs)</span>{num('retire_at', 'No rule', 500)}</label>
+            <label><span style={label}>Max fielders outside circle</span>{num('fielders_outside', 'Default', 9)}</label>
+            <label><span style={label}>Boundary size (m)</span>{num('boundary_size_m', 'Not set', 120)}</label>
+          </div>
+          <label><span style={label}>Other local rules</span>
+            <textarea rows={2} value={rules.local_rules} onChange={(e) => set('local_rules', e.target.value)} maxLength={1000} placeholder="e.g. One-tip-one-hand catch, no running on the last ball, last man can bat alone" style={{ ...field, resize: 'vertical', fontFamily: 'inherit' }} />
+          </label>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function NewMatchForm({ onCreated, onCancel }) {
   const [myTeams, setMyTeams] = useState([]);
   const [teamA, setTeamA] = useState(null);
   const [teamB, setTeamB] = useState(null);
   const [f, setF] = useState({ match_type: 'limited_overs', overs_per_innings: 10, players_per_side: 11, ball_type: 'Tennis', venue: '', city: '', at: '', title: '' });
+  const [rules, setRules] = useState(() => defaultRules(10));
   const [err, setErr] = useState(null);
   const [busy, setBusy] = useState(false);
 
   useEffect(() => { dataService.fetchMyTeams().then((t) => setMyTeams(t || [])).catch(() => setMyTeams([])); }, []);
-  const set = (k, v) => setF((p) => ({ ...p, [k]: v }));
+  const set = (k, v) => { setF((p) => ({ ...p, [k]: v })); if (k === 'overs_per_innings') setRules((r) => ({ ...r, max_overs_per_bowler: v ? Math.max(1, Math.ceil(Number(v) / 5)) : r.max_overs_per_bowler })); };
 
   const create = async () => {
     setErr(null);
@@ -75,6 +133,15 @@ export function NewMatchForm({ onCreated, onCancel }) {
         ball_type: f.ball_type, venue: f.venue, city: f.city, title: f.title,
         scheduled_at: f.at ? new Date(`${f.at}:00+05:30`).toISOString() : null
       });
+      // Save the rules chosen above as this match's playing conditions.
+      try {
+        const pc = await dataService.fetchPlayingConditions(null, r.id);
+        const { preset, local_rules, ...chosen } = rules;
+        const merged = { ...pc.rules, ...Object.fromEntries(Object.entries(chosen).filter(([, v]) => v !== null && v !== undefined)),
+          ...(chosen.powerplay_overs === 0 ? { powerplay_overs: null } : {}), ...(chosen.retire_at === null ? { retire_at: null } : {}),
+          notes: { ...(pc.rules.notes || {}), ...(local_rules.trim() ? { general: local_rules.trim() } : {}) } };
+        await dataService.savePlayingConditions(null, r.id, merged, `Set when the match was created (${PRESETS[preset]?.label || 'custom'})`);
+      } catch (e) { /* the match exists; rules can still be set on its Rules tab */ }
       onCreated && onCreated(r.id);
     } catch (e) { setErr(e.message); }
     finally { setBusy(false); }
@@ -117,6 +184,7 @@ export function NewMatchForm({ onCreated, onCancel }) {
             {BALL_TYPES.map((b) => <button key={b} type="button" style={chip(f.ball_type === b)} onClick={() => set('ball_type', b)}>{b}</button>)}
           </div>
         </div>
+        <RulesStep rules={rules} setRules={setRules} overs={f.overs_per_innings} matchType={f.match_type} />
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
           <label><span style={label}>Ground</span><input style={field} value={f.venue} onChange={(e) => set('venue', e.target.value)} placeholder="e.g. School ground" /></label>
           <label><span style={label}>City / village</span><input style={field} value={f.city} onChange={(e) => set('city', e.target.value)} /></label>
@@ -128,7 +196,7 @@ export function NewMatchForm({ onCreated, onCancel }) {
           <Button variant="primary" disabled={busy} onClick={create}>{busy ? 'Creating…' : 'Create match'}</Button>
           <Button variant="secondary" onClick={onCancel}>Cancel</Button>
         </div>
-        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Leave the date empty to play now. You will pick the Playing XI and do the toss on the next screen.</span>
+        <span style={{ fontSize: '0.75rem', color: '#64748b' }}>Leave the date empty to play now. You will pick the Playing XI and do the toss on the next screen. Rules can be changed later on the match's Rules tab until the first ball.</span>
       </div>
     </Card>
   );

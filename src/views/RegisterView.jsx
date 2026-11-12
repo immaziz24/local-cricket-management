@@ -17,6 +17,7 @@ import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
 import { dataService, authBackend } from '../services/dataService';
+import { EmailCodeBox } from './auth/EmailCodeBox.jsx';
 
 export function RegisterView(props) {
   const { onNavigate = () => {} } = props || {};
@@ -315,53 +316,21 @@ export function RegisterView(props) {
               <h2 style={{ fontSize: '1.35rem', marginBottom: '0.35rem' }}>Registration Successful!</h2>
               <p style={{ fontSize: '0.875rem', color: 'var(--color-text-muted)', maxWidth: '440px' }}>
                 {registeredUser.needs_email_confirmation
-                  ? `Your account has been created. We have sent a confirmation link to ${registeredUser.email}. Open it, then sign in.`
+                  ? `Your account has been created. We have emailed a 6-digit code and a confirmation link to ${registeredUser.email}.`
                   : authBackend === 'supabase'
                     ? 'Your account has been created. You can now sign in.'
                     : 'Your user registration profile has been validated and recorded by the mock service layer.'}
               </p>
             </div>
 
-            {/* Profile summary card */}
-            <div
-              style={{
-                width: '100%',
-                backgroundColor: 'var(--color-border-subtle)',
-                borderRadius: 'var(--radius-md)',
-                padding: '1rem',
-                textAlign: 'left',
-                fontSize: '0.85rem',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '0.45rem'
-              }}
-            >
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--color-text-muted)' }}>Assigned User ID:</span>
-                <span style={{ fontWeight: 700, fontFamily: 'monospace' }}>{registeredUser.id}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--color-text-muted)' }}>Full Name:</span>
-                <span style={{ fontWeight: 600 }}>{registeredUser.full_name}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--color-text-muted)' }}>Email Address:</span>
-                <span style={{ fontWeight: 600 }}>{registeredUser.email}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--color-text-muted)' }}>Mobile Number:</span>
-                <span style={{ fontWeight: 600 }}>{registeredUser.mobile_number}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: 'var(--color-text-muted)' }}>Recorded At:</span>
-                <span style={{ color: 'var(--color-text-muted)' }}>{new Date(registeredUser.created_at).toLocaleString()}</span>
-              </div>
-            </div>
+            {registeredUser.needs_email_confirmation && (
+              <EmailCodeBox email={registeredUser.email} onVerified={() => setTimeout(() => onNavigate && onNavigate('home'), 900)} />
+            )}
 
             {/* Next Actions */}
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap', justifyContent: 'center', width: '100%', marginTop: '0.5rem' }}>
-              <Button variant="primary" onClick={() => onNavigate && onNavigate('login')}>
-                Sign In to Account
+              <Button variant={registeredUser.needs_email_confirmation ? 'outline' : 'primary'} onClick={() => onNavigate && onNavigate('login')}>
+                {registeredUser.needs_email_confirmation ? 'I confirmed with the link – sign in' : 'Sign In to Account'}
               </Button>
               <Button variant="outline" onClick={handleReset}>
                 Register Another User

@@ -129,7 +129,7 @@ export function TeamsView({ onNavigate }) {
             </label>
             <Button type="submit" variant="primary" disabled={busy}>{busy ? 'Creating…' : 'Create team'}</Button>
           </form>
-          <p style={{ margin: '0.6rem 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>You become the team owner and are added to the squad automatically.</p>
+          <p style={{ margin: '0.6rem 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>You become the team owner. If you also play, add yourself to the squad on the team page.</p>
         </Card>
       )}
 

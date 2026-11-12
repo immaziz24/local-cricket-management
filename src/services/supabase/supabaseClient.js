@@ -73,7 +73,7 @@ function friendlyError(error, context = '') {
     return 'Incorrect email or password. Please try again or use password recovery.';
   }
   if (msg.includes('email not confirmed')) {
-    return 'Please confirm your email address first. Open the confirmation email we sent you, then sign in.';
+    return 'Please confirm your email address first: type the 6-digit code from our email below, or open the link in it.';
   }
   if (msg.includes('user already registered') || msg.includes('already been registered')) {
     return 'An account with this email address already exists. Please sign in or use another email.';
@@ -264,6 +264,21 @@ export const supabaseClient = {
       },
       error: null
     };
+  },
+
+  // #254 confirm the email with the 6-digit code from the sign-up email
+  async verifySignupCode({ email, code }) {
+    const token = String(code || '').replace(/\s/g, '');
+    if (!/^\d{6,10}$/.test(token)) return { data: null, error: 'Please enter the code from the email.' };
+    const { data, error } = await supabase.auth.verifyOtp({ email: email.trim().toLowerCase(), token, type: 'email' });
+    if (error) return { data: null, error: friendlyError(error, 'code verification') };
+    return { data: { verified: true, signed_in: !!data.session }, error: null };
+  },
+
+  async resendSignupCode(email) {
+    const { error } = await supabase.auth.resend({ type: 'signup', email: email.trim().toLowerCase(), options: { emailRedirectTo: window.location.origin } });
+    if (error) return { data: null, error: friendlyError(error, 'email') };
+    return { data: { sent: true }, error: null };
   },
 
   async verifyPasswordRecoveryOTP({ identifier, otp }) {
@@ -1775,6 +1790,156 @@ export const supabaseClient = {
   async removeArticleCover(articleId) {
     const { data, error } = await supabase.rpc('set_article_cover', { p_article_id: articleId, p_url: null });
     if (error) return { data: null, error: friendlyError(error, 'picture') };
+    return { data, error: null };
+  },
+
+  async getWagonWheel(matchId, inningsNo, batterId) {
+    const { data, error } = await supabase.rpc('get_wagon_wheel', { p_match_id: matchId, p_innings_no: inningsNo ?? null, p_batter_id: batterId || null });
+    if (error) return { data: null, error: friendlyError(error, 'wagon wheel') };
+    return { data, error: null };
+  },
+
+  async saveAuction(auctionId, p) {
+    const { data, error } = await supabase.rpc('save_auction', { p_auction_id: auctionId || null, p: p || {} });
+    if (error) return { data: null, error: friendlyError(error, 'auction') };
+    return { data, error: null };
+  },
+
+  async addAuctionPlayers(auctionId, players) {
+    const { data, error } = await supabase.rpc('add_auction_players', { p_auction_id: auctionId, p_players: players || [] });
+    if (error) return { data: null, error: friendlyError(error, 'auction') };
+    return { data, error: null };
+  },
+
+  async removeAuctionPlayer(playerId) {
+    const { data, error } = await supabase.rpc('remove_auction_player', { p_player_id: playerId });
+    if (error) return { data: null, error: friendlyError(error, 'auction') };
+    return { data, error: null };
+  },
+
+  async setAuctionCurrent(auctionId, playerId) {
+    const { data, error } = await supabase.rpc('set_auction_current', { p_auction_id: auctionId, p_player_id: playerId || null });
+    if (error) return { data: null, error: friendlyError(error, 'auction') };
+    return { data, error: null };
+  },
+
+  async sellAuctionPlayer(playerId, teamId, price) {
+    const { data, error } = await supabase.rpc('sell_auction_player', { p_player_id: playerId, p_team_id: teamId, p_price: Math.round(Number(price)) });
+    if (error) return { data: null, error: friendlyError(error, 'auction') };
+    return { data, error: null };
+  },
+
+  async markAuctionUnsold(playerId) {
+    const { data, error } = await supabase.rpc('mark_auction_unsold', { p_player_id: playerId });
+    if (error) return { data: null, error: friendlyError(error, 'auction') };
+    return { data, error: null };
+  },
+
+  async undoAuctionSale(auctionId, playerId) {
+    const { data, error } = await supabase.rpc('undo_auction_sale', { p_auction_id: auctionId, p_player_id: playerId || null });
+    if (error) return { data: null, error: friendlyError(error, 'auction') };
+    return { data, error: null };
+  },
+
+  async finishAuction(auctionId, finished) {
+    const { data, error } = await supabase.rpc('finish_auction', { p_auction_id: auctionId, p_finished: finished !== false });
+    if (error) return { data: null, error: friendlyError(error, 'auction') };
+    return { data, error: null };
+  },
+
+  async deleteAuction(auctionId) {
+    const { data, error } = await supabase.rpc('delete_auction', { p_auction_id: auctionId });
+    if (error) return { data: null, error: friendlyError(error, 'auction') };
+    return { data, error: null };
+  },
+
+  async getAuction(auctionId) {
+    const { data, error } = await supabase.rpc('get_auction', { p_auction_id: auctionId });
+    if (error) return { data: null, error: friendlyError(error, 'auction') };
+    return { data, error: null };
+  },
+
+  async listAuctions(p = {}) {
+    const { data, error } = await supabase.rpc('list_auctions', { p });
+    if (error) return { data: null, error: friendlyError(error, 'auction') };
+    return { data, error: null };
+  },
+
+  async adminSearch(query, kind) {
+    const { data, error } = await supabase.rpc('admin_search', { p_query: query || '', p_kind: kind || 'all' });
+    if (error) return { data: null, error: friendlyError(error, 'admin') };
+    return { data, error: null };
+  },
+
+  async adminGetUser(userId) {
+    const { data, error } = await supabase.rpc('admin_get_user', { p_user_id: userId });
+    if (error) return { data: null, error: friendlyError(error, 'admin') };
+    return { data, error: null };
+  },
+
+  async adminUpdateUser(userId, p) {
+    const { data, error } = await supabase.rpc('admin_update_user', { p_user_id: userId, p: p || {} });
+    if (error) return { data: null, error: friendlyError(error, 'admin') };
+    return { data, error: null };
+  },
+
+  async adminDeleteUser(userId, reason) {
+    const { data, error } = await supabase.rpc('admin_delete_user', { p_user_id: userId, p_reason: reason || null });
+    if (error) return { data: null, error: friendlyError(error, 'admin') };
+    return { data, error: null };
+  },
+
+  async adminUpdateTeam(teamId, p) {
+    const { data, error } = await supabase.rpc('admin_update_team', { p_team_id: teamId, p: p || {} });
+    if (error) return { data: null, error: friendlyError(error, 'admin') };
+    return { data, error: null };
+  },
+
+  async adminDeleteTeam(teamId) {
+    const { data, error } = await supabase.rpc('admin_delete_team', { p_team_id: teamId });
+    if (error) return { data: null, error: friendlyError(error, 'admin') };
+    return { data, error: null };
+  },
+
+  async adminUpdateTournament(tournamentId, p) {
+    const { data, error } = await supabase.rpc('admin_update_tournament', { p_tournament_id: tournamentId, p: p || {} });
+    if (error) return { data: null, error: friendlyError(error, 'admin') };
+    return { data, error: null };
+  },
+
+  async adminDeleteTournament(tournamentId) {
+    const { data, error } = await supabase.rpc('admin_delete_tournament', { p_tournament_id: tournamentId });
+    if (error) return { data: null, error: friendlyError(error, 'admin') };
+    return { data, error: null };
+  },
+
+  async adminUpdateMatch(matchId, p) {
+    const { data, error } = await supabase.rpc('admin_update_match', { p_match_id: matchId, p: p || {} });
+    if (error) return { data: null, error: friendlyError(error, 'admin') };
+    return { data, error: null };
+  },
+
+  async adminDeleteMatch(matchId) {
+    const { data, error } = await supabase.rpc('admin_delete_match', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'admin') };
+    return { data, error: null };
+  },
+
+  async adminListBalls(matchId) {
+    const { data, error } = await supabase.rpc('admin_list_balls', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'admin') };
+    return { data, error: null };
+  },
+
+  async adminUpdateBall(ballId, p) {
+    const { data, error } = await supabase.rpc('admin_update_ball', { p_ball_id: ballId, p: p || {} });
+    if (error) return { data: null, error: friendlyError(error, 'admin') };
+    return { data, error: null };
+  },
+
+  async adminDeleteBall(ballId) {
+    const { data, error } = await supabase.rpc('admin_delete_ball', { p_ball_id: ballId });
+    if (error) return { data: null, error: friendlyError(error, 'admin') };
     return { data, error: null };
   },
 

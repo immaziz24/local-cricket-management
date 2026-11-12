@@ -37,6 +37,8 @@ export function TeamDetailView({ teamId, onNavigate }) {
   const [error, setError] = useState(null);
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [myPlayer, setMyPlayer] = useState(null);
+  useEffect(() => { dataService.fetchMyPlayer().then(setMyPlayer).catch(() => setMyPlayer(null)); }, []);
 
   // Add-player flow
   const [mobile, setMobile] = useState('');
@@ -90,6 +92,17 @@ export function TeamDetailView({ teamId, onNavigate }) {
       await dataService.addPlayerToTeam(teamId, lookup.id);
       setMsg({ ok: true, text: `${lookup.display_name} added to the squad.` });
       resetAdd(); await load();
+    } catch (err) {
+      setMsg({ ok: false, text: err.message });
+    } finally { setBusy(false); }
+  };
+
+  const addMe = async () => {
+    setBusy(true);
+    try {
+      await dataService.addPlayerToTeam(teamId, myPlayer.id);
+      setMsg({ ok: true, text: 'You are now in the squad.' });
+      await load();
     } catch (err) {
       setMsg({ ok: false, text: err.message });
     } finally { setBusy(false); }
@@ -264,6 +277,12 @@ export function TeamDetailView({ teamId, onNavigate }) {
         <p style={{ margin: '0.75rem 0 0', fontSize: '0.75rem', color: '#94a3b8' }}>
           "Not registered yet" players can join later by signing up with the same mobile number — their team and stats become theirs automatically.
         </p>
+        {team.i_own && myPlayer?.id && !squad.some((p) => p.id === myPlayer.id) && (
+          <div style={{ marginTop: '0.75rem', display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap', fontSize: '0.84rem', color: '#475569' }}>
+            <span>Do you also play for this team?</span>
+            <Button size="sm" variant="secondary" disabled={busy} onClick={addMe}>Add me to the squad</Button>
+          </div>
+        )}
       </Card>
 
       {team.i_own && (

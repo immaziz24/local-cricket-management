@@ -59,10 +59,10 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 254 | User registration | 🟩 | RegisterView.jsx — real Supabase account; owner tested 2026-11-10 (email confirmed, name + mobile saved) |
+| 254 | User registration | 🟩 | RegisterView.jsx — real Supabase account; owner tested 2026-11-10 (email confirmed, name + mobile saved) **updated 2026-11-12** – sign-up shows a 6-digit code box (code from the email) plus the link; resend code; login offers the code box if the email is not confirmed. |
 | 255 | User login and logout | 🟩 | LoginView.jsx + Header — real Supabase login; owner tested 2026-11-10. Header shows user + Sign Out |
 | 256 | Password recovery | 🟨 | auth/PasswordRecoveryView.jsx — connected; code email + verification confirmed in database 2026-11-10. Awaiting owner confirmation that new-password login works |
-| 257 | Super-admin dashboard | 🟩 | admin/SuperAdminDashboardView.jsx — real data, maintenance mode, site-wide announcement; owner checked 2026-11-10 |
+| 257 | Super-admin dashboard | 🟩 | admin/SuperAdminDashboardView.jsx — real data, maintenance mode, site-wide announcement; owner checked 2026-11-10 **updated 2026-11-12** – Control centre: search any user/team/match/tournament; edit name, mobile, status, confirm email; Super-Admin deletes accounts (teams/tournaments move to Super-Admin); fix match results and balls. |
 | 258 | Admin dashboard | 🟨 | admin/AdminDashboardView.jsx — **connected 2026-11-10**: members, recent sign-ups, verification + report queues (Admin or Super-Admin). Tournament/team/dispute queues arrive with Phases 2 and 4. Awaiting owner check |
 | 259 | Organiser permissions | 🟨 | admin/RolePermissionsView.jsx — open-platform rule: earned by creating a tournament (built in Phase 2). Permission rules stored in database (Super-Admin can switch off). Awaiting owner check |
 | 260 | Team owner permissions | 🟨 | admin/RolePermissionsView.jsx — open-platform rule: earned by creating a team (Phase 2). Permission rules stored in database (Super-Admin can switch off). Awaiting owner check |
@@ -128,7 +128,7 @@
 | 68 | Team profile | 🟩 | **connected 2026-11-10** – teams/TeamsView.jsx + TeamDetailView.jsx — create team (name, short name, city); creator becomes team owner. Logo later (#69). Owner checked 2026-11-10 |
 | 69 | Team logo | 🟨 | **connected 2026-11-10** – team owner uploads logo on team page. Awaiting owner check |
 | 70 | Captain and vice-captain assignment | 🟩 | **connected 2026-11-10** – teams/TeamDetailView.jsx — captain, vice-captain and icon player; registered captain gets Captain role for that team. Owner checked 2026-11-10 |
-| 71 | Squad management | 🟩 | **connected 2026-11-10** – teams/TeamDetailView.jsx — squad list, add by mobile / by name, remove (max 40). Owner checked 2026-11-10 |
+| 71 | Squad management | 🟩 | **connected 2026-11-10** – teams/TeamDetailView.jsx — squad list, add by mobile / by name, remove (max 40). Owner checked 2026-11-10 **updated 2026-11-12** – creating a team no longer puts the creator in the squad; "Add me to the squad" button instead. |
 | 72 | Playing XI management | 🟨 | **connected 2026-11-10** – tournament → Fixtures → Playing XI: team owner (or organiser) picks the playing side from the squad, batting order, captain and wicket-keeper; players a side set by organiser (default 11); everyone can view. Tested in DB. Awaiting owner check |
 | 73 | Substitute management | 🟨 | **connected 2026-11-10** – substitutes picked with the lineup (default up to 4, organiser can change). Tested in DB. Awaiting owner check |
 | 74 | Player replacements | 🟨 | **connected 2026-11-10** – in a match, swap a playing player for a substitute or squad player with a reason (injury, concussion, illness); other team notified; shown in team history. Tested in DB. Awaiting owner check |
@@ -150,7 +150,7 @@
 | 5 | Toss winner selection | 🟨 | **connected 2026-11-10** – match page → Toss: who won the toss. Tested in DB. Awaiting owner check |
 | 6 | Toss decision: bat or bowl | 🟨 | **connected 2026-11-10** – bat or bowl first; match goes live, batting side set, team owners notified. Tested in DB. Awaiting owner check |
 | 7 | Ball-by-ball scoring | 🟨 | **connected 2026-11-10** – match page → scoring pad: one tap per ball; every ball saved with who batted/bowled. Tested in DB. Awaiting owner check |
-| 8 | Record runs: 0, 1, 2, 3, 4, 6 | 🟨 | **connected 2026-11-10** – buttons 0,1,2,3,4,6 (+5,7 for overthrows). Tested in DB. Awaiting owner check |
+| 8 | Record runs: 0, 1, 2, 3, 4, 6 | 🟨 | **connected 2026-11-10** – buttons 0,1,2,3,4,6 (+5,7 for overthrows). Tested in DB. Awaiting owner check **updated 2026-11-12** – wagon wheel: after tapping 1–7 runs the scorer taps where the ball went (can be switched off); shown on scorecard and Analysis. |
 | 9 | Record extras: wides, no-balls, byes and leg-byes | 🟨 | **connected 2026-11-10** – wide, no-ball (+1 run each), bye, leg-bye; extras shown on the scorecard. Tested in DB. Awaiting owner check |
 | 10 | Record wickets and dismissal types | 🟨 | **connected 2026-11-10** – wicket button: bowled, caught, c&b, lbw, run out (either batter), stumped, hit wicket, obstructing, timed out; fielder recorded. Tested in DB. Awaiting owner check |
 | 11 | Handle retired hurt and retired out | 🟨 | **connected 2026-11-10** – retired hurt (can bat again) and retired out. Tested in DB. Awaiting owner check |
@@ -160,10 +160,10 @@
 | 15 | Over and innings management | 🟨 | **connected 2026-11-10** – overs counted (legal balls only); innings ends when all out (players a side − 1), overs done or target reached; next innings opens automatically. Tested in DB. Awaiting owner check |
 | 16 | Target calculation | 🟨 | **connected 2026-11-10** – target = first innings + 1; runs needed, balls left, current and required run rate. Tested in DB. Awaiting owner check |
 | 17 | Match result calculation | 🟨 | **connected 2026-11-10** – result worked out: won by X runs / won by N wickets / tied; feeds points table and NRR. Tested in DB. Awaiting owner check |
-| 18 | Score correction and undo | 🟨 | **connected 2026-11-10** – Undo the last ball (also re-opens a finished innings or match). Tested in DB. Awaiting owner check |
+| 18 | Score correction and undo | 🟨 | **connected 2026-11-10** – Undo the last ball (also re-opens a finished innings or match). Tested in DB. Awaiting owner check **updated 2026-11-12** – Admin panel → Control centre: admins can fix or delete any ball of any match; totals, over numbers, scorecard and stats rebuild; audited. |
 | 19 | Abandoned and tied match handling | 🟨 | **connected 2026-11-10** – abandon with a reason (no result); tie detected automatically. Tested in DB. Awaiting owner check |
 | 20 | Live commentary | 🟨 | **connected 2026-11-10** – match page → Commentary tab: every ball written out (FOUR!, SIX!, OUT! c X b Y 7(3)), scorer's note, end-of-over summary; refreshes every 10 s. Awaiting owner check |
-| 21 | Full batting scorecard | 🟨 | **connected 2026-11-10** – Scorecard tab: R, B, 4s, 6s, SR, M (minutes at the crease), how out, extras, fall of wickets; partnership and yet-to-bat on the live screen. Awaiting owner check |
+| 21 | Full batting scorecard | 🟨 | **connected 2026-11-10** – Scorecard tab: R, B, 4s, 6s, SR, M (minutes at the crease), how out, extras, fall of wickets; partnership and yet-to-bat on the live screen. Awaiting owner check **updated 2026-11-12** – international-style scorecard: innings tabs, coloured innings bar, (c)/(wk), batting/yet to bat, extras, total with RR, fall of wickets, partnerships, wagon wheel per batter. |
 | 22 | Full bowling scorecard | 🟨 | **connected 2026-11-10** – Scorecard tab: O, M, R, W, Wd, Nb, Econ. Awaiting owner check |
 | 23 | Match summary | 🟨 | **connected 2026-11-10** – Scorecard tab → Match summary: result, each innings total, top 2 batters and bowlers. Awaiting owner check |
 | 24 | Save incomplete matches | 🟨 | **connected 2026-11-10** – every ball is saved the moment it is scored; scorer can Pause with a reason (rain, break) – spectators see "Play stopped". Awaiting owner check |
@@ -236,7 +236,7 @@
 | 129 | Ball type configuration | 🟩 | **connected 2026-11-10** – ball type from match/tournament setup shown with the rules |
 | 130 | Pitch and ground conditions | 🟩 | **connected 2026-11-10** – pitch type + ground notes |
 | 131 | Fielding restrictions | 🟩 | **connected 2026-11-10** – fielders outside the circle (powerplay / after) – shown while scoring |
-| 132 | Local tournament playing conditions | 🟩 | **connected 2026-11-10** – free-text local rules (batting, bowling, boundary, fielding, ground, substitutes, other) |
+| 132 | Local tournament playing conditions | 🟩 | **connected 2026-11-10** – free-text local rules (batting, bowling, boundary, fielding, ground, substitutes, other) **updated 2026-11-12** – new match form asks the main rules (bowler overs, wide/no-ball runs, free hit) with presets and optional rules (LBW, byes, powerplay, retire, boundary, local rules). |
 | 133 | Rules for substitutions and replacements | 🟩 | **connected 2026-11-10** – max substitutes shown; substitute rules notes; in-match replacements (#74) |
 | 134 | Match-specific rule publishing and version history | 🟩 | **connected 2026-11-10** – Save & publish creates a new version with a change note; version history; approved teams notified |
 
@@ -253,13 +253,13 @@
 | 222 | Net Run Rate calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – multi-match NRR, all-out counts full quota |
 | 223 | DLS calculation support | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – rain target helper (run-rate + DLS-style resources) |
 | 224 | Toss generator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – fair digital coin toss (secure random) |
-| 225 | Team generator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – balanced teams from a list or one of my teams (ratings, keepers spread) |
-| 226 | Playing XI generator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – suggested XI with keeper and bowling options + batting order; can load my team squad |
-| 227 | Fixture generator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – league / home-away / knockout fixtures with optional dates; copy list |
+| 225 | Team generator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – balanced teams from a list or one of my teams (ratings, keepers spread) **updated 2026-11-12** – also on the Matches page and the tournament Generators tab. |
+| 226 | Playing XI generator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – suggested XI with keeper and bowling options + batting order; can load my team squad **updated 2026-11-12** – also "Suggest a Playing XI" in the match Playing XI picker, Matches page and tournament Generators tab. |
+| 227 | Fixture generator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – league / home-away / knockout fixtures with optional dates; copy list **updated 2026-11-12** – also on the tournament Generators tab with its teams filled in. |
 | 228 | Points table calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – points table with NRR from entered results |
 | 229 | Tournament budget calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – costs vs entry fees + sponsorship, break-even fee |
 | 230 | Prize distribution calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – prize split by %, rounding |
-| 231 | Player auction calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – auction purse: remaining, max bid keeping base price for open slots |
+| 231 | Player auction calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – auction purse: remaining, max bid keeping base price for open slots **updated 2026-11-12** – saved auction board (like the GCPL sheet): purses, base price, bid step, numbered players, on the block, sold/unsold/undo, totals (budget, used, remaining, bought, places left, average, max next bid, minimum required), live link, CSV, print; tournament auctions. |
 | 232 | Cricket ground dimension calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – ground size from boundary distances (yards, rope length, area) |
 
 ### Phase 4 – Cricket Operations and Match Management

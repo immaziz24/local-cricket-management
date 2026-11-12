@@ -3,6 +3,7 @@ import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { Star } from 'lucide-react';
+import { WagonWheel } from '../matches/WagonWheel.jsx';
 import { BarChart, WormChart, PlayerName, StatGrid, oversOf, th, td } from './statsUi.jsx';
 
 /**
@@ -77,6 +78,7 @@ export function MatchAnalysisPanel({ matchId, matchStatus, canScore, refreshKey,
               ['Dot balls', i.boundaries?.dots]
             ]} />
           </div>
+          <div style={{ marginTop: '0.8rem' }}><WagonWheel matchId={matchId} inningsNo={i.innings_no} title="Wagon wheel" refreshKey={refreshKey} /></div>
           {(i.partnerships || []).length > 0 && (
             <div style={{ marginTop: '0.8rem', overflowX: 'auto' }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>Partnerships</div>

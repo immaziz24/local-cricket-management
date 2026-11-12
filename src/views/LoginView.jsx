@@ -17,6 +17,7 @@ import { Card } from '../components/common/Card';
 import { Badge } from '../components/common/Badge';
 import { Button } from '../components/common/Button';
 import { dataService, authBackend } from '../services/dataService';
+import { EmailCodeBox } from './auth/EmailCodeBox.jsx';
 
 export function LoginView(props) {
   const { onNavigate = () => {} } = props || {};
@@ -309,6 +310,12 @@ export function LoginView(props) {
         </Card>
       ) : (
         /* LOGIN FORM */
+        <>
+        {apiError && /confirm your email/i.test(apiError) && /@/.test(formData.identifier || '') && (
+          <div style={{ marginBottom: '1rem' }}>
+            <EmailCodeBox email={formData.identifier.trim()} onVerified={() => { setApiError(null); setTimeout(() => onNavigate('home'), 900); }} />
+          </div>
+        )}
         <Card>
           <form onSubmit={handleSubmit} noValidate style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem' }}>
             {/* Global API / Auth Error Banner */}
@@ -527,6 +534,7 @@ export function LoginView(props) {
             </div>
           </form>
         </Card>
+        </>
       )}
 
       {/* Component Styles */}

@@ -3,8 +3,9 @@ import { Card } from '../components/common/Card.jsx';
 import { Badge } from '../components/common/Badge.jsx';
 import { Button } from '../components/common/Button.jsx';
 import { dataService } from '../services/dataService.js';
-import { Activity, PlusCircle, MapPin, Clock, Trophy, AlertCircle } from 'lucide-react';
+import { Shuffle, Activity, PlusCircle, MapPin, Clock, Trophy, AlertCircle } from 'lucide-react';
 import { NewMatchForm } from './matches/NewMatchForm.jsx';
+import { TeamGenerator, XiGenerator, TossTool } from './tools/ToolsView.jsx';
 import { scoreLine } from './tournaments/MatchResultForm.jsx';
 import { AdSlot } from './brand/brandShared.jsx';
 
@@ -30,6 +31,7 @@ export function MatchesView({ onNavigate = () => {}, currentUser }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showNew, setShowNew] = useState(false);
+  const [showGen, setShowGen] = useState(false);
   const [myLive, setMyLive] = useState([]);
 
   const load = async (f = filter) => {
@@ -60,6 +62,10 @@ export function MatchesView({ onNavigate = () => {}, currentUser }) {
             <div style={{ fontSize: '0.85rem', color: '#64748b' }}>Live scores, upcoming games and results</div>
           </div>
         </div>
+        <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+        <Button variant="secondary" onClick={() => setShowGen(!showGen)} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
+          <Shuffle size={16} /> {showGen ? 'Hide generators' : 'Team / XI / toss generators'}
+        </Button>
         {currentUser ? (
           <Button variant="primary" onClick={() => setShowNew(!showNew)} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
             <PlusCircle size={16} /> {showNew ? 'Close' : 'Start a match'}
@@ -67,7 +73,17 @@ export function MatchesView({ onNavigate = () => {}, currentUser }) {
         ) : (
           <Button variant="secondary" onClick={() => onNavigate('login')}>Sign in to start a match</Button>
         )}
+        </div>
       </div>
+
+      {/* #224–#226 generators for a quick match: split players into teams, suggest a Playing XI, toss */}
+      {showGen && (
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
+          <TeamGenerator />
+          <XiGenerator />
+          <TossTool />
+        </div>
+      )}
 
       {myLive.length > 0 && (
         <div style={{ border: '1px solid #fecaca', backgroundColor: '#fef2f2', borderRadius: '0.75rem', padding: '0.75rem 1rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>

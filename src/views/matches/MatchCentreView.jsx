@@ -7,6 +7,7 @@ import { ArticleFeed } from '../news/newsShared.jsx';
 import { ArrowLeft, Coins, MapPin, Clock, Trophy, AlertCircle, CheckCircle, Share2, Copy, PauseCircle, PlayCircle } from 'lucide-react';
 import { LineupPanel } from '../tournaments/LineupPanel.jsx';
 import { ScoringPanel } from './ScoringPanel.jsx';
+import { FullScorecard } from './FullScorecard.jsx';
 import { CommentaryPanel } from './CommentaryPanel.jsx';
 import { MatchHistoryPanel } from './MatchHistoryPanel.jsx';
 import { MatchAnalysisPanel } from '../stats/MatchAnalysisPanel.jsx';
@@ -244,7 +245,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
 
       {/* Ball-by-ball scoring and scorecard (#7–#19) */}
       {m.status !== 'scheduled' && tab === 'live' && <ScoringPanel matchId={m.id} mode="live" refreshKey={refreshKey} onChanged={() => load()} />}
-      {m.status !== 'scheduled' && tab === 'scorecard' && <ScoringPanel matchId={m.id} mode="scorecard" refreshKey={refreshKey} />}
+      {m.status !== 'scheduled' && tab === 'scorecard' && <FullScorecard matchId={m.id} refreshKey={refreshKey} onNavigate={onNavigate} />}
       {m.status !== 'scheduled' && tab === 'commentary' && <CommentaryPanel matchId={m.id} live={m.status === 'live'} refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'analysis' && <MatchAnalysisPanel matchId={m.id} matchStatus={m.status} canScore={data.can_score} refreshKey={refreshKey} onNavigate={onNavigate} />}
       {m.status !== 'scheduled' && tab === 'rules' && <PlayingConditionsPanel matchId={m.id} />}

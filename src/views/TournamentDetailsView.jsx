@@ -17,7 +17,10 @@ import { AwardsPanel } from './brand/AwardsPanel.jsx';
 import { MerchPanel } from './brand/MerchPanel.jsx';
 import { SponsorStrip, AdSlot, trackOnce } from './brand/brandShared.jsx';
 import { ArticleFeed } from './news/newsShared.jsx';
+import { FixtureTool, XiGenerator, TeamGenerator } from './tools/ToolsView.jsx';
+import { AuctionsHome } from './tools/AuctionBoard.jsx';
 import {
+  Shuffle,
   Newspaper,
   Handshake,
   Camera,
@@ -464,6 +467,27 @@ export function TournamentDetailsView(props) {
 
         <button
           type="button"
+          onClick={() => setActiveTab('generators')}
+          style={{
+            padding: '0.65rem 1.25rem',
+            fontSize: '0.88rem',
+            fontWeight: 700,
+            border: 'none',
+            borderBottom: activeTab === 'generators' ? '3px solid var(--color-primary)' : '3px solid transparent',
+            backgroundColor: 'transparent',
+            color: activeTab === 'generators' ? 'var(--color-primary-dark)' : 'var(--color-text-muted)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem'
+          }}
+        >
+          <Shuffle size={15} />
+          <span>Generators</span>
+        </button>
+
+        <button
+          type="button"
           onClick={() => setActiveTab('news')}
           style={{
             padding: '0.65rem 1.25rem',
@@ -593,6 +617,16 @@ export function TournamentDetailsView(props) {
           {isOrganiser && <CampaignsPanel tournament={tournament} />}
           <AwardsPanel tournament={tournament} teams={teams.map((t) => ({ id: t.team_id || t.id, name: t.name }))} />
           <MerchPanel tournament={tournament} currentUser={currentUser} onNavigate={onNavigate} />
+        </div>
+      )}
+
+      {/* #225–#227 generators with this tournament's teams filled in */}
+      {activeTab === 'generators' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          <AuctionsHome currentUser={currentUser} onNavigate={onNavigate} tournamentId={tournament.id} canCreate={isOrganiser} />
+          <FixtureTool initialNames={teams.map((t) => t.name)} note={isOrganiser ? 'Try formats with your approved teams. The real fixtures are made on the Fixtures tab.' : 'Try fixture formats with the approved teams'} />
+          <XiGenerator />
+          <TeamGenerator />
         </div>
       )}
 

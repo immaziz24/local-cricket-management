@@ -15,6 +15,7 @@ import { MatchCentreView } from './views/matches/MatchCentreView.jsx';
 import { StatsView } from './views/stats/StatsView.jsx';
 import { LawsView } from './views/rules/LawsView.jsx';
 import { ToolsView } from './views/tools/ToolsView.jsx';
+import { AuctionBoard } from './views/tools/AuctionBoard.jsx';
 import { OfficialsView, OfficialProfileView } from './views/officials/OfficialsView.jsx';
 import { GroundsView } from './views/grounds/GroundsView.jsx';
 import { GroundDetailView } from './views/grounds/GroundDetailView.jsx';
@@ -46,6 +47,7 @@ export function App() {
   const [verifyCode, setVerifyCode] = useState(null);
   const [selectedArticleId, setSelectedArticleId] = useState(null);
   const [selectedQuizId, setSelectedQuizId] = useState(null);
+  const [selectedAuctionId, setSelectedAuctionId] = useState(null);
   const [liveCount, setLiveCount] = useState(0);
   const isSuperAdmin = currentUser?.role === 'Super-Admin';
   const isAdmin = isSuperAdmin || currentUser?.role === 'Admin';
@@ -79,6 +81,7 @@ export function App() {
     const sponsor = q.get('sponsor');
     const article = q.get('article');
     const quiz = q.get('quiz');
+    const auction = q.get('auction');
     if (matchId && /^[0-9a-f-]{36}$/i.test(matchId)) { setSelectedMatchId(matchId); setActiveTab('match-centre'); }
     else if (tournamentId && /^[0-9a-f-]{36}$/i.test(tournamentId)) { setSelectedTournamentId(tournamentId); setActiveTab('tournament-details'); }
     else if (site && /^[A-Za-z0-9-]{2,40}$/.test(site)) { setSiteRef(site); setActiveTab('tournament-site'); }
@@ -86,6 +89,7 @@ export function App() {
     else if (sponsor && /^[0-9a-f-]{36}$/i.test(sponsor)) { setSelectedSponsorId(sponsor); setActiveTab('sponsor'); }
     else if (article && /^[0-9a-f-]{36}$/i.test(article)) { setSelectedArticleId(article); setActiveTab('article'); }
     else if (quiz && /^[0-9a-f-]{36}$/i.test(quiz)) { setSelectedQuizId(quiz); setActiveTab('quiz'); }
+    else if (auction && /^[0-9a-f-]{36}$/i.test(auction)) { setSelectedAuctionId(auction); setActiveTab('auction'); }
   }, []);
   useEffect(() => {
     const url = activeTab === 'match-centre' && selectedMatchId ? `?match=${selectedMatchId}`
@@ -95,17 +99,18 @@ export function App() {
       : activeTab === 'sponsor' && selectedSponsorId ? `?sponsor=${selectedSponsorId}`
       : activeTab === 'article' && selectedArticleId ? `?article=${selectedArticleId}`
       : activeTab === 'quiz' && selectedQuizId ? `?quiz=${selectedQuizId}`
+      : activeTab === 'auction' && selectedAuctionId ? `?auction=${selectedAuctionId}`
       : window.location.pathname;
     if (`${window.location.pathname}${window.location.search}` !== (url.startsWith('?') ? `${window.location.pathname}${url}` : url)) {
       window.history.replaceState(null, '', url);
     }
-  }, [activeTab, selectedMatchId, selectedTournamentId, siteRef, verifyCode, selectedSponsorId, selectedArticleId, selectedQuizId]);
+  }, [activeTab, selectedMatchId, selectedTournamentId, siteRef, verifyCode, selectedSponsorId, selectedArticleId, selectedQuizId, selectedAuctionId]);
 
   // Browser tab title for each page
   useEffect(() => {
     const names = { dashboard: currentUser ? 'My cricket' : 'Live scores, tournaments & teams', matches: 'Matches', 'match-centre': 'Match', tournaments: 'Tournaments', 'tournament-details': 'Tournament',
       stats: 'Players & stats', community: 'Community', media: 'Live & Media', grounds: 'Grounds', officials: 'Umpires & scorers', laws: 'Laws & Rules', tools: 'Cricket tools',
-      teams: 'My teams', sponsors: 'Sponsors', sponsor: 'Sponsor', verify: 'Check a certificate', login: 'Log in', register: 'Register', about: 'About us', contact: 'Contact us', privacy: 'Privacy Policy', terms: 'Terms of Use', faq: 'FAQ', settings: 'Settings', admin: 'Admin panel', news: 'Cricket news', learn: 'Learn cricket', article: 'Article', quiz: 'Quiz' };
+      teams: 'My teams', sponsors: 'Sponsors', sponsor: 'Sponsor', verify: 'Check a certificate', login: 'Log in', register: 'Register', about: 'About us', contact: 'Contact us', privacy: 'Privacy Policy', terms: 'Terms of Use', faq: 'FAQ', settings: 'Settings', admin: 'Admin panel', news: 'Cricket news', learn: 'Learn cricket', article: 'Article', quiz: 'Quiz', auction: 'Player auction' };
     document.title = `${names[activeTab] || 'Local Cricket'} · Local Cricket`;
   }, [activeTab, currentUser]);
 
@@ -141,6 +146,9 @@ export function App() {
     }
     if (tab === 'quiz' && param) {
       setSelectedQuizId(param);
+    }
+    if (tab === 'auction' && param) {
+      setSelectedAuctionId(param);
     }
     if (tab === 'match-centre' && param) {
       setSelectedMatchId(param);
@@ -191,7 +199,8 @@ export function App() {
 
       {activeTab === 'laws' && <LawsView />}
 
-      {activeTab === 'tools' && <ToolsView />}
+      {activeTab === 'tools' && <ToolsView currentUser={currentUser} onNavigate={handleNavigate} />}
+      {activeTab === 'auction' && selectedAuctionId && <AuctionBoard key={selectedAuctionId} auctionId={selectedAuctionId} currentUser={currentUser} onNavigate={handleNavigate} />}
 
       {activeTab === 'officials' && <OfficialsView currentUser={currentUser} onNavigate={handleNavigate} />}
 
