@@ -120,6 +120,7 @@ export function App() {
       : activeTab === 'quiz' && selectedQuizId ? `?quiz=${selectedQuizId}`
       : activeTab === 'auction' && selectedAuctionId ? `?auction=${selectedAuctionId}`
       : idFor[activeTab] ? `?page=${activeTab}&id=${encodeURIComponent(idFor[activeTab])}`
+      : activeTab === 'tools' && new URLSearchParams(window.location.search).get('tool') ? `?page=tools&tool=${encodeURIComponent(new URLSearchParams(window.location.search).get('tool'))}`
       : activeTab && activeTab !== 'dashboard' ? `?page=${activeTab}`
       : window.location.pathname;
     const now = `${window.location.pathname}${window.location.search}`;
