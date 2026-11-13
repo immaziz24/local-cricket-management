@@ -170,6 +170,7 @@
 | 2026-11-13 | Codex | Installed Android v0.7.0 with a Score shortcut and the Android share sheet for match and tournament links. Flow checks pending. |
 | 2026-11-13 | Codex | Installed Android v0.8.0 with Play and Organise menus for #284 and #286. Owner flow checks pending. |
 | 2026-11-13 | Codex | #288–289: cached the match centre for offline reopening and retried pending scoring when the app returns to the foreground. Tablet checks and closed-app sync pending. |
+| 2026-11-13 | Codex | #295–296: added Bengali and Hindi Android navigation labels. Built and installed on the tablet. Website translations and owner checks pending. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |

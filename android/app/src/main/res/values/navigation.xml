@@ -1,0 +1,12 @@
+<resources>
+    <string name="nav_home">Home</string>
+    <string name="nav_matches">Matches</string>
+    <string name="nav_score">Score</string>
+    <string name="nav_play">Play</string>
+    <string name="nav_teams">My teams</string>
+    <string name="nav_stats">Players &amp; Stats</string>
+    <string name="nav_organise">Organise</string>
+    <string name="nav_tournaments">Tournaments</string>
+    <string name="nav_create_tournament">Create tournament</string>
+    <string name="nav_account">Account</string>
+</resources>

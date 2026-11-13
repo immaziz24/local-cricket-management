@@ -18,8 +18,8 @@
 | :--- | :---: |
 | ✅ Verified | 4 / 310 |
 | 🟩 Working (real database) | 179 / 310 |
-| 🟨 Built or prepared, awaiting verification | 111 / 310 |
-| ⬜ Not started | 16 / 310 |
+| 🟨 Built or prepared, awaiting verification | 113 / 310 |
+| ⬜ Not started | 14 / 310 |
 
 **Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5: Category H community & marketplace (17) Category I live streaming & media (12) Category J branding, sponsorship & promotion (11) and Category K news & learning (16) connected – Phase 5 complete (56/56 built).** Next: Phase 6, Category M.
 
@@ -38,7 +38,7 @@
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
 | 4 | F, G, Q | 37 | 0 | 0 | 37 | 0 |
 | 5 | H, I, J, K | 56 | 0 | 2 | 54 | 0 |
-| 6 | M, O, P | 49 | 16 | 29 | 0 | 4 |
+| 6 | M, O, P | 49 | 14 | 31 | 0 | 4 |
 
 ## 4. Supporting screens (not numbered features)
 
@@ -455,7 +455,7 @@
 | 292 | QR-based registration | 🟨 | Organiser can display a QR link to the tournament Teams tab. Scan and registration check pending. |
 | 293 | Camera integration | ⬜ | Android file picker groundwork installed. Direct camera capture pending. |
 | 294 | Ground finder using location | 🟨 | Android location permission wired to existing Near me search. Tablet check pending. |
-| 295 | Bengali language support | ⬜ |  |
-| 296 | Hindi language support | ⬜ |  |
+| 295 | Bengali language support | 🟨 | Android navigation follows Bengali device language. Web screens and owner check pending. |
+| 296 | Hindi language support | 🟨 | Android navigation follows Hindi device language. Web screens and owner check pending. |
 | 297 | Future iOS application | ⬜ |  |
 | 298 | Multi-language expansion | ⬜ |  |

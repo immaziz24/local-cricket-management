@@ -1,0 +1,12 @@
+<resources>
+    <string name="nav_home">होम</string>
+    <string name="nav_matches">मैच</string>
+    <string name="nav_score">स्कोर</string>
+    <string name="nav_play">खेलें</string>
+    <string name="nav_teams">मेरी टीमें</string>
+    <string name="nav_stats">खिलाड़ी और आँकड़े</string>
+    <string name="nav_organise">आयोजन</string>
+    <string name="nav_tournaments">टूर्नामेंट</string>
+    <string name="nav_create_tournament">टूर्नामेंट बनाएँ</string>
+    <string name="nav_account">खाता</string>
+</resources>

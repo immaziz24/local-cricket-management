@@ -1,0 +1,12 @@
+<resources>
+    <string name="nav_home">হোম</string>
+    <string name="nav_matches">ম্যাচ</string>
+    <string name="nav_score">স্কোর</string>
+    <string name="nav_play">খেলুন</string>
+    <string name="nav_teams">আমার দল</string>
+    <string name="nav_stats">খেলোয়াড় ও পরিসংখ্যান</string>
+    <string name="nav_organise">আয়োজন</string>
+    <string name="nav_tournaments">টুর্নামেন্ট</string>
+    <string name="nav_create_tournament">টুর্নামেন্ট তৈরি করুন</string>
+    <string name="nav_account">অ্যাকাউন্ট</string>
+</resources>

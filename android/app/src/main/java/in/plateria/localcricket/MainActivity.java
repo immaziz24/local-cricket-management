@@ -103,14 +103,14 @@ public final class MainActivity extends Activity {
         });
         layout.addView(website, new LinearLayout.LayoutParams(-1, 0, 1));
         LinearLayout navigation = new LinearLayout(this);
-        addDestination(navigation, "Home", "dashboard");
-        addDestination(navigation, "Matches", "matches");
-        addDestination(navigation, "Score", "matches#filter=mine");
-        addMenu(navigation, "Play", new String[]{"My teams", "Players & Stats"},
+        addDestination(navigation, getString(R.string.nav_home), "dashboard");
+        addDestination(navigation, getString(R.string.nav_matches), "matches");
+        addDestination(navigation, getString(R.string.nav_score), "matches#filter=mine");
+        addMenu(navigation, getString(R.string.nav_play), new String[]{getString(R.string.nav_teams), getString(R.string.nav_stats)},
                 new String[]{"teams", "stats"});
-        addMenu(navigation, "Organise", new String[]{"Tournaments", "Create tournament"},
+        addMenu(navigation, getString(R.string.nav_organise), new String[]{getString(R.string.nav_tournaments), getString(R.string.nav_create_tournament)},
                 new String[]{"tournaments", "create-tournament"});
-        addDestination(navigation, "Account", "settings");
+        addDestination(navigation, getString(R.string.nav_account), "settings");
         layout.addView(navigation);
         setContentView(layout);
         if (savedState == null || website.restoreState(savedState) == null) {
