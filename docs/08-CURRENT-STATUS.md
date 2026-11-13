@@ -151,6 +151,7 @@
 | 2026-11-13 | Codex | #271: added the default free membership to signed-in Settings. Owner browser check pending. |
 | 2026-11-13 | Codex | Owner reconfirmed batching. Updated the project instructions to group related features and browser checks. |
 | 2026-11-13 | Codex | #282–283: connected the admin revenue dashboard and member payment history. Applied migration and checked empty reports in Supabase. Payment capture integration and owner browser checks pending. |
+| 2026-11-13 | Codex | Started Android groundwork with a standalone web app manifest and existing logo. Android SDK, package and device test pending. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |

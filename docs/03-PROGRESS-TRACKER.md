@@ -444,7 +444,7 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 284 | Android player application | ⬜ |  |
+| 284 | Android player application | ⬜ | Added a web app manifest as groundwork. Android package and device verification pending. |
 | 285 | Android scorer application | ⬜ |  |
 | 286 | Android organiser application | ⬜ |  |
 | 287 | Push notifications | ⬜ |  |
