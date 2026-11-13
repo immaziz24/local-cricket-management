@@ -1085,6 +1085,12 @@ export const dataService = {
     return res.data;
   },
 
+  async listPaymentOffers() {
+    const { data, error } = await supabaseClient.listPaymentOffers();
+    if (error) throw new Error(error);
+    return data;
+  },
+
   async requestPaymentRefund(id, reason) {
     const { error } = await supabaseClient.requestPaymentRefund(id, reason);
     if (error) throw new Error(error);

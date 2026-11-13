@@ -1416,6 +1416,11 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async listPaymentOffers() {
+    const { data, error } = await supabase.rpc('list_payment_offers');
+    return { data, error: error ? friendlyError(error, 'membership offers') : null };
+  },
+
   async requestPaymentRefund(id, reason) {
     const { data, error } = await supabase.rpc('request_payment_refund', { p_id: id, p_reason: reason });
     return { data, error: error ? friendlyError(error, 'refund request') : null };

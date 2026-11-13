@@ -179,6 +179,7 @@
 | 2026-11-13 | Codex | Added the Cricnotch Safari home-screen icon and a shared menu language list. Native iOS and additional languages remain pending. |
 | 2026-11-13 | Codex | #298: added Marathi and Tamil to signed-in menus. Full page translations and owner check pending. |
 | 2026-11-13 | Codex | #278: deployed refund requests and added an admin review list. Gateway refunds and owner checks pending. |
+| 2026-11-13 | Codex | #272–273: deployed the paid-plan catalogue and added it to Membership settings. Pricing, checkout and activation pending. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |

@@ -54,6 +54,31 @@ function downloadReceipt(payment) {
   downloadBlob(new Blob([receipt], { type: 'text/plain;charset=utf-8' }), `cricnotch-receipt-${payment.id}.txt`);
 }
 
+function MembershipOffers() {
+  const [offers, setOffers] = useState(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    dataService.listPaymentOffers()
+      .then(rows => { if (active) setOffers(rows); })
+      .catch(err => { if (active) setError(err.message); });
+    return () => { active = false; };
+  }, []);
+
+  return (
+    <section className="info-box">
+      <h2>Paid plans</h2>
+      {error ? <p role="alert">{error}</p> : offers === null ? <p role="status">Loading plans…</p> :
+        offers.length === 0 ? <p>No paid plans are available yet.</p> : (
+          <ul>{offers.map(offer => <li key={offer.id}>
+            {offer.kind === 'premium' ? 'Premium membership' : 'Tournament organiser package'} · {offer.name} · {inr.format(offer.amount_paise / 100)}
+          </li>)}</ul>
+        )}
+    </section>
+  );
+}
+
 function PaymentReport({ revenue = false }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
@@ -155,7 +180,12 @@ export function SettingsView({ currentUser, onNavigate, language, onLanguageChan
       {tab === 'notifications' && <NotificationsManagementView />}
       {tab === 'verify' && <UserVerificationView />}
       {tab === 'report' && <UserReportingSuspensionView />}
-      {tab === 'membership' && <PaymentReport key={currentUser.id} />}
+      {tab === 'membership' && (
+        <React.Fragment key={currentUser.id}>
+          <MembershipOffers />
+          <PaymentReport />
+        </React.Fragment>
+      )}
     </div>
   );
 }
