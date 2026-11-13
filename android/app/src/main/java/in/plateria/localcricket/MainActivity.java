@@ -72,6 +72,7 @@ public final class MainActivity extends Activity {
         website.getSettings().setAllowFileAccess(false);
         website.getSettings().setAllowContentAccess(false);
         website.addJavascriptInterface(new LineupDownloads(), "CricnotchDownloads");
+        website.addJavascriptInterface(new LinkSharing(), "CricnotchSharing");
         website.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -103,6 +104,7 @@ public final class MainActivity extends Activity {
         LinearLayout navigation = new LinearLayout(this);
         addDestination(navigation, "Home", "dashboard");
         addDestination(navigation, "Matches", "matches");
+        addDestination(navigation, "Score", "matches#filter=mine");
         addDestination(navigation, "Tournaments", "tournaments");
         addDestination(navigation, "Account", "settings");
         layout.addView(navigation);
@@ -220,6 +222,21 @@ public final class MainActivity extends Activity {
             Toast.makeText(this, "Playing XI saved.", Toast.LENGTH_SHORT).show();
         } catch (IOException | SecurityException exception) {
             Toast.makeText(this, "Could not save the lineup.", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private final class LinkSharing {
+        @JavascriptInterface
+        public void shareLink(String title, String address) {
+            if (address == null || address.length() > 2048) return;
+            Uri link = Uri.parse(address);
+            if (!"https".equals(link.getScheme()) || !HOST.equals(link.getHost())
+                    || link.getUserInfo() != null || (link.getPort() != -1 && link.getPort() != 443)) return;
+            runOnUiThread(() -> {
+                Intent share = new Intent(Intent.ACTION_SEND).setType("text/plain")
+                        .putExtra(Intent.EXTRA_TEXT, link.toString());
+                startActivity(Intent.createChooser(share, title == null ? "Share" : title.substring(0, Math.min(title.length(), 100))));
+            });
         }
     }
 

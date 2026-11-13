@@ -106,6 +106,10 @@ export function TournamentDetailsView(props) {
   const shareTournament = async () => {
     const url = new URL(window.location.pathname, window.location.origin);
     url.searchParams.set('tournament', tournament.id);
+    if (window.CricnotchSharing?.shareLink) {
+      window.CricnotchSharing.shareLink(tournament.name, url.href);
+      return;
+    }
     if (navigator.share) {
       try {
         await navigator.share({ title: tournament.name, url: url.href });

@@ -79,6 +79,10 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
     catch { window.prompt('Copy this link', shareUrl); }
   };
   const nativeShare = async () => {
+    if (window.CricnotchSharing?.shareLink) {
+      window.CricnotchSharing.shareLink('Live cricket score', shareUrl);
+      return;
+    }
     if (navigator.share) { try { await navigator.share({ title: 'Live cricket score', text: shareText() }); } catch { /* cancelled */ } }
     else copyLink();
   };

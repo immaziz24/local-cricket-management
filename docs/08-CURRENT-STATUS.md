@@ -167,6 +167,7 @@
 | 2026-11-13 | Codex | #290: added Android link handling and installed the debug build. Public domain association and owner checks pending. |
 | 2026-11-13 | Codex | Added full commentary in Live recent balls and Android location permission for #294 Near me. Device checks pending. |
 | 2026-11-13 | Codex | Added tournament registration QR links, Android Home navigation and Android file picker support. Build and tablet installation passed. QR and file-selection checks pending. |
+| 2026-11-13 | Codex | Installed Android v0.7.0 with a Score shortcut and the Android share sheet for match and tournament links. Flow checks pending. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |

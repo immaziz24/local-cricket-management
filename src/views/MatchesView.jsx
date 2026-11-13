@@ -26,7 +26,9 @@ const STATUS = { live: ['danger', 'LIVE'], scheduled: ['warning', 'Upcoming'], c
 const when = (iso) => iso ? new Date(iso).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' }) : '';
 
 export function MatchesView({ onNavigate = () => {}, currentUser }) {
-  const [filter, setFilter] = useState('live');
+  const [filter, setFilter] = useState(() =>
+    currentUser && new URLSearchParams(window.location.hash.slice(1)).get('filter') === 'mine' ? 'mine' : 'live'
+  );
   const [list, setList] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
