@@ -158,6 +158,7 @@
 | 2026-11-13 | Codex | Rebranded the shared website and Android web screens to Cricnotch, with a matching logo and favicon. No numbered feature status changed. |
 | 2026-11-13 | Codex | Fixed authenticated landing, added account email in Settings, and added downloadable Playing XI graphics for web and Android. Owner flow checks pending. |
 | 2026-11-13 | Codex | Added 12 Playing XI graphic styles and one-tap Downloads saving on Android 10+ in v0.5.0. Owner download checks pending. |
+| 2026-11-13 | Codex | Built Cricnotch v0.6.0 with the owner-supplied cricket seam launcher logo. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |
