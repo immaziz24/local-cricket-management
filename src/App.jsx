@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { readLanguage } from './components/layout/navItems.js';
 import { AppLayout } from './components/layout/AppLayout.jsx';
 import { MatchesView } from './views/MatchesView.jsx';
 import { TournamentsView } from './views/TournamentsView.jsx';
@@ -34,6 +35,7 @@ import { QuizView } from './views/news/QuizViews.jsx';
 import { dataService, onAuthChange } from './services/dataService.js';
 
 export function App() {
+  const [language, setLanguage] = useState(readLanguage);
   const [activeTab, setActiveTab] = useState('dashboard');
   const [selectedTournamentId, setSelectedTournamentId] = useState('trn-001');
   const [currentUser, setCurrentUser] = useState(null);
@@ -219,7 +221,11 @@ export function App() {
       {activeTab === 'guidelines' && <GuidelinesView />}
       {activeTab === 'refunds' && <RefundView />}
       {activeTab === 'faq' && <FaqView onNavigate={handleNavigate} />}
-      {activeTab === 'settings' && <SettingsView currentUser={currentUser} onNavigate={handleNavigate} />}
+      {activeTab === 'settings' && <SettingsView currentUser={currentUser} onNavigate={handleNavigate}
+        language={language} onLanguageChange={(choice) => {
+          localStorage.setItem('cricnotch-language', choice);
+          setLanguage(choice);
+        }} />}
       {activeTab === 'admin' && <AdminPanelView currentUser={currentUser} isAdmin={isAdmin} isSuperAdmin={isSuperAdmin} onNavigate={handleNavigate} />}
 
       {activeTab === 'matches' && <MatchesView key={currentUser ? currentUser.id : 'guest'} currentUser={currentUser} onNavigate={handleNavigate} />}

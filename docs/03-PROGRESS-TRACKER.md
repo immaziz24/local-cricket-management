@@ -455,7 +455,7 @@
 | 292 | QR-based registration | 🟨 | Organiser can display a QR link to the tournament Teams tab. Scan and registration check pending. |
 | 293 | Camera integration | ⬜ | Android file picker groundwork installed. Direct camera capture pending. |
 | 294 | Ground finder using location | 🟨 | Android location permission wired to existing Near me search. Tablet check pending. |
-| 295 | Bengali language support | 🟨 | Android navigation and signed-in web menus use Bengali when the device or browser uses Bengali. Page translations and owner check pending. |
-| 296 | Hindi language support | 🟨 | Android navigation and signed-in web menus use Hindi when the device or browser uses Hindi. Page translations and owner check pending. |
+| 295 | Bengali language support | 🟨 | Android navigation and signed-in web menus use Bengali when the device or browser uses Bengali. Signed-in web menu language can be selected in Settings. Page translations and owner check pending. |
+| 296 | Hindi language support | 🟨 | Android navigation and signed-in web menus use Hindi when the device or browser uses Hindi. Signed-in web menu language can be selected in Settings. Page translations and owner check pending. |
 | 297 | Future iOS application | ⬜ |  |
 | 298 | Multi-language expansion | ⬜ |  |

@@ -76,13 +76,26 @@ function PaymentReport({ revenue = false }) {
   );
 }
 
-export function SettingsView({ currentUser, onNavigate }) {
+export function SettingsView({ currentUser, onNavigate, language, onLanguageChange }) {
   const [tab, setTab] = useState('account');
   if (!currentUser) return <div className="info-box">Please <button type="button" className="home-link" onClick={() => onNavigate('login')}>log in</button> to see your settings.</div>;
   return (
     <div>
       <PageTitle title="Settings & Privacy" sub="Control who sees your details, what you are notified about, and your account safety." />
-      <Tabs tab={tab} setTab={setTab} tabs={[['account', 'Account', Users], ['privacy', 'Privacy & security', Lock], ['notifications', 'Notifications', Bell], ['verify', 'Verification badge', BadgeCheck], ['report', 'Report a member', Flag], ['membership', 'Membership', BadgeCheck]]} />
+      <Tabs tab={tab} setTab={setTab} tabs={[['account', 'Account', Users], ['language', 'Language', FileText], ['privacy', 'Privacy & security', Lock], ['notifications', 'Notifications', Bell], ['verify', 'Verification badge', BadgeCheck], ['report', 'Report a member', Flag], ['membership', 'Membership', BadgeCheck]]} />
+      {tab === 'language' && (
+        <section className="info-box">
+          <h2>Language</h2>
+          <label>
+            Menu language{' '}
+            <select value={language} onChange={event => onLanguageChange(event.target.value)}>
+              <option value="en">English</option>
+              <option value="bn" lang="bn">বাংলা</option>
+              <option value="hi" lang="hi">हिन्दी</option>
+            </select>
+          </label>
+        </section>
+      )}
       {tab === 'account' && (
         <section className="info-box">
           <h2>Account</h2>
