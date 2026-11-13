@@ -20,7 +20,7 @@ export function ArticleView({ articleId, currentUser, onNavigate }) {
   const load = () => dataService.getArticle(articleId).then((r) => { if (!r) setErr('This article is not available.'); else setA(r); }).catch((e) => setErr(e.message));
   useEffect(() => { load(); }, [articleId, currentUser?.id]);
   useEffect(() => { if (a?.status === 'published') trackOnce('article', a.id, () => dataService.recordArticleView(a.id)); }, [a?.id, a?.status]);
-  useEffect(() => { if (a?.title) document.title = `${a.title} · Local Cricket`; }, [a?.title]);
+  useEffect(() => { if (a?.title) document.title = `${a.title} · Cricnotch`; }, [a?.title]);
 
   if (err) return <Card><span style={{ color: '#b91c1c' }}>{err}</span><div style={{ marginTop: 8 }}><button type="button" className="btn-mini" onClick={() => onNavigate('news')}>Go to News</button></div></Card>;
   if (!a) return <div style={{ color: '#94a3b8' }}>Loading article…</div>;

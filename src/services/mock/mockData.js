@@ -1,5 +1,5 @@
 /**
- * Mock Data Store for Local Cricket Management Platform
+ * Mock Data Store for Cricnotch
  * 
  * NOTE: Entities are designed to match future Supabase PostgreSQL table schemas:
  * - snake_case attribute names

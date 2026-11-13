@@ -53,7 +53,7 @@ export function QuizView({ quizId, currentUser, onNavigate }) {
   const [msg, setMsg] = useState(null);
   const load = () => dataService.getQuiz(quizId).then((r) => { if (!r) setErr('This quiz is not available.'); else { setQ(r); setAnswers(new Array(r.questions.length).fill(null)); } }).catch((e) => setErr(e.message));
   useEffect(() => { load(); }, [quizId, currentUser?.id]);
-  useEffect(() => { if (q?.title) document.title = `${q.title} · Quiz · Local Cricket`; }, [q?.title]);
+  useEffect(() => { if (q?.title) document.title = `${q.title} · Quiz · Cricnotch`; }, [q?.title]);
   if (err) return <Card><span style={{ color: '#b91c1c' }}>{err}</span></Card>;
   if (!q) return <div style={{ color: '#94a3b8' }}>Loading quiz…</div>;
   const isAdmin = currentUser?.role === 'Admin' || currentUser?.role === 'Super-Admin';
@@ -68,7 +68,7 @@ export function QuizView({ quizId, currentUser, onNavigate }) {
   const hide = async () => { try { const r = await dataService.moderateQuiz(q.id, q.status === 'hidden' ? 'published' : 'hidden'); setQ((x) => ({ ...x, status: r.status })); } catch (e) { setMsg(e.message); } };
   const share = async () => {
     const url = `${window.location.origin}${window.location.pathname}?quiz=${q.id}`;
-    const text = result ? `I scored ${result.score}/${result.total} in "${q.title}" on Local Cricket. Can you beat me?` : `Try the "${q.title}" cricket quiz on Local Cricket`;
+    const text = result ? `I scored ${result.score}/${result.total} in "${q.title}" on Cricnotch. Can you beat me?` : `Try the "${q.title}" cricket quiz on Cricnotch`;
     if (navigator.share) { try { await navigator.share({ title: q.title, text, url }); return; } catch { /* cancelled */ } }
     window.open(`https://wa.me/?text=${encodeURIComponent(`${text}\n${url}`)}`, '_blank', 'noopener');
   };

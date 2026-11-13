@@ -308,7 +308,7 @@ export function TeamDetailView({ teamId, onNavigate }) {
                 <span style={{ flex: 1 }}>
                   <strong>{lookup.display_name}</strong>
                   <span style={{ display: 'block', fontSize: '0.75rem', color: '#047857' }}>
-                    {lookup.is_registered ? 'Registered on Local Cricket' : 'Added earlier by another team (not registered yet)'}
+                    {lookup.is_registered ? 'Registered on Cricnotch' : 'Added earlier by another team (not registered yet)'}
                     {lookup.player_role ? ` · ${labelOf(ROLE_OPTIONS, lookup.player_role)}` : ''}
                   </span>
                 </span>

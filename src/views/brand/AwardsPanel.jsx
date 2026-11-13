@@ -184,7 +184,7 @@ export function CertificateVerifyView({ code, onNavigate }) {
         <Button variant="primary" onClick={() => check(q)}>Check</Button>
       </div>
       {c === undefined && <span style={{ color: '#64748b' }}>Checking…</span>}
-      {c === null && <Card><div style={{ display: 'flex', gap: 8, alignItems: 'center', color: '#b91c1c', fontWeight: 700 }}><ShieldX size={20} /> No certificate with this code was issued on Local Cricket.</div></Card>}
+      {c === null && <Card><div style={{ display: 'flex', gap: 8, alignItems: 'center', color: '#b91c1c', fontWeight: 700 }}><ShieldX size={20} /> No certificate with this code was issued on Cricnotch.</div></Card>}
       {c && (
         <Card>
           <div style={{ display: 'flex', gap: 8, alignItems: 'center', fontWeight: 800, color: c.revoked_at ? '#b91c1c' : '#065f46', marginBottom: '0.6rem' }}>

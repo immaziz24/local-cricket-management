@@ -74,7 +74,7 @@ export function SecurityPrivacyView() {
   };
 
   const signOutAll = async () => {
-    if (!window.confirm('Sign out of Local Cricket on all your devices (phone, laptop, etc.)?')) return;
+    if (!window.confirm('Sign out of Cricnotch on all your devices (phone, laptop, etc.)?')) return;
     setBusy(true);
     try {
       await dataService.signOutEverywhere();
@@ -116,7 +116,7 @@ export function SecurityPrivacyView() {
               <Toggle label="Show my phone number" hint="Visible to members who can see your profile" checked={settings.show_phone} onChange={(v) => set('show_phone', v)} />
               <Toggle label="Show my email address" checked={settings.show_email} onChange={(v) => set('show_email', v)} />
               <Toggle label="Allow messages from other members" checked={settings.allow_messages} onChange={(v) => set('allow_messages', v)} />
-              <Toggle label="Help improve Local Cricket" hint="Share anonymous usage statistics" checked={settings.analytics_opt_in} onChange={(v) => set('analytics_opt_in', v)} />
+              <Toggle label="Help improve Cricnotch" hint="Share anonymous usage statistics" checked={settings.analytics_opt_in} onChange={(v) => set('analytics_opt_in', v)} />
             </div>
             <div style={{ marginTop: '0.85rem' }}>
               <Button variant="primary" onClick={save} disabled={busy} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}><Save size={14} /> Save privacy settings</Button>
@@ -125,7 +125,7 @@ export function SecurityPrivacyView() {
 
           <Card title="My data">
             <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: '#64748b' }}>
-              Download everything Local Cricket stores about you (your right under India's DPDP Act).
+              Download everything Cricnotch stores about you (your right under India's DPDP Act).
             </p>
             <Button variant="secondary" onClick={downloadMyData} disabled={busy} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}><Download size={14} /> Download my data</Button>
           </Card>

@@ -139,7 +139,7 @@ export function PasswordRecoveryView(props) {
           Password Recovery
         </h1>
         <p style={{ fontSize: '0.875rem', color: 'var(--text-muted, #64748b)', margin: 0 }}>
-          Recover access to your Local Cricket account using your verified email or mobile number.
+          Recover access to your Cricnotch account using your verified email or mobile number.
         </p>
       </div>
 

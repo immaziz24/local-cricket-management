@@ -283,7 +283,7 @@ export function RegisterView(props) {
         <span>
           {authBackend === 'supabase' ? (
             <>
-              <strong>Real account:</strong> Your account is saved in the Local Cricket database. We will email you a link to confirm your email address.
+              <strong>Real account:</strong> Your account is saved in the Cricnotch database. We will email you a link to confirm your email address.
             </>
           ) : (
             <>

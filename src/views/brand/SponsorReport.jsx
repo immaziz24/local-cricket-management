@@ -76,7 +76,7 @@ export function SponsorReport({ sponsorshipId, onClose }) {
                 <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.86rem' }}>{r.awards.map((a) => <li key={a.id}><strong>{a.label}</strong>: {a.player?.name || a.team?.name}</li>)}</ul>
               </>
             )}
-            <p className="muted" style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '1rem' }}>Views and clicks are counted by the Local Cricket website (one view per page visit). Figures are live and keep growing until the tournament ends.</p>
+            <p className="muted" style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '1rem' }}>Views and clicks are counted by the Cricnotch website (one view per page visit). Figures are live and keep growing until the tournament ends.</p>
           </div>
         )}
       </div>

@@ -1,13 +1,13 @@
 {
   "id": "/",
-  "name": "Local Cricket",
-  "short_name": "Local Cricket",
+  "name": "Cricnotch",
+  "short_name": "Cricnotch",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
   "theme_color": "#0B132B",
   "background_color": "#ffffff",
   "icons": [
-    { "src": "/cricket-ball.svg", "sizes": "any", "type": "image/svg+xml" }
+    { "src": "/cricnotch.svg", "sizes": "any", "type": "image/svg+xml" }
   ]
 }

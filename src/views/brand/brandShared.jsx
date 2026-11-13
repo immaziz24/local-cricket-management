@@ -86,7 +86,7 @@ export function QrCard({ url, title, subtitle, size = 180 }) {
     drawQr(ctx, url, 150, 230, 700, { margin: 2 });
     ctx.fillStyle = '#0f172a'; ctx.font = '700 40px system-ui, sans-serif'; ctx.fillText(subtitle || 'Scan with your phone camera', W / 2, 1010);
     ctx.fillStyle = '#475569'; ctx.font = '500 28px system-ui, sans-serif'; wrapText(ctx, url.replace(/^https?:\/\//, ''), W / 2, 1070, W - 120, 36, 2);
-    ctx.fillStyle = '#059669'; ctx.font = '700 30px system-ui, sans-serif'; ctx.fillText('Local Cricket', W / 2, 1190);
+    ctx.fillStyle = '#059669'; ctx.font = '700 30px system-ui, sans-serif'; ctx.fillText('Cricnotch', W / 2, 1190);
     return new Promise((res) => c.toBlob(res, 'image/png'));
   };
   const download = async () => downloadBlob(await png(), `qr-${(title || 'code').toLowerCase().replace(/[^a-z0-9]+/g, '-')}.png`);
@@ -130,7 +130,7 @@ export async function drawCertificate(cert) {
   const logo = await loadImage(cert.tournament?.logo_url);
   if (logo) { const s = 110 / Math.max(logo.width, logo.height); ctx.drawImage(logo, 110, 82, logo.width * s, logo.height * s); }
   ctx.textAlign = 'center'; ctx.fillStyle = '#fff';
-  const head = cert.tournament?.name || cert.match?.title || 'Local Cricket';
+  const head = cert.tournament?.name || cert.match?.title || 'Cricnotch';
   fitText(ctx, head, W - 500, 54, 800); ctx.fillText(head, W / 2, 150);
   ctx.font = '600 24px system-ui, sans-serif'; ctx.fillStyle = 'rgba(255,255,255,0.9)';
   const when = cert.tournament ? [fmtDate(cert.tournament.start_date), cert.tournament.end_date && cert.tournament.end_date !== cert.tournament.start_date ? fmtDate(cert.tournament.end_date) : null].filter(Boolean).join(' – ') : fmtDate(cert.match?.date);

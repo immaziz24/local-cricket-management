@@ -9,7 +9,7 @@ export function Sidebar({ activeTab, onSelectTab, isCollapsed, onToggleCollapse,
   return (
     <aside className="desktop-sidebar app-sidebar" style={{ width: isCollapsed ? 76 : 256 }}>
       <div className="app-sidebar-brand">
-        {isCollapsed ? <button type="button" className="site-logo" onClick={() => onSelectTab('dashboard')} aria-label="Home"><span className="site-logo-mark"><img src="/cricket-ball.svg" alt="" /></span></button>
+        {isCollapsed ? <button type="button" className="site-logo" onClick={() => onSelectTab('dashboard')} aria-label="Home"><span className="site-logo-mark"><img src="/cricnotch.svg" alt="" /></span></button>
           : <Logo dark onClick={() => onSelectTab('dashboard')} />}
       </div>
       <nav className="app-sidebar-nav" aria-label="Member menu">

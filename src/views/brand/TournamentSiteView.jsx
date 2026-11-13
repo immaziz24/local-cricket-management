@@ -59,7 +59,7 @@ export function TournamentSiteView({ refCode, currentUser, onNavigate }) {
       dataService.listMerch(id).then((m) => setMerchCount((m?.items || []).length)).catch(() => {});
     }).catch(() => setD(null));
   }, [refCode]);
-  useEffect(() => { if (d?.tournament) document.title = `${d.tournament.name} · Local Cricket`; }, [d]);
+  useEffect(() => { if (d?.tournament) document.title = `${d.tournament.name} · Cricnotch`; }, [d]);
 
   if (d === undefined) return <div style={{ padding: '4rem 1rem', textAlign: 'center', color: '#64748b' }}>Loading tournament…</div>;
   if (d === null) return <div style={{ padding: '4rem 1rem', textAlign: 'center' }}><h2>Tournament not found</h2><p style={{ color: '#64748b' }}>Check the code or link.</p><button type="button" className="hdr-btn-primary" onClick={() => onNavigate('tournaments')}>See all tournaments</button></div>;
@@ -196,7 +196,7 @@ export function TournamentSiteView({ refCode, currentUser, onNavigate }) {
       <Section id="about" title="About & contact">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem' }}>
           <div style={{ fontSize: '0.92rem', color: '#334155', whiteSpace: 'pre-wrap' }}>
-            {site.about || t.rules_summary || `${t.name} is organised by ${t.organizer_name || 'the organiser'} on Local Cricket.`}
+            {site.about || t.rules_summary || `${t.name} is organised by ${t.organizer_name || 'the organiser'} on Cricnotch.`}
           </div>
           <div style={{ background: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.8rem', padding: '0.9rem', display: 'flex', flexDirection: 'column', gap: '0.45rem', fontSize: '0.9rem' }}>
             <strong>{site.contact_name || t.organizer_name || 'Organiser'}</strong>

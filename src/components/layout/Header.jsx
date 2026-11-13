@@ -31,7 +31,7 @@ export function Header(props) {
 
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{ fontWeight: 800, fontFamily: 'var(--font-display)', fontSize: '1.05rem', color: 'var(--color-bg-sidebar)' }}>
-            Local Cricket
+            Cricnotch
           </span>
           <span style={{ fontSize: '0.8rem', color: 'var(--color-text-muted)', display: 'none' }}>
             | Management Platform

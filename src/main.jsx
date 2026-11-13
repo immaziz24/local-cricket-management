@@ -36,7 +36,7 @@ if (import.meta.env.PROD) {
       const bar = document.createElement('div');
       bar.setAttribute('role', 'status');
       bar.style.cssText = 'position:fixed;left:50%;bottom:16px;transform:translateX(-50%);z-index:2000;background:#065f46;color:#fff;padding:10px 14px;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.3);display:flex;gap:12px;align-items:center;font:600 14px system-ui,sans-serif;max-width:92vw';
-      bar.innerHTML = '<span>A new version of Local Cricket is ready.</span>';
+      bar.innerHTML = '<span>A new version of Cricnotch is ready.</span>';
       const btn = document.createElement('button');
       btn.textContent = 'Refresh';
       btn.style.cssText = 'background:#fff;color:#065f46;border:0;border-radius:8px;padding:6px 12px;font-weight:800;cursor:pointer';

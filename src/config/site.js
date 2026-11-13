@@ -1,7 +1,7 @@
 // Site-wide details used by the header, footer and the About / Contact pages.
 // Fill in the empty values when ready – anything left empty is simply not shown.
 export const SITE = {
-  name: 'Local Cricket',
+  name: 'Cricnotch',
   tagline: 'Scores, tournaments and teams for local cricket',
   domain: 'localcricket.plateria.in',
   email: '',          // e.g. 'hello@localcricket.in'

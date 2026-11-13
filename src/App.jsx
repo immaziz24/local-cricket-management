@@ -137,7 +137,7 @@ export function App() {
     const names = { dashboard: currentUser ? 'My cricket' : 'Live scores, tournaments & teams', matches: 'Matches', 'match-centre': 'Match', tournaments: 'Tournaments', 'tournament-details': 'Tournament',
       stats: 'Players & stats', community: 'Community', media: 'Live & Media', grounds: 'Grounds', officials: 'Umpires & scorers', laws: 'Laws & Rules', tools: 'Cricket tools',
       teams: 'My teams', sponsors: 'Sponsors', sponsor: 'Sponsor', verify: 'Check a certificate', login: 'Log in', register: 'Register', about: 'About us', contact: 'Contact us', privacy: 'Privacy Policy', terms: 'Terms of Use', faq: 'FAQ', settings: 'Settings', admin: 'Admin panel', news: 'Cricket news', learn: 'Learn cricket', article: 'Article', quiz: 'Quiz', auction: 'Player auction' };
-    document.title = `${names[activeTab] || 'Local Cricket'} · Local Cricket`;
+    document.title = `${names[activeTab] || 'Cricnotch'} · Cricnotch`;
   }, [activeTab, currentUser]);
 
   const handleNavigate = (tab, param = null) => {

@@ -1,4 +1,4 @@
-# Progress Tracker: Local Cricket Management Platform
+# Progress Tracker: Cricnotch
 
 > **Last Updated:** 2026-11-13
 > **Feature list:** see `01-MASTER-BLUEPRINT.md` (310 features, A–Q, 6 phases)  

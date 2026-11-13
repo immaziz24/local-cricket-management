@@ -13,7 +13,7 @@ export function EmailCodeBox({ email, onVerified }) {
   const verify = async (e) => {
     e.preventDefault();
     setBusy(true); setMsg(null);
-    try { const r = await dataService.verifySignupCode({ email, code }); setMsg({ ok: true, text: 'Email confirmed. Welcome to Local Cricket!' }); onVerified && onVerified(r); }
+    try { const r = await dataService.verifySignupCode({ email, code }); setMsg({ ok: true, text: 'Email confirmed. Welcome to Cricnotch!' }); onVerified && onVerified(r); }
     catch (err) { setMsg({ ok: false, text: err.message }); }
     finally { setBusy(false); }
   };

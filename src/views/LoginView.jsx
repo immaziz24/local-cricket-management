@@ -188,7 +188,7 @@ export function LoginView(props) {
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
           <span style={{ fontSize: '0.78rem', color: '#94A3B8' }}>
-            Welcome back to Local Cricket
+            Welcome back to Cricnotch
           </span>
         </div>
         <h1 style={{ fontSize: '1.5rem', color: '#FFFFFF', marginBottom: '0.25rem' }}>
@@ -219,7 +219,7 @@ export function LoginView(props) {
         <span>
           {authBackend === 'supabase' ? (
             <>
-              <strong>Secure sign-in:</strong> Accounts are stored in the Local Cricket database. Sign in with the email address you registered with.
+              <strong>Secure sign-in:</strong> Accounts are stored in the Cricnotch database. Sign in with the email address you registered with.
             </>
           ) : (
             <>

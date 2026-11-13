@@ -112,7 +112,7 @@ export function ArticleEditor({ article = null, kinds = ['news'], defaults = {},
             )}
             {learning && <label style={lbl}>Level<select value={f.level} onChange={set('level')} style={inp}><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option><option value="advanced">Advanced</option></select></label>}
             {!learning && <label style={lbl}>Town or city (optional)<input value={f.city} onChange={set('city')} maxLength={80} style={inp} /></label>}
-            {isAdmin && <label style={lbl}>Byline (optional)<input value={f.byline} onChange={set('byline')} maxLength={80} placeholder="e.g. Local Cricket Coaching Desk" style={inp} /></label>}
+            {isAdmin && <label style={lbl}>Byline (optional)<input value={f.byline} onChange={set('byline')} maxLength={80} placeholder="e.g. Cricnotch Coaching Desk" style={inp} /></label>}
           </div>
           {(f.kind === 'preview' || f.kind === 'match_report') && matchId && (
             <button type="button" disabled={busy} onClick={autoDraft} className="btn-mini" style={{ alignSelf: 'flex-start', display: 'inline-flex', alignItems: 'center', gap: 4 }}>

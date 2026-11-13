@@ -126,7 +126,7 @@ export function ContactMessagesPanel() {
             <select value={m.status} onChange={(e) => set(m.id, e.target.value)} style={{ padding: '0.3rem 0.5rem', borderRadius: 6, border: '1px solid #cbd5e1', fontSize: '0.8rem' }}>
               {['new', 'read', 'replied', 'closed'].map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
-            {/@/.test(m.contact) && <a href={`mailto:${m.contact}?subject=${encodeURIComponent('Re: your message to Local Cricket')}`} style={{ fontSize: '0.8rem', color: '#047857', fontWeight: 700 }}>Reply by email</a>}
+            {/@/.test(m.contact) && <a href={`mailto:${m.contact}?subject=${encodeURIComponent('Re: your message to Cricnotch')}`} style={{ fontSize: '0.8rem', color: '#047857', fontWeight: 700 }}>Reply by email</a>}
             {/^\+?[\d\s-]{8,}$/.test(m.contact) && <a href={`https://wa.me/${m.contact.replace(/\D/g, '').replace(/^(\d{10})$/, '91$1')}`} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.8rem', color: '#047857', fontWeight: 700 }}>Reply on WhatsApp</a>}
           </div>
         </div>

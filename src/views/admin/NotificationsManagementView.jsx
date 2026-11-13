@@ -89,7 +89,7 @@ export function NotificationsManagementView() {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
       <div style={{ padding: '1.25rem 1.5rem', backgroundColor: '#fff', border: '1px solid #e2e8f0', borderRadius: '0.75rem' }}>
         <h2 style={{ fontSize: '1.5rem', fontWeight: 800, color: '#0f172a', margin: '0.35rem 0 0.25rem' }}>Notifications</h2>
-        <p style={{ fontSize: '0.825rem', color: '#64748b', margin: 0 }}>Your messages from Local Cricket, and how you want to receive them.</p>
+        <p style={{ fontSize: '0.825rem', color: '#64748b', margin: 0 }}>Your messages from Cricnotch, and how you want to receive them.</p>
       </div>
 
       <Notice msg={msg} />

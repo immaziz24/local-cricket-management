@@ -95,7 +95,7 @@ function PasteSummary({ text }) {
   );
 }
 
-/** One player: ID / Local Cricket ID, name, role, batting hand and position, bowling style, base price. */
+/** One player: ID / Cricnotch ID, name, role, batting hand and position, bowling style, base price. */
 function PlayerForm({ player = null, basePrice, onSave, onCancel, busy }) {
   const [f, setF] = useState(() => ({ number: player?.number ?? '', player_code: player?.player_code || '', name: player?.name || '', role: player?.role || '',
     batting_style: player?.batting_style || '', batting_position: player?.batting_position || '', bowling_style: player?.bowling_style || '',
@@ -117,7 +117,7 @@ function PlayerForm({ player = null, basePrice, onSave, onCancel, busy }) {
         <label style={lbl}>Base price<input style={inp} type="number" min={1} value={f.base_price} onChange={set('base_price')} placeholder={`Default ${money(basePrice)}`} /></label>
         <label style={{ ...lbl, gridColumn: 'span 2' }}>Note<input style={inp} value={f.note} onChange={set('note')} placeholder="Optional" maxLength={200} /></label>
       </div>
-      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Type a Local Cricket player ID (LC-…, shown on their profile) and their name, role, batting and bowling are filled in for you.</span>
+      <span style={{ fontSize: '0.72rem', color: '#64748b' }}>Type a Cricnotch player ID (LC-…, shown on their profile) and their name, role, batting and bowling are filled in for you.</span>
       <div style={{ display: 'flex', gap: '0.45rem' }}>
         <Button variant="primary" size="sm" disabled={busy || !ok} onClick={() => onSave({ ...f, number: f.number === '' ? undefined : String(f.number), base_price: f.base_price === '' ? undefined : String(f.base_price) })}>{player ? 'Save player' : 'Add player'}</Button>
         {onCancel && <Button variant="secondary" size="sm" onClick={onCancel}>Cancel</Button>}
@@ -252,7 +252,7 @@ export function AuctionBoard({ auctionId, currentUser, onNavigate }) {
   const load = () => dataService.getAuction(auctionId).then((r) => { if (!r) setErr('Auction not found.'); else { setA(r); setErr(null); } }).catch((e) => setErr(e.message));
   useEffect(() => { load(); }, [auctionId, currentUser?.id]);
   useEffect(() => { if (a?.can_run) return undefined; const t = setInterval(load, 5000); return () => clearInterval(t); }, [a?.can_run, auctionId]);
-  useEffect(() => { if (a?.name) document.title = `${a.name} · Auction · Local Cricket`; }, [a?.name]);
+  useEffect(() => { if (a?.name) document.title = `${a.name} · Auction · Cricnotch`; }, [a?.name]);
 
   const cur = useMemo(() => a?.players.find((p) => p.id === (pick || a.current_player_id)) || null, [a, pick]);
   useEffect(() => { if (cur) setPrice(String(cur.base_price)); }, [cur?.id]);

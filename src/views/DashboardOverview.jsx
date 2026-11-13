@@ -53,7 +53,7 @@ export function DashboardOverview(props) {
               <span>Phase 1 In Progress · Accounts are live</span>
             </div>
             <h1 style={{ fontSize: '1.6rem', color: '#FFFFFF', marginBottom: '0.35rem' }}>
-              Local Cricket Management Platform
+              Cricnotch
             </h1>
             <p style={{ color: '#CBD5E1', fontSize: '0.875rem', maxWidth: '640px' }}>
               Real accounts, sign-in and the Super-Admin console run on the live database. Tournaments, matches and the numbers below are still sample data until their phases are built.

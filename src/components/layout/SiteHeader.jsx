@@ -31,7 +31,7 @@ export const MORE_NAV = [
 export function Logo({ onClick, dark = false, small = false }) {
   return (
     <button type="button" onClick={onClick} className="site-logo" aria-label={`${SITE.name} home`}>
-      <span className="site-logo-mark" style={small ? { width: 32, height: 32 } : undefined}><img src="/cricket-ball.svg" alt="" /></span>
+      <span className="site-logo-mark" style={small ? { width: 32, height: 32 } : undefined}><img src="/cricnotch.svg" alt="" /></span>
       <span className="site-logo-text">
         <span className="site-logo-name" style={{ color: dark ? '#fff' : undefined }}>{SITE.name}</span>
         {!small && <span className="site-logo-tag" style={{ color: dark ? '#86efac' : undefined }}>Grassroots cricket, scored live</span>}
