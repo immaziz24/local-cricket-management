@@ -154,6 +154,7 @@
 | 2026-11-13 | Codex | Started Android groundwork with a standalone web app manifest and existing logo. Android SDK, package and device test pending. |
 | 2026-11-13 | Codex | Added the Android project and built a debug APK against the live website. The connected tablet rejected USB installation with INSTALL_FAILED_USER_RESTRICTED. Device checks pending. |
 | 2026-11-13 | Codex | Installed and launched Android test build v0.2.0 on the tablet. Added Matches, Tournaments and Account navigation with system bar spacing. Role flow checks pending. |
+| 2026-11-13 | Codex | Renamed the Android app Cricnotch and added a custom launcher icon. Built, installed and launched v0.3.0 on the tablet. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |

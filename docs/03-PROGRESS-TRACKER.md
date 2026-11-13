@@ -444,7 +444,7 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 284 | Android player application | ⬜ | Debug APK builds and loads the existing website through Android WebView. Debug v0.2.0 installed and launched on the tablet. Player flow verification pending. |
+| 284 | Android player application | ⬜ | Debug APK builds and loads the existing website through Android WebView. Cricnotch debug v0.3.0 installed and launched on the tablet. Player flow verification pending. |
 | 285 | Android scorer application | ⬜ |  |
 | 286 | Android organiser application | ⬜ |  |
 | 287 | Push notifications | ⬜ |  |
