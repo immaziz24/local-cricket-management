@@ -43,7 +43,13 @@ export function SettingsView({ currentUser, onNavigate }) {
   return (
     <div>
       <PageTitle title="Settings & Privacy" sub="Control who sees your details, what you are notified about, and your account safety." />
-      <Tabs tab={tab} setTab={setTab} tabs={[['privacy', 'Privacy & security', Lock], ['notifications', 'Notifications', Bell], ['verify', 'Verification badge', BadgeCheck], ['report', 'Report a member', Flag]]} />
+      <Tabs tab={tab} setTab={setTab} tabs={[['privacy', 'Privacy & security', Lock], ['notifications', 'Notifications', Bell], ['verify', 'Verification badge', BadgeCheck], ['report', 'Report a member', Flag], ['membership', 'Membership', BadgeCheck]]} />
+      {tab === 'membership' && (
+        <section className="info-box" aria-labelledby="membership-heading">
+          <h2 id="membership-heading">Free membership</h2>
+          <p>Your account includes free membership. You can create teams, tournaments and matches, and score matches you create.</p>
+        </section>
+      )}
       {tab === 'privacy' && <SecurityPrivacyView />}
       {tab === 'notifications' && <NotificationsManagementView />}
       {tab === 'verify' && <UserVerificationView />}

@@ -148,6 +148,7 @@
 | 2026-11-13 | Codex | Phase 6 #236: published the Women's T20 International rules article in Supabase. Owner confirmed the article works. |
 | 2026-11-13 | Codex | Owner requested batching. Published and confirmed all 17 remaining Category M reference articles (#237–253) in Supabase. Owner browser checks pending. |
 | 2026-11-13 | Codex | #291: added sharing to the main tournament page. Existing match sharing uses the same direct-link approach. Owner browser check and Android integration pending. |
+| 2026-11-13 | Codex | #271: added the default free membership to signed-in Settings. Owner browser check pending. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |
