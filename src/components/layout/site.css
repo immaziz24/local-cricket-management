@@ -101,7 +101,13 @@
   .site-logo-name { font-size: 0.95rem; }
   .hdr-icon-btn { padding: 0.35rem; }
 }
-@media (max-width: 380px) { .is-public .hdr-btn-ghost { display: none; } }
+.hdr-status-row { display: flex; align-items: center; gap: 0.5rem; padding: 0 1rem 0.35rem; }
+.hdr-live.hdr-live-mobile { display: none; }
+@media (max-width: 480px) {
+  .hdr-live.hdr-live-main { display: none; }
+  .hdr-live.hdr-live-mobile { display: inline-flex; flex-shrink: 0; white-space: nowrap; }
+  .hdr-status-row { padding-inline: 0.6rem; }
+}
 @media (max-width: 400px) { .site-header .site-logo-text { display: none; } }
 
 /* ---------- search ---------- */

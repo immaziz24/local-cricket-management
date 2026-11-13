@@ -132,7 +132,7 @@ export function SiteHeader({ currentUser, isAdmin, liveMatchCount = 0, activeTab
         <div className="hdr-right">
           <button type="button" className="hdr-icon-btn hdr-search-toggle" onClick={() => setMobileSearch(true)} aria-label="Search"><Search size={19} /></button>
           {liveMatchCount > 0 && (
-            <button type="button" className="hdr-live" onClick={() => go('matches')} title="Live matches">
+            <button type="button" className="hdr-live hdr-live-main" onClick={() => go('matches')} title="Live matches">
               <span className="hdr-live-dot" />{liveMatchCount}<span className="hdr-live-text">&nbsp;Live</span>
             </button>
           )}
@@ -167,7 +167,14 @@ export function SiteHeader({ currentUser, isAdmin, liveMatchCount = 0, activeTab
         </div>
       </div>
 
-      <HeaderClock />
+      <div className="hdr-status-row">
+        {liveMatchCount > 0 && (
+          <button type="button" className="hdr-live hdr-live-mobile" onClick={() => go('matches')} aria-label={`${liveMatchCount} live matches`}>
+            <span className="hdr-live-dot" />{liveMatchCount} Live
+          </button>
+        )}
+        <HeaderClock />
+      </div>
       {mobileSearch && (
         <div className="hdr-mobile-search">
           <GlobalSearch onNavigate={go} compact autoFocus onDone={() => setMobileSearch(false)} />
@@ -192,7 +199,7 @@ function HeaderClock() {
 
   return (
     <time dateTime={now.toISOString()} style={{
-      display: 'block', textAlign: 'end', padding: '0 1rem 0.35rem',
+      display: 'block', textAlign: 'end', marginInlineStart: 'auto',
       color: '#475569', fontSize: '0.78rem', fontVariantNumeric: 'tabular-nums'
     }}>
       {clockFormat.format(now)}
