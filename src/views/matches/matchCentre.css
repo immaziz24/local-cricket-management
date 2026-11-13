@@ -1,0 +1,47 @@
+.match-hero {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(0.85rem, 3vw, 1.6rem);
+  border: 1px solid #244459;
+  border-radius: 1rem;
+  background: linear-gradient(130deg, #0c192b, #104139);
+  color: #f8fafc;
+  box-shadow: 0 6px 18px #1020321a;
+}
+
+.match-tabs {
+  display: flex;
+  overflow-x: auto;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.7rem;
+}
+
+.match-tabs button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  min-height: 44px;
+}
+
+.match-tabs button[aria-pressed="true"] {
+  background: #ecfdf5 !important;
+}
+
+.match-live-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88rem;
+  font-variant-numeric: tabular-nums;
+}
+
+.match-live-table :is(th, td):not(:first-child) {
+  padding-inline: 0.25rem;
+  white-space: nowrap;
+}
+
+@media (max-width: 480px) {
+  .match-live-table { font-size: 0.72rem; }
+  .match-live-table thead tr { font-size: 0.66rem !important; }
+  .match-live-table :is(th, td):not(:first-child) { padding-inline: 0.14rem !important; }
+  .match-live-table :is(th, td):first-child { overflow-wrap: anywhere; }
+}

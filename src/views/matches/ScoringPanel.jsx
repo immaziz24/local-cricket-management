@@ -337,7 +337,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
               <>
                 {/* Batters at the crease – full details */}
                 <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', minWidth: 420 }}>
+                  <table className="match-live-table">
                     <thead>
                       <tr style={{ backgroundColor: '#f8fafc', color: '#64748b', fontSize: '0.75rem', textAlign: 'right' }}>
                         <th style={{ textAlign: 'left', padding: '0.4rem 0.6rem' }}>Batter</th><th>R</th><th>B</th><th>4s</th><th>6s</th><th>SR</th><th style={{ paddingRight: '0.6rem' }} title="Minutes at the crease">M</th>
@@ -360,7 +360,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
 
                 {/* Bowling – current bowler and the bowler of the last over, full details */}
                 <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', overflowX: 'auto' }}>
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.88rem', minWidth: 420 }}>
+                  <table className="match-live-table">
                     <thead>
                       <tr style={{ backgroundColor: '#f8fafc', color: '#64748b', fontSize: '0.75rem', textAlign: 'right' }}>
                         <th style={{ textAlign: 'left', padding: '0.4rem 0.6rem' }}>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th><th>Wd</th><th>Nb</th><th style={{ paddingRight: '0.6rem' }}>Econ</th>
@@ -596,8 +596,8 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.3rem', fontSize: '0.84rem' }}>
             {cur.recent.map((b) => (
               <React.Fragment key={b.seq}>
-              <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center' }}>
-                <span style={{ width: 34, color: '#94a3b8', fontSize: '0.75rem' }}>{b.over}</span>
+              <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'flex-start', borderBottom: '#e2e8f0 solid 1px', padding: '0.45rem 0' }}>
+                <span style={{ flex: '0 0 28px', width: 28, color: '#94a3b8', fontSize: '0.75rem' }}>{b.over}</span>
                 <BallChip b={b} />
                 <span>
                   {b.bowler} to {b.batter}: {b.wicket ? <strong style={{ color: '#b91c1c' }}>{b.out_name} {WICKET_LABEL[b.wicket]?.toLowerCase()}</strong>

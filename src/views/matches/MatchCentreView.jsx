@@ -1,3 +1,4 @@
+import './matchCentre.css';
 import React, { useState, useEffect } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
@@ -157,32 +158,31 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       </button>
 
       {/* Header */}
-      <Card>
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+      <section className="match-hero">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
-            <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'inline-flex', gap: '0.3rem', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.8rem', color: '#b6ccda', display: 'inline-flex', gap: '0.3rem', alignItems: 'center' }}>
               {data.tournament ? <><Trophy size={13} /> {data.tournament.name}{m.match_no ? ` · Match ${m.match_no}` : ''}</> : (m.title || 'Friendly match')}
             </span>
             <Badge variant={variant}>{label}</Badge>
           </div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto 1fr', alignItems: 'center', gap: '0.75rem', textAlign: 'center' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)', alignItems: 'start', gap: '0.75rem', textAlign: 'center' }}>
             <div>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800 }}>{a?.name || 'TBD'}</div>
-              <div style={{ fontSize: '1.05rem', color: '#334155' }}>{scoreLine(m.team_a_runs, m.team_a_wickets, m.team_a_balls) || ''}</div>
+              <div style={{ fontSize: '1.15rem', fontWeight: 800, overflowWrap: 'anywhere' }}>{a?.name || 'TBD'}</div>
+              <div style={{ fontSize: '1.05rem', color: '#e0edf3' }}>{scoreLine(m.team_a_runs, m.team_a_wickets, m.team_a_balls) || (m.status === 'live' ? 'Yet to bat' : '—')}</div>
             </div>
             <div style={{ color: '#94a3b8', fontWeight: 700 }}>vs</div>
             <div>
-              <div style={{ fontSize: '1.3rem', fontWeight: 800 }}>{b?.name || 'TBD'}</div>
-              <div style={{ fontSize: '1.05rem', color: '#334155' }}>{scoreLine(m.team_b_runs, m.team_b_wickets, m.team_b_balls) || ''}</div>
+              <div style={{ fontSize: '1.15rem', fontWeight: 800, overflowWrap: 'anywhere' }}>{b?.name || 'TBD'}</div>
+              <div style={{ fontSize: '1.05rem', color: '#e0edf3' }}>{scoreLine(m.team_b_runs, m.team_b_wickets, m.team_b_balls) || (m.status === 'live' ? 'Yet to bat' : '—')}</div>
             </div>
           </div>
-          {m.result_summary && <div style={{ textAlign: 'center', fontWeight: 800, color: '#065f46' }}>{m.result_summary}</div>}
+          {m.result_summary && <div style={{ textAlign: 'center', fontWeight: 800, color: '#84f2ba' }}>{m.result_summary}</div>}
           {m.toss_winner_id && (
-            <div style={{ textAlign: 'center', fontSize: '0.88rem', color: '#334155', display: 'flex', gap: '0.35rem', justifyContent: 'center', alignItems: 'center' }}>
+            <div style={{ textAlign: 'center', fontSize: '0.88rem', color: '#e0edf3', display: 'flex', gap: '0.35rem', justifyContent: 'center', alignItems: 'center' }}>
               <Coins size={15} /> {nameOf(m.toss_winner_id)} won the toss and chose to {m.toss_decision === 'bat' ? 'bat' : 'bowl'} first.
             </div>
           )}
-          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center', fontSize: '0.8rem', color: '#64748b' }}>
+          <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center', fontSize: '0.8rem', color: '#b6ccda' }}>
             <span>{m.match_type === 'two_innings' ? 'Two innings' : `${overs || '?'} overs`}{m.match_type === 'box_cricket' ? ' · box cricket' : ''}</span>
             <span>{perSide} a side</span>
             {ball && <span>{ball} ball</span>}
@@ -190,8 +190,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
             {(m.venue || m.city) && <span style={{ display: 'inline-flex', gap: '0.2rem', alignItems: 'center' }}><MapPin size={12} /> {[m.venue, m.city].filter(Boolean).join(', ')}</span>}
             {data.scorer_name && <span>Scorer: {data.scorer_name}</span>}
           </div>
-        </div>
-      </Card>
+        </section>
 
       {/* #28 share, #24 #25 pause / resume */}
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
@@ -240,14 +239,14 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
 
       {/* Tabs once the match has started */}
       {m.status !== 'scheduled' && (
-        <div style={{ display: 'flex', gap: '0.4rem', borderBottom: '1px solid #e2e8f0', flexWrap: 'wrap' }}>
+        <nav className="match-tabs" aria-label="Match sections">
           {[['live', m.status === 'live' ? 'Live' : 'Summary'], ['scorecard', 'Scorecard'], ['commentary', 'Commentary'], ['over', 'Over'], ['analysis', 'Analysis'], ['lineups', 'Playing XI'], ['matchday', 'Match day'], ['officials', 'Ground & officials'], ['rules', 'Rules'], ['media', 'Video & media'], ['news', 'Previews & reports'], ['reports', 'Reports'], ['history', 'History']].map(([v, l]) => (
-            <button key={v} type="button" onClick={() => setTab(v)}
+            <button key={v} type="button" aria-pressed={tab === v} onClick={(event) => { setTab(v); event.currentTarget.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }}
               style={{ padding: '0.55rem 1rem', border: 'none', borderBottom: `3px solid ${tab === v ? '#059669' : 'transparent'}`, background: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', color: tab === v ? '#065f46' : '#64748b' }}>
               {l}
             </button>
           ))}
-        </div>
+        </nav>
       )}
 
       {/* Step 1: Playing XI (#3, #4) */}
