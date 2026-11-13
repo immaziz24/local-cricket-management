@@ -50,6 +50,9 @@ export function TournamentDetailsView(props) {
   const [allTournaments, setAllTournaments] = useState([]);
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+  const [deleting, setDeleting] = useState(false);
   const [isOrganiser, setIsOrganiser] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -312,6 +315,23 @@ export function TournamentDetailsView(props) {
           </div>
           </div>
 
+          {deleteError && <p role="alert">{deleteError}</p>}
+          {isOrganiser && (
+            <Button variant="outline" disabled={deleting} onClick={async () => {
+              if (!confirmDelete) { setConfirmDelete(true); return; }
+          setConfirmDelete(false);
+              setDeleting(true);
+              setDeleteError('');
+              try {
+                await dataService.deleteOwnedTournament(tournament.id);
+                onNavigate('tournaments');
+              } catch (error) {
+                setDeleteError(error.message);
+              } finally {
+                setDeleting(false);
+              }
+            }}>{confirmDelete ? 'Confirm permanent deletion' : 'Delete tournament'}</Button>
+          )}
           {/* Action Buttons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
             {/^[0-9a-f-]{36}$/i.test(tournament.id) && (

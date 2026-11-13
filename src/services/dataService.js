@@ -1644,6 +1644,16 @@ export const dataService = {
     return res.data;
   },
 
+  async deleteOwnedTeam(id) {
+    const { error } = await supabaseClient.deleteOwnedTeam(id);
+    if (error) throw new Error(error);
+  },
+
+  async deleteOwnedTournament(id) {
+    const { error } = await supabaseClient.deleteOwnedTournament(id);
+    if (error) throw new Error(error);
+  },
+
   async adminDeleteTeam(teamId) {
     requireDatabase();
     const res = await supabaseClient.adminDeleteTeam(teamId);

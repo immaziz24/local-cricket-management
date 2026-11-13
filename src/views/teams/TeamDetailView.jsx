@@ -1,3 +1,4 @@
+import { XiPoster } from '../tools/XiPoster.jsx';
 import React, { useState, useEffect } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
@@ -36,6 +37,7 @@ export function TeamDetailView({ teamId, onNavigate }) {
   const [team, setTeam] = useState(null);
   const [error, setError] = useState(null);
   const [msg, setMsg] = useState(null);
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [busy, setBusy] = useState(false);
   const [myPlayer, setMyPlayer] = useState(null);
   useEffect(() => { dataService.fetchMyPlayer().then(setMyPlayer).catch(() => setMyPlayer(null)); }, []);
@@ -218,6 +220,28 @@ export function TeamDetailView({ teamId, onNavigate }) {
       </div>
 
       <Notice msg={msg} />
+      {team.i_own && (
+        <Button variant="outline" disabled={busy} onClick={async () => {
+          if (!confirmDelete) { setConfirmDelete(true); return; }
+          setConfirmDelete(false);
+          setBusy(true);
+          try {
+            await dataService.deleteOwnedTeam(team.id);
+            onNavigate('teams');
+          } catch (error) {
+            setMsg({ ok: false, text: error.message });
+          } finally {
+            setBusy(false);
+          }
+        }}>{confirmDelete ? 'Confirm permanent deletion' : 'Delete team'}</Button>
+      )}
+      {team.i_own && squad.length > 0 && (
+        <details>
+          <summary>Download squad graphic</summary>
+          <XiPoster title="Team Squad" subtitle={squad.length + ' players'} fileLabel="squad"
+            lineup={{ team: team.name, xi: squad.map(p => ({ name: p.display_name, role: p.player_role, detail: p.is_captain ? 'Captain' : p.is_vice_captain ? 'Vice-captain' : '' })), bench: [], notes: [] }} />
+        </details>
+      )}
 
       {/* Squad (#71) */}
       <Card title={`Squad (${squad.length})`}>

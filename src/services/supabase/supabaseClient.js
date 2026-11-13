@@ -1905,6 +1905,16 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async deleteOwnedTeam(id) {
+    const { data, error } = await supabase.rpc('delete_owned_team', { p_id: id });
+    return { data, error: error ? friendlyError(error, 'team deletion') : null };
+  },
+
+  async deleteOwnedTournament(id) {
+    const { data, error } = await supabase.rpc('delete_owned_tournament', { p_id: id });
+    return { data, error: error ? friendlyError(error, 'tournament deletion') : null };
+  },
+
   async adminDeleteTeam(teamId) {
     const { data, error } = await supabase.rpc('admin_delete_team', { p_team_id: teamId });
     if (error) return { data: null, error: friendlyError(error, 'admin') };

@@ -16,20 +16,30 @@ const designs = [
   ['Ocean Eleven', '#053337', '#134556', '#75f5e3', '#225b64'],
   ['Forest Club', '#1a3016', '#34491d', '#d9f989', '#485e2c'],
   ['Indigo Finals', '#211749', '#39316a', '#c9cdff', '#4b4381'],
+  ['Copper Pitch', '#342019', '#603b29', '#ffd5ad', '#754831'],
+  ['Teal Pavilion', '#092927', '#12413c', '#8af3d7', '#245b51'],
+  ['Plum Stadium', '#33152e', '#592547', '#ffc6ea', '#71395e'],
+  ['Slate Cup', '#202b3d', '#364963', '#bcd8ff', '#495d79'],
+  ['Amber Arena', '#382610', '#624414', '#ffe3a5', '#745622'],
+  ['Lime League', '#243019', '#3d4e24', '#e1fc99', '#536438'],
   ['Crimson Derby', '#3c0e18', '#591522', '#ffafb3', '#722838'],
 ];
 
-export function XiPoster({ lineup }) {
+export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) {
   const canvas = useRef(null);
   const [error, setError] = useState('');
   const [style, setStyle] = useState(0);
   const [status, setStatus] = useState('');
   const [, start, end, accent, row] = designs[style];
   const { xi, bench, team, notes } = lineup;
+  const logicalHeight = 250 + 61 * (xi.length + bench.length) + (bench.length ? 55 : 0);
+  const scale = Math.min(1, 4096 / logicalHeight);
 
   useEffect(() => {
     const ctx = canvas.current.getContext('2d');
-    const { width, height } = canvas.current;
+    const width = 960;
+    const height = logicalHeight;
+    ctx.setTransform(scale, 0, 0, scale, 0, 0);
     const background = ctx.createLinearGradient(0, 0, width, height);
     background.addColorStop(0, start);
     background.addColorStop(1, end);
@@ -45,10 +55,10 @@ export function XiPoster({ lineup }) {
     ctx.fillText('CRICNOTCH', 54, 59);
     ctx.fillStyle = '#ffffff';
     ctx.font = 'bold 60px system-ui';
-    ctx.fillText(xi.length === 11 ? 'Suggested Playing XI' : 'Suggested lineup', 52, 132, 850);
+    ctx.fillText(title || (xi.length === 11 ? 'Suggested Playing XI' : 'Suggested lineup'), 52, 132, 850);
     ctx.fillStyle = '#ade5d3';
     ctx.font = '28px system-ui';
-    ctx.fillText(team ? team + '  ·  Batting order' : 'Batting order', 55, 180, 850);
+    ctx.fillText([team, subtitle || 'Batting order'].filter(Boolean).join('  ·  '), 55, 180, 850);
 
     const drawPlayer = (player, index, y, label) => {
       ctx.fillStyle = row;
@@ -73,7 +83,7 @@ export function XiPoster({ lineup }) {
       ctx.fillText(player.name, 140, y + 37, 525);
       ctx.fillStyle = '#b9e4d5';
       ctx.font = '23px system-ui';
-      ctx.fillText(roles[player.role] || '', 710, y + 36, 180);
+      ctx.fillText(player.detail || roles[player.role] || '', 710, y + 36, 180);
     };
     xi.forEach((player, index) => drawPlayer(player, index, 210 + index * 61, String(index + 1).padStart(2, '0')));
     if (bench.length) {
@@ -83,7 +93,7 @@ export function XiPoster({ lineup }) {
       ctx.fillText('BENCH', 54, benchY + 24);
       bench.forEach((player, index) => drawPlayer(player, index, benchY + 43 + index * 61, '—'));
     }
-  }, [xi, bench, team, style, start, end, accent, row]);
+  }, [xi, bench, team, style, start, end, accent, row, title, subtitle, logicalHeight, scale]);
 
   const save = () => {
     setError('');
@@ -95,7 +105,7 @@ export function XiPoster({ lineup }) {
     canvas.current.toBlob(blob => {
       if (blob) {
         const name = designs[style][0].toLowerCase().replaceAll(' ', '-');
-        downloadBlob(blob, 'cricnotch-playing-xi-' + name + '.png');
+        downloadBlob(blob, 'cricnotch-' + fileLabel + '-' + name + '.png');
         setStatus('Download started. Check your browser downloads.');
       }
       else setError('Could not create the PNG. Please try again.');
@@ -110,9 +120,9 @@ export function XiPoster({ lineup }) {
           {designs.map(([name], index) => <option key={name} value={index}>{name}</option>)}
         </select>
       </label>
-      <canvas ref={canvas} width={960} height={250 + 61 * (xi.length + bench.length) + (bench.length ? 55 : 0)}
+      <canvas ref={canvas} width={Math.ceil(960 * scale)} height={Math.ceil(logicalHeight * scale)}
         style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '0.8rem', marginBottom: '0.7rem' }}
-        aria-label="Suggested lineup graphic">
+        aria-label={title || "Suggested lineup graphic"}>
         {xi.map(player => player.name).join(', ')}
       </canvas>
       <Button variant="secondary" onClick={save}>Download</Button>
