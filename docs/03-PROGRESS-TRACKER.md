@@ -1,6 +1,6 @@
 # Progress Tracker: Local Cricket Management Platform
 
-> **Last Updated:** 2026-11-10  
+> **Last Updated:** 2026-11-13
 > **Feature list:** see `01-MASTER-BLUEPRINT.md` (310 features, A–Q, 6 phases)  
 
 ## 1. Status definitions
@@ -8,7 +8,7 @@
 | Symbol | Meaning |
 | :---: | :--- |
 | ⬜ | Not started |
-| 🟨 | Screen built with **mock (fake) data** — nothing is saved, no real login |
+| 🟨 | Built or prepared, awaiting database or owner browser verification |
 | 🟩 | Working with the **real database** (Supabase) |
 | ✅ | Verified by the project owner in the browser and pushed to GitHub |
 
@@ -18,8 +18,8 @@
 | :--- | :---: |
 | ✅ Verified | 0 / 310 |
 | 🟩 Working (real database) | 179 / 310 |
-| 🟨 Built / connected, awaiting check | 82 / 310 |
-| ⬜ Not started | 49 / 310 |
+| 🟨 Built or prepared, awaiting verification | 83 / 310 |
+| ⬜ Not started | 48 / 310 |
 
 **Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5: Category H community & marketplace (17) Category I live streaming & media (12) Category J branding, sponsorship & promotion (11) and Category K news & learning (16) connected – Phase 5 complete (56/56 built).** Next: Phase 6, Category M.
 
@@ -38,7 +38,7 @@
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
 | 4 | F, G, Q | 37 | 0 | 0 | 37 | 0 |
 | 5 | H, I, J, K | 56 | 0 | 2 | 54 | 0 |
-| 6 | M, O, P | 49 | 49 | 0 | 0 | 0 |
+| 6 | M, O, P | 49 | 48 | 1 | 0 | 0 |
 
 ## 4. Supporting screens (not numbered features)
 
@@ -400,7 +400,7 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 233 | Men's T20 International playing conditions | ⬜ |  |
+| 233 | Men's T20 International playing conditions | 🟨 | Learn → Rules article prepared. Run the migration and verify it in the browser. |
 | 234 | Men's ODI playing conditions | ⬜ |  |
 | 235 | Men's Test playing conditions | ⬜ |  |
 | 236 | Women's T20 International playing conditions | ⬜ |  |

@@ -104,7 +104,9 @@
 
 ## 4. Next steps (in order)
 
-0. **Phase 6 next:** Category M (21 features), then O (13) and P (15). Phase 5 (Categories H, I, J, K) done 2026-11-11.
+0. **Phase 6 in progress:** Run the #233 migration in the Supabase SQL editor, then open Learn → Rules and check the article and its ICC link before starting #234.
+
+   **Remaining order:** Category M (21 features), then O (13) and P (15). Phase 5 (Categories H, I, J, K) done 2026-11-11.
 1. **Owner check of #265** (Category N → User Governance → Verification): request a badge, approve it. Push to GitHub (today's work is not on GitHub yet).
 2. **Phase 3:** Category A (live scoring #1–30) complete. **Category D statistics (#79–102) complete** on the real database, together with Phase 2 #57, #77, #78 (Statistics page, player profile stats, team record, match Analysis tab, tournament leaderboards, automatic Player of the Match). **Category E batch 1 – playing conditions (#105–112, #114, #118, #119, #129–134) complete; scoring follows them.** **Category E batch 2 complete** (laws reference, Super Over, follow-on, penalty runs, DLS helper, match reports). **Category L calculators (#216–232) built – Phase 3 complete.** **Phase 4 started – Category F officials (#135–146) complete.** **Category G grounds (#147–159) complete.** **Category Q (#299–310) complete – Phase 4 complete.** **Next: Phase 5** (community and media).
 3. **Phase 2** in number order: #31 Create a tournament (connect to database), #32 Tournament name and branding, #33, …
@@ -140,6 +142,7 @@
 
 | Date | Who | What |
 | :--- | :--- | :--- |
+| 2026-11-13 | Codex | Phase 6 #233: prepared the Learn → Rules article using the October 2026 ICC conditions. SQL execution and owner browser check pending. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |
