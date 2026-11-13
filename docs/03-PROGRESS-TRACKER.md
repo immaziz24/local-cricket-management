@@ -444,7 +444,7 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 284 | Android player application | ⬜ | Added a web app manifest as groundwork. Android package and device verification pending. |
+| 284 | Android player application | ⬜ | Debug APK builds and loads the existing website through Android WebView. Tablet installation and role verification pending. |
 | 285 | Android scorer application | ⬜ |  |
 | 286 | Android organiser application | ⬜ |  |
 | 287 | Push notifications | ⬜ |  |

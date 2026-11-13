@@ -1,0 +1,14 @@
+plugins {
+    id 'com.android.application' version '9.4.1'
+}
+android {
+    namespace 'in.plateria.localcricket'
+    compileSdk 37
+    defaultConfig {
+        applicationId 'in.plateria.localcricket'
+        minSdk 26
+        targetSdk 37
+        versionCode 1
+        versionName '0.1.0'
+    }
+}
