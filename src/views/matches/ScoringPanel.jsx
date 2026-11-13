@@ -590,7 +590,12 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                 <span>
                   {b.bowler} to {b.batter}: {b.wicket ? <strong style={{ color: '#b91c1c' }}>{b.out_name} {WICKET_LABEL[b.wicket]?.toLowerCase()}</strong>
                     : b.extra ? `${b.extra.replace('_', ' ')}${b.runs ? `, ${b.runs} off the bat` : ''}` : b.runs === 0 ? 'no run' : `${b.runs} run${b.runs === 1 ? '' : 's'}`}
-                  {b.commentary ? <span style={{ color: '#64748b' }}> – {b.commentary}</span> : null}
+                  <span style={{ display: 'block', color: '#475569', marginTop: '0.15rem' }}>
+                    {b.commentary?.trim() || makeCommentary({
+                      ...b, extraRuns: b.extra_runs, outName: b.out_name,
+                      angle: b.shot_angle, dist: b.shot_dist
+                    })}
+                  </span>
                   {b.pending ? <span style={{ color: '#b45309', fontSize: '0.72rem' }}> (not uploaded yet)</span> : null}
                 </span>
                 {scoring && !b.pending && !queue.length && st.status === 'live' && editSeq !== b.seq && (

@@ -1,5 +1,10 @@
 package in.plateria.localcricket;
 
+import android.Manifest;
+import android.content.pm.PackageManager;
+import android.webkit.GeolocationPermissions;
+import android.webkit.WebChromeClient;
+
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
 import android.content.Intent;
@@ -22,6 +27,9 @@ import android.widget.LinearLayout;
 public final class MainActivity extends Activity {
     private static final String HOST = "localcricket.plateria.in";
     private WebView website;
+    private static final int LOCATION_PERMISSION = 32;
+    private GeolocationPermissions.Callback locationCallback;
+    private String locationOrigin;
     private byte[] pendingLineup;
     private static final int SAVE_LINEUP = 31;
 
@@ -31,6 +39,20 @@ public final class MainActivity extends Activity {
         website = new WebView(this);
         website.getSettings().setJavaScriptEnabled(true);
         website.getSettings().setDomStorageEnabled(true);
+        website.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
+                if (!("https://" + HOST).equals(origin) || locationCallback != null) {
+                    callback.invoke(origin, false, false);
+                } else if (checkSelfPermission(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+                    callback.invoke(origin, true, false);
+                } else {
+                    locationCallback = callback;
+                    locationOrigin = origin;
+                    requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, LOCATION_PERMISSION);
+                }
+            }
+        });
         website.getSettings().setAllowFileAccess(false);
         website.getSettings().setAllowContentAccess(false);
         website.addJavascriptInterface(new LineupDownloads(), "CricnotchDownloads");
@@ -71,6 +93,15 @@ public final class MainActivity extends Activity {
         if (savedState == null || website.restoreState(savedState) == null) {
             openLink(getIntent());
         }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int request, String[] permissions, int[] results) {
+        super.onRequestPermissionsResult(request, permissions, results);
+        if (request != LOCATION_PERMISSION || locationCallback == null) return;
+        locationCallback.invoke(locationOrigin, results.length > 0 && results[0] == PackageManager.PERMISSION_GRANTED, false);
+        locationCallback = null;
+        locationOrigin = null;
     }
 
     @Override
