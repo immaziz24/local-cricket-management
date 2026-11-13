@@ -163,6 +163,7 @@
 | 2026-11-13 | Codex | Added Finish match beside Pause/Resume for authorised scorers. Early finish records no result and keeps the scorecard. Owner check pending. |
 | 2026-11-13 | Codex | Team owners can remove teams from My Teams while retaining linked scorecards. Browser check pending. |
 | 2026-11-13 | Codex | Added an Over tab with extras, wagon-wheel points for extras, and fallback commentary for older deliveries. Owner check pending. |
+| 2026-11-13 | Codex | Restyled the Over tab with horizontal score chips and separate colours for runs and extras. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |

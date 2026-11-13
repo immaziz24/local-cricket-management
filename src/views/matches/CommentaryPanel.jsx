@@ -76,6 +76,8 @@ function buildFeed(inn) {
 }
 
 const TONE = { out: '#dc2626', six: '#7c3aed', four: '#2563eb', extra: '#d97706', dot: '#94a3b8', run: '#0f172a', note: '#b45309' };
+const RUN_COLORS = ['#475569', '#047857', '#0e7490', '#4338ca', '#1d4ed8', '#a21caf', '#7e22ce', '#9f1239'];
+const EXTRA_COLORS = { wide: '#b45309', no_ball: '#c2410c', bye: '#3f6212', leg_bye: '#854d0e' };
 
 export function CommentaryPanel({ matchId, live, refreshKey = 0, byOver = false }) {
   const [data, setData] = useState(null);
@@ -122,11 +124,23 @@ export function CommentaryPanel({ matchId, live, refreshKey = 0, byOver = false 
       </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {byOver ? Array.from(overs, ([number, balls]) => (
-          <section key={number} style={{ marginBottom: '1rem' }}>
-            <h3>Over {number}</h3>
-            <p>{balls.reduce((total, { b }) => total + b.runs + b.extra_runs, 0)} runs · {balls.filter(({ b }) => b.legal).length} legal balls</p>
-            <ol style={{ paddingLeft: '1.5rem' }}>
-              {balls.map(line => <li key={line.key}>{line.over} · {line.text}</li>)}
+          <section key={number} style={{ marginBottom: '0.75rem', padding: '0.8rem', border: '1px solid #e2e8f0', borderRadius: '0.65rem', background: '#f8fafc' }}>
+            <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
+              <h3 style={{ margin: 0, fontSize: '1rem' }}>Over {number}</h3>
+              <span style={{ color: '#475569', fontSize: '0.85rem' }}>{balls.reduce((total, { b }) => total + b.runs + b.extra_runs, 0)} runs · {balls.filter(({ b }) => b.legal).length} legal balls</span>
+            </div>
+            <ol aria-label={`Deliveries in over ${number}`} tabIndex={0}
+              style={{ display: 'flex', gap: '0.4rem', overflowX: 'auto', listStyle: 'none', margin: 0, padding: '0.65rem 0.15rem 0.3rem' }}>
+              {balls.map(({ key, b, over, text, tone }) => {
+                const label = b.extra && tone === 'out' ? `W+${ballLabel({ ...b, wicket: null })}` : ballLabel(b);
+                return (
+                  <li key={key} title={`${over} · ${text}`} aria-label={`${over} · ${text}`}
+                    style={{ flexShrink: 0, minWidth: '2.25rem', height: '2.25rem', padding: '0 0.35rem', borderRadius: '999px', display: 'grid', placeItems: 'center', color: '#fff', fontSize: '0.8rem', fontWeight: 800,
+                      background: EXTRA_COLORS[b.extra] || (tone === 'out' ? '#b91c1c' : RUN_COLORS[b.runs] || '#334155') }}>
+                    {label}
+                  </li>
+                );
+              })}
             </ol>
           </section>
         )) : feed.map((l) => l.kind === 'over' ? (
