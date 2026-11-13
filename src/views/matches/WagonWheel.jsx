@@ -53,11 +53,11 @@ export function WagonWheelPicker({ runs, onPick, onSkip, onCancel, onChangeRuns,
   return (
     <div onClick={() => onCancel && onCancel()} style={{ position: 'fixed', inset: 0, zIndex: 1000, backgroundColor: 'rgba(15,23,42,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '0.75rem' }}>
       <div onClick={(e) => e.stopPropagation()} style={{ width: '100%', maxWidth: 360, border: '2px solid #16a34a', borderRadius: '0.9rem', padding: '0.8rem', backgroundColor: '#f0fdf4', display: 'flex', flexDirection: 'column', gap: '0.55rem', boxShadow: '0 20px 40px rgba(0,0,0,0.3)' }}>
-        <div style={{ fontWeight: 800, textAlign: 'center' }}>Where did the {runs === 4 ? 'FOUR' : runs === 6 ? 'SIX' : `${runs} run${runs === 1 ? '' : 's'}`} go? Tap the field</div>
+        <div style={{ fontWeight: 800, textAlign: 'center' }}>Where did the {runs === 0 ? 'ball' : runs === 4 ? 'FOUR' : runs === 6 ? 'SIX' : `${runs} run${runs === 1 ? '' : 's'}`} go? Tap the field</div>
         {onChangeRuns && (
           <div style={{ display: 'flex', gap: 6, justifyContent: 'center', flexWrap: 'wrap', alignItems: 'center' }}>
             <span style={{ fontSize: '0.74rem', color: '#475569' }}>Wrong runs?</span>
-            {[1, 2, 3, 4, 6].map((r) => <button key={r} type="button" disabled={busy} onClick={() => { setMark(null); onChangeRuns(r); }} style={chip(r === runs)}>{r}</button>)}
+            {[1, 2, 3, 4, 5, 6, 7].map((r) => <button key={r} type="button" disabled={busy} onClick={() => { setMark(null); onChangeRuns(r); }} style={chip(r === runs)}>{r}</button>)}
           </div>
         )}
         <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.68rem', color: '#475569', padding: '0 0.4rem' }}>

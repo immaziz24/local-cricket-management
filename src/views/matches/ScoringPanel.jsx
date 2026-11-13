@@ -220,7 +220,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   const rrr = cur && cur.target && cur.balls_left ? ((cur.runs_needed * 6) / cur.balls_left).toFixed(2) : null;
 
   const send = (runs) => {
-    if (wheelOn && runs > 0 && (!extra || extra === 'no_ball')) { setShot({ runs }); return; }
+    if (wheelOn && (runs > 0 || extra === 'wide' || extra === 'no_ball')) { setShot({ runs }); return; }
     sendNow(runs, null);
   };
   // #19 every ball gets automatic commentary (25+ words); the scorer's own note is added at the end

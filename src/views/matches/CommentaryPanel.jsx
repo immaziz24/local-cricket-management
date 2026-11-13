@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { dataService } from '../../services/dataService.js';
+import { makeCommentary } from './commentary.js';
 import { ballLabel } from './ScoringPanel.jsx';
 
 /**
@@ -76,7 +77,7 @@ function buildFeed(inn) {
 
 const TONE = { out: '#dc2626', six: '#7c3aed', four: '#2563eb', extra: '#d97706', dot: '#94a3b8', run: '#0f172a', note: '#b45309' };
 
-export function CommentaryPanel({ matchId, live, refreshKey = 0 }) {
+export function CommentaryPanel({ matchId, live, refreshKey = 0, byOver = false }) {
   const [data, setData] = useState(null);
   const [err, setErr] = useState(null);
   const [inn, setInn] = useState(null);
@@ -98,6 +99,15 @@ export function CommentaryPanel({ matchId, live, refreshKey = 0 }) {
 
   const shown = data.find((x) => x.innings_no === inn) || data[data.length - 1];
   const feed = buildFeed(shown);
+  const overs = new Map();
+  if (byOver) {
+    for (const line of [...feed].reverse()) {
+      if (line.kind !== 'ball') continue;
+      const number = Number(line.b.over_no) + 1;
+      if (!overs.has(number)) overs.set(number, []);
+      overs.get(number).push(line);
+    }
+  }
 
   return (
     <Card>
@@ -111,7 +121,15 @@ export function CommentaryPanel({ matchId, live, refreshKey = 0 }) {
         ))}
       </div>
       <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {feed.map((l) => l.kind === 'over' ? (
+        {byOver ? Array.from(overs, ([number, balls]) => (
+          <section key={number} style={{ marginBottom: '1rem' }}>
+            <h3>Over {number}</h3>
+            <p>{balls.reduce((total, { b }) => total + b.runs + b.extra_runs, 0)} runs · {balls.filter(({ b }) => b.legal).length} legal balls</p>
+            <ol style={{ paddingLeft: '1.5rem' }}>
+              {balls.map(line => <li key={line.key}>{line.over} · {line.text}</li>)}
+            </ol>
+          </section>
+        )) : feed.map((l) => l.kind === 'over' ? (
           <div key={l.key} style={{ margin: '0.5rem 0', padding: '0.55rem 0.75rem', borderRadius: '0.5rem', backgroundColor: '#f1f5f9', fontSize: '0.8rem', color: '#0f172a' }}>
             <strong>End of over {l.over}</strong> · {l.runs} run{l.runs === 1 ? '' : 's'}{l.wkts ? `, ${l.wkts} wicket${l.wkts === 1 ? '' : 's'}` : ''} · <strong>{shown.batting_team} {l.score}</strong>
             <div style={{ color: '#475569', marginTop: '0.15rem' }}>{l.batters}{l.batters ? ' · ' : ''}{l.bowler}</div>
@@ -124,7 +142,7 @@ export function CommentaryPanel({ matchId, live, refreshKey = 0 }) {
                            color: ['out', 'six', 'four', 'extra'].includes(l.tone) ? '#fff' : '#0f172a', padding: '0 4px' }}>{ballLabel({ ...l.b, wicket: l.b.wicket })}</span>
             <div style={{ fontSize: '0.88rem', lineHeight: 1.4 }}>
               <span style={{ color: TONE[l.tone], fontWeight: ['out', 'six', 'four'].includes(l.tone) ? 800 : 500 }}>{l.text}</span>
-              {l.note && <div style={{ color: '#475569', fontSize: '0.82rem' }}>{l.note}</div>}
+              <div style={{ color: '#475569', fontSize: '0.82rem' }}>{l.note || makeCommentary({ ...l.b, extraRuns: l.b.extra_runs, outName: l.b.out_name, team: shown.batting_team, total: l.b.score, wickets: l.b.wkts })}</div>
             </div>
           </div>
         ))}

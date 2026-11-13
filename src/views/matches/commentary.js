@@ -60,17 +60,11 @@ export function makeCommentary(b) {
   } else if (b.wicket === 'retired_hurt') {
     body = `${b.outName || batter} is hurt and leaves the field, retired hurt and not out. The batter can come back later to continue the innings.`;
   } else if (b.extra === 'wide') {
-    const ran = Math.max(0, ex - 1);
-    body = ran >= 4
-      ? `Wide, and it runs away for four more! The ball is too far from ${batter}, the keeper cannot stop it, and it races to the boundary. Expensive.`
-      : `Wide ball. The delivery is too far from ${batter} to reach, so the umpire stretches out both arms.${ran ? ` The batters also run ${plural(ran, 'run')}.` : ''} ${ex === 1 ? 'One extra run goes' : `${ex} extra runs go`} to the batting side.`;
+    body = `Wide called. ${plural(ex, 'extra run')} to the batting side. This delivery does not count toward the over.`;
   } else if (b.extra === 'no_ball') {
-    const shot = r === 6 ? `and ${batter} smashes it for SIX${where ? ` ${where}` : ''}!` : r === 4 ? `and ${batter} hits it for FOUR${where ? ` ${where}` : ''}!` : r ? `and ${batter} takes ${plural(r, 'run')}${where ? ` ${where}` : ''}.` : `and ${batter} cannot score off the bat.`;
-    body = `No ball! ${bowler} oversteps or bowls an illegal delivery, ${shot} The batting side gets an extra run${b.freeHitNext ? ', and the next ball is a FREE HIT' : ''}.`;
-  } else if (b.extra === 'bye') {
-    body = ex >= 4 ? `Four byes! The ball misses the bat and the pads, beats the wicket-keeper, and runs away to the boundary.` : `${word(ex).charAt(0).toUpperCase() + word(ex).slice(1)} ${ex === 1 ? 'bye' : 'byes'}. The ball misses everything and the keeper cannot gather it, so the batters run for ${plural(ex, 'run')}.`;
-  } else if (b.extra === 'leg_bye') {
-    body = ex >= 4 ? `Four leg byes! The ball hits ${batter} on the pad and runs away to the boundary.` : `Leg ${ex === 1 ? 'bye' : 'byes'}. The ball hits ${batter} on the body and rolls away, and the batters run for ${plural(ex, 'run')}.`;
+    body = `No ball! ${r ? plural(r, 'run') + ' off the bat' : 'No runs off the bat'}. ${plural(ex, 'extra run')} added.${b.freeHitNext ? ' Free hit next.' : ''}`;
+  } else if (b.extra === 'bye' || b.extra === 'leg_bye') {
+    body = `${plural(ex, b.extra === 'bye' ? 'bye' : 'leg bye')} added to the team score.`;
   } else if (r === 6) {
     body = pick([
       `SIX! What a hit! ${batter} gets under the ball and sends it high ${where || 'over the fielders'}. It clears the boundary rope easily.`,
@@ -95,6 +89,8 @@ export function makeCommentary(b) {
       `${batter} plays it ${where || 'into the field'} and they take ${r === 1 ? 'an easy single' : `${n} good runs`}. Smart running between the wickets keeps the score moving.`
     ]);
   }
+
+  if (where && b.extra) body += ' The ball went ' + where + '.';
 
   let tail = '';
   if (b.team && b.total != null) {
