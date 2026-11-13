@@ -5,6 +5,7 @@ import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { Wrench, Copy, Plus, Trash2, Coins, Users, Shuffle, CalendarDays, Table2, Wallet, Trophy, Gavel, Ruler, Gauge, Target, Activity } from 'lucide-react';
 import * as M from './cricketMath.js';
+import { XiPoster } from './XiPoster.jsx';
 import { roundRobin, knockoutFirstRound, scheduleFixtures } from '../tournaments/fixtureGenerator.js';
 import { DlsHelper } from '../rules/LawsView.jsx';
 
@@ -159,7 +160,7 @@ function SquadLoader({ onLoad }) {
         try {
           const t = await dataService.fetchTeam(e.target.value);
           const role = { batter: 'bat', bowler: 'bowler', all_rounder: 'all', wicket_keeper: 'wk' };
-          onLoad((t.squad || []).map((p) => [p.display_name, role[p.player_role]].filter(Boolean).join(', ')).join('\n'));
+          onLoad((t.squad || []).map((p) => [p.display_name, role[p.player_role]].filter(Boolean).join(', ')).join('\n'), t.name || e.target.selectedOptions[0]?.text);
         } catch { /* ignore */ } finally { setBusy(false); }
       }}>
         <option value="">Choose a team…</option>
@@ -212,31 +213,19 @@ export function XiGenerator({ initialText = '' } = {}) {
   const [size, setSize] = useState(11);
   const [bowlers, setBowlers] = useState(5);
   const [res, setRes] = useState(null);
+  const [team, setTeam] = useState('');
   const players = M.parsePlayers(text);
-  const roleName = { batter: 'Batter', bowler: 'Bowler', all_rounder: 'All-rounder', wicket_keeper: 'Wicket-keeper' };
   return (
     <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Users size={16} /> Playing XI generator</span>} subtitle="Suggests a balanced side and batting order from your squad">
-      <SquadLoader onLoad={setText} />
+      <SquadLoader onLoad={(squad, name) => { setText(squad); setTeam(name); setRes(null); }} />
       <label style={{ ...lbl, marginTop: '0.5rem' }}>Squad ({players.length})<textarea rows={7} value={text} onChange={(e) => setText(e.target.value)} style={{ ...inp, resize: 'vertical' }} placeholder={'Aziz, wk, 4\nMunna, bowler, 5\n…'} /></label>
       <p style={{ margin: '0.2rem 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>{PLAYERS_HINT}</p>
       <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'flex-end', marginTop: '0.5rem', flexWrap: 'wrap' }}>
         <div style={{ width: 120 }}><Field label="Players a side" type="number" min="2" value={size} onChange={(v) => setSize(v)} /></div>
         <div style={{ width: 150 }}><Field label="Bowling options" type="number" min="1" value={bowlers} onChange={(v) => setBowlers(v)} /></div>
-        <Button variant="primary" disabled={!players.length} onClick={() => setRes(M.pickPlayingXI(players, { size: Number(size) || 11, bowlersNeeded: Number(bowlers) || 0 }))}>Suggest XI</Button>
+        <Button variant="primary" disabled={!players.length} onClick={() => setRes({ ...M.pickPlayingXI(players, { size: Number(size) || 11, bowlersNeeded: Number(bowlers) || 0 }), team })}>Suggest XI</Button>
       </div>
-      {res && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '0.8rem', marginTop: '0.8rem' }}>
-          <div>
-            <div style={{ fontWeight: 800, marginBottom: '0.3rem' }}>Playing XI (batting order)</div>
-            <ol style={{ margin: 0, paddingLeft: '1.2rem', fontSize: '0.86rem' }}>{res.xi.map((p) => <li key={p.name}>{p.name} <span style={{ color: '#94a3b8' }}>{roleName[p.role] || ''}</span></li>)}</ol>
-          </div>
-          <div>
-            <div style={{ fontWeight: 800, marginBottom: '0.3rem' }}>Bench</div>
-            <div style={{ fontSize: '0.84rem', color: '#475569' }}>{res.bench.map((p) => p.name).join(', ') || '—'}</div>
-            {res.notes.map((x) => <p key={x} style={{ fontSize: '0.78rem', color: '#b45309', margin: '0.4rem 0 0' }}>{x}</p>)}
-          </div>
-        </div>
-      )}
+      {res && <XiPoster lineup={res} />}
       <p style={{ margin: '0.6rem 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>Only a suggestion – the captain picks the real Playing XI on the match page.</p>
     </Card>
   );

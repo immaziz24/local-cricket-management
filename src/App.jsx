@@ -71,6 +71,13 @@ export function App() {
     }
   };
 
+  useEffect(() => {
+    if (currentUser && (activeTab === 'login' || activeTab === 'register')) {
+      setActiveTab('dashboard');
+      window.scrollTo(0, 0);
+    }
+  }, [currentUser, activeTab]);
+
   // #28 Shareable links, and every page keeps its own address: a refresh (or Back / Forward) stays on the same page.
   // ?match=<id>, ?tournament=<id>, ?t=CODE, ?verify=CODE, ?sponsor=<id>, ?article=<id>, ?quiz=<id>, ?auction=<id>,
   // and ?page=<page>[&id=<id>] for every other page.

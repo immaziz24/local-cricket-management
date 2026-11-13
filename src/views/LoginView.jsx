@@ -132,6 +132,7 @@ export function LoginView(props) {
         rememberMe: formData.rememberMe
       })
       setSessionUser(user)
+      onNavigate('dashboard')
     } catch (err) {
       setApiError(err.message || 'Login failed. Please verify your credentials.')
     } finally {

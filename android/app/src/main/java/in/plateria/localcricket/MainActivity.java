@@ -5,6 +5,10 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Base64;
+import android.webkit.JavascriptInterface;
+import java.io.IOException;
+import java.io.OutputStream;
 import android.view.WindowInsets;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
@@ -16,6 +20,8 @@ import android.widget.LinearLayout;
 public final class MainActivity extends Activity {
     private static final String HOST = "localcricket.plateria.in";
     private WebView website;
+    private byte[] pendingLineup;
+    private static final int SAVE_LINEUP = 31;
 
     @Override
     protected void onCreate(Bundle savedState) {
@@ -25,6 +31,7 @@ public final class MainActivity extends Activity {
         website.getSettings().setDomStorageEnabled(true);
         website.getSettings().setAllowFileAccess(false);
         website.getSettings().setAllowContentAccess(false);
+        website.addJavascriptInterface(new LineupDownloads(), "CricnotchDownloads");
         website.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -61,6 +68,51 @@ public final class MainActivity extends Activity {
         setContentView(layout);
         if (savedState == null || website.restoreState(savedState) == null) {
             website.loadUrl("https://" + HOST + "/");
+        }
+    }
+
+    private final class LineupDownloads {
+        @JavascriptInterface
+        public void saveLineup(String image) {
+            String prefix = "data:image/png;base64,";
+            if (image == null || !image.startsWith(prefix) || image.length() > 8_000_000) return;
+            try {
+                byte[] bytes = Base64.decode(image.substring(prefix.length()), Base64.DEFAULT);
+                if (bytes.length < 8 || bytes[0] != (byte) 137 || bytes[1] != 80
+                        || bytes[2] != 78 || bytes[3] != 71) return;
+                runOnUiThread(() -> {
+                    if (pendingLineup != null) return;
+                    pendingLineup = bytes;
+                    Intent save = new Intent(Intent.ACTION_CREATE_DOCUMENT)
+                            .addCategory(Intent.CATEGORY_OPENABLE)
+                            .setType("image/png")
+                            .putExtra(Intent.EXTRA_TITLE, "cricnotch-playing-xi.png");
+                    try {
+                        startActivityForResult(save, SAVE_LINEUP);
+                    } catch (ActivityNotFoundException exception) {
+                        pendingLineup = null;
+                        Toast.makeText(MainActivity.this, "No file picker is available.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (IllegalArgumentException ignored) {
+                // An invalid image cannot be exported.
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int request, int result, Intent data) {
+        super.onActivityResult(request, result, data);
+        if (request != SAVE_LINEUP) return;
+        byte[] bytes = pendingLineup;
+        pendingLineup = null;
+        if (result != RESULT_OK || data == null || data.getData() == null || bytes == null) return;
+        try (OutputStream output = getContentResolver().openOutputStream(data.getData())) {
+            if (output == null) throw new IOException("Could not open destination");
+            output.write(bytes);
+            Toast.makeText(this, "Playing XI saved.", Toast.LENGTH_SHORT).show();
+        } catch (IOException | SecurityException exception) {
+            Toast.makeText(this, "Could not save the lineup.", Toast.LENGTH_SHORT).show();
         }
     }
 

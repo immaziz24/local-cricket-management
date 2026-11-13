@@ -77,12 +77,18 @@ function PaymentReport({ revenue = false }) {
 }
 
 export function SettingsView({ currentUser, onNavigate }) {
-  const [tab, setTab] = useState('privacy');
+  const [tab, setTab] = useState('account');
   if (!currentUser) return <div className="info-box">Please <button type="button" className="home-link" onClick={() => onNavigate('login')}>log in</button> to see your settings.</div>;
   return (
     <div>
       <PageTitle title="Settings & Privacy" sub="Control who sees your details, what you are notified about, and your account safety." />
-      <Tabs tab={tab} setTab={setTab} tabs={[['privacy', 'Privacy & security', Lock], ['notifications', 'Notifications', Bell], ['verify', 'Verification badge', BadgeCheck], ['report', 'Report a member', Flag], ['membership', 'Membership', BadgeCheck]]} />
+      <Tabs tab={tab} setTab={setTab} tabs={[['account', 'Account', Users], ['privacy', 'Privacy & security', Lock], ['notifications', 'Notifications', Bell], ['verify', 'Verification badge', BadgeCheck], ['report', 'Report a member', Flag], ['membership', 'Membership', BadgeCheck]]} />
+      {tab === 'account' && (
+        <section className="info-box">
+          <h2>Account</h2>
+          <dl><dt>Sign-in email</dt><dd>{currentUser.email || 'No email on this account'}</dd></dl>
+        </section>
+      )}
       {tab === 'membership' && (
         <section className="info-box" aria-labelledby="membership-heading">
           <h2 id="membership-heading">Free membership</h2>
