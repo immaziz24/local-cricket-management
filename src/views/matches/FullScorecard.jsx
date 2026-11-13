@@ -95,22 +95,22 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead><tr style={{ backgroundColor: '#f1f5f9' }}>
-            <th style={{ ...th, textAlign: 'left' }}>Batter</th><th style={th}>R</th><th style={th}>B</th><th style={th}>4s</th><th style={th}>6s</th><th style={th}>SR</th>
+            <th style={{ ...th, textAlign: 'left' }}>Batter</th><th style={th}>R</th><th style={th}>B</th><th style={th}>4s</th><th style={th}>6s</th><th style={th}>SR</th><th style={th} title="Minutes batted">M</th>
           </tr></thead>
           <tbody>
             {inn.batting.map((p) => (
               <React.Fragment key={p.player_id}>
                 <tr>
                   <td style={{ ...td, textAlign: 'left' }}>
-                    {player(p.player_id, `${p.name}${tag(p.player_id)}`)}
+                    {player(p.player_id, ``)}
                     <div className="scorecard-dismissal">{p.out ? dismissalText(p.out) : p.at_crease && st.status !== 'completed' ? 'batting' : 'not out'}</div>
-                    <button type="button" className="scorecard-wheel" aria-expanded={wheelFor === p.player_id}
-                      onClick={() => setWheelFor(wheelFor === p.player_id ? null : p.player_id)}>Wagon wheel</button>
+                    <button type="button" className="scorecard-wheel" title="Wagon wheel" aria-label="Wagon wheel" aria-expanded={wheelFor === p.player_id}
+                      onClick={() => setWheelFor(wheelFor === p.player_id ? null : p.player_id)}>◔</button>
                   </td>
-                  <td style={{ ...td, fontWeight: 800 }}>{p.runs}</td><td style={td}>{p.balls}</td><td style={td}>{p.fours}</td><td style={td}>{p.sixes}</td><td style={td}>{sr(p.runs, p.balls)}</td>
+                  <td style={{ ...td, fontWeight: 800 }}>{p.runs}</td><td style={td}>{p.balls}</td><td style={td}>{p.fours}</td><td style={td}>{p.sixes}</td><td style={td}>{sr(p.runs, p.balls)}</td><td style={td}>{p.minutes ?? '–'}</td>
                 </tr>
                 {wheelFor === p.player_id && (
-                  <tr><td colSpan={6} style={{ padding: '0.6rem', borderBottom: '1px solid #eef2f7' }}>
+                  <tr><td colSpan={7} style={{ padding: '0.6rem', borderBottom: '1px solid #eef2f7' }}>
                     <WagonWheel matchId={matchId} inningsNo={inn.innings_no} batterId={p.player_id} title={`${p.name} – ${p.runs} (${p.balls})`} refreshKey={refreshKey} />
                   </td></tr>
                 )}
@@ -118,16 +118,16 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
             ))}
             <tr>
               <td style={{ ...td, textAlign: 'left', fontWeight: 700 }}>Extras</td>
-              <td colSpan={5} style={{ ...td, textAlign: 'left' }}><strong>{inn.extras}</strong> <span style={{ color: '#64748b' }}>(b {ex.byes || 0}, lb {ex.leg_byes || 0}, w {ex.wides || 0}, nb {ex.no_balls || 0}{inn.penalty_runs ? `, p ${inn.penalty_runs}` : ''})</span></td>
+              <td colSpan={6} style={{ ...td, textAlign: 'left' }}><strong>{inn.extras}</strong> <span style={{ color: '#64748b' }}>(b {ex.byes || 0}, lb {ex.leg_byes || 0}, w {ex.wides || 0}, nb {ex.no_balls || 0}{inn.penalty_runs ? `, p ${inn.penalty_runs}` : ''})</span></td>
             </tr>
             <tr style={{ backgroundColor: '#f8fafc' }}>
               <td style={{ ...td, textAlign: 'left', fontWeight: 800 }}>Total</td>
-              <td colSpan={5} style={{ ...td, textAlign: 'left' }}><strong>{inn.runs}</strong> <span style={{ color: '#64748b' }}>({inn.wickets} wkts, {oversText(inn.legal_balls)} Ov, RR {rr})</span></td>
+              <td colSpan={6} style={{ ...td, textAlign: 'left' }}><strong>{inn.runs}</strong> <span style={{ color: '#64748b' }}>({inn.wickets} wkts, {oversText(inn.legal_balls)} Ov, RR {rr})</span></td>
             </tr>
             {yetToBat.length > 0 && (
               <tr>
                 <td style={{ ...td, textAlign: 'left', fontWeight: 700 }}>{done ? 'Did not bat' : 'Yet to bat'}</td>
-                <td colSpan={5} style={{ ...td, textAlign: 'left', color: '#1d4ed8' }}>{yetToBat.join(', ')}</td>
+                <td colSpan={6} style={{ ...td, textAlign: 'left', color: '#1d4ed8' }}>{yetToBat.join(', ')}</td>
               </tr>
             )}
           </tbody>

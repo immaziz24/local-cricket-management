@@ -19,3 +19,9 @@
   }
   .scorecard-section :is(th, td):first-child { padding-inline-start: 0.35rem !important; }
 }
+
+.scorecard-wheel { padding: 0; margin-inline-start: 0.25rem; width: 1.5rem; height: 1.5rem; border: 1px solid #cbd5e1; border-radius: 50%; }
+@media (max-width: 600px) {
+  .content-container:has(.full-scorecard) { padding-inline: 0; }
+  .full-scorecard { border-radius: 0 !important; border-inline: 0 !important; }
+}
