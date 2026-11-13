@@ -6,10 +6,28 @@ import {
 export const menuLanguages = [
   { code: 'en', name: 'English' },
   { code: 'bn', name: 'বাংলা' },
-  { code: 'hi', name: 'हिन्दी' }
+  { code: 'hi', name: 'हिन्दी' },
+  { code: 'mr', name: 'मराठी' },
+  { code: 'ta', name: 'தமிழ்' }
 ];
 
 const translations = {
+  mr: {
+    dashboard: 'मुख्यपृष्ठ', teams: 'माझे संघ', matches: 'सामने', tournaments: 'स्पर्धा',
+    'create-tournament': 'स्पर्धा तयार करा', stats: 'खेळाडू व आकडेवारी', community: 'समुदाय',
+    news: 'बातम्या', media: 'थेट व मीडिया', sponsors: 'प्रायोजक', grounds: 'मैदाने',
+    officials: 'पंच व गुणलेखक', learn: 'शिका व प्रश्नमंजुषा', laws: 'कायदे व नियम',
+    tools: 'क्रिकेट साधने', penalties: 'उशिरा येण्याचे नियम', settings: 'सेटिंग्ज व गोपनीयता',
+    admin: 'प्रशासन', Explore: 'शोधा', Help: 'मदत', Account: 'खाते', live: 'थेट'
+  },
+  ta: {
+    dashboard: 'முகப்பு', teams: 'என் அணிகள்', matches: 'போட்டிகள்', tournaments: 'தொடர்கள்',
+    'create-tournament': 'தொடரை உருவாக்கு', stats: 'வீரர்கள் மற்றும் புள்ளிவிவரங்கள்', community: 'சமூகம்',
+    news: 'செய்திகள்', media: 'நேரலை மற்றும் ஊடகம்', sponsors: 'ஆதரவாளர்கள்', grounds: 'மைதானங்கள்',
+    officials: 'நடுவர்கள் மற்றும் மதிப்பெண் பதிவாளர்கள்', learn: 'கற்றல் மற்றும் வினாடி வினா', laws: 'சட்டங்கள் மற்றும் விதிகள்',
+    tools: 'கிரிக்கெட் கருவிகள்', penalties: 'தாமத வருகை விதிகள்', settings: 'அமைப்புகள் மற்றும் தனியுரிமை',
+    admin: 'நிர்வாகம்', Explore: 'ஆராய்க', Help: 'உதவி', Account: 'கணக்கு', live: 'நேரலை'
+  },
   bn: {
     dashboard: 'হোম', teams: 'আমার দল', matches: 'ম্যাচ', tournaments: 'টুর্নামেন্ট',
     'create-tournament': 'টুর্নামেন্ট তৈরি করুন', stats: 'খেলোয়াড় ও পরিসংখ্যান', community: 'কমিউনিটি',

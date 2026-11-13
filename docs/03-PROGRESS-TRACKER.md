@@ -18,8 +18,8 @@
 | :--- | :---: |
 | ✅ Verified | 4 / 310 |
 | 🟩 Working (real database) | 179 / 310 |
-| 🟨 Built or prepared, awaiting verification | 115 / 310 |
-| ⬜ Not started | 12 / 310 |
+| 🟨 Built or prepared, awaiting verification | 116 / 310 |
+| ⬜ Not started | 11 / 310 |
 
 **Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5: Category H community & marketplace (17) Category I live streaming & media (12) Category J branding, sponsorship & promotion (11) and Category K news & learning (16) connected – Phase 5 complete (56/56 built).** Next: Phase 6, Category M.
 
@@ -38,7 +38,7 @@
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
 | 4 | F, G, Q | 37 | 0 | 0 | 37 | 0 |
 | 5 | H, I, J, K | 56 | 0 | 2 | 54 | 0 |
-| 6 | M, O, P | 49 | 12 | 33 | 0 | 4 |
+| 6 | M, O, P | 49 | 11 | 34 | 0 | 4 |
 
 ## 4. Supporting screens (not numbered features)
 
@@ -458,4 +458,4 @@
 | 295 | Bengali language support | 🟨 | Android navigation and signed-in web menus use Bengali when the device or browser uses Bengali. Signed-in web menu language can be selected in Settings. Page translations and owner check pending. |
 | 296 | Hindi language support | 🟨 | Android navigation and signed-in web menus use Hindi when the device or browser uses Hindi. Signed-in web menu language can be selected in Settings. Page translations and owner check pending. |
 | 297 | Future iOS application | ⬜ | Safari home-screen icon prepared. Native iOS app remains unstarted. |
-| 298 | Multi-language expansion | ⬜ | Shared menu language list prepared. Additional languages remain unstarted. |
+| 298 | Multi-language expansion | 🟨 | Marathi and Tamil added to signed-in web menus. Page translations and owner check pending. |
