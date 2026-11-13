@@ -151,7 +151,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem', maxWidth: 1000, margin: '0 auto', width: '100%' }}>
+    <div className="match-centre" style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem', maxWidth: 1000, margin: '0 auto', width: '100%' }}>
       <button type="button" onClick={() => onNavigate(data.tournament ? 'tournament-details' : 'matches', data.tournament?.id)}
         style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'inline-flex', gap: '0.3rem', alignItems: 'center', color: '#334155', fontSize: '0.85rem', alignSelf: 'flex-start' }}>
         <ArrowLeft size={16} /> {data.tournament ? data.tournament.name : 'All matches'}
@@ -241,7 +241,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       {m.status !== 'scheduled' && (
         <nav className="match-tabs" aria-label="Match sections">
           {[['live', m.status === 'live' ? 'Live' : 'Summary'], ['scorecard', 'Scorecard'], ['commentary', 'Commentary'], ['over', 'Over'], ['analysis', 'Analysis'], ['lineups', 'Playing XI'], ['matchday', 'Match day'], ['officials', 'Ground & officials'], ['rules', 'Rules'], ['media', 'Video & media'], ['news', 'Previews & reports'], ['reports', 'Reports'], ['history', 'History']].map(([v, l]) => (
-            <button key={v} type="button" aria-pressed={tab === v} onClick={(event) => { setTab(v); event.currentTarget.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }}
+            <button key={v} type="button" aria-pressed={tab === v} onClick={() => setTab(v)}
               style={{ padding: '0.55rem 1rem', border: 'none', borderBottom: `3px solid ${tab === v ? '#059669' : 'transparent'}`, background: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', color: tab === v ? '#065f46' : '#64748b' }}>
               {l}
             </button>

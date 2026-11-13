@@ -40,8 +40,12 @@
 }
 
 @media (max-width: 480px) {
+  .match-centre { gap: 0.7rem !important; }
+  .match-hero { gap: 0.65rem; }
+  .match-tabs button { padding-inline: 0.6rem !important; font-size: 0.8rem !important; }
   .match-live-table { font-size: 0.72rem; }
   .match-live-table thead tr { font-size: 0.66rem !important; }
   .match-live-table :is(th, td):not(:first-child) { padding-inline: 0.14rem !important; }
   .match-live-table :is(th, td):first-child { overflow-wrap: anywhere; }
 }
+.match-centre, .match-centre > * { min-width: 0; }
