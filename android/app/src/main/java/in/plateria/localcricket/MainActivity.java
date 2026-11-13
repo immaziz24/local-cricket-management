@@ -24,6 +24,7 @@ import android.webkit.WebViewClient;
 import android.widget.Toast;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.PopupMenu;
 
 public final class MainActivity extends Activity {
     private static final String HOST = "localcricket.plateria.in";
@@ -105,7 +106,10 @@ public final class MainActivity extends Activity {
         addDestination(navigation, "Home", "dashboard");
         addDestination(navigation, "Matches", "matches");
         addDestination(navigation, "Score", "matches#filter=mine");
-        addDestination(navigation, "Tournaments", "tournaments");
+        addMenu(navigation, "Play", new String[]{"My teams", "Players & Stats"},
+                new String[]{"teams", "stats"});
+        addMenu(navigation, "Organise", new String[]{"Tournaments", "Create tournament"},
+                new String[]{"tournaments", "create-tournament"});
         addDestination(navigation, "Account", "settings");
         layout.addView(navigation);
         setContentView(layout);
@@ -240,12 +244,35 @@ public final class MainActivity extends Activity {
         }
     }
 
+    private void addMenu(LinearLayout navigation, String label, String[] labels, String[] pages) {
+        Button button = navigationButton(navigation, label);
+        button.setOnClickListener(view -> {
+            PopupMenu menu = new PopupMenu(this, button);
+            for (int index = 0; index < labels.length; index++) {
+                menu.getMenu().add(0, index, index, labels[index]);
+            }
+            menu.setOnMenuItemClickListener(item -> {
+                showPage(pages[item.getItemId()]);
+                return true;
+            });
+            menu.show();
+        });
+    }
+
     private void addDestination(LinearLayout navigation, String label, String page) {
+        navigationButton(navigation, label).setOnClickListener(view -> showPage(page));
+    }
+
+    private void showPage(String page) {
+        website.loadUrl("https://" + HOST + "/?page=" + page);
+    }
+
+    private Button navigationButton(LinearLayout navigation, String label) {
         Button button = new Button(this);
         button.setText(label);
         button.setAllCaps(false);
-        button.setOnClickListener(view -> website.loadUrl("https://" + HOST + "/?page=" + page));
         navigation.addView(button, new LinearLayout.LayoutParams(0, -2, 1));
+        return button;
     }
 
     @Override
