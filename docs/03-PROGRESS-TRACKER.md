@@ -444,9 +444,9 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 284 | Android player application | 🟨 | Play menu opens My teams and Players & Stats on Android v0.8.0. Owner flow check pending. |
-| 285 | Android scorer application | 🟨 | Android Score shortcut opens My matches for signed-in scorers. Full scoring flow check pending. |
-| 286 | Android organiser application | 🟨 | Organise menu opens Tournaments and Create tournament on Android v0.8.0. Owner flow check pending. |
+| 284 | Android player application | 🟨 | My teams and Players & Stats are available through the shared menu on Android. Owner flow check pending. |
+| 285 | Android scorer application | 🟨 | Signed-in scorers can open Matches → My matches from the shared Android menu. Full scoring flow check pending. |
+| 286 | Android organiser application | 🟨 | Tournaments and Create tournament are available through the shared menu on Android. Owner flow check pending. |
 | 287 | Push notifications | 🟨 | Opt-in in-app alerts within 30 km of a match ground. Android push queue migration prepared. Firebase setup, delivery and device checks pending. |
 | 288 | Offline scoring in Android | 🟨 | Cached match page can reopen offline after an online visit. Tablet scoring check pending. |
 | 289 | Background synchronisation | 🟨 | Queued scoring retries on reconnect and return to the app. Sync while closed is pending. |
@@ -455,7 +455,7 @@
 | 292 | QR-based registration | 🟨 | Organiser can display a QR link to the tournament Teams tab. Scan and registration check pending. |
 | 293 | Camera integration | 🟨 | Android image upload chooser includes camera capture. Owner upload check pending. |
 | 294 | Ground finder using location | 🟨 | Android location permission wired to existing Near me search. Tablet check pending. |
-| 295 | Bengali language support | 🟨 | Android navigation and signed-in web menus use Bengali when the device or browser uses Bengali. Signed-in web menu language can be selected in Settings. Page translations and owner check pending. |
-| 296 | Hindi language support | 🟨 | Android navigation and signed-in web menus use Hindi when the device or browser uses Hindi. Signed-in web menu language can be selected in Settings. Page translations and owner check pending. |
+| 295 | Bengali language support | 🟨 | Signed-in menus on web and Android use Bengali when the device or browser uses Bengali. Signed-in web menu language can be selected in Settings. Page translations and owner check pending. |
+| 296 | Hindi language support | 🟨 | Signed-in menus on web and Android use Hindi when the device or browser uses Hindi. Signed-in web menu language can be selected in Settings. Page translations and owner check pending. |
 | 297 | Future iOS application | 🟨 | iOS project scaffold and shared website integration written. Xcode build and device check pending. |
 | 298 | Multi-language expansion | 🟨 | Marathi and Tamil added to signed-in web menus. Page translations and owner check pending. |

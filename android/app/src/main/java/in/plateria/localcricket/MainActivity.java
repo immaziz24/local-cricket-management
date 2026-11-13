@@ -22,9 +22,7 @@ import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
-import android.widget.Button;
 import android.widget.LinearLayout;
-import android.widget.PopupMenu;
 
 public final class MainActivity extends Activity {
     private static final String HOST = "localcricket.plateria.in";
@@ -121,16 +119,6 @@ public final class MainActivity extends Activity {
             return insets;
         });
         layout.addView(website, new LinearLayout.LayoutParams(-1, 0, 1));
-        LinearLayout navigation = new LinearLayout(this);
-        addDestination(navigation, getString(R.string.nav_home), "dashboard");
-        addDestination(navigation, getString(R.string.nav_matches), "matches");
-        addDestination(navigation, getString(R.string.nav_score), "matches#filter=mine");
-        addMenu(navigation, getString(R.string.nav_play), new String[]{getString(R.string.nav_teams), getString(R.string.nav_stats)},
-                new String[]{"teams", "stats"});
-        addMenu(navigation, getString(R.string.nav_organise), new String[]{getString(R.string.nav_tournaments), getString(R.string.nav_create_tournament)},
-                new String[]{"tournaments", "create-tournament"});
-        addDestination(navigation, getString(R.string.nav_account), "settings");
-        layout.addView(navigation);
         setContentView(layout);
         if (savedState == null || website.restoreState(savedState) == null) {
             openLink(getIntent());
@@ -275,37 +263,6 @@ public final class MainActivity extends Activity {
                 startActivity(Intent.createChooser(share, title == null ? "Share" : title.substring(0, Math.min(title.length(), 100))));
             });
         }
-    }
-
-    private void addMenu(LinearLayout navigation, String label, String[] labels, String[] pages) {
-        Button button = navigationButton(navigation, label);
-        button.setOnClickListener(view -> {
-            PopupMenu menu = new PopupMenu(this, button);
-            for (int index = 0; index < labels.length; index++) {
-                menu.getMenu().add(0, index, index, labels[index]);
-            }
-            menu.setOnMenuItemClickListener(item -> {
-                showPage(pages[item.getItemId()]);
-                return true;
-            });
-            menu.show();
-        });
-    }
-
-    private void addDestination(LinearLayout navigation, String label, String page) {
-        navigationButton(navigation, label).setOnClickListener(view -> showPage(page));
-    }
-
-    private void showPage(String page) {
-        website.loadUrl("https://" + HOST + "/?page=" + page);
-    }
-
-    private Button navigationButton(LinearLayout navigation, String label) {
-        Button button = new Button(this);
-        button.setText(label);
-        button.setAllCaps(false);
-        navigation.addView(button, new LinearLayout.LayoutParams(0, -2, 1));
-        return button;
     }
 
     @Override
