@@ -14,6 +14,7 @@ import { AdsPanel } from '../brand/AdsPanel.jsx';
 import { CampaignModeration } from '../brand/CampaignModeration.jsx';
 import { ReportedArticlesPanel } from '../news/NewsLearnViews.jsx';
 import { AdminControlCentre } from '../admin/AdminControlCentre.jsx';
+import { downloadBlob } from '../media/mediaUtils.js';
 
 /** Settings & Privacy (every member) and Admin Panel (Admin / Super-Admin). */
 function Tabs({ tabs, tab, setTab }) {
@@ -38,6 +39,19 @@ function PageTitle({ title, sub }) {
 }
 
 const inr = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' });
+
+function downloadReceipt(payment) {
+  const receipt = [
+    'Cricnotch payment receipt',
+    'Receipt reference: ' + payment.id,
+    'Payment: ' + payment.description,
+    'Captured: ' + new Date(payment.captured_at).toLocaleString('en-IN'),
+    'Amount paid: ' + inr.format(payment.amount_paise / 100),
+    'Amount refunded: ' + inr.format(payment.refunded_paise / 100),
+    'Amount after refunds: ' + inr.format((payment.amount_paise - payment.refunded_paise) / 100)
+  ].join('\n');
+  downloadBlob(new Blob([receipt], { type: 'text/plain;charset=utf-8' }), `cricnotch-receipt-${payment.id}.txt`);
+}
 
 function PaymentReport({ revenue = false }) {
   const [data, setData] = useState(null);
@@ -68,6 +82,7 @@ function PaymentReport({ revenue = false }) {
               <strong>{payment.description}</strong> · {inr.format(payment.amount_paise / 100)}
               {' · '}{new Date(payment.captured_at).toLocaleDateString('en-IN')}
               {payment.refunded_paise > 0 && <> · Refunded {inr.format(payment.refunded_paise / 100)}</>}
+              {' · '}<button type="button" className="home-link" onClick={() => downloadReceipt(payment)}>Download receipt</button>
             </li>
           ))}
         </ul>
