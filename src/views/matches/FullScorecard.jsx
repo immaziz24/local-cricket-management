@@ -17,10 +17,8 @@ const td = { padding: '0.55rem 0.5rem', fontSize: '0.86rem', textAlign: 'right',
 const sec = { backgroundColor: '#f1f5f9', fontWeight: 700, fontSize: '0.84rem', padding: '0.5rem 0.6rem', color: '#334155' };
 const linkBtn = { background: 'none', border: 'none', padding: 0, color: '#1d4ed8', cursor: 'pointer', font: 'inherit', textAlign: 'left' };
 
-function innLabel(inn, all) {
-  if (inn.is_super_over) return 'Super Over';
-  const n = all.filter((x) => !x.is_super_over && x.batting_team.id === inn.batting_team.id && x.innings_no <= inn.innings_no).length;
-  return n === 2 ? '2nd Inn' : '1st Inn';
+function innLabel(inn) {
+  return inn.is_super_over ? 'Super Over' : `Innings ${inn.innings_no}`;
 }
 
 export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
@@ -82,7 +80,7 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
           return (
             <button key={x.id} type="button" onClick={() => { setSel(i); setWheelFor(null); }}
               style={{ padding: '0.45rem 0.95rem', borderRadius: 999, border: 'none', cursor: 'pointer', fontWeight: 600, fontSize: '0.9rem', backgroundColor: on ? GREEN : '#e2e8f0', color: on ? '#fff' : '#0f172a' }}>
-              {x.batting_team.short_name || x.batting_team.name} ({innLabel(x, inns)})
+              {x.batting_team.short_name || x.batting_team.name} ({innLabel(x)})
             </button>
           );
         })}
@@ -90,27 +88,32 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
 
       <div className="scorecard-section">
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: GREEN, color: '#fff', padding: '0.65rem 0.75rem', fontWeight: 700 }}>
-          <span>{inn.batting_team.name} {inn.is_super_over ? 'Super Over' : innLabel(inn, inns).replace('Inn', 'Innings')}</span>
+          <span>{inn.batting_team.name} {innLabel(inn)}</span>
           <span>{inn.runs}-{inn.wickets} <span style={{ fontWeight: 400 }}>({oversText(inn.legal_balls)} Ov)</span></span>
         </div>
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead><tr style={{ backgroundColor: '#f1f5f9' }}>
-            <th style={{ ...th, textAlign: 'left' }}>Batter</th><th style={th}>R</th><th style={th}>B</th><th style={th}>4s</th><th style={th}>6s</th><th style={th}>SR</th><th style={th} title="Minutes batted">M</th>
+            <th style={{ ...th, textAlign: 'left' }}>Batter</th><th style={th}>R</th><th style={th}>B</th><th style={th}>4s</th><th style={th}>6s</th><th style={th}>SR</th><th style={th} title="Minutes batted">M</th><th style={th} aria-label="Wagon wheel" />
           </tr></thead>
           <tbody>
             {inn.batting.map((p) => (
               <React.Fragment key={p.player_id}>
                 <tr>
                   <td style={{ ...td, textAlign: 'left' }}>
-                    {player(p.player_id, ``)}
+                    <strong className="scorecard-batter-name">
+                      {player(p.player_id, (p.name?.trim() || nameOf(p.player_id) || 'Unknown batter') + tag(p.player_id))}
+                      {st.status === 'live' && inn.id === st.current?.innings_id && p.on_strike ? ' *' : ''}
+                    </strong>
                     <div className="scorecard-dismissal">{p.out ? dismissalText(p.out) : p.at_crease && st.status !== 'completed' ? 'batting' : 'not out'}</div>
+                  </td>
+                  <td style={{ ...td, fontWeight: 800 }}>{p.runs}</td><td style={td}>{p.balls}</td><td style={td}>{p.fours}</td><td style={td}>{p.sixes}</td><td style={td}>{sr(p.runs, p.balls)}</td><td style={td}>{p.minutes ?? '–'}</td>
+                  <td style={td}>
                     <button type="button" className="scorecard-wheel" title="Wagon wheel" aria-label="Wagon wheel" aria-expanded={wheelFor === p.player_id}
                       onClick={() => setWheelFor(wheelFor === p.player_id ? null : p.player_id)}>◔</button>
                   </td>
-                  <td style={{ ...td, fontWeight: 800 }}>{p.runs}</td><td style={td}>{p.balls}</td><td style={td}>{p.fours}</td><td style={td}>{p.sixes}</td><td style={td}>{sr(p.runs, p.balls)}</td><td style={td}>{p.minutes ?? '–'}</td>
                 </tr>
                 {wheelFor === p.player_id && (
-                  <tr><td colSpan={7} style={{ padding: '0.6rem', borderBottom: '1px solid #eef2f7' }}>
+                  <tr><td colSpan={8} style={{ padding: '0.6rem', borderBottom: '1px solid #eef2f7' }}>
                     <WagonWheel matchId={matchId} inningsNo={inn.innings_no} batterId={p.player_id} title={`${p.name} – ${p.runs} (${p.balls})`} refreshKey={refreshKey} />
                   </td></tr>
                 )}
@@ -118,16 +121,16 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
             ))}
             <tr>
               <td style={{ ...td, textAlign: 'left', fontWeight: 700 }}>Extras</td>
-              <td colSpan={6} style={{ ...td, textAlign: 'left' }}><strong>{inn.extras}</strong> <span style={{ color: '#64748b' }}>(b {ex.byes || 0}, lb {ex.leg_byes || 0}, w {ex.wides || 0}, nb {ex.no_balls || 0}{inn.penalty_runs ? `, p ${inn.penalty_runs}` : ''})</span></td>
+              <td colSpan={7} style={{ ...td, textAlign: 'left' }}><strong>{inn.extras}</strong> <span style={{ color: '#64748b' }}>(b {ex.byes || 0}, lb {ex.leg_byes || 0}, w {ex.wides || 0}, nb {ex.no_balls || 0}{inn.penalty_runs ? `, p ${inn.penalty_runs}` : ''})</span></td>
             </tr>
             <tr style={{ backgroundColor: '#f8fafc' }}>
               <td style={{ ...td, textAlign: 'left', fontWeight: 800 }}>Total</td>
-              <td colSpan={6} style={{ ...td, textAlign: 'left' }}><strong>{inn.runs}</strong> <span style={{ color: '#64748b' }}>({inn.wickets} wkts, {oversText(inn.legal_balls)} Ov, RR {rr})</span></td>
+              <td colSpan={7} style={{ ...td, textAlign: 'left' }}><strong>{inn.runs}</strong> <span style={{ color: '#64748b' }}>({inn.wickets} wkts, {oversText(inn.legal_balls)} Ov, RR {rr})</span></td>
             </tr>
             {yetToBat.length > 0 && (
               <tr>
                 <td style={{ ...td, textAlign: 'left', fontWeight: 700 }}>{done ? 'Did not bat' : 'Yet to bat'}</td>
-                <td colSpan={6} style={{ ...td, textAlign: 'left', color: '#1d4ed8' }}>{yetToBat.join(', ')}</td>
+                <td colSpan={7} style={{ ...td, textAlign: 'left', color: '#1d4ed8' }}>{yetToBat.join(', ')}</td>
               </tr>
             )}
           </tbody>

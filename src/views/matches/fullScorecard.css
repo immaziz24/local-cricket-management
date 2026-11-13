@@ -25,3 +25,7 @@
   .content-container:has(.full-scorecard) { padding-inline: 0; }
   .full-scorecard { border-radius: 0 !important; border-inline: 0 !important; }
 }
+
+.scorecard-batter-name { display: block; font-weight: 800; }
+.scorecard-batter-name button { appearance: none; display: inline; font-weight: inherit; }
+.scorecard-section .scorecard-wheel { margin: 0; width: 1.35rem; height: 1.35rem; }

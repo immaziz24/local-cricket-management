@@ -193,6 +193,7 @@
 | 2026-11-13 | Codex | Checked the match page on the Realme and compacted tabs and spacing further. |
 | 2026-11-13 | Codex | Removed forced scorecard table widths and moved batting details under player names for phones. |
 | 2026-11-13 | Codex | Added scorecard batting minutes and live striker mark, restored the wagon-wheel icon, and removed phone side gutters. |
+| 2026-11-13 | Codex | Corrected scorecard innings order and missing batter names. Moved the wagon wheel after batting minutes. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |
