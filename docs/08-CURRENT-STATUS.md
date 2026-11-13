@@ -182,6 +182,7 @@
 | 2026-11-13 | Codex | #272–273: deployed the paid-plan catalogue and added it to Membership settings. Pricing, checkout and activation pending. |
 | 2026-11-13 | Codex | #274: wrote test-mode Razorpay payment link creation using server-side offer prices. Deployment, capture verification and UI pending. |
 | 2026-11-13 | Codex | #274: deployed test checkout and connected it to paid plans. Test credentials, active offers and payment verification pending. |
+| 2026-11-13 | Codex | #274: deployed signed Razorpay test payment verification and duplicate-safe payment recording. Test configuration and end-to-end check pending. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |
