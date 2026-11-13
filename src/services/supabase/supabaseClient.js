@@ -605,9 +605,9 @@ export const supabaseClient = {
     const me = await supabase.rpc('get_my_player');
     const playerId = me.data?.id;
     const [owned, member] = await Promise.all([
-      supabase.from('teams').select('id, name, short_name, city, logo_url, owner_id, created_at').eq('owner_id', uid),
+      supabase.from('teams').select('id, name, short_name, city, logo_url, owner_id, created_at').eq('owner_id', uid).is('archived_at', null),
       playerId
-        ? supabase.from('team_members').select('team_id, teams(id, name, short_name, city, logo_url, owner_id, created_at)').eq('player_id', playerId)
+        ? supabase.from('team_members').select('team_id, teams!inner(id, name, short_name, city, logo_url, owner_id, created_at)').eq('player_id', playerId).is('teams.archived_at', null)
         : Promise.resolve({ data: [] })
     ]);
     if (owned.error) return { data: null, error: friendlyError(owned.error, 'teams') };

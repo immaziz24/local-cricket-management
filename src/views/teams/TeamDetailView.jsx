@@ -233,7 +233,7 @@ export function TeamDetailView({ teamId, onNavigate }) {
           } finally {
             setBusy(false);
           }
-        }}>{confirmDelete ? 'Confirm permanent deletion' : 'Delete team'}</Button>
+        }}>{confirmDelete ? 'Confirm removal from My Teams' : 'Remove team'}</Button>
       )}
       {team.i_own && squad.length > 0 && (
         <details>
