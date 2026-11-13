@@ -402,7 +402,7 @@
 | :---: | :--- | :---: | :--- |
 | 233 | Men's T20 International playing conditions | ✅ | Migration ran and owner verified in the browser on 2026-11-13. |
 | 234 | Men's ODI playing conditions | ✅ | Migration ran and owner verified in the browser on 2026-11-13. |
-| 235 | Men's Test playing conditions | 🟨 | Learn → Rules article prepared. Migration and owner browser check pending. |
+| 235 | Men's Test playing conditions | 🟨 | Published and confirmed in Supabase on 2026-11-13. Owner browser check pending. |
 | 236 | Women's T20 International playing conditions | ⬜ |  |
 | 237 | Women's ODI playing conditions | ⬜ |  |
 | 238 | ICC tournament playing conditions | ⬜ |  |
