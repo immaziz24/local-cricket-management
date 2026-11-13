@@ -36,6 +36,7 @@ public final class MainActivity extends Activity {
     private static final int SAVE_LINEUP = 31;
     private static final int PICK_FILE = 33;
     private ValueCallback<Uri[]> fileCallback;
+    private Uri capturedPhoto;
 
     @Override
     protected void onCreate(Bundle savedState) {
@@ -49,8 +50,26 @@ public final class MainActivity extends Activity {
                 if (fileCallback != null) fileCallback.onReceiveValue(null);
                 fileCallback = callback;
                 try {
-                    startActivityForResult(params.createIntent(), PICK_FILE);
+                    Intent files = params.createIntent();
+                    if (android.os.Build.VERSION.SDK_INT >= 29
+                            && java.util.Arrays.stream(params.getAcceptTypes()).anyMatch(type -> type.startsWith("image/"))) {
+                        ContentValues photo = new ContentValues();
+                        photo.put(MediaStore.Images.Media.DISPLAY_NAME, "cricnotch-camera-" + System.currentTimeMillis() + ".jpg");
+                        photo.put(MediaStore.Images.Media.MIME_TYPE, "image/jpeg");
+                        capturedPhoto = getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, photo);
+                        if (capturedPhoto != null) {
+                            Intent camera = new Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                                    .putExtra(MediaStore.EXTRA_OUTPUT, capturedPhoto)
+                                    .addFlags(Intent.FLAG_GRANT_WRITE_URI_PERMISSION | Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            camera.setClipData(android.content.ClipData.newRawUri("Photo", capturedPhoto));
+                            files = Intent.createChooser(files, "Choose a photo")
+                                    .putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{camera});
+                        }
+                    }
+                    startActivityForResult(files, PICK_FILE);
                 } catch (ActivityNotFoundException exception) {
+                    if (capturedPhoto != null) getContentResolver().delete(capturedPhoto, null, null);
+                    capturedPhoto = null;
                     fileCallback = null;
                     callback.onReceiveValue(null);
                 }
@@ -213,7 +232,21 @@ public final class MainActivity extends Activity {
         if (request == PICK_FILE && fileCallback != null) {
             ValueCallback<Uri[]> callback = fileCallback;
             fileCallback = null;
-            callback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result, data));
+            Uri[] files = WebChromeClient.FileChooserParams.parseResult(result, data);
+            if (capturedPhoto != null) {
+                if (result == RESULT_OK && files == null) {
+                    try (android.os.ParcelFileDescriptor photo = getContentResolver().openFileDescriptor(capturedPhoto, "r")) {
+                        if (photo != null && photo.getStatSize() > 0) files = new Uri[]{capturedPhoto};
+                    } catch (IOException ignored) {
+                        // The camera did not produce a readable photo.
+                    }
+                }
+                if (files == null || !capturedPhoto.equals(files[0])) {
+                    getContentResolver().delete(capturedPhoto, null, null);
+                }
+                capturedPhoto = null;
+            }
+            callback.onReceiveValue(files);
             return;
         }
         if (request != SAVE_LINEUP) return;
