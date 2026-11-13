@@ -3,8 +3,28 @@ import {
   ShieldAlert, Settings, Shield, Handshake, Newspaper, GraduationCap
 } from 'lucide-react';
 
+const translations = {
+  bn: {
+    dashboard: 'হোম', teams: 'আমার দল', matches: 'ম্যাচ', tournaments: 'টুর্নামেন্ট',
+    'create-tournament': 'টুর্নামেন্ট তৈরি করুন', stats: 'খেলোয়াড় ও পরিসংখ্যান', community: 'কমিউনিটি',
+    news: 'খবর', media: 'লাইভ ও মিডিয়া', sponsors: 'স্পনসর', grounds: 'মাঠ',
+    officials: 'আম্পায়ার ও স্কোরার', learn: 'শিখুন ও কুইজ', laws: 'আইন ও নিয়ম',
+    tools: 'ক্রিকেট টুল', penalties: 'দেরিতে আসার নিয়ম', settings: 'সেটিংস ও গোপনীয়তা',
+    admin: 'অ্যাডমিন প্যানেল', Explore: 'ঘুরে দেখুন', Help: 'সহায়তা', Account: 'অ্যাকাউন্ট', live: 'লাইভ'
+  },
+  hi: {
+    dashboard: 'होम', teams: 'मेरी टीमें', matches: 'मैच', tournaments: 'टूर्नामेंट',
+    'create-tournament': 'टूर्नामेंट बनाएँ', stats: 'खिलाड़ी और आँकड़े', community: 'समुदाय',
+    news: 'समाचार', media: 'लाइव और मीडिया', sponsors: 'प्रायोजक', grounds: 'मैदान',
+    officials: 'अंपायर और स्कोरर', learn: 'सीखें और क्विज़', laws: 'कानून और नियम',
+    tools: 'क्रिकेट टूल', penalties: 'देर से आने के नियम', settings: 'सेटिंग्स और गोपनीयता',
+    admin: 'एडमिन पैनल', Explore: 'देखें', Help: 'सहायता', Account: 'खाता', live: 'लाइव'
+  }
+};
+
 // Signed-in members: grouped menu. Admin group only for Admin / Super-Admin.
 export function memberNav({ isAdmin, liveMatchCount = 0 }) {
+  const labels = translations[globalThis.navigator?.language?.split('-')[0]];
   return [
     { title: null, items: [
       { id: 'dashboard', label: 'Home', icon: Home },
@@ -32,7 +52,15 @@ export function memberNav({ isAdmin, liveMatchCount = 0 }) {
       { id: 'settings', label: 'Settings & Privacy', icon: Settings },
       ...(isAdmin ? [{ id: 'admin', label: 'Admin Panel', icon: Shield }] : [])
     ] }
-  ];
+  ].map(group => ({
+    ...group,
+    title: labels?.[group.title] || group.title,
+    items: group.items.map(item => ({
+      ...item,
+      label: labels?.[item.id] || item.label,
+      badge: item.badge && labels ? `${liveMatchCount} ${labels.live}` : item.badge
+    }))
+  }));
 }
 
 export const isActiveItem = (item, activeTab) => item.id === activeTab || (item.also || []).includes(activeTab);
