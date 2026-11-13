@@ -82,7 +82,7 @@ export function PlayerProfileView({ playerId, onNavigate }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '1.25rem', padding: '1.5rem', backgroundColor: '#0f172a', borderRadius: '0.75rem', color: '#fff', flexWrap: 'wrap' }}>
         <Avatar url={p.photo_url} name={p.display_name} size={84} dark onPick={p.can_edit_photo ? uploadPhoto : undefined} busy={busy} />
         <div style={{ flex: 1 }}>
-          <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800 }}>{p.display_name}</h2>
+          <h2 style={{ margin: 0, fontSize: '1.6rem', fontWeight: 800, color: '#fff', overflowWrap: 'anywhere' }}>{p.display_name?.trim() || 'Player'}</h2>
           <div style={{ fontSize: '0.85rem', color: '#cbd5e1', marginTop: '0.2rem' }}>Player ID: <strong style={{ color: '#fff', fontFamily: 'monospace' }}>{p.player_code}</strong></div>
           <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', marginTop: '0.5rem' }}>
             <Badge variant={p.is_registered ? 'success' : 'neutral'}>{p.is_registered ? 'Registered' : 'Not registered yet'}</Badge>
@@ -95,6 +95,7 @@ export function PlayerProfileView({ playerId, onNavigate }) {
         </div>
       </div>
 
+      <PlayerShareCard profile={p} stats={stats} />
       <Card title="Cricket details">
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.6rem' }}>
           {details.map(([k, v]) => (
@@ -145,7 +146,6 @@ export function PlayerProfileView({ playerId, onNavigate }) {
 
       {/* #182 player video profile, #187 player card */}
       <MediaGallery scope="player" scopeId={playerId} kinds={['video']} title="Video profile" subtitle="Batting, bowling and fielding clips – added by the player or their team owner" />
-      <PlayerShareCard profile={p} stats={stats} />
 
       {/* #204 interviews, #205 success stories */}
       <ArticleFeed title="Interviews & stories" subtitle={`Articles about ${p.display_name || 'this player'}`} filter={{ player_id: playerId }}

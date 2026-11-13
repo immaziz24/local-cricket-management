@@ -123,7 +123,10 @@ public final class MainActivity extends Activity {
         layout.addView(website, new LinearLayout.LayoutParams(-1, 0, 1));
         setContentView(layout);
         if (savedState == null || website.restoreState(savedState) == null) {
-            openLink(getIntent());
+            if (!openLink(getIntent())) {
+                String lastPage = getPreferences(MODE_PRIVATE).getString("last_page", "");
+                website.loadUrl(isCricnotchPage(Uri.parse(lastPage)) ? lastPage : "https://" + HOST + "/");
+            }
         }
     }
 
@@ -143,15 +146,27 @@ public final class MainActivity extends Activity {
         openLink(intent);
     }
 
-    private void openLink(Intent intent) {
-        Uri link = intent.getData();
-        if (Intent.ACTION_VIEW.equals(intent.getAction()) && link != null
-                && "https".equals(link.getScheme()) && HOST.equals(link.getHost())
-                && (link.getPort() == -1 || link.getPort() == 443)) {
-            website.loadUrl(link.toString());
-        } else {
-            website.loadUrl("https://" + HOST + "/");
+    private static boolean isCricnotchPage(Uri link) {
+        return link != null && "https".equals(link.getScheme()) && HOST.equals(link.getHost())
+                && link.getUserInfo() == null && (link.getPort() == -1 || link.getPort() == 443);
+    }
+
+    @Override
+    protected void onPause() {
+        String page = website.getUrl();
+        if (page != null && isCricnotchPage(Uri.parse(page))) {
+            getPreferences(MODE_PRIVATE).edit().putString("last_page", page).apply();
         }
+        super.onPause();
+    }
+
+    private boolean openLink(Intent intent) {
+        Uri link = intent.getData();
+        if (Intent.ACTION_VIEW.equals(intent.getAction()) && isCricnotchPage(link)) {
+            website.loadUrl(link.toString());
+            return true;
+        }
+        return false;
     }
 
     private final class LineupDownloads {
