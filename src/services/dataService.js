@@ -1085,6 +1085,17 @@ export const dataService = {
     return res.data;
   },
 
+  async requestPaymentRefund(id, reason) {
+    const { error } = await supabaseClient.requestPaymentRefund(id, reason);
+    if (error) throw new Error(error);
+  },
+
+  async listPaymentRefundRequests() {
+    const { data, error } = await supabaseClient.listPaymentRefundRequests();
+    if (error) throw new Error(error);
+    return data;
+  },
+
   async getMyPaymentHistory() {
     const { data, error } = await supabaseClient.getMyPaymentHistory();
     if (error) throw new Error(error);

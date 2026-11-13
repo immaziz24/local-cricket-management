@@ -1416,6 +1416,16 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async requestPaymentRefund(id, reason) {
+    const { data, error } = await supabase.rpc('request_payment_refund', { p_id: id, p_reason: reason });
+    return { data, error: error ? friendlyError(error, 'refund request') : null };
+  },
+
+  async listPaymentRefundRequests() {
+    const { data, error } = await supabase.rpc('list_payment_refund_requests');
+    return { data, error: error ? friendlyError(error, 'refund requests') : null };
+  },
+
   async getMyPaymentHistory() {
     const { data, error } = await supabase.rpc('get_my_payment_history');
     return { data, error: error ? friendlyError(error, 'payment history') : null };

@@ -57,12 +57,29 @@ function downloadReceipt(payment) {
 function PaymentReport({ revenue = false }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
+  const [notice, setNotice] = useState('');
+  const [refunds, setRefunds] = useState([]);
+
+  const requestRefund = async (id) => {
+    const reason = window.prompt('Why are you requesting a refund?');
+    if (!reason?.trim()) return;
+    setNotice('');
+    try {
+      await dataService.requestPaymentRefund(id, reason.trim());
+      setNotice('Refund request recorded.');
+    } catch (err) {
+      setNotice(err.message);
+    }
+  };
 
   useEffect(() => {
     let active = true;
     const request = revenue ? dataService.getRevenueDashboard() : dataService.getMyPaymentHistory();
     request.then(result => { if (active) setData(result); })
       .catch(err => { if (active) setError(err.message); });
+    if (revenue) dataService.listPaymentRefundRequests()
+      .then(result => { if (active) setRefunds(result); })
+      .catch(err => { if (active) setNotice(err.message); });
     return () => { active = false; };
   }, [revenue]);
 
@@ -84,10 +101,22 @@ function PaymentReport({ revenue = false }) {
               {' · '}{new Date(payment.captured_at).toLocaleDateString('en-IN')}
               {payment.refunded_paise > 0 && <> · Refunded {inr.format(payment.refunded_paise / 100)}</>}
               {' · '}<button type="button" className="home-link" onClick={() => downloadReceipt(payment)}>Download receipt</button>
+              {payment.refunded_paise < payment.amount_paise && (
+                <> · <button type="button" className="home-link" onClick={() => requestRefund(payment.id)}>Request refund</button></>
+              )}
             </li>
           ))}
         </ul>
       )}
+      {revenue && data && (
+        <>
+          <h3>Refund requests</h3>
+          {refunds.length ? <ul>{refunds.map(refund => (
+            <li key={refund.payment_id}><strong>{refund.description}</strong> · {refund.reason}</li>
+          ))}</ul> : <p>No open requests.</p>}
+        </>
+      )}
+      {notice && <p role="status">{notice}</p>}
     </section>
   );
 }
