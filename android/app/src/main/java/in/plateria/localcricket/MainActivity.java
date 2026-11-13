@@ -5,6 +5,8 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.content.ContentValues;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.webkit.JavascriptInterface;
 import java.io.IOException;
@@ -80,6 +82,10 @@ public final class MainActivity extends Activity {
                 byte[] bytes = Base64.decode(image.substring(prefix.length()), Base64.DEFAULT);
                 if (bytes.length < 8 || bytes[0] != (byte) 137 || bytes[1] != 80
                         || bytes[2] != 78 || bytes[3] != 71) return;
+                if (android.os.Build.VERSION.SDK_INT >= 29) {
+                    saveToDownloads(bytes);
+                    return;
+                }
                 runOnUiThread(() -> {
                     if (pendingLineup != null) return;
                     pendingLineup = bytes;
@@ -97,6 +103,35 @@ public final class MainActivity extends Activity {
             } catch (IllegalArgumentException ignored) {
                 // An invalid image cannot be exported.
             }
+        }
+    }
+
+    private void saveToDownloads(byte[] bytes) {
+        Uri destination = null;
+        try {
+            ContentValues values = new ContentValues();
+            values.put(MediaStore.Downloads.DISPLAY_NAME, "cricnotch-playing-xi-" + System.currentTimeMillis() + ".png");
+            values.put(MediaStore.Downloads.MIME_TYPE, "image/png");
+            values.put(MediaStore.Downloads.IS_PENDING, 1);
+            destination = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+            if (destination == null) throw new IOException("Could not create download");
+            try (OutputStream output = getContentResolver().openOutputStream(destination)) {
+                if (output == null) throw new IOException("Could not open download");
+                output.write(bytes);
+            }
+            values.clear();
+            values.put(MediaStore.Downloads.IS_PENDING, 0);
+            getContentResolver().update(destination, values, null, null);
+            runOnUiThread(() -> Toast.makeText(this, "Saved to Downloads.", Toast.LENGTH_SHORT).show());
+        } catch (IOException | RuntimeException exception) {
+            if (destination != null) {
+                try {
+                    getContentResolver().delete(destination, null, null);
+                } catch (RuntimeException ignored) {
+                    // Storage may no longer be available.
+                }
+            }
+            runOnUiThread(() -> Toast.makeText(this, "Could not save the lineup.", Toast.LENGTH_SHORT).show());
         }
     }
 
