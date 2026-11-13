@@ -9,7 +9,7 @@ Website for local/grassroots cricket (React 18 + Vite frontend, Supabase backend
 
 ## Rules
 - **Open platform:** every registered user can create tournaments, teams and matches and score them. Owners control what they created. Organiser / team owner / captain / scorer / umpire are earned per tournament, team or match — never handed out by the owner. Only Admin and Super-Admin are appointed by hand. See section 6a of the master blueprint.
-- One feature at a time, in phase order. Finish, test and record it before starting the next.
+- Batch as many related features as practical, following phase order. Test and record each feature individually. Group owner browser checks so implementation can continue while checks are pending.
 - A feature counts as done only when it works with the real database and the owner has checked it in the browser.
 - All data access goes through `src/services/dataService.js`. Views never call Supabase directly.
 - Never commit secrets. `.env` holds only the Supabase URL and publishable/anon key; the service-role key never goes in the frontend.

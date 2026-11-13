@@ -18,7 +18,7 @@ Read this first, then `CLAUDE.md`, `docs/08-CURRENT-STATUS.md`, `docs/01-MASTER-
 
 ## Rules that must be kept (from CLAUDE.md)
 1. Feature numbers and names come only from `docs/01-MASTER-BLUEPRINT.md`. Never renumber, rename or invent features.
-2. One feature at a time, in phase order. A feature is done only when it works with the real database and the owner has checked it in the browser.
+2. Batch related features in phase order and group owner browser checks. A feature is done only when it works with the real database and the owner has checked it in the browser.
 3. Views never call Supabase directly. Every call goes through `src/services/supabase/supabaseClient.js` (returns `{data, error}`) and `src/services/dataService.js` (throws on error).
 4. Open platform: any registered user can create tournaments, teams and matches. Owners control what they create; only Admin and Super-Admin are appointed by hand.
 5. Never commit secrets. `.env` holds only the Supabase URL and the publishable/anon key. Check that no `.env` file is in a commit.
