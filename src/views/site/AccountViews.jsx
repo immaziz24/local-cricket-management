@@ -15,6 +15,7 @@ import { CampaignModeration } from '../brand/CampaignModeration.jsx';
 import { ReportedArticlesPanel } from '../news/NewsLearnViews.jsx';
 import { AdminControlCentre } from '../admin/AdminControlCentre.jsx';
 import { downloadBlob } from '../media/mediaUtils.js';
+import { menuLanguages } from '../../components/layout/navItems.js';
 
 /** Settings & Privacy (every member) and Admin Panel (Admin / Super-Admin). */
 function Tabs({ tabs, tab, setTab }) {
@@ -104,9 +105,7 @@ export function SettingsView({ currentUser, onNavigate, language, onLanguageChan
           <label>
             Menu language{' '}
             <select value={language} onChange={event => onLanguageChange(event.target.value)}>
-              <option value="en">English</option>
-              <option value="bn" lang="bn">বাংলা</option>
-              <option value="hi" lang="hi">हिन्दी</option>
+              {menuLanguages.map(({ code, name }) => <option key={code} value={code} lang={code}>{name}</option>)}
             </select>
           </label>
         </section>

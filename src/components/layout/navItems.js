@@ -3,6 +3,12 @@ import {
   ShieldAlert, Settings, Shield, Handshake, Newspaper, GraduationCap
 } from 'lucide-react';
 
+export const menuLanguages = [
+  { code: 'en', name: 'English' },
+  { code: 'bn', name: 'বাংলা' },
+  { code: 'hi', name: 'हिन्दी' }
+];
+
 const translations = {
   bn: {
     dashboard: 'হোম', teams: 'আমার দল', matches: 'ম্যাচ', tournaments: 'টুর্নামেন্ট',
@@ -66,10 +72,10 @@ export function memberNav({ isAdmin, liveMatchCount = 0 }) {
 export function readLanguage() {
   try {
     const saved = localStorage.getItem('cricnotch-language');
-    if (['en', 'bn', 'hi'].includes(saved)) return saved;
+    if (menuLanguages.some(({ code }) => code === saved)) return saved;
   } catch { /* Storage can be unavailable. */ }
   const device = globalThis.navigator?.language?.split('-')[0];
-  return device === 'bn' || device === 'hi' ? device : 'en';
+  return menuLanguages.some(({ code }) => code === device) ? device : 'en';
 }
 
 export const isActiveItem = (item, activeTab) => item.id === activeTab || (item.also || []).includes(activeTab);
