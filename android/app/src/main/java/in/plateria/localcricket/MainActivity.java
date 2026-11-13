@@ -5,10 +5,13 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.view.WindowInsets;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 public final class MainActivity extends Activity {
     private static final String HOST = "localcricket.plateria.in";
@@ -39,10 +42,34 @@ public final class MainActivity extends Activity {
                 return true;
             }
         });
-        setContentView(website);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setOnApplyWindowInsetsListener((view, insets) -> {
+            if (android.os.Build.VERSION.SDK_INT >= 30) {
+                android.graphics.Insets bars = insets.getInsets(WindowInsets.Type.systemBars()
+                        | WindowInsets.Type.displayCutout() | WindowInsets.Type.ime());
+                view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+            }
+            return insets;
+        });
+        layout.addView(website, new LinearLayout.LayoutParams(-1, 0, 1));
+        LinearLayout navigation = new LinearLayout(this);
+        addDestination(navigation, "Matches", "matches");
+        addDestination(navigation, "Tournaments", "tournaments");
+        addDestination(navigation, "Account", "settings");
+        layout.addView(navigation);
+        setContentView(layout);
         if (savedState == null || website.restoreState(savedState) == null) {
             website.loadUrl("https://" + HOST + "/");
         }
+    }
+
+    private void addDestination(LinearLayout navigation, String label, String page) {
+        Button button = new Button(this);
+        button.setText(label);
+        button.setAllCaps(false);
+        button.setOnClickListener(view -> website.loadUrl("https://" + HOST + "/?page=" + page));
+        navigation.addView(button, new LinearLayout.LayoutParams(0, -2, 1));
     }
 
     @Override
