@@ -104,7 +104,7 @@
 
 ## 4. Next steps (in order)
 
-0. **Phase 6 in progress:** #233–235 are verified by the owner. #236 is published in Supabase. Owner to check the article and its ICC PDF in Learn → Rules.
+0. **Phase 6 in progress:** #233–236 are verified by the owner. Next is #237 Women's ODI playing conditions.
 
    **Remaining order:** Category M (21 features), then O (13) and P (15). Phase 5 (Categories H, I, J, K) done 2026-11-11.
 1. **Owner check of #265** (Category N → User Governance → Verification): request a badge, approve it. Push to GitHub (today's work is not on GitHub yet).
@@ -145,7 +145,7 @@
 | 2026-11-13 | Codex | Phase 6 #233: prepared the Learn → Rules article using the October 2026 ICC conditions. Owner ran the migration and verified the article in the browser. |
 | 2026-11-13 | Codex | Phase 6 #234: prepared the Men's ODI rules article. Owner ran the migration and verified the article in the browser. |
 | 2026-11-13 | Codex | Phase 6 #235: ran the Men's Test rules migration and confirmed the article is published in Supabase. Owner verified in the browser. |
-| 2026-11-13 | Codex | Phase 6 #236: published the Women's T20 International rules article in Supabase. Owner browser check pending. |
+| 2026-11-13 | Codex | Phase 6 #236: published the Women's T20 International rules article in Supabase. Owner confirmed the article works. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |
