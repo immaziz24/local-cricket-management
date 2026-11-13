@@ -1,3 +1,4 @@
+import './fullScorecard.css';
 import React, { useEffect, useMemo, useState } from 'react';
 import { dataService } from '../../services/dataService.js';
 import { dismissalText, oversText } from './ScoringPanel.jsx';
@@ -72,7 +73,7 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
   const player = (id, text) => (onNavigate && id ? <button type="button" style={linkBtn} onClick={() => onNavigate('player-profile', id)}>{text}</button> : <span style={{ color: '#1d4ed8' }}>{text}</span>);
 
   return (
-    <div style={{ backgroundColor: '#fff', borderRadius: '0.9rem', border: '1px solid #e2e8f0', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
+    <div className="full-scorecard" style={{ backgroundColor: '#fff', borderRadius: '0.9rem', border: '1px solid #e2e8f0', padding: '1rem', display: 'flex', flexDirection: 'column', gap: '0.9rem' }}>
       {status && <div style={{ color: status.color, fontSize: '1rem', fontWeight: 600 }}>{status.text}</div>}
 
       <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -87,28 +88,29 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
         })}
       </div>
 
-      <div style={{ overflowX: 'auto' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: GREEN, color: '#fff', padding: '0.65rem 0.75rem', fontWeight: 700, minWidth: 560 }}>
+      <div className="scorecard-section">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: GREEN, color: '#fff', padding: '0.65rem 0.75rem', fontWeight: 700 }}>
           <span>{inn.batting_team.name} {inn.is_super_over ? 'Super Over' : innLabel(inn, inns).replace('Inn', 'Innings')}</span>
           <span>{inn.runs}-{inn.wickets} <span style={{ fontWeight: 400 }}>({oversText(inn.legal_balls)} Ov)</span></span>
         </div>
-        <table style={{ width: '100%', minWidth: 560, borderCollapse: 'collapse' }}>
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead><tr style={{ backgroundColor: '#f1f5f9' }}>
-            <th style={{ ...th, textAlign: 'left' }}>Batter</th><th style={{ ...th, textAlign: 'left' }} /><th style={th}>R</th><th style={th}>B</th><th style={th}>4s</th><th style={th}>6s</th><th style={th}>SR</th><th style={th} />
+            <th style={{ ...th, textAlign: 'left' }}>Batter</th><th style={th}>R</th><th style={th}>B</th><th style={th}>4s</th><th style={th}>6s</th><th style={th}>SR</th>
           </tr></thead>
           <tbody>
             {inn.batting.map((p) => (
               <React.Fragment key={p.player_id}>
                 <tr>
-                  <td style={{ ...td, textAlign: 'left', minWidth: 120 }}>{player(p.player_id, `${p.name}${tag(p.player_id)}`)}</td>
-                  <td style={{ ...td, textAlign: 'left', color: '#64748b', fontSize: '0.82rem', minWidth: 150 }}>{p.out ? dismissalText(p.out) : p.at_crease ? (st.status === 'completed' ? 'not out' : 'batting') : 'not out'}</td>
-                  <td style={{ ...td, fontWeight: 800 }}>{p.runs}</td><td style={td}>{p.balls}</td><td style={td}>{p.fours}</td><td style={td}>{p.sixes}</td><td style={td}>{sr(p.runs, p.balls)}</td>
-                  <td style={{ ...td, width: 34 }}>
-                    <button type="button" title="Wagon wheel" onClick={() => setWheelFor(wheelFor === p.player_id ? null : p.player_id)} style={{ border: '1px solid #cbd5e1', borderRadius: 999, width: 26, height: 26, cursor: 'pointer', backgroundColor: wheelFor === p.player_id ? '#ecfdf5' : '#fff', fontSize: '0.7rem' }}>◔</button>
+                  <td style={{ ...td, textAlign: 'left' }}>
+                    {player(p.player_id, `${p.name}${tag(p.player_id)}`)}
+                    <div className="scorecard-dismissal">{p.out ? dismissalText(p.out) : p.at_crease && st.status !== 'completed' ? 'batting' : 'not out'}</div>
+                    <button type="button" className="scorecard-wheel" aria-expanded={wheelFor === p.player_id}
+                      onClick={() => setWheelFor(wheelFor === p.player_id ? null : p.player_id)}>Wagon wheel</button>
                   </td>
+                  <td style={{ ...td, fontWeight: 800 }}>{p.runs}</td><td style={td}>{p.balls}</td><td style={td}>{p.fours}</td><td style={td}>{p.sixes}</td><td style={td}>{sr(p.runs, p.balls)}</td>
                 </tr>
                 {wheelFor === p.player_id && (
-                  <tr><td colSpan={8} style={{ padding: '0.6rem', borderBottom: '1px solid #eef2f7' }}>
+                  <tr><td colSpan={6} style={{ padding: '0.6rem', borderBottom: '1px solid #eef2f7' }}>
                     <WagonWheel matchId={matchId} inningsNo={inn.innings_no} batterId={p.player_id} title={`${p.name} – ${p.runs} (${p.balls})`} refreshKey={refreshKey} />
                   </td></tr>
                 )}
@@ -116,16 +118,16 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
             ))}
             <tr>
               <td style={{ ...td, textAlign: 'left', fontWeight: 700 }}>Extras</td>
-              <td colSpan={7} style={{ ...td, textAlign: 'left' }}><strong>{inn.extras}</strong> <span style={{ color: '#64748b' }}>(b {ex.byes || 0}, lb {ex.leg_byes || 0}, w {ex.wides || 0}, nb {ex.no_balls || 0}{inn.penalty_runs ? `, p ${inn.penalty_runs}` : ''})</span></td>
+              <td colSpan={5} style={{ ...td, textAlign: 'left' }}><strong>{inn.extras}</strong> <span style={{ color: '#64748b' }}>(b {ex.byes || 0}, lb {ex.leg_byes || 0}, w {ex.wides || 0}, nb {ex.no_balls || 0}{inn.penalty_runs ? `, p ${inn.penalty_runs}` : ''})</span></td>
             </tr>
             <tr style={{ backgroundColor: '#f8fafc' }}>
               <td style={{ ...td, textAlign: 'left', fontWeight: 800 }}>Total</td>
-              <td colSpan={7} style={{ ...td, textAlign: 'left' }}><strong>{inn.runs}</strong> <span style={{ color: '#64748b' }}>({inn.wickets} wkts, {oversText(inn.legal_balls)} Ov, RR {rr})</span></td>
+              <td colSpan={5} style={{ ...td, textAlign: 'left' }}><strong>{inn.runs}</strong> <span style={{ color: '#64748b' }}>({inn.wickets} wkts, {oversText(inn.legal_balls)} Ov, RR {rr})</span></td>
             </tr>
             {yetToBat.length > 0 && (
               <tr>
                 <td style={{ ...td, textAlign: 'left', fontWeight: 700 }}>{done ? 'Did not bat' : 'Yet to bat'}</td>
-                <td colSpan={7} style={{ ...td, textAlign: 'left', color: '#1d4ed8' }}>{yetToBat.join(', ')}</td>
+                <td colSpan={5} style={{ ...td, textAlign: 'left', color: '#1d4ed8' }}>{yetToBat.join(', ')}</td>
               </tr>
             )}
           </tbody>
@@ -133,9 +135,9 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
       </div>
 
       {inn.fall_of_wickets.length > 0 && (
-        <div style={{ overflowX: 'auto' }}>
+        <div className="scorecard-section">
           <div style={sec}>Fall of wickets</div>
-          <table style={{ width: '100%', minWidth: 400, borderCollapse: 'collapse' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead><tr><th style={{ ...th, textAlign: 'left' }}>Batter</th><th style={th}>Score</th><th style={th}>Over</th></tr></thead>
             <tbody>{inn.fall_of_wickets.map((f) => (
               <tr key={f.wicket}><td style={{ ...td, textAlign: 'left', color: '#1d4ed8' }}>{f.name}</td><td style={td}>{f.runs}-{f.wicket}</td><td style={td}>{f.over}</td></tr>
@@ -144,8 +146,8 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
         </div>
       )}
 
-      <div style={{ overflowX: 'auto' }}>
-        <table style={{ width: '100%', minWidth: 560, borderCollapse: 'collapse' }}>
+      <div className="scorecard-section">
+        <table style={{ width: '100%', borderCollapse: 'collapse' }}>
           <thead><tr style={{ backgroundColor: '#f1f5f9' }}>
             <th style={{ ...th, textAlign: 'left' }}>Bowler</th><th style={th}>O</th><th style={th}>M</th><th style={th}>R</th><th style={th}>W</th><th style={th}>NB</th><th style={th}>WD</th><th style={th}>ECO</th>
           </tr></thead>
@@ -160,9 +162,9 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
       </div>
 
       {pships.length > 0 && (
-        <div style={{ overflowX: 'auto' }}>
+        <div className="scorecard-section">
           <div style={sec}>Partnerships</div>
-          <table style={{ width: '100%', minWidth: 400, borderCollapse: 'collapse' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead><tr><th style={{ ...th, textAlign: 'left' }}>Wicket</th><th style={{ ...th, textAlign: 'left' }}>Batters</th><th style={th}>Runs</th><th style={th}>Balls</th></tr></thead>
             <tbody>{pships.map((p) => (
               <tr key={p.wicket}><td style={{ ...td, textAlign: 'left' }}>{p.wicket}</td><td style={{ ...td, textAlign: 'left' }}>{p.batters || '–'}</td><td style={{ ...td, fontWeight: 700 }}>{p.runs}</td><td style={td}>{p.balls}</td></tr>

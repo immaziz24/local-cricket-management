@@ -1,0 +1,21 @@
+.scorecard-section { min-width: 0; }
+.scorecard-section span,
+.scorecard-section td { overflow-wrap: anywhere; }
+.scorecard-dismissal { color: #64748b; font-size: 0.76rem; }
+.scorecard-wheel {
+  border: 0;
+  padding: 0.3rem 0;
+  background: transparent;
+  color: #065f46;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+@media (max-width: 600px) {
+  .full-scorecard { padding: 0.55rem !important; }
+  .scorecard-section :is(th, td) {
+    padding: 0.5rem 0.19rem !important;
+    font-size: 0.72rem !important;
+    font-variant-numeric: tabular-nums;
+  }
+  .scorecard-section :is(th, td):first-child { padding-inline-start: 0.35rem !important; }
+}
