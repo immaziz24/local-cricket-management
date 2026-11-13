@@ -18,8 +18,8 @@
 | :--- | :---: |
 | ✅ Verified | 4 / 310 |
 | 🟩 Working (real database) | 179 / 310 |
-| 🟨 Built or prepared, awaiting verification | 109 / 310 |
-| ⬜ Not started | 18 / 310 |
+| 🟨 Built or prepared, awaiting verification | 111 / 310 |
+| ⬜ Not started | 16 / 310 |
 
 **Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5: Category H community & marketplace (17) Category I live streaming & media (12) Category J branding, sponsorship & promotion (11) and Category K news & learning (16) connected – Phase 5 complete (56/56 built).** Next: Phase 6, Category M.
 
@@ -38,7 +38,7 @@
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
 | 4 | F, G, Q | 37 | 0 | 0 | 37 | 0 |
 | 5 | H, I, J, K | 56 | 0 | 2 | 54 | 0 |
-| 6 | M, O, P | 49 | 18 | 27 | 0 | 4 |
+| 6 | M, O, P | 49 | 16 | 29 | 0 | 4 |
 
 ## 4. Supporting screens (not numbered features)
 
@@ -448,8 +448,8 @@
 | 285 | Android scorer application | 🟨 | Android Score shortcut opens My matches for signed-in scorers. Full scoring flow check pending. |
 | 286 | Android organiser application | 🟨 | Organise menu opens Tournaments and Create tournament on Android v0.8.0. Owner flow check pending. |
 | 287 | Push notifications | ⬜ |  |
-| 288 | Offline scoring in Android | ⬜ |  |
-| 289 | Background synchronisation | ⬜ |  |
+| 288 | Offline scoring in Android | 🟨 | Cached match page can reopen offline after an online visit. Tablet scoring check pending. |
+| 289 | Background synchronisation | 🟨 | Queued scoring retries on reconnect and return to the app. Sync while closed is pending. |
 | 290 | Deep links | 🟨 | Android link handling implemented. Public domain association and link checks pending. |
 | 291 | Match and tournament sharing | 🟨 | Website match and tournament links can be shared. Android share sheet connected for match and tournament links. Device checks pending. |
 | 292 | QR-based registration | 🟨 | Organiser can display a QR link to the tournament Teams tab. Scan and registration check pending. |

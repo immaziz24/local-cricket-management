@@ -8,6 +8,11 @@ import { ArrowLeft, Coins, MapPin, Clock, Trophy, AlertCircle, CheckCircle, Shar
 import { LineupPanel } from '../tournaments/LineupPanel.jsx';
 import { ScoringPanel } from './ScoringPanel.jsx';
 import { loadQueue } from './offlineScoring.js';
+
+function readCachedMatch(matchId) {
+  try { return JSON.parse(localStorage.getItem(`cricnotch:match-centre:${matchId}`)); }
+  catch { return null; }
+}
 import { FullScorecard } from './FullScorecard.jsx';
 import { CommentaryPanel } from './CommentaryPanel.jsx';
 import { MatchHistoryPanel } from './MatchHistoryPanel.jsx';
@@ -48,10 +53,25 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
   const [finishReason, setFinishReason] = useState('');
 
   const load = async () => {
-    try { setData(await dataService.fetchMatchCentre(matchId)); setError(null); }
-    catch (err) { setError(err.message); }
+    try {
+      const match = await dataService.fetchMatchCentre(matchId);
+      setData(match);
+      setError(null);
+      try {
+        // The scoring panel separately restores its cached scoring state.
+        localStorage.setItem(`cricnotch:match-centre:${matchId}`, JSON.stringify({ ...match, can_score: false }));
+      } catch { /* storage may be unavailable */ }
+    } catch (err) {
+      const cached = !navigator.onLine && readCachedMatch(matchId);
+      if (cached) { setData(cached); setError(null); }
+      else setError(err.message);
+    }
   };
   useEffect(() => { load(); }, [matchId]);
+  useEffect(() => {
+    window.addEventListener('online', load);
+    return () => window.removeEventListener('online', load);
+  }, [matchId]);
   // #29 instant updates: every ball scored anywhere refreshes this page
   useEffect(() => dataService.subscribeToMatch(matchId, () => { load(); setRefreshKey((k) => k + 1); }), [matchId]);
 

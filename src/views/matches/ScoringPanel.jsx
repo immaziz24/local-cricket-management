@@ -167,10 +167,22 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   useEffect(() => {
     const on = () => { setOnline(true); flush(); };
     const off = () => setOnline(false);
+    const foreground = () => {
+      if (document.visibilityState === 'visible') {
+        setOnline(navigator.onLine);
+        if (navigator.onLine) flush();
+      }
+    };
     window.addEventListener('online', on); window.addEventListener('offline', off);
+    document.addEventListener('visibilitychange', foreground);
     flush();
     const id = setInterval(() => { if (queueRef.current.length) flush(); }, 10000);
-    return () => { window.removeEventListener('online', on); window.removeEventListener('offline', off); clearInterval(id); };
+    return () => {
+      window.removeEventListener('online', on);
+      window.removeEventListener('offline', off);
+      document.removeEventListener('visibilitychange', foreground);
+      clearInterval(id);
+    };
   }, [matchId]);
 
   /** Ball or player change: send now, or keep on the device when there is no internet. */
