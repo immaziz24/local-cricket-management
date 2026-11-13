@@ -185,6 +185,7 @@
 | 2026-11-13 | Codex | #274: deployed signed Razorpay test payment verification and duplicate-safe payment recording. Test configuration and end-to-end check pending. |
 | 2026-11-13 | Codex | #297: added a SwiftUI iOS project that opens the shared site. Xcode build and device check pending. Razorpay work deferred at owner request. |
 | 2026-11-13 | Codex | #287: added opt-in 30 km match-start alerts in the notification inbox. Android push and device test pending. |
+| 2026-11-13 | Codex | #287: prepared an Android push queue fed by the existing 30 km alert rule. Queue deployment, Firebase setup and device delivery pending. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |

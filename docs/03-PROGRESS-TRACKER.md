@@ -447,7 +447,7 @@
 | 284 | Android player application | 🟨 | Play menu opens My teams and Players & Stats on Android v0.8.0. Owner flow check pending. |
 | 285 | Android scorer application | 🟨 | Android Score shortcut opens My matches for signed-in scorers. Full scoring flow check pending. |
 | 286 | Android organiser application | 🟨 | Organise menu opens Tournaments and Create tournament on Android v0.8.0. Owner flow check pending. |
-| 287 | Push notifications | 🟨 | Opt-in in-app alerts within 30 km of a match ground. Android push delivery pending. |
+| 287 | Push notifications | 🟨 | Opt-in in-app alerts within 30 km of a match ground. Android push queue migration prepared. Firebase setup, delivery and device checks pending. |
 | 288 | Offline scoring in Android | 🟨 | Cached match page can reopen offline after an online visit. Tablet scoring check pending. |
 | 289 | Background synchronisation | 🟨 | Queued scoring retries on reconnect and return to the app. Sync while closed is pending. |
 | 290 | Deep links | 🟨 | Android link handling implemented. Public domain association and link checks pending. |
