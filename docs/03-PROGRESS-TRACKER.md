@@ -18,8 +18,8 @@
 | :--- | :---: |
 | ✅ Verified | 4 / 310 |
 | 🟩 Working (real database) | 179 / 310 |
-| 🟨 Built or prepared, awaiting verification | 82 / 310 |
-| ⬜ Not started | 45 / 310 |
+| 🟨 Built or prepared, awaiting verification | 99 / 310 |
+| ⬜ Not started | 28 / 310 |
 
 **Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5: Category H community & marketplace (17) Category I live streaming & media (12) Category J branding, sponsorship & promotion (11) and Category K news & learning (16) connected – Phase 5 complete (56/56 built).** Next: Phase 6, Category M.
 
@@ -38,7 +38,7 @@
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
 | 4 | F, G, Q | 37 | 0 | 0 | 37 | 0 |
 | 5 | H, I, J, K | 56 | 0 | 2 | 54 | 0 |
-| 6 | M, O, P | 49 | 45 | 0 | 0 | 4 |
+| 6 | M, O, P | 49 | 28 | 17 | 0 | 4 |
 
 ## 4. Supporting screens (not numbered features)
 
@@ -404,23 +404,23 @@
 | 234 | Men's ODI playing conditions | ✅ | Migration ran and owner verified in the browser on 2026-11-13. |
 | 235 | Men's Test playing conditions | ✅ | Owner verified in the browser on 2026-11-13. |
 | 236 | Women's T20 International playing conditions | ✅ | Published in Supabase and owner verified in the browser on 2026-11-13. |
-| 237 | Women's ODI playing conditions | ⬜ |  |
-| 238 | ICC tournament playing conditions | ⬜ |  |
-| 239 | Cricket equipment regulations | ⬜ |  |
-| 240 | Bat regulations | ⬜ |  |
-| 241 | Ball regulations | ⬜ |  |
-| 242 | Player eligibility regulations | ⬜ |  |
-| 243 | Concussion replacement regulations | ⬜ |  |
-| 244 | Substitute player regulations | ⬜ |  |
-| 245 | Over-rate regulations | ⬜ |  |
-| 246 | DRS regulations | ⬜ |  |
-| 247 | Player code of conduct | ⬜ |  |
-| 248 | Match referee regulations | ⬜ |  |
-| 249 | Anti-corruption regulations | ⬜ |  |
-| 250 | Anti-doping regulations | ⬜ |  |
-| 251 | Anti-discrimination regulations | ⬜ |  |
-| 252 | Player disciplinary regulations | ⬜ |  |
-| 253 | Umpire regulations | ⬜ |  |
+| 237 | Women's ODI playing conditions | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 238 | ICC tournament playing conditions | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 239 | Cricket equipment regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 240 | Bat regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 241 | Ball regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 242 | Player eligibility regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 243 | Concussion replacement regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 244 | Substitute player regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 245 | Over-rate regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 246 | DRS regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 247 | Player code of conduct | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 248 | Match referee regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 249 | Anti-corruption regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 250 | Anti-doping regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 251 | Anti-discrimination regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 252 | Player disciplinary regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
+| 253 | Umpire regulations | 🟨 | Published in Supabase on 2026-11-13. Owner browser check pending. |
 
 **Category O – Revenue and business management**
 
