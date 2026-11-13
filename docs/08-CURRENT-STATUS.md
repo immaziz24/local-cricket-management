@@ -173,6 +173,7 @@
 | 2026-11-13 | Codex | #295–296: added Bengali and Hindi Android navigation labels. Built and installed on the tablet. Website translations and owner checks pending. |
 | 2026-11-13 | Codex | Extended Bengali and Hindi labels to the signed-in desktop and mobile web menus. Page translations and owner checks pending. |
 | 2026-11-13 | Codex | Added Settings → Language for English, Bengali and Hindi signed-in menus. Preference is saved locally. |
+| 2026-11-13 | Codex | Added a shared header clock showing device-local weekday, date and time with seconds. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |

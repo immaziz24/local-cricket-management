@@ -167,6 +167,7 @@ export function SiteHeader({ currentUser, isAdmin, liveMatchCount = 0, activeTab
         </div>
       </div>
 
+      <HeaderClock />
       {mobileSearch && (
         <div className="hdr-mobile-search">
           <GlobalSearch onNavigate={go} compact autoFocus onDone={() => setMobileSearch(false)} />
@@ -174,6 +175,28 @@ export function SiteHeader({ currentUser, isAdmin, liveMatchCount = 0, activeTab
         </div>
       )}
     </header>
+  );
+}
+
+const clockFormat = new Intl.DateTimeFormat(undefined, {
+  weekday: 'long', year: 'numeric', month: 'short', day: 'numeric',
+  hour: 'numeric', minute: '2-digit', second: '2-digit'
+});
+
+function HeaderClock() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <time dateTime={now.toISOString()} style={{
+      display: 'block', textAlign: 'end', padding: '0 1rem 0.35rem',
+      color: '#475569', fontSize: '0.78rem', fontVariantNumeric: 'tabular-nums'
+    }}>
+      {clockFormat.format(now)}
+    </time>
   );
 }
 
