@@ -188,6 +188,7 @@
 | 2026-11-13 | Codex | #287: prepared an Android push queue fed by the existing 30 km alert rule. Queue deployment, Firebase setup and device delivery pending. |
 | 2026-11-13 | Codex | Removed the crowded native bottom bar in Android v0.9.0. Built, installed and launched on the Realme 11 Pro. Navigation uses the shared site menu. |
 | 2026-11-13 | Codex | Kept Log in visible on phones and moved the live counter beside the header clock. |
+| 2026-11-13 | Codex | Built and installed Android v0.9.1 with keyboard inset handling for the login gap. Visual keyboard check pending. |
 | 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
 | 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |

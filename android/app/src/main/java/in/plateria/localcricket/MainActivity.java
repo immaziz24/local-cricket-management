@@ -115,6 +115,8 @@ public final class MainActivity extends Activity {
                 android.graphics.Insets bars = insets.getInsets(WindowInsets.Type.systemBars()
                         | WindowInsets.Type.displayCutout() | WindowInsets.Type.ime());
                 view.setPadding(bars.left, bars.top, bars.right, bars.bottom);
+                // The root already accounts for the keyboard. Do not resize WebView again.
+                return WindowInsets.CONSUMED;
             }
             return insets;
         });
