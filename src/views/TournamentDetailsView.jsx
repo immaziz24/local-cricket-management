@@ -98,6 +98,20 @@ export function TournamentDetailsView(props) {
     return () => { isMounted = false; };
   }, [tournamentId]);
 
+  const shareTournament = async () => {
+    const url = new URL(window.location.pathname, window.location.origin);
+    url.searchParams.set('tournament', tournament.id);
+    if (navigator.share) {
+      try {
+        await navigator.share({ title: tournament.name, url: url.href });
+        return;
+      } catch (error) {
+        if (error.name === 'AbortError') return;
+      }
+    }
+    window.prompt('Copy this tournament link', url.href);
+  };
+
   const handleCopyCode = (code) => {
     if (navigator && navigator.clipboard && navigator.clipboard.writeText) {
       navigator.clipboard.writeText(code);
@@ -300,6 +314,11 @@ export function TournamentDetailsView(props) {
 
           {/* Action Buttons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+            {/^[0-9a-f-]{36}$/i.test(tournament.id) && (
+              <Button variant="outline" size="sm" icon={Share2} onClick={shareTournament}>
+                Share tournament
+              </Button>
+            )}
             <Button
               variant="outline"
               size="sm"
