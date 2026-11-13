@@ -69,6 +69,24 @@ public final class MainActivity extends Activity {
         layout.addView(navigation);
         setContentView(layout);
         if (savedState == null || website.restoreState(savedState) == null) {
+            openLink(getIntent());
+        }
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        setIntent(intent);
+        openLink(intent);
+    }
+
+    private void openLink(Intent intent) {
+        Uri link = intent.getData();
+        if (Intent.ACTION_VIEW.equals(intent.getAction()) && link != null
+                && "https".equals(link.getScheme()) && HOST.equals(link.getHost())
+                && (link.getPort() == -1 || link.getPort() == 443)) {
+            website.loadUrl(link.toString());
+        } else {
             website.loadUrl("https://" + HOST + "/");
         }
     }
