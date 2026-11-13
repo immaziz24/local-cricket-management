@@ -1416,6 +1416,11 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async createTestCheckout(offerId) {
+    const { data, error } = await supabase.functions.invoke('create-checkout', { body: { offerId } });
+    return { data, error: error ? 'Test checkout is unavailable. Please try again later.' : null };
+  },
+
   async listPaymentOffers() {
     const { data, error } = await supabase.rpc('list_payment_offers');
     return { data, error: error ? friendlyError(error, 'membership offers') : null };

@@ -429,7 +429,7 @@
 | 271 | Free membership | 🟨 | Signed-in accounts show the default free membership in Settings. Owner browser check pending. |
 | 272 | Premium membership | 🟨 | Paid-plan catalogue connected. Pricing, checkout and membership activation pending. |
 | 273 | Tournament organiser packages | 🟨 | Paid-plan catalogue connected. Pricing, checkout and package activation pending. |
-| 274 | Online payments | 🟨 | Test-mode checkout link function written. Deployment, capture verification and UI pending. |
+| 274 | Online payments | 🟨 | Test checkout deployed and linked from paid plans. Test credentials, active offers and capture verification pending. |
 | 275 | Online tournament registration payments | ⬜ |  |
 | 276 | Sponsorship payments | ⬜ |  |
 | 277 | Invoices and receipts | 🟨 | Browser receipt download added. Invoice issuance, payment integration and owner check pending. |

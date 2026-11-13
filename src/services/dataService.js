@@ -1085,6 +1085,14 @@ export const dataService = {
     return res.data;
   },
 
+  async createTestCheckout(offerId) {
+    const { data, error } = await supabaseClient.createTestCheckout(offerId);
+    if (error) throw new Error(error);
+    const url = new URL(data.url);
+    if (url.origin !== 'https://rzp.io' || url.username || url.password) throw new Error('Invalid checkout link.');
+    return url.href;
+  },
+
   async listPaymentOffers() {
     const { data, error } = await supabaseClient.listPaymentOffers();
     if (error) throw new Error(error);

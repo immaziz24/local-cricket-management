@@ -57,6 +57,22 @@ function downloadReceipt(payment) {
 function MembershipOffers() {
   const [offers, setOffers] = useState(null);
   const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [checkout, setCheckout] = useState(null);
+  const [checkoutError, setCheckoutError] = useState('');
+
+  const startCheckout = async (offerId) => {
+    setBusy(true);
+    setCheckout(null);
+    setCheckoutError('');
+    try {
+      setCheckout({ offerId, url: await dataService.createTestCheckout(offerId) });
+    } catch (err) {
+      setCheckoutError(err.message);
+    } finally {
+      setBusy(false);
+    }
+  };
 
   useEffect(() => {
     let active = true;
@@ -73,8 +89,12 @@ function MembershipOffers() {
         offers.length === 0 ? <p>No paid plans are available yet.</p> : (
           <ul>{offers.map(offer => <li key={offer.id}>
             {offer.kind === 'premium' ? 'Premium membership' : 'Tournament organiser package'} · {offer.name} · {inr.format(offer.amount_paise / 100)}
+            {' · '}{checkout?.offerId === offer.id ? (
+              <a href={checkout.url} target="_blank" rel="noopener noreferrer">Open Razorpay test checkout</a>
+            ) : <button type="button" className="home-link" disabled={busy} onClick={() => startCheckout(offer.id)}>Prepare test checkout</button>}
           </li>)}</ul>
         )}
+      {checkoutError && <p role="alert">{checkoutError}</p>}
     </section>
   );
 }
