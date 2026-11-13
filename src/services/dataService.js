@@ -1085,6 +1085,18 @@ export const dataService = {
     return res.data;
   },
 
+  async getMyPaymentHistory() {
+    const { data, error } = await supabaseClient.getMyPaymentHistory();
+    if (error) throw new Error(error);
+    return data;
+  },
+
+  async getRevenueDashboard() {
+    const { data, error } = await supabaseClient.getRevenueDashboard();
+    if (error) throw new Error(error);
+    return data;
+  },
+
   async listContactMessages(status = null) {
     requireDatabase();
     const res = await supabaseClient.listContactMessages(status);

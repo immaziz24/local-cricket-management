@@ -37,6 +37,45 @@ function PageTitle({ title, sub }) {
   );
 }
 
+const inr = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' });
+
+function PaymentReport({ revenue = false }) {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    let active = true;
+    const request = revenue ? dataService.getRevenueDashboard() : dataService.getMyPaymentHistory();
+    request.then(result => { if (active) setData(result); })
+      .catch(err => { if (active) setError(err.message); });
+    return () => { active = false; };
+  }, [revenue]);
+
+  return (
+    <section className="info-box">
+      <h2>{revenue ? 'Revenue dashboard' : 'Payment history'}</h2>
+      {error ? <p role="alert">{error}</p> : !data ? <p role="status">Loading…</p> : revenue ? (
+        <dl>
+          <dt>Captured payments</dt><dd>{data.payment_count}</dd>
+          <dt>Gross collections</dt><dd>{inr.format(data.captured_paise / 100)}</dd>
+          <dt>Refunds</dt><dd>{inr.format(data.refunded_paise / 100)}</dd>
+          <dt>Collections after refunds</dt><dd>{inr.format((data.captured_paise - data.refunded_paise) / 100)}</dd>
+        </dl>
+      ) : data.length === 0 ? <p>No payments recorded yet.</p> : (
+        <ul aria-label="Most recent 100 payments">
+          {data.map(payment => (
+            <li key={payment.id}>
+              <strong>{payment.description}</strong> · {inr.format(payment.amount_paise / 100)}
+              {' · '}{new Date(payment.captured_at).toLocaleDateString('en-IN')}
+              {payment.refunded_paise > 0 && <> · Refunded {inr.format(payment.refunded_paise / 100)}</>}
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
 export function SettingsView({ currentUser, onNavigate }) {
   const [tab, setTab] = useState('privacy');
   if (!currentUser) return <div className="info-box">Please <button type="button" className="home-link" onClick={() => onNavigate('login')}>log in</button> to see your settings.</div>;
@@ -54,6 +93,7 @@ export function SettingsView({ currentUser, onNavigate }) {
       {tab === 'notifications' && <NotificationsManagementView />}
       {tab === 'verify' && <UserVerificationView />}
       {tab === 'report' && <UserReportingSuspensionView />}
+      {tab === 'membership' && <PaymentReport key={currentUser.id} />}
     </div>
   );
 }
@@ -98,7 +138,7 @@ export function ContactMessagesPanel() {
 export function AdminPanelView({ currentUser, isAdmin, isSuperAdmin, onNavigate }) {
   const [tab, setTab] = useState('control');
   if (!isAdmin) return <div className="info-box">This page is only for administrators.</div>;
-  const tabs = [['control', 'Control centre', ShieldCheck], ['overview', 'Overview', LayoutDashboard], ['messages', 'Contact messages', Mail], ['roles', 'Roles & admins', Shield], ['verify', 'Verification requests', BadgeCheck],
+  const tabs = [['control', 'Control centre', ShieldCheck], ['overview', 'Overview', LayoutDashboard], ['revenue', 'Revenue', LayoutDashboard], ['messages', 'Contact messages', Mail], ['roles', 'Roles & admins', Shield], ['verify', 'Verification requests', BadgeCheck],
     ['reports', 'Reports & suspensions', Users], ['notify', 'Message all members', Megaphone], ['ads', 'Adverts & campaigns', Megaphone], ['articles', 'Reported articles', Newspaper], ['audit', 'Audit log', FileText], ...(isSuperAdmin ? [['backup', 'Backups', Database]] : [])];
   return (
     <div>
@@ -107,6 +147,7 @@ export function AdminPanelView({ currentUser, isAdmin, isSuperAdmin, onNavigate 
       {tab === 'control' && <AdminControlCentre currentUser={currentUser} onNavigate={onNavigate} />}
       {tab === 'overview' && (isSuperAdmin ? <SuperAdminDashboardView /> : <AdminDashboardView />)}
       {tab === 'messages' && <ContactMessagesPanel />}
+      {tab === 'revenue' && <PaymentReport key={currentUser?.id} revenue />}
       {tab === 'roles' && <RolePermissionsView onNavigate={onNavigate} />}
       {tab === 'verify' && <UserVerificationView />}
       {tab === 'reports' && <UserReportingSuspensionView />}

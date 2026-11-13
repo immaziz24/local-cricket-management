@@ -18,8 +18,8 @@
 | :--- | :---: |
 | ✅ Verified | 4 / 310 |
 | 🟩 Working (real database) | 179 / 310 |
-| 🟨 Built or prepared, awaiting verification | 101 / 310 |
-| ⬜ Not started | 26 / 310 |
+| 🟨 Built or prepared, awaiting verification | 103 / 310 |
+| ⬜ Not started | 24 / 310 |
 
 **Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5: Category H community & marketplace (17) Category I live streaming & media (12) Category J branding, sponsorship & promotion (11) and Category K news & learning (16) connected – Phase 5 complete (56/56 built).** Next: Phase 6, Category M.
 
@@ -38,7 +38,7 @@
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
 | 4 | F, G, Q | 37 | 0 | 0 | 37 | 0 |
 | 5 | H, I, J, K | 56 | 0 | 2 | 54 | 0 |
-| 6 | M, O, P | 49 | 26 | 19 | 0 | 4 |
+| 6 | M, O, P | 49 | 24 | 21 | 0 | 4 |
 
 ## 4. Supporting screens (not numbered features)
 
@@ -437,8 +437,8 @@
 | 279 | Subscription renewals | ⬜ |  |
 | 280 | Advertising revenue | ⬜ |  |
 | 281 | Platform commission | ⬜ |  |
-| 282 | Revenue dashboard | ⬜ |  |
-| 283 | Payment history | ⬜ |  |
+| 282 | Revenue dashboard | 🟨 | Admin report connected. Payment capture integration and browser check pending. |
+| 283 | Payment history | 🟨 | Member history connected. Payment capture integration and browser check pending. |
 
 **Category P – Android app and future expansion**
 

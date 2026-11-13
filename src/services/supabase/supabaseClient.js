@@ -1416,6 +1416,16 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async getMyPaymentHistory() {
+    const { data, error } = await supabase.rpc('get_my_payment_history');
+    return { data, error: error ? friendlyError(error, 'payment history') : null };
+  },
+
+  async getRevenueDashboard() {
+    const { data, error } = await supabase.rpc('get_revenue_dashboard');
+    return { data, error: error ? friendlyError(error, 'revenue') : null };
+  },
+
   async listContactMessages(status = null) {
     const { data, error } = await supabase.rpc('list_contact_messages', { p_status: status });
     if (error) return { data: null, error: friendlyError(error, 'messages') };
