@@ -7,6 +7,7 @@ import { ArticleFeed } from '../news/newsShared.jsx';
 import { ArrowLeft, Coins, MapPin, Clock, Trophy, AlertCircle, CheckCircle, Share2, Copy, PauseCircle, PlayCircle } from 'lucide-react';
 import { LineupPanel } from '../tournaments/LineupPanel.jsx';
 import { ScoringPanel } from './ScoringPanel.jsx';
+import { loadQueue } from './offlineScoring.js';
 import { FullScorecard } from './FullScorecard.jsx';
 import { CommentaryPanel } from './CommentaryPanel.jsx';
 import { MatchHistoryPanel } from './MatchHistoryPanel.jsx';
@@ -43,6 +44,8 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
   const [refreshKey, setRefreshKey] = useState(0);
   const [copied, setCopied] = useState(false);
   const [pauseReason, setPauseReason] = useState('');
+  const [finishing, setFinishing] = useState(false);
+  const [finishReason, setFinishReason] = useState('');
 
   const load = async () => {
     try { setData(await dataService.fetchMatchCentre(matchId)); setError(null); }
@@ -87,6 +90,28 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       setPauseReason(''); await load();
     } catch (err) { setMsg({ ok: false, text: err.message }); }
     finally { setBusy(false); }
+  };
+
+  const finishMatch = async (event) => {
+    event.preventDefault();
+    if (busy || !finishReason.trim()) return;
+    if (!navigator.onLine || loadQueue(m.id).length) {
+      setMsg({ ok: false, text: 'Connect to the internet and let pending balls sync before finishing.' });
+      return;
+    }
+    setBusy(true);
+    setMsg(null);
+    try {
+      await dataService.abandonMatch(m.id, finishReason.trim());
+      setFinishing(false);
+      setFinishReason('');
+      setRefreshKey((key) => key + 1);
+      await load();
+    } catch (err) {
+      setMsg({ ok: false, text: err.message });
+    } finally {
+      setBusy(false);
+    }
   };
 
   const startMatch = async () => {
@@ -156,9 +181,23 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
             <Button variant="secondary" size="sm" disabled={busy} onClick={togglePause} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
               {m.paused_at ? <><PlayCircle size={14} /> Resume play</> : <><PauseCircle size={14} /> Pause</>}
             </Button>
+            <Button variant="secondary" size="sm" disabled={busy} onClick={() => setFinishing(!finishing)}>
+              Finish match
+            </Button>
           </span>
         )}
       </div>
+
+      {data.can_score && m.status === 'live' && finishing && (
+        <Card title="Finish match early">
+          <p>The scorecard will be kept and the match will count as no result.</p>
+          <form onSubmit={finishMatch}>
+            <label>Reason <input required value={finishReason} onChange={(event) => setFinishReason(event.target.value)} placeholder="For example, rain" /></label>
+            <Button type="submit" disabled={busy || !finishReason.trim()}>Confirm no result</Button>
+            <Button type="button" variant="secondary" disabled={busy} onClick={() => setFinishing(false)}>Cancel</Button>
+          </form>
+        </Card>
+      )}
 
       {m.status === 'live' && m.paused_at && (
         <div style={{ padding: '0.7rem 1rem', borderRadius: '0.5rem', backgroundColor: '#fffbeb', border: '1px solid #fde68a', color: '#92400e', fontWeight: 700, fontSize: '0.9rem', display: 'flex', gap: '0.4rem', alignItems: 'center' }}>
