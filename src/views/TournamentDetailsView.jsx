@@ -15,7 +15,7 @@ import { SiteSettingsCard, TournamentSponsorsPanel, CampaignsPanel } from './bra
 import { AdsPanel } from './brand/AdsPanel.jsx';
 import { AwardsPanel } from './brand/AwardsPanel.jsx';
 import { MerchPanel } from './brand/MerchPanel.jsx';
-import { SponsorStrip, AdSlot, trackOnce } from './brand/brandShared.jsx';
+import { SponsorStrip, AdSlot, trackOnce, QrCard } from './brand/brandShared.jsx';
 import { ArticleFeed } from './news/newsShared.jsx';
 import { FixtureTool, XiGenerator, TeamGenerator } from './tools/ToolsView.jsx';
 import { AuctionsHome } from './tools/AuctionBoard.jsx';
@@ -56,7 +56,9 @@ export function TournamentDetailsView(props) {
   const [isOrganiser, setIsOrganiser] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [activeTab, setActiveTab] = useState('overview'); // overview | teams | fixtures | standings
+  const [activeTab, setActiveTab] = useState(() =>
+    new URLSearchParams(window.location.hash.slice(1)).get('tab') === 'teams' ? 'teams' : 'overview'
+  );
   const [matchFilter, setMatchFilter] = useState('all'); // all | live | upcoming | completed
   const [copiedCode, setCopiedCode] = useState(false);
 
@@ -633,6 +635,10 @@ export function TournamentDetailsView(props) {
       )}
 
       {/* TAB 2: TEAMS — registration (#40) and approval (#41) */}
+      {activeTab === 'teams' && isOrganiser && tournament.registration_open && (
+        <QrCard url={new URL(`?tournament=${encodeURIComponent(tournament.id)}#tab=teams`, window.location.href).href}
+          title="Team registration" subtitle="Scan to open the Teams tab and register your team." />
+      )}
       {activeTab === 'teams' && (
         <TeamRegistrationPanel
           tournament={tournament}

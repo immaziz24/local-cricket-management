@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.pm.PackageManager;
 import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
+import android.webkit.ValueCallback;
 
 import android.app.Activity;
 import android.content.ActivityNotFoundException;
@@ -32,6 +33,8 @@ public final class MainActivity extends Activity {
     private String locationOrigin;
     private byte[] pendingLineup;
     private static final int SAVE_LINEUP = 31;
+    private static final int PICK_FILE = 33;
+    private ValueCallback<Uri[]> fileCallback;
 
     @Override
     protected void onCreate(Bundle savedState) {
@@ -40,6 +43,19 @@ public final class MainActivity extends Activity {
         website.getSettings().setJavaScriptEnabled(true);
         website.getSettings().setDomStorageEnabled(true);
         website.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public boolean onShowFileChooser(WebView view, ValueCallback<Uri[]> callback, FileChooserParams params) {
+                if (fileCallback != null) fileCallback.onReceiveValue(null);
+                fileCallback = callback;
+                try {
+                    startActivityForResult(params.createIntent(), PICK_FILE);
+                } catch (ActivityNotFoundException exception) {
+                    fileCallback = null;
+                    callback.onReceiveValue(null);
+                }
+                return true;
+            }
+
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
                 if (!("https://" + HOST).equals(origin) || locationCallback != null) {
@@ -85,6 +101,7 @@ public final class MainActivity extends Activity {
         });
         layout.addView(website, new LinearLayout.LayoutParams(-1, 0, 1));
         LinearLayout navigation = new LinearLayout(this);
+        addDestination(navigation, "Home", "dashboard");
         addDestination(navigation, "Matches", "matches");
         addDestination(navigation, "Tournaments", "tournaments");
         addDestination(navigation, "Account", "settings");
@@ -187,6 +204,12 @@ public final class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int request, int result, Intent data) {
         super.onActivityResult(request, result, data);
+        if (request == PICK_FILE && fileCallback != null) {
+            ValueCallback<Uri[]> callback = fileCallback;
+            fileCallback = null;
+            callback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(result, data));
+            return;
+        }
         if (request != SAVE_LINEUP) return;
         byte[] bytes = pendingLineup;
         pendingLineup = null;
