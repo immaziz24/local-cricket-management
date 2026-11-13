@@ -16,10 +16,10 @@
 
 | Status | Features |
 | :--- | :---: |
-| ✅ Verified | 1 / 310 |
+| ✅ Verified | 2 / 310 |
 | 🟩 Working (real database) | 179 / 310 |
 | 🟨 Built or prepared, awaiting verification | 83 / 310 |
-| ⬜ Not started | 47 / 310 |
+| ⬜ Not started | 46 / 310 |
 
 **Honest summary (2026-11-10, Phase 3):** Phase 1 done (17). Phase 2 all 48 built. Phase 3: Category A scoring (30) built; Category D statistics (#79–#102) connected to the real database, together with Phase 2 #57, #77, #78. Category E (32) complete: playing conditions, laws reference, Super Over, follow-on, penalty runs, DLS helper, decision/incident/disciplinary reports. Category L (17) built – **Phase 3 complete (103/103 built)**. **Phase 4 complete (37/37 connected)**: officials, grounds, punctuality & late-arrival rules. **Phase 5: Category H community & marketplace (17) Category I live streaming & media (12) Category J branding, sponsorship & promotion (11) and Category K news & learning (16) connected – Phase 5 complete (56/56 built).** Next: Phase 6, Category M.
 
@@ -38,7 +38,7 @@
 | 3 | A, D, E, L | 103 | 0 | 30 | 73 | 0 |
 | 4 | F, G, Q | 37 | 0 | 0 | 37 | 0 |
 | 5 | H, I, J, K | 56 | 0 | 2 | 54 | 0 |
-| 6 | M, O, P | 49 | 47 | 1 | 0 | 1 |
+| 6 | M, O, P | 49 | 46 | 1 | 0 | 2 |
 
 ## 4. Supporting screens (not numbered features)
 
@@ -401,8 +401,8 @@
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
 | 233 | Men's T20 International playing conditions | ✅ | Migration ran and owner verified in the browser on 2026-11-13. |
-| 234 | Men's ODI playing conditions | 🟨 | Learn → Rules article prepared. Migration and owner browser check pending. |
-| 235 | Men's Test playing conditions | ⬜ |  |
+| 234 | Men's ODI playing conditions | ✅ | Migration ran and owner verified in the browser on 2026-11-13. |
+| 235 | Men's Test playing conditions | 🟨 | Learn → Rules article prepared. Migration and owner browser check pending. |
 | 236 | Women's T20 International playing conditions | ⬜ |  |
 | 237 | Women's ODI playing conditions | ⬜ |  |
 | 238 | ICC tournament playing conditions | ⬜ |  |
