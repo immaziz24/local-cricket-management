@@ -1421,6 +1421,11 @@ export const supabaseClient = {
     return { data, error: error ? 'Test checkout is unavailable. Please try again later.' : null };
   },
 
+  async setNearbyMatchLocation(latitude, longitude) {
+    const { error } = await supabase.rpc('set_nearby_match_location', { p_lat: latitude, p_lng: longitude });
+    return { error: error ? friendlyError(error, 'nearby match alerts') : null };
+  },
+
   async listPaymentOffers() {
     const { data, error } = await supabase.rpc('list_payment_offers');
     return { data, error: error ? friendlyError(error, 'membership offers') : null };

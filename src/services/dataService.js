@@ -1093,6 +1093,11 @@ export const dataService = {
     return url.href;
   },
 
+  async setNearbyMatchLocation(latitude, longitude) {
+    const { error } = await supabaseClient.setNearbyMatchLocation(latitude, longitude);
+    if (error) throw new Error(error);
+  },
+
   async listPaymentOffers() {
     const { data, error } = await supabaseClient.listPaymentOffers();
     if (error) throw new Error(error);

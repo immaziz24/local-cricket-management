@@ -166,6 +166,37 @@ function PaymentReport({ revenue = false }) {
   );
 }
 
+function NearbyMatchAlerts() {
+  const [message, setMessage] = useState('');
+  const [busy, setBusy] = useState(false);
+  const save = async (latitude, longitude) => {
+    try {
+      await dataService.setNearbyMatchLocation(latitude, longitude);
+      setMessage(latitude === null ? 'Nearby alerts are off.' : 'Nearby alerts are on for this location.');
+    } catch (error) {
+      setMessage(error.message);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const enable = () => {
+    if (!navigator.geolocation) { setMessage('Location is unavailable.'); return; }
+    setBusy(true);
+    navigator.geolocation.getCurrentPosition(({ coords }) => save(coords.latitude, coords.longitude),
+      () => { setMessage('Could not get your location. Check location permissions.'); setBusy(false); },
+      { timeout: 10000 });
+  };
+  return (
+    <section className="info-box">
+      <h2>Nearby match alerts</h2>
+      <p>Get an in-app alert when a match starts within 30 km of your saved location.</p>
+      <button type="button" disabled={busy} onClick={enable}>Use my current location</button>
+      {' '}<button type="button" disabled={busy} onClick={() => { setBusy(true); save(null, null); }}>Turn off</button>
+      {message && <p role="status">{message}</p>}
+    </section>
+  );
+}
+
 export function SettingsView({ currentUser, onNavigate, language, onLanguageChange }) {
   const [tab, setTab] = useState('account');
   if (!currentUser) return <div className="info-box">Please <button type="button" className="home-link" onClick={() => onNavigate('login')}>log in</button> to see your settings.</div>;
@@ -197,7 +228,7 @@ export function SettingsView({ currentUser, onNavigate, language, onLanguageChan
         </section>
       )}
       {tab === 'privacy' && <SecurityPrivacyView />}
-      {tab === 'notifications' && <NotificationsManagementView />}
+      {tab === 'notifications' && <><NearbyMatchAlerts key={currentUser.id} /><NotificationsManagementView /></>}
       {tab === 'verify' && <UserVerificationView />}
       {tab === 'report' && <UserReportingSuspensionView />}
       {tab === 'membership' && (
