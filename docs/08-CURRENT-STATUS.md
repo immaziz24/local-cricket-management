@@ -241,3 +241,5 @@
 - 2026-11-14: Released profile editing separately. Email-code sign-in and registration await custom SMTP.
 
 - 2026-11-14: Added the shared player profile editor to Settings & Privacy → Account. Owner save and upload checks pending.
+
+- 2026-11-14: Applied the missing owner-scoped storage SELECT policy for profile photo uploads. Owner upload check pending.

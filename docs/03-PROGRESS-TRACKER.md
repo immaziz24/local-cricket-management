@@ -118,7 +118,7 @@
 | :---: | :--- | :---: | :--- |
 | 59 | Player registration | 🟩 | **connected 2026-11-10** – teams/TeamDetailView.jsx — every user is a player automatically; team owners add players by mobile number, or by name if not registered; claim on sign-up with same mobile. Owner checked 2026-11-10 |
 | 60 | Player profile | 🟨 | **connected 2026-11-10** – teams/PlayerProfileView.jsx — public profile: ID, photo, role, styles, age, badges, teams; privacy respected. Awaiting owner check. Nov 14 profile editor and 50 KB upload limit ready for owner verification. Settings & Privacy → Account also opens the editor. |
-| 61 | Player profile photograph | 🟨 | **connected 2026-11-10** – photo upload (2 MB JPG/PNG/WEBP, Supabase Storage 'media' bucket) — own photo, or players you added who aren't registered. Awaiting owner check. Nov 14 profile editor and 50 KB upload limit ready for owner verification. Settings & Privacy → Account also opens the editor. |
+| 61 | Player profile photograph | 🟨 | **connected 2026-11-10** – photo upload (2 MB JPG/PNG/WEBP, Supabase Storage 'media' bucket) — own photo, or players you added who aren't registered. Awaiting owner check. Nov 14 profile editor and 50 KB upload limit ready for owner verification. Settings & Privacy → Account also opens the editor. Storage upload permission fixed in production. Owner upload check pending. |
 | 62 | Player ID | 🟩 | **connected 2026-11-10** – automatic Player ID LC-000001…. Owner checked 2026-11-10 |
 | 63 | Batting style | 🟩 | **connected 2026-11-10** – My player profile + add-player form. Owner checked 2026-11-10 |
 | 64 | Bowling style | 🟩 | **connected 2026-11-10** – My player profile + add-player form. Owner checked 2026-11-10 |
