@@ -160,8 +160,7 @@ export function SiteHeader({ currentUser, isAdmin, liveMatchCount = 0, activeTab
             </>
           ) : (
             <>
-              <button type="button" className="hdr-btn-ghost" onClick={() => go('login')}>Log in</button>
-              <button type="button" className="hdr-btn-primary" onClick={() => go('register')}>Register<span className="hdr-btn-free"> – it's free</span></button>
+              <button type="button" className="hdr-btn-primary" onClick={() => go('login')}>Sign in</button>
             </>
           )}
         </div>

@@ -59,8 +59,8 @@
 
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
-| 254 | User registration | 🟩 | RegisterView.jsx — real Supabase account; owner tested 2026-11-10 (email confirmed, name + mobile saved) **updated 2026-11-12** – sign-up shows a 6-digit code box (code from the email) plus the link; resend code; login offers the code box if the email is not confirmed. |
-| 255 | User login and logout | 🟩 | LoginView.jsx + Header — real Supabase login; owner tested 2026-11-10. Header shows user + Sign Out |
+| 254 | User registration | 🟩 | RegisterView.jsx — real Supabase account; owner tested 2026-11-10 (email confirmed, name + mobile saved) **updated 2026-11-12** – sign-up shows a 6-digit code box (code from the email) plus the link; resend code; login offers the code box if the email is not confirmed.. Nov 14 account and profile update prepared. Live verification pending. |
+| 255 | User login and logout | 🟩 | LoginView.jsx + Header — real Supabase login; owner tested 2026-11-10. Header shows user + Sign Out. Nov 14 account and profile update prepared. Live verification pending. |
 | 256 | Password recovery | 🟨 | auth/PasswordRecoveryView.jsx — connected; code email + verification confirmed in database 2026-11-10. Awaiting owner confirmation that new-password login works |
 | 257 | Super-admin dashboard | 🟩 | admin/SuperAdminDashboardView.jsx — real data, maintenance mode, site-wide announcement; owner checked 2026-11-10 **updated 2026-11-12** – Control centre: search any user/team/match/tournament; edit name, mobile, status, confirm email; Super-Admin deletes accounts (teams/tournaments move to Super-Admin); fix match results and balls. |
 | 258 | Admin dashboard | 🟨 | admin/AdminDashboardView.jsx — **connected 2026-11-10**: members, recent sign-ups, verification + report queues (Admin or Super-Admin). Tournament/team/dispute queues arrive with Phases 2 and 4. Awaiting owner check |
@@ -117,8 +117,8 @@
 | # | Feature | Status | Notes |
 | :---: | :--- | :---: | :--- |
 | 59 | Player registration | 🟩 | **connected 2026-11-10** – teams/TeamDetailView.jsx — every user is a player automatically; team owners add players by mobile number, or by name if not registered; claim on sign-up with same mobile. Owner checked 2026-11-10 |
-| 60 | Player profile | 🟨 | **connected 2026-11-10** – teams/PlayerProfileView.jsx — public profile: ID, photo, role, styles, age, badges, teams; privacy respected. Awaiting owner check |
-| 61 | Player profile photograph | 🟨 | **connected 2026-11-10** – photo upload (2 MB JPG/PNG/WEBP, Supabase Storage 'media' bucket) — own photo, or players you added who aren't registered. Awaiting owner check |
+| 60 | Player profile | 🟨 | **connected 2026-11-10** – teams/PlayerProfileView.jsx — public profile: ID, photo, role, styles, age, badges, teams; privacy respected. Awaiting owner check. Nov 14 account and profile update prepared. Live verification pending. |
+| 61 | Player profile photograph | 🟨 | **connected 2026-11-10** – photo upload (2 MB JPG/PNG/WEBP, Supabase Storage 'media' bucket) — own photo, or players you added who aren't registered. Awaiting owner check. Nov 14 account and profile update prepared. Live verification pending. |
 | 62 | Player ID | 🟩 | **connected 2026-11-10** – automatic Player ID LC-000001…. Owner checked 2026-11-10 |
 | 63 | Batting style | 🟩 | **connected 2026-11-10** – My player profile + add-player form. Owner checked 2026-11-10 |
 | 64 | Bowling style | 🟩 | **connected 2026-11-10** – My player profile + add-player form. Owner checked 2026-11-10 |

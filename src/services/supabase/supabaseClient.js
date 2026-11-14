@@ -267,6 +267,19 @@ export const supabaseClient = {
   },
 
   // #254 confirm the email with the 6-digit code from the sign-up email
+  async requestEmailCode(email, profile) {
+    const name = profile?.full_name?.trim();
+    if (profile && !name) return { error: 'Enter your full name.' };
+    const { error } = await supabase.auth.signInWithOtp({
+      email: email.trim().toLowerCase(),
+      options: {
+        shouldCreateUser: Boolean(profile),
+        data: profile ? { ...profile, full_name: name, accepted_terms: true } : undefined
+      }
+    });
+    return { error: error ? friendlyError(error, 'email code') : null };
+  },
+
   async verifySignupCode({ email, code }) {
     const token = String(code || '').replace(/\s/g, '');
     if (!/^\d{6,10}$/.test(token)) return { data: null, error: 'Please enter the code from the email.' };
@@ -585,13 +598,14 @@ export const supabaseClient = {
   // Phase 2 – Category C: players and teams
   // ==========================================
   async getMyPlayer() {
-    const { data, error } = await supabase.rpc('get_my_player');
+    const { data, error } = await supabase.rpc('get_my_player_profile');
     if (error) return { data: null, error: friendlyError(error, 'player profile') };
     return { data, error: null };
   },
 
-  async updateMyPlayer({ player_role, batting_style, bowling_style }) {
-    const { data, error } = await supabase.rpc('update_my_player', {
+  async updateMyPlayer({ display_name, location, date_of_birth, player_role, batting_style, bowling_style }) {
+    const { data, error } = await supabase.rpc('update_my_player_profile', {
+      p_name: display_name, p_location: location || '', p_birth_date: date_of_birth || null,
       p_player_role: player_role || '', p_batting_style: batting_style || '', p_bowling_style: bowling_style || ''
     });
     if (error) return { data: null, error: friendlyError(error, 'player profile') };

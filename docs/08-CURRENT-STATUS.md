@@ -237,3 +237,8 @@
 | 2026-11-10 | Claude | #257 Super-Admin dashboard on real data; owner granted super_admin role; site-wide announcement + maintenance banner |
 | 2026-11-10 | Claude | Header shows signed-in user + Sign Out; sidebar shows database status. Owner tested register + login successfully |
 | 2026-11-10 | Claude | Mobile-number migration applied; real Supabase register/login/logout/password recovery wired in; mock hints hidden when real accounts are on |
+
+### 2026-11-14 — Account and player profile
+- Prepared email-code registration and sign-in using existing Supabase accounts.
+- Prepared player name, location, birth date and playing detail edits, plus photo compression to 50 KB.
+- Pending production migration, email template verification, and browser and Android checks.

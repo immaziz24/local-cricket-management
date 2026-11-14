@@ -67,7 +67,7 @@ export function TeamsView({ onNavigate }) {
   const saveMe = async () => {
     setBusy(true);
     try {
-      await dataService.saveMyBirthDate(me.date_of_birth || null);
+
       setMe(await dataService.saveMyPlayer(me));
       setMsg({ ok: true, text: 'Your player profile is saved.' });
     } catch (err) {
@@ -79,7 +79,8 @@ export function TeamsView({ onNavigate }) {
     setBusy(true);
     try {
       await dataService.setPlayerPhoto(me.id, file);
-      setMe(await dataService.fetchMyPlayer());
+      const updated = await dataService.fetchMyPlayer();
+      setMe((current) => ({ ...current, photo_url: updated.photo_url }));
       setMsg({ ok: true, text: 'Photo updated.' });
     } catch (err) {
       setMsg({ ok: false, text: err.message });
@@ -167,6 +168,12 @@ export function TeamsView({ onNavigate }) {
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.6rem' }}>
+            <label>Full name
+              <input maxLength={100} value={me.display_name || ''} onChange={(e) => setMe({ ...me, display_name: e.target.value })} style={field} />
+            </label>
+            <label>Location
+              <input maxLength={120} value={me.location || ''} onChange={(e) => setMe({ ...me, location: e.target.value })} style={field} />
+            </label>
             <label style={{ fontSize: '0.8rem', color: '#475569' }}>Date of birth – others see only your age
               <input type="date" value={me.date_of_birth || ''} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setMe({ ...me, date_of_birth: e.target.value })} style={field} />
             </label>
