@@ -722,11 +722,15 @@ export const supabaseClient = {
   },
 
   async setPlayerPhoto({ playerId, file }) {
-    const up = await this.uploadImage('players', playerId, file);
-    if (up.error) return up;
-    const { error } = await supabase.rpc('set_player_photo', { p_player_id: playerId, p_url: up.data.url });
+    let url = null;
+    if (file !== null) {
+      const up = await this.uploadImage('players', playerId, file);
+      if (up.error) return up;
+      url = up.data.url;
+    }
+    const { error } = await supabase.rpc('set_player_photo', { p_player_id: playerId, p_url: url });
     if (error) return { data: null, error: friendlyError(error, 'player photo') };
-    return { data: { photo_url: up.data.url }, error: null };
+    return { data: { photo_url: url }, error: null };
   },
 
   async setTeamLogo({ teamId, file }) {

@@ -36,13 +36,12 @@ export function PlayerProfileEditor({ onNavigate, onProfileSaved }) {
     } finally { setBusy(false); }
   };
 
-  const uploadMyPhoto = async (file) => {
+  const updateMyPhoto = async (file) => {
     setBusy(true);
     try {
-      await dataService.setPlayerPhoto(me.id, file);
-      const updated = await dataService.fetchMyPlayer();
+      const updated = await dataService.setPlayerPhoto(me.id, file);
       setMe((current) => ({ ...current, photo_url: updated.photo_url }));
-      setMsg({ ok: true, text: 'Photo updated.' });
+      setMsg({ ok: true, text: file === null ? 'Photo removed from your profile.' : 'Photo updated.' });
     } catch (err) {
       setMsg({ ok: false, text: err.message });
     } finally { setBusy(false); }
@@ -58,9 +57,14 @@ export function PlayerProfileEditor({ onNavigate, onProfileSaved }) {
                 <input type="file" accept="image/jpeg,image/png,image/webp" disabled={busy} onChange={(event) => {
                   const file = event.target.files?.[0];
                   event.target.value = "";
-                  if (file) uploadMyPhoto(file);
+                  if (file) updateMyPhoto(file);
                 }} />
               </label>
+              {me.photo_url && (
+                <Button type="button" variant="secondary" disabled={busy} onClick={() => updateMyPhoto(null)}>
+                  Remove photo
+                </Button>
+              )}
               <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{me.display_name}</strong>
               <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Player ID: <strong style={{ fontFamily: 'monospace', color: '#0f172a' }}>{me.player_code}</strong> · this is how you appear in every team.</div>
               <button type="button" onClick={() => onNavigate && onNavigate('player-profile', me.id)} style={{ background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', padding: 0, fontSize: '0.8rem', marginTop: '0.2rem' }}>View my public profile →</button>

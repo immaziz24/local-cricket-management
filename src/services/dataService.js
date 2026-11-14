@@ -378,7 +378,7 @@ export const dataService = {
 
   async setPlayerPhoto(playerId, file) {
     requireDatabase();
-    const res = await supabaseClient.setPlayerPhoto({ playerId, file: await compressPlayerPhoto(file) });
+    const res = await supabaseClient.setPlayerPhoto({ playerId, file: file === null ? null : await compressPlayerPhoto(file) });
     if (res.error) throw new Error(res.error);
     return res.data;
   },

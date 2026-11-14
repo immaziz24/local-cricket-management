@@ -243,3 +243,5 @@
 - 2026-11-14: Added the shared player profile editor to Settings & Privacy → Account. Owner save and upload checks pending.
 
 - 2026-11-14: Applied the missing owner-scoped storage SELECT policy for profile photo uploads. Owner upload check pending.
+
+- 2026-11-14: Added Remove photo to the shared player profile editor using the existing player photo RPC. Owner browser verification pending.
