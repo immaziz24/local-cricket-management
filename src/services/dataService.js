@@ -1,3 +1,4 @@
+import { compressPlayerPhoto } from './compressPlayerPhoto.js';
 import { mockClient } from './mock/mockClient.js';
 import { supabaseClient, isSupabaseConfigured, supabase } from './supabase/supabaseClient.js';
 
@@ -377,7 +378,7 @@ export const dataService = {
 
   async setPlayerPhoto(playerId, file) {
     requireDatabase();
-    const res = await supabaseClient.setPlayerPhoto({ playerId, file });
+    const res = await supabaseClient.setPlayerPhoto({ playerId, file: await compressPlayerPhoto(file) });
     if (res.error) throw new Error(res.error);
     return res.data;
   },

@@ -585,13 +585,14 @@ export const supabaseClient = {
   // Phase 2 – Category C: players and teams
   // ==========================================
   async getMyPlayer() {
-    const { data, error } = await supabase.rpc('get_my_player');
+    const { data, error } = await supabase.rpc('get_my_player_profile');
     if (error) return { data: null, error: friendlyError(error, 'player profile') };
     return { data, error: null };
   },
 
-  async updateMyPlayer({ player_role, batting_style, bowling_style }) {
-    const { data, error } = await supabase.rpc('update_my_player', {
+  async updateMyPlayer({ display_name, location, date_of_birth, player_role, batting_style, bowling_style }) {
+    const { data, error } = await supabase.rpc('update_my_player_profile', {
+      p_name: display_name, p_location: location || '', p_birth_date: date_of_birth || null,
       p_player_role: player_role || '', p_batting_style: batting_style || '', p_bowling_style: bowling_style || ''
     });
     if (error) return { data: null, error: friendlyError(error, 'player profile') };
