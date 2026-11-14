@@ -64,6 +64,10 @@ export function App() {
     return () => { mounted = false; unsubscribe(); };
   }, []);
 
+  const handleProfileSaved = (profile) => {
+    setCurrentUser((user) => user ? { ...user, full_name: profile.display_name } : user);
+  };
+
   const handleSignOut = async () => {
     try {
       await dataService.logoutUser();
@@ -221,7 +225,7 @@ export function App() {
       {activeTab === 'guidelines' && <GuidelinesView />}
       {activeTab === 'refunds' && <RefundView />}
       {activeTab === 'faq' && <FaqView onNavigate={handleNavigate} />}
-      {activeTab === 'settings' && <SettingsView currentUser={currentUser} onNavigate={handleNavigate}
+      {activeTab === 'settings' && <SettingsView onProfileSaved={handleProfileSaved} currentUser={currentUser} onNavigate={handleNavigate}
         language={language} onLanguageChange={(choice) => {
           localStorage.setItem('cricnotch-language', choice);
           setLanguage(choice);
@@ -278,7 +282,7 @@ export function App() {
 
       {activeTab === 'penalties' && <PenaltyRulesView currentUser={currentUser} onNavigate={handleNavigate} />}
 
-      {activeTab === 'teams' && <TeamsView key={currentUser ? currentUser.id : 'guest'} onNavigate={handleNavigate} />}
+      {activeTab === 'teams' && <TeamsView onProfileSaved={handleProfileSaved} key={currentUser ? currentUser.id : 'guest'} onNavigate={handleNavigate} />}
 
       {activeTab === 'team-details' && selectedTeamId && (
         <TeamDetailView key={selectedTeamId} teamId={selectedTeamId} onNavigate={handleNavigate} />

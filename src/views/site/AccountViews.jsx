@@ -1,3 +1,4 @@
+import { PlayerProfileEditor } from '../teams/PlayerProfileEditor.jsx';
 import React, { useEffect, useState } from 'react';
 import { Lock, Bell, BadgeCheck, Flag, LayoutDashboard, Mail, Shield, FileText, Database, Megaphone, Users, Newspaper, ShieldCheck } from 'lucide-react';
 import { dataService } from '../../services/dataService.js';
@@ -197,7 +198,7 @@ function NearbyMatchAlerts() {
   );
 }
 
-export function SettingsView({ currentUser, onNavigate, language, onLanguageChange }) {
+export function SettingsView({ currentUser, onNavigate, language, onLanguageChange, onProfileSaved }) {
   const [tab, setTab] = useState('account');
   if (!currentUser) return <div className="info-box">Please <button type="button" className="home-link" onClick={() => onNavigate('login')}>log in</button> to see your settings.</div>;
   return (
@@ -219,6 +220,7 @@ export function SettingsView({ currentUser, onNavigate, language, onLanguageChan
         <section className="info-box">
           <h2>Account</h2>
           <dl><dt>Sign-in email</dt><dd>{currentUser.email || 'No email on this account'}</dd></dl>
+          <PlayerProfileEditor key={currentUser.id} onNavigate={onNavigate} onProfileSaved={onProfileSaved} />
         </section>
       )}
       {tab === 'membership' && (

@@ -3,8 +3,8 @@ import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
-import { Users, Plus, ChevronRight, Save, AlertCircle, CheckCircle } from 'lucide-react';
-import { ROLE_OPTIONS, BATTING_OPTIONS, BOWLING_OPTIONS } from './playerOptions.js';
+import { Users, Plus, ChevronRight, AlertCircle, CheckCircle } from 'lucide-react';
+import { PlayerProfileEditor } from './PlayerProfileEditor.jsx';
 import { Avatar } from './Avatar.jsx';
 
 /**
@@ -24,9 +24,9 @@ function Notice({ msg }) {
   );
 }
 
-export function TeamsView({ onNavigate }) {
+export function TeamsView({ onNavigate, onProfileSaved }) {
   const [teams, setTeams] = useState([]);
-  const [me, setMe] = useState(null);
+
   const [loading, setLoading] = useState(true);
   const [signedOut, setSignedOut] = useState(false);
   const [msg, setMsg] = useState(null);
@@ -37,9 +37,9 @@ export function TeamsView({ onNavigate }) {
   const load = async () => {
     setLoading(true);
     try {
-      const [t, p] = await Promise.all([dataService.fetchMyTeams(), dataService.fetchMyPlayer()]);
+      const t = await dataService.fetchMyTeams();
       setTeams(t || []);
-      setMe(p);
+
       setSignedOut(false);
     } catch {
       setSignedOut(true);
@@ -59,29 +59,6 @@ export function TeamsView({ onNavigate }) {
       setForm({ name: '', short_name: '', city: '' });
       setShowCreate(false);
       onNavigate && onNavigate('team-details', res.id);
-    } catch (err) {
-      setMsg({ ok: false, text: err.message });
-    } finally { setBusy(false); }
-  };
-
-  const saveMe = async () => {
-    setBusy(true);
-    try {
-
-      setMe(await dataService.saveMyPlayer(me));
-      setMsg({ ok: true, text: 'Your player profile is saved.' });
-    } catch (err) {
-      setMsg({ ok: false, text: err.message });
-    } finally { setBusy(false); }
-  };
-
-  const uploadMyPhoto = async (file) => {
-    setBusy(true);
-    try {
-      await dataService.setPlayerPhoto(me.id, file);
-      const updated = await dataService.fetchMyPlayer();
-      setMe((current) => ({ ...current, photo_url: updated.photo_url }));
-      setMsg({ ok: true, text: 'Photo updated.' });
     } catch (err) {
       setMsg({ ok: false, text: err.message });
     } finally { setBusy(false); }
@@ -157,50 +134,7 @@ export function TeamsView({ onNavigate }) {
         )}
       </Card>
 
-      {me && (
-        <Card title="My player profile">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-            <Avatar url={me.photo_url} name={me.display_name} size={64} onPick={uploadMyPhoto} busy={busy} />
-            <div style={{ flex: 1 }}>
-              <strong style={{ fontSize: '1.05rem', color: '#0f172a' }}>{me.display_name}</strong>
-              <div style={{ fontSize: '0.8rem', color: '#64748b' }}>Player ID: <strong style={{ fontFamily: 'monospace', color: '#0f172a' }}>{me.player_code}</strong> · this is how you appear in every team.</div>
-              <button type="button" onClick={() => onNavigate && onNavigate('player-profile', me.id)} style={{ background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', padding: 0, fontSize: '0.8rem', marginTop: '0.2rem' }}>View my public profile →</button>
-            </div>
-          </div>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.6rem' }}>
-            <label>Full name
-              <input maxLength={100} value={me.display_name || ''} onChange={(e) => setMe({ ...me, display_name: e.target.value })} style={field} />
-            </label>
-            <label>Location
-              <input maxLength={120} value={me.location || ''} onChange={(e) => setMe({ ...me, location: e.target.value })} style={field} />
-            </label>
-            <label style={{ fontSize: '0.8rem', color: '#475569' }}>Date of birth – others see only your age
-              <input type="date" value={me.date_of_birth || ''} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setMe({ ...me, date_of_birth: e.target.value })} style={field} />
-            </label>
-            <label style={{ fontSize: '0.8rem', color: '#475569' }}>Playing role
-              <select value={me.player_role || ''} onChange={(e) => setMe({ ...me, player_role: e.target.value })} style={field}>
-                <option value="">Not set</option>
-                {ROLE_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-              </select>
-            </label>
-            <label style={{ fontSize: '0.8rem', color: '#475569' }}>Batting style
-              <select value={me.batting_style || ''} onChange={(e) => setMe({ ...me, batting_style: e.target.value })} style={field}>
-                <option value="">Not set</option>
-                {BATTING_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-              </select>
-            </label>
-            <label style={{ fontSize: '0.8rem', color: '#475569' }}>Bowling style
-              <select value={me.bowling_style || ''} onChange={(e) => setMe({ ...me, bowling_style: e.target.value })} style={field}>
-                <option value="">Not set</option>
-                {BOWLING_OPTIONS.map(([v, l]) => <option key={v} value={v}>{l}</option>)}
-              </select>
-            </label>
-          </div>
-          <div style={{ marginTop: '0.75rem' }}>
-            <Button variant="secondary" onClick={saveMe} disabled={busy} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}><Save size={14} /> Save</Button>
-          </div>
-        </Card>
-      )}
+      <PlayerProfileEditor onNavigate={onNavigate} onProfileSaved={onProfileSaved} />
     </div>
   );
 }

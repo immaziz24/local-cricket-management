@@ -239,3 +239,5 @@
 | 2026-11-10 | Claude | Mobile-number migration applied; real Supabase register/login/logout/password recovery wired in; mock hints hidden when real accounts are on |
 
 - 2026-11-14: Released profile editing separately. Email-code sign-in and registration await custom SMTP.
+
+- 2026-11-14: Added the shared player profile editor to Settings & Privacy → Account. Owner save and upload checks pending.
