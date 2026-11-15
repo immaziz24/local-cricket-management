@@ -57,7 +57,7 @@ export function TournamentDetailsView(props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState(() =>
-    new URLSearchParams(window.location.hash.slice(1)).get('tab') === 'teams' ? 'teams' : 'overview'
+    props.initialTab || (new URLSearchParams(window.location.hash.slice(1)).get('tab') === 'teams' ? 'teams' : 'overview')
   );
   const [matchFilter, setMatchFilter] = useState('all'); // all | live | upcoming | completed
   const [copiedCode, setCopiedCode] = useState(false);
@@ -294,6 +294,7 @@ export function TournamentDetailsView(props) {
             }}>
               {tournament.name}
             </h1>
+            {currentUser && <span>{isOrganiser ? 'Managed by me' : 'Created by another user'}</span>}
 
             <div style={{
               display: 'flex',
@@ -638,6 +639,14 @@ export function TournamentDetailsView(props) {
         </div>
       )}
 
+      {isOrganiser && ['overview', 'teams'].includes(activeTab) && (
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+          {activeTab === 'overview' && <Button onClick={() => setActiveTab('teams')}>Add teams and squads</Button>}
+          <Button variant="secondary" onClick={() => setActiveTab('fixtures')} disabled={teams.length < 2}>Generate fixtures</Button>
+          {teams.length < 2 && <span>Add at least two teams to start scheduling.</span>}
+        </div>
+      )}
+
       {/* TAB 2: TEAMS — registration (#40) and approval (#41) */}
       {activeTab === 'teams' && isOrganiser && tournament.registration_open && (
         <QrCard url={new URL(`?tournament=${encodeURIComponent(tournament.id)}#tab=teams`, window.location.href).href}
@@ -648,7 +657,10 @@ export function TournamentDetailsView(props) {
           tournament={tournament}
           onNavigate={onNavigate}
           onTournamentChanged={async () => setTournament(await dataService.fetchTournamentById(tournament.id))}
-          onChanged={(regs) => setTeams((regs?.teams || []).filter((t) => t.status === 'approved'))}
+          onChanged={(regs) => {
+            setIsOrganiser(!!regs?.is_organiser);
+            setTeams((regs?.teams || []).filter((t) => t.status === 'approved'));
+          }}
         />
       )}
 

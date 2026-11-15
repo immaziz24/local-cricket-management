@@ -153,10 +153,12 @@ export function App() {
     document.title = `${names[activeTab] || 'Cricnotch'} · Cricnotch`;
   }, [activeTab, currentUser]);
 
-  const handleNavigate = (tab, param = null) => {
+  const [tournamentStartTab, setTournamentStartTab] = useState(null);
+  const handleNavigate = (tab, param = null, section = null) => {
     if (tab === 'category-n') tab = isAdmin ? 'admin' : 'settings';
     if (tab === 'password-recovery' && currentUser) tab = 'settings';
     if (tab === 'tournament-details' && param) {
+      setTournamentStartTab(section);
       setSelectedTournamentId(param);
     }
     if (tab === 'team-details' && param) {
@@ -272,6 +274,7 @@ export function App() {
       {activeTab === 'tournament-details' && (
         <TournamentDetailsView
           key={selectedTournamentId}
+          initialTab={tournamentStartTab}
           tournamentId={selectedTournamentId}
           currentUser={currentUser}
           onNavigate={handleNavigate}

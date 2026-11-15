@@ -163,7 +163,10 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
             <span style={{ fontSize: '0.8rem', color: '#b6ccda', display: 'inline-flex', gap: '0.3rem', alignItems: 'center' }}>
               {data.tournament ? <><Trophy size={13} /> {data.tournament.name}{m.match_no ? ` · Match ${m.match_no}` : ''}</> : (m.title || 'Friendly match')}
             </span>
-            <Badge variant={variant}>{label}</Badge>
+            <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+              <Badge variant={variant}>{label}</Badge>
+              <span>{data.can_manage ? 'Managed by me' : 'Created by another user'}</span>
+            </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)', alignItems: 'start', gap: '0.75rem', textAlign: 'center' }}>
             <div>

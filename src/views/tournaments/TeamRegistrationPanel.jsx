@@ -208,7 +208,12 @@ export function TeamRegistrationPanel({ tournament, onChanged, onTournamentChang
                   <span style={{ display: 'block', marginTop: '0.3rem' }}><Badge variant={STATUS[t.status]?.variant}>{STATUS[t.status]?.label || t.status}</Badge></span>
                   {t.status === 'rejected' && t.note && <span style={{ display: 'block', fontSize: '0.72rem', color: '#b91c1c', marginTop: '0.2rem' }}>Reason: {t.note}</span>}
                 </span>
-                {data.is_organiser && !t.i_own && t.status === 'approved' && !finished && (
+                {t.status === 'approved' && onNavigate && (
+                  <Button size="sm" variant="secondary" onClick={() => onNavigate('team-details', t.team_id)}>
+                    {t.i_own ? 'Manage squad' : 'View squad'}
+                  </Button>
+                )}
+                {data.is_organiser && t.status === 'approved' && !finished && (
                   <Button variant="secondary" disabled={busy} title="Remove from tournament" onClick={() => window.confirm(`Remove ${t.name} from ${tournament.name}?`) && act(() => dataService.organiserRemoveTeam(tournament.id, t.team_id), `${t.name} removed.`)} style={{ padding: '0.3rem 0.5rem' }}>
                     <Trash2 size={14} />
                   </Button>

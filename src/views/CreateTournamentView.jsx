@@ -138,7 +138,7 @@ export function CreateTournamentView(props) {
               Next: open the tournament, go to <strong>Teams</strong> and add the teams. Then make the fixtures.
             </p>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
-              <Button variant="primary" onClick={() => onNavigate('tournament-details', created.id)}>Open tournament & add teams</Button>
+              <Button variant="primary" onClick={() => onNavigate('tournament-details', created.id, 'teams')}>Open tournament & add teams</Button>
               <Button variant="secondary" onClick={() => { setCreated(null); setF(INITIAL); setCodeTouched(false); }}>Create another</Button>
             </div>
           </div>
