@@ -50,13 +50,56 @@
 }
 .match-centre, .match-centre > * { min-width: 0; }
 
-.fixture-public-nav { display: flex; flex-wrap: wrap; gap: .45rem; }
-.fixture-public-nav :is(a, button) {
-  font: inherit; font-weight: 700; text-decoration: none; color: #352168; background: #f0eaff;
-  border: 1px solid #d9c9f7; border-radius: .5rem; padding: .55rem .8rem; cursor: pointer;
+.fixture-screen {
+  --fixture-accent: #c6acff;
+  overflow: hidden;
+  width: 100%;
+  max-width: 56rem;
+  margin: 0 auto;
+  color: #f7f5fc;
+  background: #100f15;
+  border-radius: 1rem;
 }
-.fixture-info { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: .65rem; }
-.fixture-info > div { padding: .65rem .85rem; background: #f7f4ff; border-radius: .5rem; overflow-wrap: anywhere; }
-.fixture-info dt { font-size: .8rem; color: #504469; }
-.fixture-info dd { margin: .2rem 0 0; font-weight: 700; color: #241846; }
-#match-info { scroll-margin-top: 9rem; }
+.fixture-toolbar, .fixture-tabs { display: flex; align-items: center; background: #1e1b27; }
+.fixture-toolbar { gap: .65rem; padding: .85rem 1rem; }
+.fixture-toolbar h1 { flex: 1; min-width: 0; margin: 0; font-size: clamp(1.15rem, 5vw, 1.65rem); color: inherit; overflow-wrap: anywhere; }
+.fixture-icon {
+  display: grid; place-items: center; flex: 0 0 44px; height: 44px;
+  border: 0; border-radius: 50%; background: #302a3d; color: inherit; cursor: pointer;
+}
+.fixture-tabs { border-bottom: 1px solid #35303f; }
+.fixture-tabs button {
+  flex: 1; padding: .85rem .5rem; border: 0; border-bottom: 3px solid transparent;
+  background: transparent; color: #d0c9da; font: inherit; cursor: pointer;
+}
+.fixture-tabs button[aria-pressed="true"] { color: var(--fixture-accent); border-bottom-color: var(--fixture-accent); font-weight: 750; }
+.fixture-content { padding: 1.25rem 1rem 2rem; }
+.fixture-content h2 { margin: 0 0 .75rem; color: inherit; font-size: 1.25rem; }
+.fixture-info {
+  margin: 0 0 1.6rem; padding: .15rem .9rem; border: 1px solid #373140;
+  border-radius: 1rem; background: #211e29;
+}
+.fixture-info > div { display: grid; grid-template-columns: minmax(0, 36%) minmax(0, 1fr); align-items: center; gap: .65rem; padding: .8rem 0; }
+.fixture-info > div + div { border-top: 1px solid #373140; }
+.fixture-info dt { color: #d0c9da; }
+.fixture-info dd { margin: 0; overflow-wrap: anywhere; }
+.fixture-info > div:last-child dd { font-size: .83rem; }
+.fixture-tournament {
+  display: flex; justify-content: space-between; gap: .5rem; width: 100%; padding: 0;
+  color: var(--fixture-accent); background: none; border: 0; font: inherit; text-align: left; cursor: pointer;
+}
+.fixture-banner {
+  display: grid; gap: .65rem; min-height: 9rem; align-content: center; padding: 1.1rem;
+  text-align: center; border-radius: 1rem; background: linear-gradient(125deg, #312454, #51398a 58%, #24204c);
+}
+.fixture-banner strong { font-size: clamp(1.1rem, 6vw, 1.75rem); overflow-wrap: anywhere; }
+.fixture-banner small { color: var(--fixture-accent); }
+.fixture-team-links { display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: .9rem; }
+.fixture-team-links button { padding: .5rem .75rem; border: 1px solid #514667; border-radius: .6rem; color: var(--fixture-accent); background: #262031; cursor: pointer; }
+
+@media (max-width: 720px) {
+  .main-wrapper:has(.fixture-screen) { background: #100f15; }
+  .main-wrapper:has(.fixture-screen) > :is(header, footer) { display: none; }
+  .main-wrapper > main:has(.fixture-screen) { width: 100%; max-width: none; padding: 0; }
+  .fixture-screen { min-height: 100dvh; border-radius: 0; }
+}
