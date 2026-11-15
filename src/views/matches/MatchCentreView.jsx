@@ -173,6 +173,66 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
     finally { setBusy(false); }
   };
 
+  if (m.status === 'scheduled' && !staff) {
+    const squads = tab === 'fixture-squads';
+    const round = ({ league: 'League Matches', group: 'Group Stage', final: 'Final' })[m.stage]
+      || m.stage?.replaceAll('_', ' ') || (m.match_no ? `Match ${m.match_no}` : 'Upcoming match');
+    const back = () => onNavigate(data.tournament ? 'tournament-details' : 'matches', data.tournament?.id);
+    const details = [
+      ['Tournament', data.tournament?.id ? <button type="button" className="fixture-tournament" onClick={back}>{data.tournament.name}<span aria-hidden="true">›</span></button> : data.tournament?.name],
+      ['Round', round],
+      ['Match type', ({ box_cricket: 'Box cricket', two_innings: 'Two innings', limited_overs: 'Limited overs' })[m.match_type || data.tournament?.match_type]],
+      ['Overs', overs],
+      ['Date & time', m.scheduled_at ? new Date(m.scheduled_at).toLocaleString('en-IN', {
+        day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata',
+      }) + ' IST' : null],
+      ['Venue', [data.ground_name || m.venue, m.city].filter(Boolean).join(', ')],
+      ['Ball type', ball],
+      ['Match ID', m.id],
+    ];
+    return (
+      <section className="fixture-screen">
+        <header className="fixture-toolbar">
+          <button type="button" className="fixture-icon" onClick={back} aria-label="Back"><ArrowLeft size={23} /></button>
+          <h1>{round}</h1>
+          <button type="button" className="fixture-icon" onClick={nativeShare} aria-label="Share match"><Share2 size={21} /></button>
+          <button type="button" className="fixture-icon" onClick={copyLink} aria-label={copied ? 'Link copied' : 'Copy match link'}><Copy size={20} /></button>
+        </header>
+        <nav className="fixture-tabs" aria-label="Fixture sections">
+          <button type="button" aria-pressed={!squads} onClick={() => setTab('live')}>Info</button>
+          <button type="button" aria-pressed={squads} onClick={() => setTab('fixture-squads')}>Squads</button>
+        </nav>
+        <div className="fixture-content">
+          {copied && <span role="status">Match link copied.</span>}
+          {squads ? (
+            <>
+              <h2>Squads</h2>
+              <div className="fixture-team-links">
+                {[a, b].filter(team => team?.id).map(team => (
+                  <button type="button" key={team.id} onClick={() => onNavigate('team-details', team.id)}>{team.name}</button>
+                ))}
+              </div>
+              {a && b ? <LineupPanel match={m} /> : <p>Teams to be announced.</p>}
+            </>
+          ) : (
+            <>
+              <h2>Match details</h2>
+              <dl className="fixture-info">
+                {details.map(([title, value]) => <div key={title}><dt>{title}</dt><dd>{value || '—'}</dd></div>)}
+              </dl>
+              <h2>Match banner</h2>
+              <div className="fixture-banner">
+                <span>{data.tournament?.name || 'Cricnotch'}{m.match_no ? ` · Match ${m.match_no}` : ''}</span>
+                <strong>{a?.name || 'TBD'} <small>vs</small> {b?.name || 'TBD'}</strong>
+                <span>{label}</span>
+              </div>
+            </>
+          )}
+        </div>
+      </section>
+    );
+  }
+
   return (
     <div className="match-centre" style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem', maxWidth: 1000, margin: '0 auto', width: '100%' }}>
       <button type="button" onClick={() => onNavigate(data.tournament ? 'tournament-details' : 'matches', data.tournament?.id)}
@@ -347,33 +407,6 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       {staff && m.status === 'scheduled' && <LiveStreamPanel matchId={m.id} matchStatus={m.status} />}
       {staff && m.status === 'scheduled' && <MatchShareCards matchId={m.id} refreshKey={refreshKey} />}
       {staff && m.status === 'scheduled' && <ArticleFeed title="Match previews" filter={{ match_id: m.id }} writeKinds={['preview']} defaults={{ match_id: m.id }} onNavigate={onNavigate} limit={6} emptyText="No preview yet – write one." />}
-
-      {m.status === 'scheduled' && !staff && (
-        <>
-          <nav className="fixture-public-nav" aria-label="Fixture links">
-            <a href="#match-info">Info</a>
-            {[a, b].filter((team) => team?.id).map((team) => (
-              <button key={team.id} type="button" onClick={() => onNavigate('team-details', team.id)}>{team.name}</button>
-            ))}
-          </nav>
-          <Card title="Match info" id="match-info">
-            <dl className="fixture-info">
-              {[
-                ['Tournament', data.tournament?.name],
-                ['Round', m.stage || (m.match_no ? `Match ${m.match_no}` : null)],
-                ['Match type', ({ box_cricket: 'Box cricket', two_innings: 'Two innings', limited_overs: 'Limited overs' })[m.match_type || data.tournament?.match_type]],
-                ['Overs', m.overs_per_innings || data.tournament?.overs_per_innings],
-                ['Date & time', when(m.scheduled_at)],
-                ['Venue', data.ground_name || m.venue],
-                ['Ball type', m.ball_type || data.tournament?.ball_type],
-                ['Match ID', m.id],
-              ].filter(([, value]) => value).map(([label, value]) => (
-                <div key={label}><dt>{label}</dt><dd>{value}</dd></div>
-              ))}
-            </dl>
-          </Card>
-        </>
-      )}
 
       {/* Ball-by-ball scoring and scorecard (#7–#19) */}
       {m.status !== 'scheduled' && tab === 'live' && (staff || !completed) && <ScoringPanel matchId={m.id} mode="live" refreshKey={refreshKey} onChanged={() => load()} />}
