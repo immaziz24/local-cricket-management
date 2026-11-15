@@ -128,7 +128,9 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }
           <XiPoster title="Tournament Fixtures" subtitle={matches.length + ' matches'} fileLabel="fixtures"
             lineup={{ team: tournament.name, xi: days.flatMap(day => byDay[day]).map(match => ({
               name: (match.team_a?.name || 'TBD') + ' vs ' + (match.team_b?.name || 'TBD'),
-              detail: match.scheduled_at ? new Date(match.scheduled_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'Unscheduled'
+              detail: match.scheduled_at ? new Date(match.scheduled_at).toLocaleString('en-IN', {
+                day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit'
+              }) : 'Unscheduled'
             })), bench: [], notes: [] }} />
         </details>
       )}
