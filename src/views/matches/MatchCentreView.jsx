@@ -338,8 +338,31 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       {staff && m.status === 'scheduled' && <MatchShareCards matchId={m.id} refreshKey={refreshKey} />}
       {staff && m.status === 'scheduled' && <ArticleFeed title="Match previews" filter={{ match_id: m.id }} writeKinds={['preview']} defaults={{ match_id: m.id }} onNavigate={onNavigate} limit={6} emptyText="No preview yet – write one." />}
 
-      {m.status === 'scheduled' && !data.can_score && (
-        <Card><p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>This match has not started yet. </p></Card>
+      {m.status === 'scheduled' && !staff && (
+        <>
+          <nav className="fixture-public-nav" aria-label="Fixture links">
+            <a href="#match-info">Info</a>
+            {[a, b].filter((team) => team?.id).map((team) => (
+              <button key={team.id} type="button" onClick={() => onNavigate('team-details', team.id)}>{team.name}</button>
+            ))}
+          </nav>
+          <Card title="Match info" id="match-info">
+            <dl className="fixture-info">
+              {[
+                ['Tournament', data.tournament?.name],
+                ['Round', m.stage || (m.match_no ? `Match ${m.match_no}` : null)],
+                ['Match type', ({ box_cricket: 'Box cricket', two_innings: 'Two innings', limited_overs: 'Limited overs' })[m.match_type || data.tournament?.match_type]],
+                ['Overs', m.overs_per_innings || data.tournament?.overs_per_innings],
+                ['Date & time', when(m.scheduled_at)],
+                ['Venue', data.ground_name || m.venue],
+                ['Ball type', m.ball_type || data.tournament?.ball_type],
+                ['Match ID', m.id],
+              ].filter(([, value]) => value).map(([label, value]) => (
+                <div key={label}><dt>{label}</dt><dd>{value}</dd></div>
+              ))}
+            </dl>
+          </Card>
+        </>
       )}
 
       {/* Ball-by-ball scoring and scorecard (#7–#19) */}

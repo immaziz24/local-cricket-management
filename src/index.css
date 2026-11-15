@@ -2,11 +2,11 @@
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --font-display: 'Outfit', var(--font-sans);
 
-  /* Colors - Sports Emerald & Midnight Navy */
-  --color-primary: #059669;
-  --color-primary-hover: #047857;
-  --color-primary-light: #D1FAE5;
-  --color-primary-dark: #064E3B;
+  /* Colors - Indigo and Violet */
+  --color-primary: #603bb5;
+  --color-primary-hover: #4a2995;
+  --color-primary-light: #eee7ff;
+  --color-primary-dark: #352168;
 
   --color-accent: #F59E0B;
   --color-accent-light: #FEF3C7;
@@ -16,9 +16,9 @@
 
   --color-bg-app: #F8FAFC;
   --color-bg-card: #FFFFFF;
-  --color-bg-sidebar: #0B132B;
+  --color-bg-sidebar: #1d1539;
   --color-bg-sidebar-hover: #1C2541;
-  --color-bg-sidebar-active: #10B981;
+  --color-bg-sidebar-active: #6944bb;
 
   --color-text-main: #0F172A;
   --color-text-muted: #64748B;

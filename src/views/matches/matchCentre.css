@@ -2,9 +2,9 @@
   display: grid;
   gap: 1rem;
   padding: clamp(0.85rem, 3vw, 1.6rem);
-  border: 1px solid #244459;
+  border: 1px solid #5b4290;
   border-radius: 1rem;
-  background: linear-gradient(130deg, #0c192b, #104139);
+  background: linear-gradient(130deg, #26164e, #533496);
   color: #f8fafc;
   box-shadow: 0 6px 18px #1020321a;
 }
@@ -49,3 +49,14 @@
   .match-live-table :is(th, td):first-child { overflow-wrap: anywhere; }
 }
 .match-centre, .match-centre > * { min-width: 0; }
+
+.fixture-public-nav { display: flex; flex-wrap: wrap; gap: .45rem; }
+.fixture-public-nav :is(a, button) {
+  font: inherit; font-weight: 700; text-decoration: none; color: #352168; background: #f0eaff;
+  border: 1px solid #d9c9f7; border-radius: .5rem; padding: .55rem .8rem; cursor: pointer;
+}
+.fixture-info { margin: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: .65rem; }
+.fixture-info > div { padding: .65rem .85rem; background: #f7f4ff; border-radius: .5rem; overflow-wrap: anywhere; }
+.fixture-info dt { font-size: .8rem; color: #504469; }
+.fixture-info dd { margin: .2rem 0 0; font-weight: 700; color: #241846; }
+#match-info { scroll-margin-top: 9rem; }
