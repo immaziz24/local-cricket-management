@@ -1,3 +1,4 @@
+import { LeaderboardsPanel } from './stats/LeaderboardsPanel.jsx';
 import { CreateTournamentView } from './CreateTournamentView.jsx';
 import './tournaments/TournamentDetails.css';
 import React, { useState, useEffect } from 'react';
@@ -415,6 +416,12 @@ export function TournamentDetailsView(props) {
           className="tournament-match-tab" onClick={() => setActiveTab('matches')}>
           Matches
         </button>
+        {[['stats', 'Stats'], ['leaderboard', 'Leaderboard'], ['heroes', 'Heroes'], ['mvp', 'MVP']].map(([value, label]) => (
+          <button type="button" key={value} className="tournament-match-tab"
+            aria-pressed={activeTab === value} onClick={() => setActiveTab(value)}>
+            {label}
+          </button>
+        ))}
         <button
           type="button"
           onClick={() => setActiveTab('overview')}
@@ -585,6 +592,11 @@ export function TournamentDetailsView(props) {
       </div>
 
       {/* TAB 1: ABOUT & RULES */}
+      {['stats', 'leaderboard', 'heroes', 'mvp'].includes(activeTab) && (
+        <LeaderboardsPanel key={activeTab} mode={activeTab} tournamentId={tournament.id}
+          title={{ stats: 'Tournament stats', leaderboard: 'Leaderboard', heroes: 'Tournament heroes', mvp: 'Most valuable players' }[activeTab]}
+          onNavigate={onNavigate} />
+      )}
       {activeTab === 'matches' && (
         <section aria-label="Tournament matches" className="tournament-match-section">
           <div className="tournament-match-filters" role="group" aria-label="Match status">

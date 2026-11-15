@@ -19,9 +19,9 @@ const BOARDS = [
   { key: 'most_catches', label: 'Most dismissals (field)', cols: [['Total', 'value'], ['Ct', 'catches'], ['St', 'stumpings'], ['RO', 'run_outs']] }
 ];
 
-export function LeaderboardsPanel({ tournamentId = null, onNavigate, title = 'Leaderboards' }) {
+export function LeaderboardsPanel({ tournamentId = null, onNavigate, title = 'Leaderboards', mode = 'leaderboard' }) {
   const [data, setData] = useState(null);
-  const [board, setBoard] = useState('most_runs');
+  const [board, setBoard] = useState(mode === 'mvp' ? 'mvp' : 'most_runs');
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export function LeaderboardsPanel({ tournamentId = null, onNavigate, title = 'Le
     <Card title={title} subtitle="From ball-by-ball scored matches">
       <StatGrid items={[['Matches', t.matches], ['Runs', t.runs], ['Wickets', t.wickets], ['Fours', t.fours], ['Sixes', t.sixes]]} columns={5} />
       <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', margin: '0.9rem 0 0.6rem' }}>
-        {BOARDS.map((b) => (
+        {mode === 'leaderboard' && BOARDS.map((b) => (
           <button key={b.key} onClick={() => setBoard(b.key)}
             style={{ padding: '0.3rem 0.65rem', borderRadius: '999px', fontSize: '0.75rem', cursor: 'pointer', border: '1px solid ' + (board === b.key ? '#16a34a' : '#e2e8f0'),
                      backgroundColor: board === b.key ? '#dcfce7' : '#fff', color: board === b.key ? '#166534' : '#475569', fontWeight: board === b.key ? 700 : 500 }}>
@@ -52,7 +52,11 @@ export function LeaderboardsPanel({ tournamentId = null, onNavigate, title = 'Le
           </button>
         ))}
       </div>
-      {rows.length === 0 ? <p style={{ margin: 0, fontSize: '0.82rem', color: '#94a3b8' }}>Nobody qualifies yet.{def.note ? ` (${def.note})` : ''}</p> : (
+      {mode === 'heroes' ? <StatGrid columns={3} items={[
+        ['Top batter', data.most_runs?.[0]?.name || 'Pending'],
+        ['Top bowler', data.most_wickets?.[0]?.name || 'Pending'],
+        ['MVP leader', data.mvp?.[0]?.name || 'Pending'],
+      ]} /> : mode === 'stats' ? null : rows.length === 0 ? <p style={{ margin: 0, fontSize: '0.82rem', color: '#94a3b8' }}>Nobody qualifies yet.{def.note ? ` (${def.note})` : ''}</p> : (
         <div style={{ overflowX: 'auto' }}>
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead><tr><th style={th}>#</th><th style={th}>Player</th>{def.cols.map(([h]) => <th key={h} style={th}>{h}</th>)}</tr></thead>

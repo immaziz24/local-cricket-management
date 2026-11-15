@@ -47,6 +47,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
   const [msg, setMsg] = useState(null);
   const [lineupKey, setLineupKey] = useState(0);
   const [tab, setTab] = useState('live');
+  const [honours, setHonours] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [copied, setCopied] = useState(false);
   const [pauseReason, setPauseReason] = useState('');
@@ -68,6 +69,26 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       else setError(err.message);
     }
   };
+  const completed = data?.match?.status === 'completed';
+  useEffect(() => {
+    if (!completed) return;
+    let active = true;
+    dataService.fetchMatchAnalysis(matchId).then((analysis) => {
+      if (!active) return;
+      const players = analysis?.players || [];
+      const batter = players.filter((p) => p.runs > 0 || p.balls > 0)
+        .sort((a, b) => b.runs - a.runs || a.balls - b.balls)[0];
+      const bowler = players.filter((p) => p.wickets > 0)
+        .sort((a, b) => b.wickets - a.wickets || a.runs_conceded - b.runs_conceded)[0];
+      setHonours([
+        ['Player of the Match', analysis?.player_of_match],
+        ['Best batter', batter, batter && `${batter.runs} runs (${batter.balls} balls)`],
+        ['Best bowler', bowler, bowler && `${bowler.wickets}/${bowler.runs_conceded}`],
+      ]);
+    }).catch(() => { if (active) setHonours(null); });
+    return () => { active = false; };
+  }, [completed, matchId, refreshKey]);
+
   useEffect(() => { load(); }, [matchId]);
   useEffect(() => {
     window.addEventListener('online', load);
@@ -193,6 +214,17 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
             {(m.venue || m.city) && <span style={{ display: 'inline-flex', gap: '0.2rem', alignItems: 'center' }}><MapPin size={12} /> {[m.venue, m.city].filter(Boolean).join(', ')}</span>}
             {data.scorer_name && <span>Scorer: {data.scorer_name}</span>}
           </div>
+          {completed && honours?.some(([, player]) => player) && (
+            <div aria-label="Match awards" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+              {honours.map(([label, player, figures]) => player && (
+                <div key={label} style={{ flex: '1 1 10rem', background: '#ffffff18', borderRadius: '0.55rem', padding: '0.65rem' }}>
+                  <small>{label}</small>
+                  <div><strong>{player.name}</strong></div>
+                  {figures && <small>{figures}</small>}
+                </div>
+              ))}
+            </div>
+          )}
         </section>
 
       {/* #28 share, #24 #25 pause / resume */}
