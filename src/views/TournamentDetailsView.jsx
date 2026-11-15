@@ -1,3 +1,4 @@
+import './tournaments/TournamentDetails.css';
 import React, { useState, useEffect } from 'react';
 import { Card } from '../components/common/Card.jsx';
 import { Badge } from '../components/common/Badge.jsx';
@@ -186,7 +187,7 @@ export function TournamentDetailsView(props) {
   }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+    <div className="tournament-detail" style={{ display: 'flex', flexDirection: 'column' }}>
       {/* Top Action Bar with Breadcrumb and Tournament Switcher */}
       <div style={{
         display: 'flex',
@@ -242,16 +243,16 @@ export function TournamentDetailsView(props) {
 
       {/* Hero Header Card */}
       <Card
+        className="tournament-detail-hero"
         style={{
           borderTop: '5px solid ' + (tournament.banner_color || '#059669'),
-          padding: '1.75rem',
           display: 'flex',
           flexDirection: 'column',
           gap: '1.25rem'
         }}
       >
         {/* #33 banner and logo */}
-        <BannerStrip tournament={tournament} />
+        {tournament.banner_url && <BannerStrip tournament={tournament} />}
         {isOrganiser && (
           <BrandingControls
             tournament={tournament}
@@ -265,8 +266,8 @@ export function TournamentDetailsView(props) {
           flexWrap: 'wrap',
           gap: '1rem'
         }}>
-          <div style={{ display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
-          <TournamentLogo tournament={tournament} size={72} />
+          <div className="tournament-identity">
+          <TournamentLogo tournament={tournament} size={56} />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
                             <Badge variant={tournament.status === 'ongoing' ? 'primary' : 'upcoming'}>
@@ -299,7 +300,7 @@ export function TournamentDetailsView(props) {
             <div style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '1.25rem',
+              columnGap: '1rem', rowGap: '0.35rem',
               flexWrap: 'wrap',
               fontSize: '0.85rem',
               color: 'var(--color-text-muted)'
@@ -373,10 +374,7 @@ export function TournamentDetailsView(props) {
         </div>
 
         {/* Key facts (local cricket) */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))',
-          gap: '1rem',
+        <div className="tournament-facts" style={{
           paddingTop: '1.25rem',
           borderTop: '1px solid var(--color-border)'
         }}>
@@ -406,7 +404,7 @@ export function TournamentDetailsView(props) {
       </Card>
 
       {/* Navigation Sub-Tabs */}
-      <div style={{
+      <div className="tournament-section-nav" style={{
         display: 'flex',
         gap: '0.5rem',
         borderBottom: '1px solid var(--color-border)',
@@ -591,7 +589,7 @@ export function TournamentDetailsView(props) {
         </div>
       )}
       {activeTab === 'overview' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.5rem' }}>
+        <div className="tournament-overview">
           <Card title="About this tournament">
             <div style={{ display: 'flex', flexDirection: 'column', marginTop: '0.25rem' }}>
               {[

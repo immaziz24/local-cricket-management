@@ -41,7 +41,7 @@ export function AppLayout(props) {
     <div className={`app-container ${member ? 'layout-member' : 'layout-public'}`}>
       {member && <Sidebar activeTab={activeTab} onSelectTab={onSelectTab} isCollapsed={sidebarCollapsed} onToggleCollapse={toggleCollapse} liveMatchCount={liveMatchCount} isAdmin={isAdmin} />}
       <MobileNav isOpen={mobileNavOpen} onClose={() => setMobileNavOpen(false)} activeTab={activeTab} onSelectTab={onSelectTab} liveMatchCount={liveMatchCount} currentUser={currentUser} isAdmin={isAdmin} onSignOut={onSignOut} />
-      <div className="main-wrapper">
+      <div className="main-wrapper" style={{ minWidth: 0 }}>
         <SiteHeader variant={member ? 'member' : 'public'} currentUser={currentUser} isAdmin={isAdmin} liveMatchCount={liveMatchCount} activeTab={activeTab}
           onNavigate={onSelectTab} onSignOut={onSignOut} onToggleMobileNav={() => setMobileNavOpen(true)} />
         {fullBleed ? (
