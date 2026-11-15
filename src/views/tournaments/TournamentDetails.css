@@ -84,3 +84,34 @@
   .tournament-owner-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .tournament-owner-facts > :last-child { grid-column: auto; }
 }
+
+.tournament-hero-columns {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  width: 100%;
+  gap: clamp(1rem, 5vw, 5rem);
+}
+.tournament-detail .tournament-detail-hero {
+  --color-text-main: #fff;
+  --color-text-muted: #d2eade;
+  --color-primary: #8ce3b4;
+  background: linear-gradient(115deg, #082e25, #0e5841);
+  color: #fff;
+}
+.tournament-headline-stats > div {
+  background: #ffffff16;
+  border: 1px solid #ffffff40;
+}
+.tournament-match-filters { justify-content: center; }
+.tournament-match-grid {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.tournament-score-card { flex: 0 1 23rem; min-width: 0; max-width: 100%; }
+.tournament-match-section > .card { text-align: center; }
+@media (max-width: 760px) {
+  .tournament-hero-columns { grid-template-columns: minmax(0, 1fr); gap: 1rem; }
+  .tournament-hero-columns > .tournament-identity { grid-row: 1; }
+}

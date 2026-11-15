@@ -71,7 +71,7 @@ export function BrandingControls({ tournament, onChanged }) {
       <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}>
         <input ref={logoRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={pick('logo')} />
         <input ref={bannerRef} type="file" accept="image/jpeg,image/png,image/webp" hidden onChange={pick('banner')} />
-        <button type="button" disabled={busy} onClick={() => logoRef.current?.click()} style={linkBtn}><ImagePlus size={13} /> {tournament.logo_url ? 'Change logo' : 'Add logo'}</button>
+        <button type="button" disabled={busy} onClick={() => logoRef.current?.click()} style={linkBtn}><ImagePlus size={13} /> {tournament.logo_url ? 'Change tournament logo' : 'Upload tournament logo'}</button>
         {tournament.logo_url && <button type="button" disabled={busy} onClick={() => window.confirm('Remove the logo?') && run(() => dataService.removeTournamentImage(tournament.id, 'logo'), 'Logo removed.')} style={linkBtn}><Trash2 size={13} /> Logo</button>}
         <button type="button" disabled={busy} onClick={() => bannerRef.current?.click()} style={linkBtn}><ImagePlus size={13} /> {tournament.banner_url ? 'Change banner' : 'Add banner'}</button>
         {tournament.banner_url && <button type="button" disabled={busy} onClick={() => window.confirm('Remove the banner?') && run(() => dataService.removeTournamentImage(tournament.id, 'banner'), 'Banner removed.')} style={linkBtn}><Trash2 size={13} /> Banner</button>}

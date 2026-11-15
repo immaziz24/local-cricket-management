@@ -274,6 +274,11 @@ export function TournamentDetailsView(props) {
           flexWrap: 'wrap',
           gap: '1rem'
         }}>
+          <div className="tournament-hero-columns">
+            <div className="tournament-headline-stats">
+            <div><strong>{matchesTotal}</strong><span>Total matches</span></div>
+            <div><strong>{teams.length}</strong><span>Total teams</span></div>
+          </div>
           <div className="tournament-identity">
           <TournamentLogo tournament={tournament} size={80} />
           <div>
@@ -345,9 +350,7 @@ export function TournamentDetailsView(props) {
                 </div>
               )}
             </div>
-          <div className="tournament-headline-stats">
-            <div><strong>{matchesTotal}</strong><span>Total matches</span></div>
-            <div><strong>{teams.length}</strong><span>Registered teams</span></div>
+
           </div>
           </div>
           </div>
