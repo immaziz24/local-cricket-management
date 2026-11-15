@@ -30,7 +30,7 @@ function Notice({ msg }) {
 
 const cleanMobile = (v) => {
   const d = String(v || '').replace(/\D/g, '');
-  return d.length > 10 ? d.slice(-10) : d;
+  return /^91\d{10}$/.test(d) ? d.slice(2) : /^0\d{10}$/.test(d) ? d.slice(1) : d;
 };
 
 export function TeamDetailView({ teamId, onNavigate }) {
@@ -213,7 +213,7 @@ export function TeamDetailView({ teamId, onNavigate }) {
       <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', padding: '1.25rem 1.5rem', backgroundColor: '#0f172a', borderRadius: '0.75rem', color: '#fff', flexWrap: 'wrap' }}>
         <Avatar url={team.logo_url} name={team.short_name || team.name} size={64} square dark onPick={team.i_own ? uploadLogo : undefined} busy={busy} />
         <div style={{ flex: 1 }}>
-          <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800 }}>{team.name}</h2>
+          <h2 style={{ margin: 0, fontSize: '1.5rem', fontWeight: 800, color: '#fff', overflowWrap: 'anywhere' }}>{team.name}</h2>
           <div style={{ fontSize: '0.85rem', color: '#cbd5e1' }}>{team.city ? `${team.city} · ` : ''}{squad.length} players</div>
         </div>
         <Badge variant={team.i_own ? 'success' : 'neutral'}>{team.i_own ? 'You own this team' : 'View only'}</Badge>
@@ -316,11 +316,11 @@ export function TeamDetailView({ teamId, onNavigate }) {
             <form onSubmit={searchMobile} style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               <div style={{ flex: 1, minWidth: '220px', display: 'flex', alignItems: 'center', gap: '0.4rem', padding: '0.45rem 0.65rem', border: '1px solid #cbd5e1', borderRadius: '0.5rem' }}>
                 <Phone size={14} style={{ color: '#94a3b8' }} />
-                <input value={mobile} onChange={(e) => { setMobile(e.target.value); setLookup(null); }} inputMode="numeric" placeholder="Player's 10-digit mobile number" style={{ border: 'none', outline: 'none', flex: 1, fontSize: '0.9rem' }} />
+                <input value={mobile} onChange={(e) => { setMobile(e.target.value); setLookup(null); setMsg(null); }} inputMode="numeric" placeholder="Player mobile number (10 digits or +91)" style={{ border: 'none', outline: 'none', flex: 1, fontSize: '0.9rem' }} />
               </div>
               <Button type="submit" variant="primary" disabled={busy} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}><Search size={14} /> Find player</Button>
             </form>
-            <button type="button" onClick={() => { setManualNoMobile(true); setLookup({ found: false }); }} style={{ marginTop: '0.5rem', background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', fontSize: '0.8rem', padding: 0 }}>
+            <button type="button" onClick={() => { setMsg(null); setManualNoMobile(true); setLookup({ found: false }); }} style={{ marginTop: '0.5rem', background: 'none', border: 'none', color: '#2563eb', cursor: 'pointer', fontSize: '0.8rem', padding: 0 }}>
               Player has no mobile number? Add by name only
             </button>
 

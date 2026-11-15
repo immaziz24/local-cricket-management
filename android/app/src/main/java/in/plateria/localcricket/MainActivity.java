@@ -163,7 +163,9 @@ public final class MainActivity extends Activity {
     private boolean openLink(Intent intent) {
         Uri link = intent.getData();
         if (Intent.ACTION_VIEW.equals(intent.getAction()) && isCricnotchPage(link)) {
-            website.loadUrl(link.toString());
+            if (!link.toString().equals(website.getUrl())) {
+                website.loadUrl(link.toString());
+            }
             return true;
         }
         return false;

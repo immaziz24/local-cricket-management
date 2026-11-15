@@ -360,9 +360,24 @@ function BudgetTool() {
 
 /* #230 Prize distribution */
 function PrizeTool() {
-  const [pool, setPool] = useState('');
-  const [roundTo, setRoundTo] = useState('100');
-  const [shares, setShares] = useState([{ label: 'Winner', percent: 50 }, { label: 'Runner-up', percent: 25 }, { label: 'Player of the Tournament', percent: 10 }, { label: 'Best batter', percent: 5 }, { label: 'Best bowler', percent: 5 }, { label: 'Best fielder', percent: 5 }]);
+  const storageKey = 'cricnotch-prize-draft';
+  const [draft] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem(storageKey));
+    } catch {
+      return null;
+    }
+  });
+  const [pool, setPool] = useState(draft?.pool ?? '');
+  const [roundTo, setRoundTo] = useState(draft?.roundTo ?? '100');
+  const [shares, setShares] = useState(Array.isArray(draft?.shares) ? draft.shares : [{ label: 'Winner', percent: 50 }, { label: 'Runner-up', percent: 25 }, { label: 'Player of the Tournament', percent: 10 }, { label: 'Best batter', percent: 5 }, { label: 'Best bowler', percent: 5 }, { label: 'Best fielder', percent: 5 }]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(storageKey, JSON.stringify({ pool, roundTo, shares }));
+    } catch {
+      // The calculator still works when browser storage is unavailable.
+    }
+  }, [pool, roundTo, shares]);
   const res = M.splitPrizes(pool, shares, roundTo);
   const upd = (i, k, v) => setShares(shares.map((x, j) => (j === i ? { ...x, [k]: v } : x)));
   return (

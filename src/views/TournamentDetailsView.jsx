@@ -51,6 +51,9 @@ export function TournamentDetailsView(props) {
   const [allTournaments, setAllTournaments] = useState([]);
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [edit, setEdit] = useState(null);
+  const [savingEdit, setSavingEdit] = useState(false);
+  const [editError, setEditError] = useState('');
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteError, setDeleteError] = useState('');
   const [deleting, setDeleting] = useState(false);
@@ -323,6 +326,10 @@ export function TournamentDetailsView(props) {
           </div>
           </div>
 
+          {isOrganiser && <Button size="sm" onClick={() => {
+            setEditError('');
+            setEdit(Object.fromEntries(['name', 'venue', 'city', 'start_date', 'end_date', 'organizer_name', 'entry_fee', 'prize_pool', 'rules_summary'].map((key) => [key, tournament[key] ?? ''])));
+          }}>Edit tournament</Button>}
           {deleteError && <p role="alert">{deleteError}</p>}
           {isOrganiser && (
             <Button variant="outline" disabled={deleting} onClick={async () => {
@@ -402,6 +409,53 @@ export function TournamentDetailsView(props) {
           </div>
         </div>
       </Card>
+
+      {isOrganiser && edit && (
+        <Card title="Edit tournament">
+          <form onSubmit={async (event) => {
+            event.preventDefault();
+            setEditError('');
+            if (edit.name.trim().length < 3 || edit.venue.trim().length < 3 || edit.end_date < edit.start_date) {
+              setEditError('Enter a name and ground of at least 3 characters, and check the dates.');
+              return;
+            }
+            setSavingEdit(true);
+            try {
+              await dataService.updateTournament(tournament.id, edit);
+              setTournament((previous) => ({ ...previous, ...edit, name: edit.name.trim(), venue: edit.venue.trim() }));
+              setEdit(null);
+            } catch (error) {
+              setEditError(error.message);
+            } finally {
+              setSavingEdit(false);
+            }
+          }}>
+            <div className="tournament-overview">
+              {[
+                ['name', 'Tournament name'], ['venue', 'Ground'], ['city', 'City / village'],
+                ['organizer_name', 'Organiser name'], ['start_date', 'Start date', 'date'],
+                ['end_date', 'End date', 'date'], ['entry_fee', 'Entry fee'], ['prize_pool', 'Prizes'],
+                ['rules_summary', 'Organiser notes'],
+              ].map(([key, label, type]) => (
+                <label key={key} style={{ display: 'grid', gap: '0.3rem' }}>
+                  {label}
+                  {key === 'rules_summary' ? (
+                    <textarea value={edit[key]} onChange={(event) => setEdit({ ...edit, [key]: event.target.value })} />
+                  ) : (
+                    <input type={type || 'text'} required={!!type || key === 'name' || key === 'venue'}
+                      value={edit[key]} onChange={(event) => setEdit({ ...edit, [key]: event.target.value })} />
+                  )}
+                </label>
+              ))}
+            </div>
+            {editError && <p role="alert">{editError}</p>}
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem' }}>
+              <Button type="submit" disabled={savingEdit}>Save changes</Button>
+              <Button type="button" variant="secondary" disabled={savingEdit} onClick={() => setEdit(null)}>Cancel</Button>
+            </div>
+          </form>
+        </Card>
+      )}
 
       {/* Navigation Sub-Tabs */}
       <div className="tournament-section-nav" style={{
