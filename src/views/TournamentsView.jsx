@@ -114,6 +114,11 @@ export function TournamentsView(props) {
                 </div>
 
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', fontSize: '0.8rem', color: 'var(--color-text-muted)', padding: '0.5rem 0' }}>
+                  <div style={{ marginTop: '0.75rem', color: '#475569' }}>
+                    {currentUser?.id && trn.owner_id === currentUser.id
+                      ? 'Created by me'
+                      : 'Created by ' + (trn.tournament_creator_name || 'an unavailable account')}
+                  </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     <Calendar size={13} />
                     <span>{trn.start_date} to {trn.end_date}</span>
@@ -138,11 +143,6 @@ export function TournamentsView(props) {
                     <div style={{ width: pct + '%', height: '100%', backgroundColor: trn.banner_color || 'var(--color-primary)', borderRadius: '999px' }} />
                   </div>
 
-                  <div style={{ marginTop: '0.75rem', color: '#475569' }}>
-                    {currentUser?.id && trn.owner_id === currentUser.id
-                      ? 'Created by you'
-                      : 'Organised by'} <strong>{trn.organizer_name || '—'}</strong>
-                  </div>
                   <Button
                     variant="outline"
                     size="sm"

@@ -778,14 +778,14 @@ export const supabaseClient = {
   // Phase 2 – Category B: tournaments
   // ==========================================
   async getTournaments() {
-    const { data, error } = await supabase.from('tournaments').select('*').order('start_date', { ascending: false }).limit(200);
+    const { data, error } = await supabase.from('tournaments').select('*, tournament_creator_name').order('start_date', { ascending: false }).limit(200);
     if (error) return { data: null, error: friendlyError(error, 'tournaments') };
     return { data: data || [], error: null };
   },
 
   async getTournamentById(tournamentId) {
     if (!/^[0-9a-f-]{36}$/i.test(String(tournamentId || ''))) return { data: null, error: 'Tournament not found.' };
-    const { data, error } = await supabase.from('tournaments').select('*').eq('id', tournamentId).maybeSingle();
+    const { data, error } = await supabase.from('tournaments').select('*, tournament_creator_name').eq('id', tournamentId).maybeSingle();
     if (error) return { data: null, error: friendlyError(error, 'tournament') };
     if (!data) return { data: null, error: 'Tournament not found.' };
     return { data, error: null };

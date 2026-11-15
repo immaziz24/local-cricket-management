@@ -294,7 +294,7 @@ export function TournamentDetailsView(props) {
             }}>
               {tournament.name}
             </h1>
-            {currentUser && <span>{isOrganiser ? 'Managed by me' : 'Created by another user'}</span>}
+            <span>{currentUser?.id && tournament.owner_id === currentUser.id ? 'Created by me' : 'Created by ' + (tournament.tournament_creator_name || 'an unavailable account')}</span>
 
             <div style={{
               display: 'flex',
