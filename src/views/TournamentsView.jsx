@@ -7,10 +7,20 @@ import { dataService } from '../services/dataService.js';
 import { TournamentLogo } from './tournaments/TournamentBranding.jsx';
 import { Trophy, Calendar, Users, MapPin, PlusCircle, Sparkles, Eye } from 'lucide-react';
 
+const FILTERS = [
+  ['live', 'Live'],
+  ['upcoming', 'Upcoming'],
+  ['finished', 'Finished'],
+  ['mine', 'My tournaments'],
+  ['all', 'All'],
+];
+
 export function TournamentsView(props) {
   const { currentUser, onNavigate = () => {} } = props || {};
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [selectedFilter, setFilter] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -19,7 +29,7 @@ export function TournamentsView(props) {
         const data = await dataService.fetchTournaments();
         if (isMounted) setTournaments(data || []);
       } catch (err) {
-        console.error(err);
+        if (isMounted) setError(err.message || 'Could not load tournaments.');
       } finally {
         if (isMounted) setLoading(false);
       }
@@ -27,6 +37,18 @@ export function TournamentsView(props) {
     loadTournaments();
     return () => { isMounted = false; };
   }, []);
+
+  const defaultFilter = tournaments.some((t) => t.status === 'ongoing') ? 'live' : 'upcoming';
+  const filter = selectedFilter === 'mine' && !currentUser ? defaultFilter : selectedFilter ?? defaultFilter;
+  const visibleTournaments = tournaments.filter((t) => {
+    switch (filter) {
+      case 'live': return t.status === 'ongoing';
+      case 'upcoming': return ['registration', 'upcoming'].includes(t.status);
+      case 'finished': return t.status === 'completed';
+      case 'mine': return t.owner_id === currentUser?.id;
+      default: return true;
+    }
+  });
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
@@ -67,11 +89,24 @@ export function TournamentsView(props) {
         </Button>
       </div>
 
-      {loading ? (
+      <div role="group" aria-label="Filter tournaments" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+        {FILTERS.filter(([value]) => value !== 'mine' || currentUser).map(([value, label]) => (
+          <button key={value} type="button" aria-pressed={filter === value} onClick={() => setFilter(value)}
+            style={{ padding: '0.4rem 0.9rem', borderRadius: '999px', fontSize: '0.85rem', cursor: 'pointer',
+              fontWeight: filter === value ? 700 : 500, border: '1px solid ' + (filter === value ? '#0f172a' : '#cbd5e1'),
+              backgroundColor: filter === value ? '#0f172a' : '#fff', color: filter === value ? '#fff' : '#334155' }}>
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {error ? <p role="alert">{error}</p> : loading ? (
         <LoadingSpinner message="Fetching tournament registries..." />
+      ) : visibleTournaments.length === 0 ? (
+        <p role="status">No tournaments in this view.</p>
       ) : (
         <div className="grid-cards">
-          {tournaments.map((trn) => {
+          {visibleTournaments.map((trn) => {
             const pct = trn.matches_total ? Math.round((trn.matches_completed / trn.matches_total) * 100) : 0;
             return (
               <Card
