@@ -47,7 +47,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
   const [msg, setMsg] = useState(null);
   const [lineupKey, setLineupKey] = useState(0);
   const [tab, setTab] = useState('live');
-  const [honours, setHonours] = useState(null);
+  const [analysis, setAnalysis] = useState(null);
   const [refreshKey, setRefreshKey] = useState(0);
   const [copied, setCopied] = useState(false);
   const [pauseReason, setPauseReason] = useState('');
@@ -75,17 +75,8 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
     let active = true;
     dataService.fetchMatchAnalysis(matchId).then((analysis) => {
       if (!active) return;
-      const players = analysis?.players || [];
-      const batter = players.filter((p) => p.runs > 0 || p.balls > 0)
-        .sort((a, b) => b.runs - a.runs || a.balls - b.balls)[0];
-      const bowler = players.filter((p) => p.wickets > 0)
-        .sort((a, b) => b.wickets - a.wickets || a.runs_conceded - b.runs_conceded)[0];
-      setHonours([
-        ['Player of the Match', analysis?.player_of_match],
-        ['Best batter', batter, batter && `${batter.runs} runs (${batter.balls} balls)`],
-        ['Best bowler', bowler, bowler && `${bowler.wickets}/${bowler.runs_conceded}`],
-      ]);
-    }).catch(() => { if (active) setHonours(null); });
+      setAnalysis(analysis);
+    }).catch(() => { if (active) setAnalysis(null); });
     return () => { active = false; };
   }, [completed, matchId, refreshKey]);
 
@@ -101,6 +92,17 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
   if (!data) return <div style={{ color: '#94a3b8' }}>Loading match…</div>;
 
   const m = data.match;
+  const staff = data.can_manage || data.can_score;
+  const players = analysis?.players || [];
+  const batters = players.filter((p) => p.runs > 0 || p.balls > 0)
+    .sort((a, b) => b.runs - a.runs || a.balls - b.balls).slice(0, 3);
+  const bowlers = players.filter((p) => p.wickets > 0 || p.runs_conceded > 0)
+    .sort((a, b) => b.wickets - a.wickets || a.runs_conceded - b.runs_conceded).slice(0, 3);
+  const honours = [
+    ['Player of the Match', analysis?.player_of_match],
+    ['Best batter', batters[0], batters[0] && `${batters[0].runs} runs (${batters[0].balls} balls)`],
+    ['Best bowler', bowlers[0], bowlers[0] && `${bowlers[0].wickets}/${bowlers[0].runs_conceded}`],
+  ];
   const a = data.team_a; const b = data.team_b;
   const [variant, label] = STATUS[m.status] || ['neutral', m.status];
   const nameOf = (id) => (id === a?.id ? a.name : id === b?.id ? b.name : '');
@@ -186,7 +188,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
             </span>
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <Badge variant={variant}>{label}</Badge>
-              <span>{data.can_manage ? 'Managed by me' : 'Created by another user'}</span>
+              {data.can_manage && <span>Managed by me</span>}
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)', alignItems: 'start', gap: '0.75rem', textAlign: 'center' }}>
@@ -269,13 +271,13 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
         </div>
       )}
 
-      {data.tournament?.id && <SponsorStrip tournamentId={data.tournament.id} showBanner={false} onNavigate={onNavigate} />}
-      <AdSlot slot="match_page" tournamentId={data.tournament?.id || null} />
+      {staff && data.tournament?.id && <SponsorStrip tournamentId={data.tournament.id} showBanner={false} onNavigate={onNavigate} />}
+      {staff && <AdSlot slot="match_page" tournamentId={data.tournament?.id || null} />}
 
       {/* Tabs once the match has started */}
       {m.status !== 'scheduled' && (
         <nav className="match-tabs" aria-label="Match sections">
-          {[['live', m.status === 'live' ? 'Live' : 'Summary'], ['scorecard', 'Scorecard'], ['commentary', 'Commentary'], ['over', 'Over'], ['analysis', 'Analysis'], ['lineups', 'Playing XI'], ['matchday', 'Match day'], ['officials', 'Ground & officials'], ['rules', 'Rules'], ['media', 'Video & media'], ['news', 'Previews & reports'], ['reports', 'Reports'], ['history', 'History']].map(([v, l]) => (
+          {[['live', m.status === 'live' ? 'Live' : 'Summary'], ['scorecard', 'Scorecard'], ['commentary', 'Commentary'], ['over', 'Over'], ['analysis', 'Analysis'], ['lineups', 'Playing XI'], ['matchday', 'Match day'], ['officials', 'Ground & officials'], ['rules', 'Rules'], ['media', 'Video & media'], ['news', 'Previews & reports'], ['reports', 'Reports'], ['history', 'History']].filter(([v]) => staff || ['live', 'scorecard', 'commentary', 'over', 'analysis', 'lineups'].includes(v)).map(([v, l]) => (
             <button key={v} type="button" aria-pressed={tab === v} onClick={() => setTab(v)}
               style={{ padding: '0.55rem 1rem', border: 'none', borderBottom: `3px solid ${tab === v ? '#059669' : 'transparent'}`, background: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', color: tab === v ? '#065f46' : '#64748b' }}>
               {l}
@@ -285,7 +287,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       )}
 
       {/* Step 1: Playing XI (#3, #4) */}
-      {(m.status === 'scheduled' || tab === 'lineups') && (
+      {((staff && m.status === 'scheduled') || tab === 'lineups') && (
         <Card title={m.status === 'scheduled' ? '1. Playing XI & substitutes' : 'Playing XI'}>
           {a && b ? <LineupPanel key={lineupKey} match={m} /> : <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Both teams must be set first.</span>}
         </Card>
@@ -328,20 +330,36 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       )}
 
       {/* Category E: playing conditions (editable until the match starts) */}
-      {m.status === 'scheduled' && <MatchPunctualityPanel matchId={m.id} refreshKey={refreshKey} />}
-      {m.status === 'scheduled' && <MatchGroundCard match={m} groundName={data.ground_name} canManage={data.can_manage} onNavigate={onNavigate} onChanged={load} />}
-      {m.status === 'scheduled' && <MatchOfficialsPanel match={m} onNavigate={onNavigate} />}
-      {m.status === 'scheduled' && <PlayingConditionsPanel matchId={m.id} />}
-      {m.status === 'scheduled' && <LiveStreamPanel matchId={m.id} matchStatus={m.status} />}
-      {m.status === 'scheduled' && <MatchShareCards matchId={m.id} refreshKey={refreshKey} />}
-      {m.status === 'scheduled' && <ArticleFeed title="Match previews" filter={{ match_id: m.id }} writeKinds={['preview']} defaults={{ match_id: m.id }} onNavigate={onNavigate} limit={6} emptyText="No preview yet – write one." />}
+      {staff && m.status === 'scheduled' && <MatchPunctualityPanel matchId={m.id} refreshKey={refreshKey} />}
+      {staff && m.status === 'scheduled' && <MatchGroundCard match={m} groundName={data.ground_name} canManage={data.can_manage} onNavigate={onNavigate} onChanged={load} />}
+      {staff && m.status === 'scheduled' && <MatchOfficialsPanel match={m} onNavigate={onNavigate} />}
+      {staff && m.status === 'scheduled' && <PlayingConditionsPanel matchId={m.id} />}
+      {staff && m.status === 'scheduled' && <LiveStreamPanel matchId={m.id} matchStatus={m.status} />}
+      {staff && m.status === 'scheduled' && <MatchShareCards matchId={m.id} refreshKey={refreshKey} />}
+      {staff && m.status === 'scheduled' && <ArticleFeed title="Match previews" filter={{ match_id: m.id }} writeKinds={['preview']} defaults={{ match_id: m.id }} onNavigate={onNavigate} limit={6} emptyText="No preview yet – write one." />}
 
       {m.status === 'scheduled' && !data.can_score && (
-        <Card><p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>This match has not started yet. Only the scorer or the tournament organiser can start it.</p></Card>
+        <Card><p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>This match has not started yet. </p></Card>
       )}
 
       {/* Ball-by-ball scoring and scorecard (#7–#19) */}
-      {m.status !== 'scheduled' && tab === 'live' && <ScoringPanel matchId={m.id} mode="live" refreshKey={refreshKey} onChanged={() => load()} />}
+      {m.status !== 'scheduled' && tab === 'live' && (staff || !completed) && <ScoringPanel matchId={m.id} mode="live" refreshKey={refreshKey} onChanged={() => load()} />}
+      {!staff && completed && tab === 'live' && (
+        <>
+          <Card title="Best performances">
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 15rem), 1fr))', gap: '1rem' }}>
+              {[['Batters', batters, (p) => `${p.runs} runs (${p.balls} balls)`],
+                ['Bowlers', bowlers, (p) => `${p.wickets}/${p.runs_conceded}`]].map(([title, entries, figures]) => (
+                <div key={title}>
+                  <h4>{title}</h4>
+                  {entries.length ? <ol>{entries.map((p) => <li key={p.player_id}>{p.name} · {figures(p)}</li>)}</ol> : <p>No recorded performances.</p>}
+                </div>
+              ))}
+            </div>
+          </Card>
+          <FullScorecard matchId={m.id} refreshKey={refreshKey} onNavigate={onNavigate} />
+        </>
+      )}
       {m.status !== 'scheduled' && tab === 'scorecard' && <FullScorecard matchId={m.id} refreshKey={refreshKey} onNavigate={onNavigate} />}
       {m.status !== 'scheduled' && ['commentary', 'over'].includes(tab) && <CommentaryPanel key={tab} byOver={tab === 'over'} matchId={m.id} live={m.status === 'live'} refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'analysis' && <MatchAnalysisPanel matchId={m.id} matchStatus={m.status} canScore={data.can_score} refreshKey={refreshKey} onNavigate={onNavigate} />}
