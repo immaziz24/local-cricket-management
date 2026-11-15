@@ -1,4 +1,4 @@
-import { XiPoster } from '../tools/XiPoster.jsx';
+import { FixturePosters } from '../tools/XiPoster.jsx';
 import React, { useState, useEffect } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
@@ -125,13 +125,7 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }
       {matches.length > 0 && (
         <details>
           <summary>Download tournament fixtures</summary>
-          <XiPoster title="Tournament Fixtures" subtitle={matches.length + ' matches'} fileLabel="fixtures"
-            lineup={{ team: tournament.name, xi: days.flatMap(day => byDay[day]).map(match => ({
-              name: (match.team_a?.name || 'TBD') + ' vs ' + (match.team_b?.name || 'TBD'),
-              detail: match.scheduled_at ? new Date(match.scheduled_at).toLocaleString('en-IN', {
-                day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit'
-              }) : 'Unscheduled'
-            })), bench: [], notes: [] }} />
+          <FixturePosters tournament={tournament} matches={days.flatMap(day => byDay[day])} />
         </details>
       )}
 
