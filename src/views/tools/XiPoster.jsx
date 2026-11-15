@@ -35,14 +35,185 @@ const fixtureDesigns = [
   ['Silver Crease', '#21242f', '#454057', '#e6ddff', '#343244'],
 ];
 
+function drawFixture(canvas, tournament, match, number, style) {
+  const [, start, end, accent, panel] = fixtureDesigns[style];
+  canvas.width = 1080;
+  canvas.height = 720;
+  const ctx = canvas.getContext('2d');
+  const gradient = ctx.createLinearGradient(0, 0, 1080, 720);
+  gradient.addColorStop(0, start);
+  gradient.addColorStop(1, end);
+  ctx.fillStyle = gradient;
+  ctx.fillRect(0, 0, 1080, 720);
+  ctx.strokeStyle = accent;
+  ctx.globalAlpha = 0.22;
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  if (style % 3 === 0) ctx.ellipse(540, 360, 510, 320, 0, 0, 2 * Math.PI);
+  if (style % 3 === 1) ctx.rect(32, 32, 1016, 656);
+  if (style % 3 === 2) {
+    ctx.moveTo(0, 490);
+    ctx.lineTo(1080, 170);
+    ctx.moveTo(0, 530);
+    ctx.lineTo(1080, 210);
+  }
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = panel;
+  ctx.fillRect(80, 218, 920, 286);
+  ctx.textAlign = 'center';
+  const line = (value, y, font, color, maxWidth = 900) => {
+    ctx.font = font + ' system-ui';
+    ctx.fillStyle = color;
+    ctx.fillText(value, 540, y, maxWidth);
+  };
+  line('CRICNOTCH', 88, 'bold 26px', accent);
+  line(tournament.name, 151, 'bold 52px', '#fff');
+  line('MATCH ' + number, 193, 'bold 25px', accent);
+  line(match.team_a?.name || 'TBD', 305, 'bold 62px', '#fff', 850);
+  line('VS', 372, 'bold 30px', accent);
+  line(match.team_b?.name || 'TBD', 453, 'bold 62px', '#fff', 850);
+  const date = match.scheduled_at ? new Date(match.scheduled_at).toLocaleString('en-IN', {
+    day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata',
+  }) + ' IST' : 'Date and time to be announced';
+  line(date, 579, 'bold 32px', '#fff');
+  line(match.venue || tournament.venue || 'Venue to be announced', 630, '28px', accent);
+}
+
+const zipCrc = Uint32Array.from({ length: 256 }, (_, value) => {
+  for (let bit = 0; bit < 8; bit++) value = (value >>> 1) ^ (value & 1 ? 0xedb88320 : 0);
+  return value;
+});
+
+// PNG already uses compression. Store the PNG bytes directly in the ZIP.
+async function fixtureZip(entries) {
+  const local = [];
+  const central = [];
+  let offset = 0;
+  let directorySize = 0;
+  for await (const { name, png } of entries) {
+    const bytes = new Uint8Array(await png.arrayBuffer());
+    const filename = new TextEncoder().encode(name);
+    let crc = 0xffffffff;
+    for (const byte of bytes) crc = (crc >>> 8) ^ zipCrc[(crc ^ byte) & 255];
+    crc = (crc ^ 0xffffffff) >>> 0;
+    const header = new DataView(new ArrayBuffer(30));
+    header.setUint32(0, 0x04034b50, true);
+    header.setUint16(4, 20, true);
+    header.setUint16(12, 33, true);
+    header.setUint32(14, crc, true);
+    header.setUint32(18, bytes.length, true);
+    header.setUint32(22, bytes.length, true);
+    header.setUint16(26, filename.length, true);
+    const record = new DataView(new ArrayBuffer(46));
+    record.setUint32(0, 0x02014b50, true);
+    record.setUint16(4, 20, true);
+    new Uint8Array(record.buffer).set(new Uint8Array(header.buffer, 4, 26), 6);
+    record.setUint32(42, offset, true);
+    local.push(header.buffer, filename, bytes);
+    central.push(record.buffer, filename);
+    offset += header.byteLength + filename.length + bytes.length;
+    directorySize += record.byteLength + filename.length;
+  }
+  const footer = new DataView(new ArrayBuffer(22));
+  footer.setUint32(0, 0x06054b50, true);
+  footer.setUint16(8, central.length / 2, true);
+  footer.setUint16(10, central.length / 2, true);
+  footer.setUint32(12, directorySize, true);
+  footer.setUint32(16, offset, true);
+  return new Blob([...local, ...central, footer.buffer], { type: 'application/zip' });
+}
+
+function canvasPng(canvas) {
+  return new Promise((resolve, reject) => canvas.toBlob(blob => {
+    if (blob) resolve(blob);
+    else reject(new Error('Could not create the match image.'));
+  }, 'image/png'));
+}
+
+export function FixturePosters({ tournament, matches }) {
+  const preview = useRef(null);
+  const [matchId, setMatchId] = useState('');
+  const [style, setStyle] = useState(0);
+  const [busy, setBusy] = useState(false);
+  const [status, setStatus] = useState('');
+  const [error, setError] = useState('');
+  const index = Math.max(0, matches.findIndex(match => match.id === matchId));
+  const selected = matches[index];
+
+  useEffect(() => {
+    drawFixture(preview.current, tournament, selected, selected.match_no ?? index + 1, style);
+  }, [tournament, selected, index, style]);
+
+  async function download(all) {
+    setBusy(true);
+    setStatus('');
+    setError('');
+    try {
+      const canvas = document.createElement('canvas');
+      const styleName = fixtureDesigns[style][0].toLowerCase().replaceAll(' ', '-');
+      if (all) {
+        async function* images() {
+          for (const [position, match] of matches.entries()) {
+            drawFixture(canvas, tournament, match, match.match_no ?? position + 1, style);
+            const number = String(position + 1).padStart(String(matches.length).length, '0');
+            yield { name: 'match-' + number + '-' + styleName + '.png', png: await canvasPng(canvas) };
+          }
+        }
+        downloadBlob(await fixtureZip(images()), 'cricnotch-fixtures-' + styleName + '.zip');
+      } else {
+        drawFixture(canvas, tournament, selected, selected.match_no ?? index + 1, style);
+        const nativeDownloads = window.CricnotchDownloads;
+        if (nativeDownloads?.saveLineup) {
+          nativeDownloads.saveLineup(canvas.toDataURL('image/png'));
+          return;
+        }
+        downloadBlob(await canvasPng(canvas), 'cricnotch-match-' + (index + 1) + '-' + styleName + '.png');
+      }
+      setStatus('Download started. Check your browser downloads.');
+    } catch {
+      setError('Could not prepare the download. Please try again.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div style={{ display: 'grid', gap: '0.8rem', marginTop: '0.9rem', maxWidth: '44rem', minWidth: 0 }}>
+      <label>
+        Graphic style ({fixtureDesigns.length} designs){' '}
+        <select value={style} disabled={busy} onChange={event => setStyle(Number(event.target.value))}>
+          {fixtureDesigns.map(([name], value) => <option key={name} value={value}>{name}</option>)}
+        </select>
+      </label>
+      <label>
+        Match{' '}
+        <select value={selected.id} disabled={busy} onChange={event => setMatchId(event.target.value)} style={{ maxWidth: '100%' }}>
+          {matches.map((match, position) => (
+            <option key={match.id} value={match.id}>
+              {match.match_no ?? position + 1}. {match.team_a?.name || 'TBD'} vs {match.team_b?.name || 'TBD'}
+            </option>
+          ))}
+        </select>
+      </label>
+      <canvas ref={preview} aria-label="Selected match graphic" style={{ display: 'block', width: '100%', height: 'auto', borderRadius: '0.8rem' }} />
+      <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.6rem' }}>
+        <Button variant="secondary" disabled={busy} onClick={() => download(false)}>Download selected match (PNG)</Button>
+        <Button variant="primary" disabled={busy} onClick={() => download(true)}>Download all {matches.length} matches (ZIP)</Button>
+      </div>
+      {busy && <p role="status">Preparing download…</p>}
+      {!busy && status && <p role="status">{status}</p>}
+      {error && <p role="alert">{error}</p>}
+    </div>
+  );
+}
+
 export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) {
   const canvas = useRef(null);
   const [error, setError] = useState('');
   const [style, setStyle] = useState(0);
   const [status, setStatus] = useState('');
-  const isFixturePoster = fileLabel === 'fixtures';
-  const availableDesigns = isFixturePoster ? fixtureDesigns : designs;
-  const [designName, start, end, accent, row] = availableDesigns[style];
+  const [, start, end, accent, row] = designs[style];
   const { xi, bench, team, notes } = lineup;
   const logicalHeight = 250 + 61 * (xi.length + bench.length) + (bench.length ? 55 : 0);
   const scale = Math.min(1, 4096 / logicalHeight);
@@ -60,21 +231,7 @@ export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) 
     ctx.strokeStyle = '#326758';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    if (isFixturePoster && style % 3 === 1) {
-      ctx.rect(width - 272, 29, 110, 154);
-      ctx.moveTo(width - 274, 54);
-      ctx.lineTo(width - 144, 54);
-      ctx.moveTo(width - 274, 158);
-      ctx.lineTo(width - 144, 158);
-    } else if (isFixturePoster && style % 3 === 2) {
-      ctx.arc(width - 126, 89, 97, 0, Math.PI * 2);
-      ctx.moveTo(width - 172, 14);
-      ctx.lineTo(width - 83, 164);
-      ctx.moveTo(width - 156, 8);
-      ctx.lineTo(width - 67, 158);
-    } else {
-      ctx.ellipse(width - 75, 105, 235, 100, -0.5, 0, Math.PI * 2);
-    }
+    ctx.ellipse(width - 75, 105, 235, 100, -0.5, 0, Math.PI * 2);
     ctx.stroke();
     ctx.fillStyle = accent;
     ctx.font = 'bold 25px system-ui';
@@ -84,7 +241,7 @@ export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) 
     ctx.fillText(title || (xi.length === 11 ? 'Suggested Playing XI' : 'Suggested lineup'), 52, 132, 850);
     ctx.fillStyle = '#ade5d3';
     ctx.font = '28px system-ui';
-    ctx.fillText([team, subtitle || 'Batting order'].filter(Boolean).join('  ·  '), 55, 180, 850);
+    ctx.fillText([team, subtitle || 'Batting order'].filter(Boolean).join('  ┬╖  '), 55, 180, 850);
 
     const drawPlayer = (player, index, y, label) => {
       ctx.fillStyle = row;
@@ -106,10 +263,10 @@ export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) 
       ctx.fillText(label, 70, y + 36);
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 29px system-ui';
-      ctx.fillText(player.name, 140, y + 37, isFixturePoster ? 485 : 525);
+      ctx.fillText(player.name, 140, y + 37, 525);
       ctx.fillStyle = '#b9e4d5';
       ctx.font = '23px system-ui';
-      ctx.fillText(player.detail || roles[player.role] || '', isFixturePoster ? 647 : 710, y + 36, isFixturePoster ? 238 : 180);
+      ctx.fillText(player.detail || roles[player.role] || '', 710, y + 36, 180);
     };
     xi.forEach((player, index) => drawPlayer(player, index, 210 + index * 61, String(index + 1).padStart(2, '0')));
     if (bench.length) {
@@ -117,9 +274,9 @@ export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) 
       ctx.fillStyle = accent;
       ctx.font = 'bold 25px system-ui';
       ctx.fillText('BENCH', 54, benchY + 24);
-      bench.forEach((player, index) => drawPlayer(player, index, benchY + 43 + index * 61, '—'));
+      bench.forEach((player, index) => drawPlayer(player, index, benchY + 43 + index * 61, 'ΓÇö'));
     }
-  }, [xi, bench, team, style, start, end, accent, row, title, subtitle, logicalHeight, scale, isFixturePoster]);
+  }, [xi, bench, team, style, start, end, accent, row, title, subtitle, logicalHeight, scale]);
 
   const save = () => {
     setError('');
@@ -130,7 +287,7 @@ export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) 
     }
     canvas.current.toBlob(blob => {
       if (blob) {
-        const name = designName.toLowerCase().replaceAll(' ', '-');
+        const name = designs[style][0].toLowerCase().replaceAll(' ', '-');
         downloadBlob(blob, 'cricnotch-' + fileLabel + '-' + name + '.png');
         setStatus('Download started. Check your browser downloads.');
       }
@@ -141,9 +298,9 @@ export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) 
   return (
     <div style={{ marginTop: '0.9rem' }}>
       <label style={{ display: 'block', marginBottom: '0.7rem' }}>
-        Graphic style{isFixturePoster ? ` (${availableDesigns.length} designs)` : ''}{' '}
+        Graphic style{' '}
         <select value={style} onChange={event => { setStyle(Number(event.target.value)); setStatus(''); }}>
-          {availableDesigns.map(([name], index) => <option key={name} value={index}>{name}</option>)}
+          {designs.map(([name], index) => <option key={name} value={index}>{name}</option>)}
         </select>
       </label>
       <canvas ref={canvas} width={Math.ceil(960 * scale)} height={Math.ceil(logicalHeight * scale)}
@@ -151,7 +308,7 @@ export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) 
         aria-label={title || "Suggested lineup graphic"}>
         {xi.map(player => player.name).join(', ')}
       </canvas>
-      <Button variant="secondary" onClick={save}>{isFixturePoster ? 'Download fixtures as PNG' : 'Download'}</Button>
+      <Button variant="secondary" onClick={save}>Download</Button>
       {status && <p role="status">{status}</p>}
       {error && <p role="alert">{error}</p>}
       {notes.map(note => <p key={note} style={{ color: '#92400e' }}>{note}</p>)}
