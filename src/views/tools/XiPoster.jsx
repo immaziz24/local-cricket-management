@@ -25,12 +25,24 @@ const designs = [
   ['Crimson Derby', '#3c0e18', '#591522', '#ffafb3', '#722838'],
 ];
 
+const fixtureDesigns = [
+  ...designs,
+  ['Stadium Neon', '#141431', '#33306b', '#bfff62', '#292953'],
+  ['Daylight Cricket', '#0c4249', '#267c74', '#fff2ad', '#124c4e'],
+  ['Boundary Line', '#192c1c', '#2e5032', '#b7f6aa', '#29452a'],
+  ['Electric Scoreboard', '#0b2141', '#164684', '#66f4ff', '#102f55'],
+  ['Monsoon Trophy', '#243043', '#354a63', '#ffedcb', '#293b52'],
+  ['Silver Crease', '#21242f', '#454057', '#e6ddff', '#343244'],
+];
+
 export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) {
   const canvas = useRef(null);
   const [error, setError] = useState('');
   const [style, setStyle] = useState(0);
   const [status, setStatus] = useState('');
-  const [, start, end, accent, row] = designs[style];
+  const isFixturePoster = fileLabel === 'fixtures';
+  const availableDesigns = isFixturePoster ? fixtureDesigns : designs;
+  const [designName, start, end, accent, row] = availableDesigns[style];
   const { xi, bench, team, notes } = lineup;
   const logicalHeight = 250 + 61 * (xi.length + bench.length) + (bench.length ? 55 : 0);
   const scale = Math.min(1, 4096 / logicalHeight);
@@ -48,7 +60,21 @@ export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) 
     ctx.strokeStyle = '#326758';
     ctx.lineWidth = 2;
     ctx.beginPath();
-    ctx.ellipse(width - 75, 105, 235, 100, -0.5, 0, Math.PI * 2);
+    if (isFixturePoster && style % 3 === 1) {
+      ctx.rect(width - 272, 29, 110, 154);
+      ctx.moveTo(width - 274, 54);
+      ctx.lineTo(width - 144, 54);
+      ctx.moveTo(width - 274, 158);
+      ctx.lineTo(width - 144, 158);
+    } else if (isFixturePoster && style % 3 === 2) {
+      ctx.arc(width - 126, 89, 97, 0, Math.PI * 2);
+      ctx.moveTo(width - 172, 14);
+      ctx.lineTo(width - 83, 164);
+      ctx.moveTo(width - 156, 8);
+      ctx.lineTo(width - 67, 158);
+    } else {
+      ctx.ellipse(width - 75, 105, 235, 100, -0.5, 0, Math.PI * 2);
+    }
     ctx.stroke();
     ctx.fillStyle = accent;
     ctx.font = 'bold 25px system-ui';
@@ -80,10 +106,10 @@ export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) 
       ctx.fillText(label, 70, y + 36);
       ctx.fillStyle = '#ffffff';
       ctx.font = 'bold 29px system-ui';
-      ctx.fillText(player.name, 140, y + 37, 525);
+      ctx.fillText(player.name, 140, y + 37, isFixturePoster ? 485 : 525);
       ctx.fillStyle = '#b9e4d5';
       ctx.font = '23px system-ui';
-      ctx.fillText(player.detail || roles[player.role] || '', 710, y + 36, 180);
+      ctx.fillText(player.detail || roles[player.role] || '', isFixturePoster ? 647 : 710, y + 36, isFixturePoster ? 238 : 180);
     };
     xi.forEach((player, index) => drawPlayer(player, index, 210 + index * 61, String(index + 1).padStart(2, '0')));
     if (bench.length) {
@@ -93,7 +119,7 @@ export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) 
       ctx.fillText('BENCH', 54, benchY + 24);
       bench.forEach((player, index) => drawPlayer(player, index, benchY + 43 + index * 61, '—'));
     }
-  }, [xi, bench, team, style, start, end, accent, row, title, subtitle, logicalHeight, scale]);
+  }, [xi, bench, team, style, start, end, accent, row, title, subtitle, logicalHeight, scale, isFixturePoster]);
 
   const save = () => {
     setError('');
@@ -104,7 +130,7 @@ export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) 
     }
     canvas.current.toBlob(blob => {
       if (blob) {
-        const name = designs[style][0].toLowerCase().replaceAll(' ', '-');
+        const name = designName.toLowerCase().replaceAll(' ', '-');
         downloadBlob(blob, 'cricnotch-' + fileLabel + '-' + name + '.png');
         setStatus('Download started. Check your browser downloads.');
       }
@@ -115,9 +141,9 @@ export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) 
   return (
     <div style={{ marginTop: '0.9rem' }}>
       <label style={{ display: 'block', marginBottom: '0.7rem' }}>
-        Graphic style{' '}
+        Graphic style{isFixturePoster ? ` (${availableDesigns.length} designs)` : ''}{' '}
         <select value={style} onChange={event => { setStyle(Number(event.target.value)); setStatus(''); }}>
-          {designs.map(([name], index) => <option key={name} value={index}>{name}</option>)}
+          {availableDesigns.map(([name], index) => <option key={name} value={index}>{name}</option>)}
         </select>
       </label>
       <canvas ref={canvas} width={Math.ceil(960 * scale)} height={Math.ceil(logicalHeight * scale)}
@@ -125,7 +151,7 @@ export function XiPoster({ lineup, title, subtitle, fileLabel = 'playing-xi' }) 
         aria-label={title || "Suggested lineup graphic"}>
         {xi.map(player => player.name).join(', ')}
       </canvas>
-      <Button variant="secondary" onClick={save}>Download</Button>
+      <Button variant="secondary" onClick={save}>{isFixturePoster ? 'Download fixtures as PNG' : 'Download'}</Button>
       {status && <p role="status">{status}</p>}
       {error && <p role="alert">{error}</p>}
       {notes.map(note => <p key={note} style={{ color: '#92400e' }}>{note}</p>)}
