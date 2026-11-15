@@ -60,9 +60,9 @@ export function TournamentDetailsView(props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState(() =>
-    props.initialTab || (new URLSearchParams(window.location.hash.slice(1)).get('tab') === 'teams' ? 'teams' : 'overview')
+    props.initialTab || (new URLSearchParams(window.location.hash.slice(1)).get('tab') === 'teams' ? 'teams' : 'matches')
   );
-  const [matchFilter, setMatchFilter] = useState('all'); // all | live | upcoming | completed
+  const [matchFilter, setMatchFilter] = useState(null);
   const [copiedCode, setCopiedCode] = useState(false);
 
   useEffect(() => {
@@ -169,16 +169,16 @@ export function TournamentDetailsView(props) {
     );
   }
 
-  const matchesTotal = tournament.matches_total || 1;
+  const matchesTotal = Math.max(matches.length, tournament.matches_total || 0);
   const matchesDone = tournament.matches_completed || 0;
-  const progressPercent = Math.round((matchesDone / matchesTotal) * 100);
+  const progressPercent = matchesTotal ? Math.round((matchesDone / matchesTotal) * 100) : 0;
 
-  // Filter matches for Fixtures tab
-  const filteredMatches = matches.filter((m) => {
-    if (matchFilter === 'all') return true;
-    return m.status === matchFilter;
-  });
-
+  const matchStatus = matchFilter || (matches.some((match) => match.status === 'live') ? 'live' : 'upcoming');
+  const filteredMatches = matches.filter((match) => matchStatus === 'upcoming'
+    ? match.status === 'scheduled'
+    : match.status === matchStatus);
+  const score = (runs, wickets, balls) => runs == null ? null :
+    `${runs}/${wickets ?? 0}${balls == null ? '' : ` (${Math.floor(balls / 6)}.${balls % 6} ov)`}`;
   // Calculate duration in days
   let durationDays = null;
   if (tournament.start_date && tournament.end_date) {
@@ -276,7 +276,7 @@ export function TournamentDetailsView(props) {
           gap: '1rem'
         }}>
           <div className="tournament-identity">
-          <TournamentLogo tournament={tournament} size={56} />
+          <TournamentLogo tournament={tournament} size={80} />
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
                             <Badge variant={tournament.status === 'ongoing' ? 'primary' : 'upcoming'}>
@@ -332,6 +332,10 @@ export function TournamentDetailsView(props) {
           </div>
           </div>
 
+          <div className="tournament-headline-stats">
+            <div><strong>{matchesTotal}</strong><span>Total matches</span></div>
+            <div><strong>{teams.length}</strong><span>Registered teams</span></div>
+          </div>
           {isOrganiser && <Button size="sm" onClick={() => { setEdit(true); window.scrollTo(0, 0); }}>Edit tournament</Button>}
           {isOrganiser && <Button type="button" variant="outline" size="sm" onClick={() => onNavigate('create-tournament', tournament)}>Create next season</Button>}
           {deleteError && <p role="alert">{deleteError}</p>}
@@ -421,6 +425,10 @@ export function TournamentDetailsView(props) {
         borderBottom: '1px solid var(--color-border)',
         paddingBottom: '0.25rem'
       }}>
+        <button type="button" aria-pressed={activeTab === 'matches'}
+          className="tournament-match-tab" onClick={() => setActiveTab('matches')}>
+          Matches
+        </button>
         <button
           type="button"
           onClick={() => setActiveTab('overview')}
@@ -591,6 +599,36 @@ export function TournamentDetailsView(props) {
       </div>
 
       {/* TAB 1: ABOUT & RULES */}
+      {activeTab === 'matches' && (
+        <section aria-label="Tournament matches" className="tournament-match-section">
+          <div className="tournament-match-filters" role="group" aria-label="Match status">
+            {[['live', 'Live'], ['upcoming', 'Upcoming'], ['completed', 'Completed']].map(([value, label]) => (
+              <button type="button" key={value} aria-pressed={matchStatus === value}
+                onClick={() => setMatchFilter(value)}>{label}</button>
+            ))}
+          </div>
+          {filteredMatches.length === 0 ? (
+            <Card><p>No {matchStatus} matches yet.</p></Card>
+          ) : (
+            <div className="tournament-match-grid">
+              {filteredMatches.map((match) => (
+                <button type="button" className="tournament-score-card" key={match.id}
+                  onClick={() => onNavigate('match-centre', match.id)}>
+                  <span className="tournament-score-row">
+                    <span>{match.stage || (match.match_no ? `Match ${match.match_no}` : 'Tournament match')}</span>
+                    <Badge variant={match.status === 'live' ? 'danger' : 'upcoming'}>{match.status}</Badge>
+                  </span>
+                  {match.scheduled_at && <small>{new Date(match.scheduled_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' })}</small>}
+                  {(match.venue || tournament.venue) && <small>{match.venue || tournament.venue}</small>}
+                  <span className="tournament-score-row"><strong>{match.team_a?.name || 'Team to be decided'}</strong><span>{score(match.team_a_runs, match.team_a_wickets, match.team_a_balls)}</span></span>
+                  <span className="tournament-score-row"><strong>{match.team_b?.name || 'Team to be decided'}</strong><span>{score(match.team_b_runs, match.team_b_wickets, match.team_b_balls)}</span></span>
+                  {match.result_summary && <small>{match.result_summary}</small>}
+                </button>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
       {activeTab === 'overview' && /^[0-9a-f-]{36}$/i.test(tournament.id) && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem' }}>
           <SponsorStrip tournamentId={tournament.id} onNavigate={onNavigate} />
