@@ -66,8 +66,9 @@ const suggestCode = (name, startDate, season) => {
 };
 
 export function CreateTournamentView(props) {
-  const { onNavigate = () => {}, previousTournament = null } = props || {};
-  const [f, setF] = useState(() => previousTournament ? { ...INITIAL, name: previousTournament.name, venue: previousTournament.venue, city: previousTournament.city || '', season_number: Math.min(999, (previousTournament.season_number || 1) + 1), code: suggestCode(previousTournament.name, '', (previousTournament.season_number || 1) + 1) } : INITIAL);
+  const { onNavigate = () => {}, previousTournament = null, editingTournament = null, onSaved, onCancel } = props || {};
+  const [f, setF] = useState(() => editingTournament ? Object.fromEntries(Object.entries(INITIAL).map(([key, value]) => [key, editingTournament[key] ?? (key === 'overs_per_innings' ? 10 : value)])) : previousTournament ? { ...INITIAL, name: previousTournament.name, venue: previousTournament.venue, city: previousTournament.city || '', season_number: Math.min(999, (previousTournament.season_number || 1) + 1), code: suggestCode(previousTournament.name, '', (previousTournament.season_number || 1) + 1) } : INITIAL);
+  const [codeTouched, setCodeTouched] = useState(!!editingTournament);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
@@ -76,7 +77,7 @@ export function CreateTournamentView(props) {
   const set = (k, v) => {
     setF((prev) => {
       const next = { ...prev, [k]: v };
-      if (['name', 'start_date', 'season_number'].includes(k)) next.code = suggestCode(next.name, next.start_date, next.season_number);
+      if (!codeTouched && ['name', 'start_date'].includes(k)) next.code = suggestCode(next.name, next.start_date, next.season_number);
       if (k === 'match_type' && v === 'box_cricket' && prev.players_per_side === 11) { next.players_per_side = 8; next.overs_per_innings = 5; }
       return next;
     });
@@ -110,12 +111,17 @@ export function CreateTournamentView(props) {
     setSubmitting(true); setSubmitError(null);
     try {
       const payload = {
-        ...f, previous_tournament_id: previousTournament?.id,
+        ...f, previous_tournament_id: previousTournament?.id, custom_code: codeTouched,
         teams_count: Number(f.teams_count),
         overs_per_innings: f.match_type === 'two_innings' ? null : Number(f.overs_per_innings),
         players_per_side: Number(f.players_per_side)
       };
-      setCreated(await dataService.createTournament(payload));
+      if (editingTournament) {
+        await dataService.updateTournament(editingTournament.id, payload);
+        await onSaved();
+      } else {
+        setCreated(await dataService.createTournament(payload));
+      }
     } catch (err) {
       setSubmitError(err.message || 'Could not create the tournament.');
     } finally {
@@ -138,7 +144,7 @@ export function CreateTournamentView(props) {
             </p>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Button variant="primary" onClick={() => onNavigate('tournament-details', created.id, 'teams')}>Open tournament & add teams</Button>
-              <Button variant="secondary" onClick={() => { setCreated(null); setF(INITIAL);  }}>Create another</Button>
+              <Button variant="secondary" onClick={() => { setCreated(null); setF(INITIAL); setCodeTouched(false);  }}>Create another</Button>
             </div>
           </div>
         </Card>
@@ -152,10 +158,10 @@ export function CreateTournamentView(props) {
   return (
     <form onSubmit={submit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', maxWidth: 980, margin: '0 auto' }}>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-        <button type="button" onClick={() => onNavigate('tournaments')} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'inline-flex' }} aria-label="Back"><ArrowLeft size={20} /></button>
+        <button type="button" onClick={onCancel || (() => onNavigate('tournaments'))} style={{ background: 'none', border: 'none', cursor: 'pointer', display: 'inline-flex' }} aria-label="Back"><ArrowLeft size={20} /></button>
         <Trophy size={26} color="#059669" />
         <div>
-          <h1 style={{ margin: 0, fontSize: '1.4rem' }}>Create a tournament</h1>
+          <h1 style={{ margin: 0, fontSize: '1.4rem' }}>{editingTournament ? 'Edit tournament' : 'Create a tournament'}</h1>
           <div style={{ fontSize: '0.85rem', color: '#64748b' }}>Takes a minute. You add teams and fixtures afterwards.</div>
         </div>
       </div>
@@ -171,14 +177,10 @@ export function CreateTournamentView(props) {
           <div>
             <label style={labelStyle}>Short code *</label>
             <input style={{ ...box('code'), fontFamily: 'monospace' }} value={f.code}
-              readOnly placeholder="e.g. TPL-26-S1" />
-            <div style={hint}>Generated from the name, start year, and season number. For a linked tournament, the next available season is assigned when you save.</div>
+              maxLength={16} onChange={(e) => { setCodeTouched(true); set('code', e.target.value.toUpperCase()); }} placeholder="e.g. TPL-26-S1" />
+            <div style={hint}>Suggested automatically. You can change it here.</div>
             {err('code')}
           </div>
-          <label style={labelStyle}>Season number
-            <input style={input} type="number" min="1" max="999" required readOnly={!!previousTournament} value={f.season_number}
-              onChange={(e) => set('season_number', e.target.value)} />
-          </label>
           <div>
             <label style={labelStyle}>City / village</label>
             <input style={input} value={f.city} onChange={(e) => set('city', e.target.value)} placeholder="e.g. Silchar" />
@@ -295,7 +297,7 @@ export function CreateTournamentView(props) {
         <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'inline-flex', gap: '0.3rem', alignItems: 'center' }}>
           <MapPin size={13} /> {f.match_type === 'two_innings' ? 'Two innings' : `${f.overs_per_innings || '?'} overs`} · {f.players_per_side} a side · {f.ball_type}
         </span>
-        <Button type="button" variant="secondary" onClick={() => onNavigate('tournaments')}>Cancel</Button>
+        <Button type="button" variant="secondary" onClick={onCancel || (() => onNavigate('tournaments'))}>Cancel</Button>
         <Button type="submit" variant="primary" disabled={submitting}>{submitting ? 'Creating…' : 'Create tournament'}</Button>
       </div>
     </form>
