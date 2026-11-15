@@ -303,6 +303,8 @@ export function TournamentDetailsView(props) {
             }}>
               {tournament.name}
             </h1>
+          </div>
+          <div style={{ gridColumn: '1 / -1', display: 'grid', justifyItems: 'start', gap: '0.4rem' }}>
             <div className="tournament-title-actions">
               {/^[0-9a-f-]{36}$/i.test(tournament.id) && (
                 <button type="button" aria-label="Share tournament" title="Share tournament" onClick={shareTournament}>
@@ -343,12 +345,11 @@ export function TournamentDetailsView(props) {
                 </div>
               )}
             </div>
-          </div>
-          </div>
-
           <div className="tournament-headline-stats">
             <div><strong>{matchesTotal}</strong><span>Total matches</span></div>
             <div><strong>{teams.length}</strong><span>Registered teams</span></div>
+          </div>
+          </div>
           </div>
           {isOrganiser && <Button size="sm" onClick={() => { setEdit(true); window.scrollTo(0, 0); }}>Edit tournament</Button>}
           {isOrganiser && <Button type="button" variant="outline" size="sm" onClick={() => onNavigate('create-tournament', tournament)}>Create next season</Button>}
