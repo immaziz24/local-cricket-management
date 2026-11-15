@@ -330,10 +330,20 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       )}
 
       {/* Category E: playing conditions (editable until the match starts) */}
+      {data.can_manage && m.status === 'scheduled' && (
+        <Button variant="outline" size="sm" style={{ alignSelf: 'flex-start' }}
+          onClick={() => document.getElementById('match-playing-conditions')?.scrollIntoView({ block: 'start' })}>
+          Set late-arrival rule
+        </Button>
+      )}
       {staff && m.status === 'scheduled' && <MatchPunctualityPanel matchId={m.id} refreshKey={refreshKey} />}
       {staff && m.status === 'scheduled' && <MatchGroundCard match={m} groundName={data.ground_name} canManage={data.can_manage} onNavigate={onNavigate} onChanged={load} />}
       {staff && m.status === 'scheduled' && <MatchOfficialsPanel match={m} onNavigate={onNavigate} />}
-      {staff && m.status === 'scheduled' && <PlayingConditionsPanel matchId={m.id} />}
+      {staff && m.status === 'scheduled' && (
+        <div id="match-playing-conditions" style={{ scrollMarginTop: '9rem' }}>
+          <PlayingConditionsPanel matchId={m.id} />
+        </div>
+      )}
       {staff && m.status === 'scheduled' && <LiveStreamPanel matchId={m.id} matchStatus={m.status} />}
       {staff && m.status === 'scheduled' && <MatchShareCards matchId={m.id} refreshKey={refreshKey} />}
       {staff && m.status === 'scheduled' && <ArticleFeed title="Match previews" filter={{ match_id: m.id }} writeKinds={['preview']} defaults={{ match_id: m.id }} onNavigate={onNavigate} limit={6} emptyText="No preview yet – write one." />}
