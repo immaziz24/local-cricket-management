@@ -130,3 +130,25 @@
     justify-content: flex-start;
   }
 }
+.tournament-detail-hero .btn-primary {
+  background-color: #e0fdfa;
+  color: #104644;
+}
+.tournament-detail-hero .btn-primary:hover { background-color: #b5f4eb; }
+.tournament-detail-hero .btn-outline {
+  background-color: #fff;
+  border-color: #cbd8ee;
+  color: #172d52;
+}
+.tournament-detail-hero .btn-outline:hover { background-color: #e8f1ff; }
+.tournament-detail-hero .btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 3px;
+}
+.tournament-owner-facts > div {
+  --color-text-main: #172d52;
+  --color-text-muted: #475569;
+  background: #f3f8ff;
+  border-radius: .55rem;
+  padding: .65rem .8rem;
+}
