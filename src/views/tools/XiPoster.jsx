@@ -37,47 +37,89 @@ const fixtureDesigns = [
 
 function drawFixture(canvas, tournament, match, number, style) {
   const [, start, end, accent, panel] = fixtureDesigns[style];
-  canvas.width = 1080;
-  canvas.height = 720;
+  canvas.width = 1600;
+  canvas.height = 900;
   const ctx = canvas.getContext('2d');
-  const gradient = ctx.createLinearGradient(0, 0, 1080, 720);
+  const gradient = ctx.createLinearGradient(0, 0, 1600, 900);
+  const gold = ctx.createLinearGradient(0, 0, 1600, 900);
+  gold.addColorStop(0, '#9b6325');
+  gold.addColorStop(0.5, '#ffe2a0');
+  gold.addColorStop(1, '#b8782b');
   gradient.addColorStop(0, start);
-  gradient.addColorStop(1, end);
+  gradient.addColorStop(0.57, end);
+  gradient.addColorStop(1, '#080e19');
   ctx.fillStyle = gradient;
-  ctx.fillRect(0, 0, 1080, 720);
-  ctx.strokeStyle = accent;
-  ctx.globalAlpha = 0.22;
-  ctx.lineWidth = 5;
-  ctx.beginPath();
-  if (style % 3 === 0) ctx.ellipse(540, 360, 510, 320, 0, 0, 2 * Math.PI);
-  if (style % 3 === 1) ctx.rect(32, 32, 1016, 656);
-  if (style % 3 === 2) {
-    ctx.moveTo(0, 490);
-    ctx.lineTo(1080, 170);
-    ctx.moveTo(0, 530);
-    ctx.lineTo(1080, 210);
+  ctx.fillRect(0, 0, 1600, 900);
+  for (const x of [42, 1558]) {
+    const glow = ctx.createRadialGradient(x, 685, 0, x, 685, 390);
+    glow.addColorStop(0, accent + '55');
+    glow.addColorStop(1, accent + '00');
+    ctx.fillStyle = glow;
+    ctx.fillRect(0, 0, 1600, 900);
   }
+  ctx.fillStyle = '#29452a';
+  ctx.beginPath();
+  ctx.ellipse(800, 916, 940, 102, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  function card(x, y, width, height, radius, fill) {
+    ctx.beginPath();
+    ctx.roundRect(x, y, width, height, radius);
+    if (fill) {
+      ctx.fillStyle = fill;
+      ctx.fill();
+    }
+    ctx.strokeStyle = gold;
+    ctx.lineWidth = 3;
+    ctx.stroke();
+  }
+  card(45, 45, 1510, 810, 34);
+  for (const [x, y, direction] of [[0, 0, 1], [1600, 900, -1]]) {
+    ctx.beginPath();
+    ctx.moveTo(x, y);
+    ctx.lineTo(x + direction * 258, y);
+    ctx.lineTo(x, y + direction * 120);
+    ctx.closePath();
+    ctx.fillStyle = gold;
+    ctx.fill();
+  }
+
+  const matchup = ctx.createLinearGradient(104, 0, 1496, 0);
+  matchup.addColorStop(0, panel);
+  matchup.addColorStop(0.5, '#0a1120');
+  matchup.addColorStop(1, end);
+  card(104, 367, 1392, 192, [22, 34, 64][style % 3], matchup);
+  card(739, 405, 122, 116, 26, '#101725');
+  card(380, 603, 840, 80, 40, '#0b1423');
+
+  ctx.fillStyle = '#b83236';
+  ctx.beginPath();
+  ctx.arc(800, 108, 24, 0, 2 * Math.PI);
+  ctx.fill();
+  ctx.beginPath();
+  ctx.moveTo(785, 90);
+  ctx.quadraticCurveTo(786, 113, 815, 126);
+  ctx.strokeStyle = '#ffe2a0';
   ctx.stroke();
-  ctx.globalAlpha = 1;
-  ctx.fillStyle = panel;
-  ctx.fillRect(80, 218, 920, 286);
+
   ctx.textAlign = 'center';
-  const line = (value, y, font, color, maxWidth = 900) => {
+  const line = (value, y, font, color, maxWidth = 1300, x = 800) => {
     ctx.font = font + ' system-ui';
     ctx.fillStyle = color;
-    ctx.fillText(value, 540, y, maxWidth);
+    ctx.fillText(value, x, y, maxWidth);
   };
-  line('CRICNOTCH', 88, 'bold 26px', accent);
-  line(tournament.name, 151, 'bold 52px', '#fff');
-  line('MATCH ' + number, 193, 'bold 25px', accent);
-  line(match.team_a?.name || 'TBD', 305, 'bold 62px', '#fff', 850);
-  line('VS', 372, 'bold 30px', accent);
-  line(match.team_b?.name || 'TBD', 453, 'bold 62px', '#fff', 850);
+  line('CRICNOTCH', 182, 'italic 900 48px', '#fff');
+  line(tournament.name.toLocaleUpperCase(), 275, 'italic 900 80px', gold);
+  card(675, 292, 250, 53, 22, gold);
+  line('MATCH ' + number, 329, '900 28px', '#14141a', 206);
+  line((match.team_a?.name || 'TBD').toLocaleUpperCase(), 488, '900 62px', '#fff', 535, 426);
+  line('VS', 480, 'italic 900 48px', gold, 90);
+  line((match.team_b?.name || 'TBD').toLocaleUpperCase(), 488, '900 62px', '#fff', 535, 1174);
   const date = match.scheduled_at ? new Date(match.scheduled_at).toLocaleString('en-IN', {
     day: 'numeric', month: 'short', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZone: 'Asia/Kolkata',
   }) + ' IST' : 'Date and time to be announced';
-  line(date, 579, 'bold 32px', '#fff');
-  line(match.venue || tournament.venue || 'Venue to be announced', 630, '28px', accent);
+  line(date, 655, 'bold 36px', '#fff', 770);
+  line(match.venue || tournament.venue || 'Venue to be announced', 758, 'bold 38px', '#ffe2a0', 1220);
 }
 
 const zipCrc = Uint32Array.from({ length: 256 }, (_, value) => {
