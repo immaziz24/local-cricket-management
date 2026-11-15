@@ -8,7 +8,7 @@ import { TournamentLogo } from './tournaments/TournamentBranding.jsx';
 import { Trophy, Calendar, Users, MapPin, PlusCircle, Sparkles, Eye } from 'lucide-react';
 
 export function TournamentsView(props) {
-  const { onNavigate = () => {} } = props || {};
+  const { currentUser, onNavigate = () => {} } = props || {};
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -124,7 +124,7 @@ export function TournamentsView(props) {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
                     <Users size={13} />
-                    <span>{trn.teams_count} Participating Teams</span>
+                    <span>{trn.teams_count} team slots</span>
                   </div>
                 </div>
 
@@ -138,6 +138,11 @@ export function TournamentsView(props) {
                     <div style={{ width: pct + '%', height: '100%', backgroundColor: trn.banner_color || 'var(--color-primary)', borderRadius: '999px' }} />
                   </div>
 
+                  <div style={{ marginTop: '0.75rem', color: '#475569' }}>
+                    {currentUser?.id && trn.owner_id === currentUser.id
+                      ? 'Created by you'
+                      : 'Organised by'} <strong>{trn.organizer_name || '—'}</strong>
+                  </div>
                   <Button
                     variant="outline"
                     size="sm"
@@ -147,6 +152,13 @@ export function TournamentsView(props) {
                   >
                     View Details
                   </Button>
+                  {currentUser && !['completed', 'cancelled'].includes(trn.status) &&
+                    (trn.owner_id === currentUser.id || (trn.registration_open !== false && ['registration', 'upcoming'].includes(trn.status))) && (
+                    <Button size="sm" onClick={() => onNavigate('tournament-details', trn.id, 'teams')}
+                      style={{ width: '100%', marginTop: '0.5rem', justifyContent: 'center' }}>
+                      {trn.owner_id === currentUser.id ? 'Add teams' : 'Register my team'}
+                    </Button>
+                  )}
                 </div>
               </Card>
             );

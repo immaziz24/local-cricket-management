@@ -269,7 +269,7 @@ export function App() {
         <OfficialProfileView key={selectedOfficialId} userId={selectedOfficialId} onNavigate={handleNavigate} />
       )}
 
-      {activeTab === 'tournaments' && <TournamentsView onNavigate={handleNavigate} />}
+      {activeTab === 'tournaments' && <TournamentsView currentUser={currentUser} onNavigate={handleNavigate} />}
 
       {activeTab === 'tournament-details' && (
         <TournamentDetailsView

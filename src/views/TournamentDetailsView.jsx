@@ -341,6 +341,12 @@ export function TournamentDetailsView(props) {
           )}
           {/* Action Buttons */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+            {currentUser && !['completed', 'cancelled'].includes(tournament.status) &&
+              (isOrganiser || (tournament.registration_open !== false && ['registration', 'upcoming'].includes(tournament.status))) && (
+                <Button size="sm" onClick={() => setActiveTab('teams')}>
+                  {isOrganiser ? 'Add teams' : 'Register my team'}
+                </Button>
+              )}
             {/^[0-9a-f-]{36}$/i.test(tournament.id) && (
               <Button variant="outline" size="sm" icon={Share2} onClick={shareTournament}>
                 Share tournament
