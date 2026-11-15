@@ -171,7 +171,6 @@ export function TournamentDetailsView(props) {
 
   const matchesTotal = Math.max(matches.length, tournament.matches_total || 0);
   const matchesDone = tournament.matches_completed || 0;
-  const progressPercent = matchesTotal ? Math.round((matchesDone / matchesTotal) * 100) : 0;
 
   const matchStatus = matchFilter || (matches.some((match) => match.status === 'live') ? 'live' : 'upcoming');
   const filteredMatches = matches.filter((match) => matchStatus === 'upcoming'
@@ -304,6 +303,21 @@ export function TournamentDetailsView(props) {
             }}>
               {tournament.name}
             </h1>
+            <div className="tournament-title-actions">
+              {/^[0-9a-f-]{36}$/i.test(tournament.id) && (
+                <button type="button" aria-label="Share tournament" title="Share tournament" onClick={shareTournament}>
+                  <Share2 size={17} aria-hidden="true" />
+                </button>
+              )}
+              <button type="button" aria-label={copiedCode ? 'Code copied' : 'Copy tournament code'}
+                title={copiedCode ? 'Code copied' : 'Copy tournament code'} onClick={() => handleCopyCode(tournament.code)}>
+                {copiedCode ? <CheckCircle2 size={17} aria-hidden="true" /> : <Copy size={17} aria-hidden="true" />}
+              </button>
+            </div>
+            <div className="tournament-title-progress">
+              <span>Matches played <strong>{matchesDone} / {matchesTotal}</strong></span>
+              <progress aria-label="Matches played" value={matchesDone} max={matchesTotal || 1} />
+            </div>
             <span>{currentUser?.id && tournament.owner_id === currentUser.id ? 'Created by me' : 'Created by ' + (tournament.tournament_creator_name || 'an unavailable account')}</span>
 
             <div style={{
@@ -363,33 +377,11 @@ export function TournamentDetailsView(props) {
                   {isOrganiser ? 'Add teams' : 'Register my team'}
                 </Button>
               )}
-            {/^[0-9a-f-]{36}$/i.test(tournament.id) && (
-              <Button variant="outline" size="sm" icon={Share2} onClick={shareTournament}>
-                Share tournament
-              </Button>
-            )}
-            <Button
-              variant="outline"
-              size="sm"
-              icon={copiedCode ? CheckCircle2 : Copy}
-              onClick={() => handleCopyCode(tournament.code)}
-            >
-              {copiedCode ? 'Code Copied!' : 'Copy Code'}
-            </Button>
-            <Button
-              variant="primary"
-              size="sm"
-              icon={Trophy}
-              onClick={() => onNavigate('create-tournament')}
-              style={{ backgroundColor: '#059669' }}
-            >
-              New tournament
-            </Button>
           </div>
         </div>
 
         {/* Key facts (local cricket) */}
-        <div className="tournament-facts" style={{
+        {currentUser?.id === tournament.owner_id && currentUser?.id && <div className="tournament-facts tournament-owner-facts" style={{
           paddingTop: '1.25rem',
           borderTop: '1px solid var(--color-border)'
         }}>
@@ -405,17 +397,7 @@ export function TournamentDetailsView(props) {
               <span style={{ fontSize: '0.76rem', color: 'var(--color-text-muted)' }}>{sub}</span>
             </div>
           ))}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--color-text-muted)', textTransform: 'uppercase' }}>Matches played</span>
-              <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-primary-dark)' }}>{progressPercent}%</span>
-            </div>
-            <span style={{ fontSize: '1rem', fontWeight: 700, color: 'var(--color-text-main)' }}>{matchesDone} / {matchesTotal}</span>
-            <div style={{ width: '100%', height: '5px', backgroundColor: 'var(--color-border)', borderRadius: '999px', marginTop: '0.2rem', overflow: 'hidden' }}>
-              <div style={{ width: progressPercent + '%', height: '100%', backgroundColor: tournament.banner_color || 'var(--color-primary)', borderRadius: '999px' }} />
-            </div>
-          </div>
-        </div>
+        </div>}
       </Card>
 
       {/* Navigation Sub-Tabs */}
