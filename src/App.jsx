@@ -154,7 +154,9 @@ export function App() {
   }, [activeTab, currentUser]);
 
   const [tournamentStartTab, setTournamentStartTab] = useState(null);
+  const [previousTournament, setPreviousTournament] = useState(null);
   const handleNavigate = (tab, param = null, section = null) => {
+    if (tab === 'create-tournament') setPreviousTournament(param);
     if (tab === 'category-n') tab = isAdmin ? 'admin' : 'settings';
     if (tab === 'password-recovery' && currentUser) tab = 'settings';
     if (tab === 'tournament-details' && param) {
@@ -281,7 +283,7 @@ export function App() {
         />
       )}
 
-      {activeTab === 'create-tournament' && <CreateTournamentView onNavigate={handleNavigate} />}
+      {activeTab === 'create-tournament' && <CreateTournamentView previousTournament={previousTournament} onNavigate={handleNavigate} />}
 
       {activeTab === 'penalties' && <PenaltyRulesView currentUser={currentUser} onNavigate={handleNavigate} />}
 

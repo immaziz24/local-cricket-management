@@ -29,7 +29,7 @@ const PENALTIES = [
 const COLORS = ['#059669', '#1E3A8A', '#D97706', '#7C3AED', '#DC2626', '#0D9488'];
 
 const INITIAL = {
-  name: '', code: '', city: '', venue: '', organizer_name: '',
+  name: '', code: '', season_number: 1, city: '', venue: '', organizer_name: '',
   start_date: '', end_date: '', teams_count: '',
   match_type: 'limited_overs', overs_per_innings: 10, players_per_side: 11,
   ball_type: 'Tennis', pitch_type: '', category: 'Open',
@@ -58,21 +58,16 @@ function Chips({ options, value, onChange, render = (o) => o }) {
   );
 }
 
-const suggestCode = (name, suffix) => {
+const suggestCode = (name, startDate, season) => {
   if (!name.trim()) return '';
   const words = name.toUpperCase().match(/[A-Z0-9]+/g) || [];
   const initials = words.length > 1 ? words.map((w) => w[0]).join('').slice(0, 6) : words[0]?.slice(0, 6) || 'TRN';
-  return `${initials}-${String(new Date().getFullYear()).slice(2)}-${suffix}`;
+  return `${initials}-${String(startDate ? startDate.slice(0, 4) : new Date().getFullYear()).slice(2)}-S`;
 };
 
 export function CreateTournamentView(props) {
-  const { onNavigate = () => {} } = props || {};
-  const [f, setF] = useState(INITIAL);
-  const [codeSuffix] = useState(() => {
-    const alphabet = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-    return Array.from(crypto.getRandomValues(new Uint8Array(5)), (byte) => alphabet[byte % alphabet.length]).join('');
-  });
-  const [codeTouched, setCodeTouched] = useState(false);
+  const { onNavigate = () => {}, previousTournament = null } = props || {};
+  const [f, setF] = useState(() => previousTournament ? { ...INITIAL, name: previousTournament.name, venue: previousTournament.venue, city: previousTournament.city || '', season_number: Math.min(999, (previousTournament.season_number || 1) + 1), code: suggestCode(previousTournament.name, '', (previousTournament.season_number || 1) + 1) } : INITIAL);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
@@ -81,7 +76,7 @@ export function CreateTournamentView(props) {
   const set = (k, v) => {
     setF((prev) => {
       const next = { ...prev, [k]: v };
-      if (k === 'name' && !codeTouched) next.code = suggestCode(v, codeSuffix);
+      if (['name', 'start_date', 'season_number'].includes(k)) next.code = suggestCode(next.name, next.start_date, next.season_number);
       if (k === 'match_type' && v === 'box_cricket' && prev.players_per_side === 11) { next.players_per_side = 8; next.overs_per_innings = 5; }
       return next;
     });
@@ -115,7 +110,7 @@ export function CreateTournamentView(props) {
     setSubmitting(true); setSubmitError(null);
     try {
       const payload = {
-        ...f,
+        ...f, previous_tournament_id: previousTournament?.id,
         teams_count: Number(f.teams_count),
         overs_per_innings: f.match_type === 'two_innings' ? null : Number(f.overs_per_innings),
         players_per_side: Number(f.players_per_side)
@@ -143,7 +138,7 @@ export function CreateTournamentView(props) {
             </p>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Button variant="primary" onClick={() => onNavigate('tournament-details', created.id, 'teams')}>Open tournament & add teams</Button>
-              <Button variant="secondary" onClick={() => { setCreated(null); setF(INITIAL); setCodeTouched(false); }}>Create another</Button>
+              <Button variant="secondary" onClick={() => { setCreated(null); setF(INITIAL);  }}>Create another</Button>
             </div>
           </div>
         </Card>
@@ -176,10 +171,14 @@ export function CreateTournamentView(props) {
           <div>
             <label style={labelStyle}>Short code *</label>
             <input style={{ ...box('code'), fontFamily: 'monospace' }} value={f.code}
-              onChange={(e) => { setCodeTouched(true); set('code', e.target.value.toUpperCase().replace(/[^A-Z0-9-]/g, '')); }} placeholder="e.g. TPL-26" />
-            <div style={hint}>Suggested from the tournament name, year, and a random suffix. You can edit it before creating the tournament.</div>
+              readOnly placeholder="e.g. TPL-26-S1" />
+            <div style={hint}>Generated from the name, start year, and season number. For a linked tournament, the next available season is assigned when you save.</div>
             {err('code')}
           </div>
+          <label style={labelStyle}>Season number
+            <input style={input} type="number" min="1" max="999" required readOnly={!!previousTournament} value={f.season_number}
+              onChange={(e) => set('season_number', e.target.value)} />
+          </label>
           <div>
             <label style={labelStyle}>City / village</label>
             <input style={input} value={f.city} onChange={(e) => set('city', e.target.value)} placeholder="e.g. Silchar" />

@@ -328,8 +328,9 @@ export function TournamentDetailsView(props) {
 
           {isOrganiser && <Button size="sm" onClick={() => {
             setEditError('');
-            setEdit(Object.fromEntries(['name', 'venue', 'city', 'start_date', 'end_date', 'organizer_name', 'entry_fee', 'prize_pool', 'rules_summary'].map((key) => [key, tournament[key] ?? ''])));
+            setEdit(Object.fromEntries(['name', 'venue', 'city', 'start_date', 'end_date', 'organizer_name', 'entry_fee', 'prize_pool', 'rules_summary', 'pitch_type', 'category', 'ball_type', 'teams_count'].map((key) => [key, tournament[key] ?? ''])));
           }}>Edit tournament</Button>}
+          {isOrganiser && <Button type="button" variant="outline" size="sm" onClick={() => onNavigate('create-tournament', tournament)}>Create next season</Button>}
           {deleteError && <p role="alert">{deleteError}</p>}
           {isOrganiser && (
             <Button variant="outline" disabled={deleting} onClick={async () => {
@@ -422,7 +423,7 @@ export function TournamentDetailsView(props) {
             setSavingEdit(true);
             try {
               await dataService.updateTournament(tournament.id, edit);
-              setTournament((previous) => ({ ...previous, ...edit, name: edit.name.trim(), venue: edit.venue.trim() }));
+              setTournament(await dataService.fetchTournamentById(tournament.id));
               setEdit(null);
             } catch (error) {
               setEditError(error.message);
@@ -435,15 +436,15 @@ export function TournamentDetailsView(props) {
                 ['name', 'Tournament name'], ['venue', 'Ground'], ['city', 'City / village'],
                 ['organizer_name', 'Organiser name'], ['start_date', 'Start date', 'date'],
                 ['end_date', 'End date', 'date'], ['entry_fee', 'Entry fee'], ['prize_pool', 'Prizes'],
-                ['rules_summary', 'Organiser notes'],
+                ['rules_summary', 'Organiser notes'], ['pitch_type', 'Pitch'], ['category', 'Category'], ['ball_type', 'Ball type'], ['teams_count', 'Team slots'], ['season_number', 'New season number (leave blank to keep current code)'],
               ].map(([key, label, type]) => (
                 <label key={key} style={{ display: 'grid', gap: '0.3rem' }}>
                   {label}
                   {key === 'rules_summary' ? (
-                    <textarea value={edit[key]} onChange={(event) => setEdit({ ...edit, [key]: event.target.value })} />
+                    <textarea value={edit[key] ?? ""} onChange={(event) => setEdit({ ...edit, [key]: event.target.value })} />
                   ) : (
                     <input type={type || 'text'} required={!!type || key === 'name' || key === 'venue'}
-                      value={edit[key]} onChange={(event) => setEdit({ ...edit, [key]: event.target.value })} />
+                      value={edit[key] ?? ""} onChange={(event) => setEdit({ ...edit, [key]: event.target.value })} />
                   )}
                 </label>
               ))}
