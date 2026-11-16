@@ -149,9 +149,10 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, o
 
   const load = async () => {
     try {
+      const fixtures = dataService.fetchTournamentMatches(tournament.id);
       const [t, m, st] = await Promise.all([
-        dataService.fetchPointsTable(tournament.id),
-        dataService.fetchTournamentMatches(tournament.id),
+        dataService.fetchPointsTable(tournament.id, fixtures),
+        fixtures,
         dataService.fetchTournamentStructure(tournament.id)
       ]);
       setTable(t || []); setMatches(m || []); setTeams(st?.teams || []);

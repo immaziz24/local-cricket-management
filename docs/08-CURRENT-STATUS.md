@@ -253,3 +253,5 @@
 - 2026-11-16: Applied tournament media Storage policy for logo and banner uploads. Live policy verified. Owner upload check pending.
 
 - 2026-11-16: Added a responsive tournament standings layout with all statistics visible at narrow widths. Owner mobile check pending.
+
+- 2026-11-16: Qualification indicators and knockout seeding now wait for league/group results. Live check pending.

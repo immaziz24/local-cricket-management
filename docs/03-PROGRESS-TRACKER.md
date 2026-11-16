@@ -465,3 +465,5 @@
 - 2026-11-16: #33 tournament branding upload policy applied in production. Awaiting owner browser verification.
 
 - 2026-11-16: Points table and NRR (#53-55) now use stacked team rows at narrow widths. Owner mobile check pending.
+
+- 2026-11-16: Fixed premature qualification (#55). Owner browser check pending.

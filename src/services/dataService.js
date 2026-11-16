@@ -19,14 +19,14 @@ import { supabaseClient, isSupabaseConfigured, supabase } from './supabase/supab
 const activeProvider = mockClient;
 
 // Features already moved to the real backend use authProvider.
-// Phase 1 #254–#256 (registration, login/logout, password recovery) run on Supabase
+// Phase 1 #254-#256 (registration, login/logout, password recovery) run on Supabase
 // whenever VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY are set in .env.
 const authProvider = isSupabaseConfigured ? supabaseClient : mockClient;
 
 /** 'supabase' when real accounts are active, otherwise 'mock'. Screens use this to hide test hints. */
 export const authBackend = isSupabaseConfigured ? 'supabase' : 'mock';
 
-// Phase 1 #257 (Super-admin dashboard), #258 (Admin dashboard), #259–#264 (roles) and #265 (verification) and #266 (reports, suspensions) and tournaments also run on Supabase when configured.
+// Phase 1 #257 (Super-admin dashboard), #258 (Admin dashboard), #259-#264 (roles) and #265 (verification) and #266 (reports, suspensions) and tournaments also run on Supabase when configured.
 const adminProvider = isSupabaseConfigured ? supabaseClient : mockClient;
 
 // ------------------------------------------------------------------
@@ -200,7 +200,7 @@ export const dataService = {
   },
 
   // ==========================================
-  // Features #267–#270 (real database only)
+  // Features #267-#270 (real database only)
   // ==========================================
   async fetchAuditLogs(search, limit) {
     requireDatabase();
@@ -280,7 +280,7 @@ export const dataService = {
   },
 
   // ==========================================
-  // Phase 2 – Category C: players and teams (real database only)
+  // Phase 2 - Category C: players and teams (real database only)
   // ==========================================
   async verifySignupCode(args) {
     requireDatabase();
@@ -528,7 +528,7 @@ export const dataService = {
     return res.data;
   },
 
-  // #7–#19 ball-by-ball scoring
+  // #7-#19 ball-by-ball scoring
   // #24 #25 pause / resume, #30 history, #29 realtime
   async pauseMatch(matchId, reason) {
     requireDatabase();
@@ -1039,7 +1039,7 @@ export const dataService = {
     return res.data;
   },
 
-  // Category I: media (#177–#188)
+  // Category I: media (#177-#188)
   async addMedia(p) {
     requireDatabase();
     const res = await supabaseClient.addMedia(p);
@@ -1153,7 +1153,7 @@ export const dataService = {
     return res.data;
   },
 
-  // Category J: branding, sponsorship and promotion (#189–#199)
+  // Category J: branding, sponsorship and promotion (#189-#199)
   async saveTournamentSite(tournamentId, p) {
     requireDatabase();
     const res = await supabaseClient.saveTournamentSite(tournamentId, p);
@@ -1815,7 +1815,7 @@ export const dataService = {
     return res.data;
   },
 
-  // #1–#6 matches: create, list, match centre, toss and start
+  // #1-#6 matches: create, list, match centre, toss and start
   async listMatches(filter = 'all', limit = 50) {
     requireDatabase();
     const res = await supabaseClient.listMatches(filter, limit);
@@ -1931,11 +1931,23 @@ export const dataService = {
   },
 
   // #53 #54 #55 points table with NRR and qualification
-  async fetchPointsTable(tournamentId) {
+  async fetchPointsTable(tournamentId, fixtures = null) {
     requireDatabase();
-    const res = await supabaseClient.getPointsTable(tournamentId);
+    const [res, matches] = await Promise.all([
+      supabaseClient.getPointsTable(tournamentId),
+      fixtures ?? this.fetchTournamentMatches(tournamentId)
+    ]);
     if (res.error) throw new Error(res.error);
-    return res.data;
+
+    const leagueMatches = matches.filter((match) => match.stage === 'league' || match.stage === 'group');
+    const stageComplete = leagueMatches.some((match) =>
+      ['completed', 'abandoned'].includes(match.status) && match.result_type
+    ) && leagueMatches.every((match) =>
+      match.status === 'cancelled' ||
+      (['completed', 'abandoned'].includes(match.status) && match.result_type)
+    );
+
+    return stageComplete ? res.data : (res.data ?? []).map((row) => ({ ...row, qualified: false }));
   },
 
   // Manual result entry (until ball-by-ball scoring in Phase 3)
@@ -2011,7 +2023,7 @@ export const dataService = {
   },
 
   // ==========================================
-  // Features #259–#264: Role Permissions
+  // Features #259-#264: Role Permissions
   // ==========================================
   async fetchRolePermissions(role) {
     const res = await adminProvider.getRolePermissions(role);
@@ -2110,7 +2122,7 @@ export const dataService = {
     return res.data;
   },
 
-  /** payload: { userId, reason, days } — days null = until further notice */
+  /** payload: { userId, reason, days } - days null = until further notice */
   async suspendUserAccount(suspensionPayload) {
     const res = await adminProvider.suspendUserAccount(suspensionPayload);
     if (res.error) throw new Error(res.error);
@@ -2196,7 +2208,7 @@ export const dataService = {
   },
 
   // ==========================================
-  // Category N Full 17-Slot Manifest (#254–#270)
+  // Category N Full 17-Slot Manifest (#254-#270)
   // ==========================================
   async fetchCategoryNSlots() {
     const res = await activeProvider.getCategoryNSlots();
