@@ -6,7 +6,7 @@ import { ArrowUp, ArrowDown, Repeat, Users, AlertCircle, CheckCircle } from 'luc
 import { pickPlayingXI } from '../tools/cricketMath.js';
 
 /**
- * #72 Playing XI, #73 Substitutes, #74 Player replacements — per match, per team.
+ * #72 Playing XI, #73 Substitutes, #74 Player replacements - per match, per team.
  * Everyone can see the lineups; the team owner (or the tournament organiser) can pick and replace.
  */
 
@@ -14,11 +14,14 @@ const field = { padding: '0.35rem 0.5rem', border: '1px solid #cbd5e1', borderRa
 const iconBtn = { background: 'none', border: '1px solid #e2e8f0', borderRadius: '0.3rem', padding: '0.1rem 0.2rem', cursor: 'pointer', display: 'inline-flex' };
 const REASONS = ['Injury', 'Concussion', 'Illness', 'Other'];
 
-function TeamLineup({ match, team, perSide, maxSubs, onSaved }) {
+function TeamLineup({ match, team, perSide, maxSubs, canAddPlayer, onSaved }) {
   const lineup = team.lineup || [];
   const hasReplacement = lineup.some((p) => p.role === 'replaced');
   const open = match.status === 'scheduled' || match.status === 'live';
   const canPick = match.status === 'scheduled';
+  const [adding, setAdding] = useState(false);
+  const [playerName, setPlayerName] = useState('');
+  const [playerMobile, setPlayerMobile] = useState('');
   const [editing, setEditing] = useState(false);
   const [playing, setPlaying] = useState([]);
   const [subs, setSubs] = useState([]);
@@ -44,7 +47,7 @@ function TeamLineup({ match, team, perSide, maxSubs, onSaved }) {
     const xi = res.xi.map((p) => p.name);
     setPlaying(xi); setSubs((s0) => s0.filter((id) => !xi.includes(id)).slice(0, maxSubs));
     const wk = res.xi.find((p) => p.role === 'wicket_keeper'); if (wk) setKeeper(wk.name);
-    setMsg({ ok: true, text: `Suggested ${xi.length} players${res.notes.length ? ` – ${res.notes.join(' ')}` : ''}. Change anything, then Save lineup.` });
+    setMsg({ ok: true, text: `Suggested ${xi.length} players${res.notes.length ? ` - ${res.notes.join(' ')}` : ''}. Change anything, then Save lineup.` });
   };
   const nameOf = (id) => team.squad.find((p) => p.player_id === id)?.name || lineup.find((p) => p.player_id === id)?.name || '?';
   const setRole = (id, role) => {
@@ -58,6 +61,34 @@ function TeamLineup({ match, team, perSide, maxSubs, onSaved }) {
     try { await fn(); setMsg({ ok: true, text: ok }); setEditing(false); await onSaved(); }
     catch (err) { setMsg({ ok: false, text: err.message }); }
     finally { setBusy(false); }
+  };
+
+  const addPlayer = async (event) => {
+    event.preventDefault();
+    const name = playerName.trim();
+    if (busy || name.length < 2) return;
+    setBusy(true);
+    setMsg(null);
+    try {
+      const result = await dataService.addNewPlayerToTeam({
+        teamId: team.team_id,
+        name,
+        mobile: playerMobile.trim() || null
+      });
+      setPlayerName('');
+      setPlayerMobile('');
+      setAdding(false);
+      if (result?.player_id && !subs.includes(result.player_id)) {
+        setPlaying((selected) => selected.length < perSide && !selected.includes(result.player_id)
+          ? [...selected, result.player_id] : selected);
+      }
+      setMsg({ ok: true, text: 'Player added to the squad. Save the lineup when it is ready.' });
+      await onSaved();
+    } catch (err) {
+      setMsg({ ok: false, text: err.message });
+    } finally {
+      setBusy(false);
+    }
   };
 
   const save = () => {
@@ -100,12 +131,36 @@ function TeamLineup({ match, team, perSide, maxSubs, onSaved }) {
       {editing ? (
         <>
           <div style={{ fontSize: '0.75rem', color: '#64748b' }}>
-            Playing <strong>{playing.length}/{perSide}</strong> · Substitutes <strong>{subs.length}/{maxSubs}</strong> · Squad {team.squad.length}
+            Playing <strong>{playing.length}/{perSide}</strong> � Substitutes <strong>{subs.length}/{maxSubs}</strong> � Squad {team.squad.length}
           </div>
-          {team.squad.length === 0 && <span style={{ fontSize: '0.8rem', color: '#94a3b8' }}>This team has no players yet. Add them on the team page.</span>}
+          {team.squad.length === 0 && (
+            <span style={{ fontSize: '0.8rem', color: '#475569' }}>
+              {canAddPlayer ? 'This squad is empty. Add players below to pick your lineup.' : 'This squad is empty. Ask the team owner to add players.'}
+            </span>
+          )}
+          {canAddPlayer && (
+            adding ? (
+              <form onSubmit={addPlayer} style={{ display: 'grid', gap: '0.4rem' }}>
+                <label style={{ display: 'grid', gap: '0.2rem', fontSize: '0.8rem' }}>
+                  Player name
+                  <input autoFocus style={field} value={playerName} onChange={(e) => setPlayerName(e.target.value)} required minLength={2} disabled={busy} />
+                </label>
+                <label style={{ display: 'grid', gap: '0.2rem', fontSize: '0.8rem' }}>
+                  Mobile number (optional)
+                  <input type="tel" style={field} value={playerMobile} onChange={(e) => setPlayerMobile(e.target.value)} disabled={busy} />
+                </label>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+                  <Button type="submit" size="sm" disabled={busy || playerName.trim().length < 2}>Add to squad</Button>
+                  <Button type="button" variant="outline" size="sm" disabled={busy} onClick={() => setAdding(false)}>Cancel</Button>
+                </div>
+              </form>
+            ) : (
+              <Button type="button" variant="outline" size="sm" style={{ alignSelf: 'flex-start' }} disabled={busy} onClick={() => setAdding(true)}>Add player</Button>
+            )
+          )}
           {team.squad.length > 0 && (
             <button type="button" onClick={suggest} style={{ alignSelf: 'flex-start', border: '1px dashed #059669', backgroundColor: '#ecfdf5', color: '#065f46', borderRadius: 999, padding: '0.3rem 0.8rem', fontSize: '0.78rem', fontWeight: 700, cursor: 'pointer' }}>
-              ✨ Suggest a Playing XI (generator)
+              ? Suggest a Playing XI (generator)
             </button>
           )}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', maxHeight: 320, overflowY: 'auto' }}>
@@ -113,7 +168,7 @@ function TeamLineup({ match, team, perSide, maxSubs, onSaved }) {
               const role = playing.includes(p.player_id) ? 'playing' : subs.includes(p.player_id) ? 'sub' : '';
               return (
                 <div key={p.player_id} style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.82rem', gap: '0.4rem' }}>
-                  <span>{p.name}{p.player_role ? <span style={{ color: '#94a3b8', fontSize: '0.7rem' }}> · {p.player_role.replace('_', ' ')}</span> : null}</span>
+                  <span>{p.name}{p.player_role ? <span style={{ color: '#94a3b8', fontSize: '0.7rem' }}> � {p.player_role.replace('_', ' ')}</span> : null}</span>
                   <select value={role} onChange={(e) => setRole(p.player_id, e.target.value)} style={field}>
                     <option value="">Not picked</option>
                     <option value="playing">Playing</option>
@@ -164,7 +219,7 @@ function TeamLineup({ match, team, perSide, maxSubs, onSaved }) {
               {playingNow.map((p) => (
                 <li key={p.player_id}>
                   {p.name} {p.is_captain && <Badge variant="primary">C</Badge>} {p.is_wicket_keeper && <Badge variant="neutral">WK</Badge>}
-                  {p.replaces_player_id && <span style={{ fontSize: '0.72rem', color: '#b45309' }}> (replaced {nameOf(p.replaces_player_id)} – {p.replacement_reason})</span>}
+                  {p.replaces_player_id && <span style={{ fontSize: '0.72rem', color: '#b45309' }}> (replaced {nameOf(p.replaces_player_id)} - {p.replacement_reason})</span>}
                 </li>
               ))}
             </ol>
@@ -202,14 +257,23 @@ function TeamLineup({ match, team, perSide, maxSubs, onSaved }) {
 export function LineupPanel({ match }) {
   const [data, setData] = useState(null);
   const [err, setErr] = useState(null);
+  const [ownedTeams, setOwnedTeams] = useState([]);
   const load = async () => {
     try { setData(await dataService.fetchMatchLineups(match.id)); setErr(null); }
     catch (e) { setErr(e.message); }
   };
   useEffect(() => { load(); }, [match.id]);
+  useEffect(() => {
+    if (match.status !== 'scheduled') return;
+    let active = true;
+    dataService.fetchMyTeams()
+      .then((teams) => { if (active) setOwnedTeams(teams.filter((team) => team.i_own).map((team) => team.id)); })
+      .catch(() => { if (active) setOwnedTeams([]); });
+    return () => { active = false; };
+  }, [match.id, match.status]);
 
   if (err) return <div style={{ fontSize: '0.8rem', color: '#b91c1c', marginTop: '0.5rem' }}>{err}</div>;
-  if (!data) return <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.5rem' }}>Loading lineups…</div>;
+  if (!data) return <div style={{ fontSize: '0.8rem', color: '#94a3b8', marginTop: '0.5rem' }}>Loading lineups.</div>;
   return (
     <div style={{ marginTop: '0.6rem' }}>
       <div style={{ fontSize: '0.75rem', color: '#64748b', marginBottom: '0.4rem', display: 'flex', gap: '0.3rem', alignItems: 'center' }}>
@@ -217,7 +281,7 @@ export function LineupPanel({ match }) {
       </div>
       <div style={{ display: 'flex', gap: '0.6rem', flexWrap: 'wrap' }}>
         {data.teams.map((t) => (
-          <TeamLineup key={t.team_id} match={match} team={t} perSide={data.players_per_side} maxSubs={data.max_substitutes} onSaved={load} />
+          <TeamLineup key={t.team_id} match={match} team={t} perSide={data.players_per_side} maxSubs={data.max_substitutes} canAddPlayer={match.status === 'scheduled' && ownedTeams.includes(t.team_id)} onSaved={load} />
         ))}
       </div>
     </div>

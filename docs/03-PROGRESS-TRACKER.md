@@ -479,3 +479,5 @@
 - 2026-11-16: Scorecard (#21-23) only opens from its tab and presents wickets inline before bowling.
 
 - 2026-11-16: Compact mobile tournament header. Owner browser check pending.
+
+- 2026-11-16: Player addition and Playing XI (#59, #72) are now available together during match setup.
