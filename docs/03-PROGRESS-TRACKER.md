@@ -469,3 +469,5 @@
 - 2026-11-16: Fixed premature qualification (#55). Owner browser check pending.
 
 - 2026-11-16: Tournament details navigation reordered. Owner browser check pending.
+
+- 2026-11-16: Tournament statistics (#57) now show top performances, boundary scoring and selectable rankings.

@@ -257,3 +257,5 @@
 - 2026-11-16: Qualification indicators and knockout seeding now wait for league/group results. Live check pending.
 
 - 2026-11-16: Reordered tournament navigation tabs. Owner browser check pending.
+
+- 2026-11-16: Expanded tournament Stats using existing ball-by-ball totals and ranking data. Owner browser check pending.
