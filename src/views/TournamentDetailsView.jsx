@@ -1,3 +1,4 @@
+import { TournamentAdmins } from './tournaments/TournamentAdmins.jsx';
 import { LeaderboardsPanel } from './stats/LeaderboardsPanel.jsx';
 import { CreateTournamentView } from './CreateTournamentView.jsx';
 import './tournaments/TournamentDetails.css';
@@ -356,9 +357,10 @@ export function TournamentDetailsView(props) {
           </div>
           </div>
           {isOrganiser && <Button size="sm" onClick={() => { setEdit(true); window.scrollTo(0, 0); }}>Edit tournament</Button>}
-          {isOrganiser && <Button type="button" variant="outline" size="sm" onClick={() => onNavigate('create-tournament', tournament)}>Create next season</Button>}
+          {currentUser?.id && currentUser.id === tournament.owner_id && <TournamentAdmins key={tournament.id} tournamentId={tournament.id} />}
+          {currentUser?.id && currentUser.id === tournament.owner_id && <Button type="button" variant="outline" size="sm" onClick={() => onNavigate('create-tournament', tournament)}>Create next season</Button>}
           {deleteError && <p role="alert">{deleteError}</p>}
-          {isOrganiser && (
+          {currentUser?.id && currentUser.id === tournament.owner_id && (
             <Button variant="outline" disabled={deleting} onClick={async () => {
               if (!confirmDelete) { setConfirmDelete(true); return; }
           setConfirmDelete(false);
