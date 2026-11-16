@@ -477,3 +477,5 @@
 - 2026-11-16: Points table (#53) includes expandable team match lists with result links.
 
 - 2026-11-16: Scorecard (#21-23) only opens from its tab and presents wickets inline before bowling.
+
+- 2026-11-16: Compact mobile tournament header. Owner browser check pending.

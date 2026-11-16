@@ -267,7 +267,7 @@ export function TournamentDetailsView(props) {
         }}
       >
         {/* #33 banner and logo */}
-        {tournament.banner_url && <BannerStrip tournament={tournament} />}
+        {tournament.banner_url && <div className="tournament-hero-banner"><BannerStrip tournament={tournament} /></div>}
         {isOrganiser && (
           <BrandingControls
             tournament={tournament}
@@ -287,7 +287,7 @@ export function TournamentDetailsView(props) {
             <div><strong>{teams.length}</strong><span>Total teams</span></div>
           </div>
           <div className="tournament-identity">
-          <TournamentLogo tournament={tournament} size={80} />
+          <div className="tournament-hero-logo"><TournamentLogo tournament={tournament} size={80} /></div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem', flexWrap: 'wrap' }}>
                             <Badge variant={tournament.status === 'ongoing' ? 'primary' : 'upcoming'}>
@@ -316,7 +316,7 @@ export function TournamentDetailsView(props) {
               {tournament.name}
             </h1>
           </div>
-          <div style={{ gridColumn: '1 / -1', display: 'grid', justifyItems: 'start', gap: '0.4rem' }}>
+          <div className="tournament-hero-details" style={{ gridColumn: '1 / -1', display: 'grid', justifyItems: 'start', gap: '0.4rem' }}>
             <div className="tournament-title-actions">
               {/^[0-9a-f-]{36}$/i.test(tournament.id) && (
                 <button type="button" aria-label="Share tournament" title="Share tournament" onClick={shareTournament}>

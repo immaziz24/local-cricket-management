@@ -152,3 +152,24 @@
   border-radius: .55rem;
   padding: .65rem .8rem;
 }
+
+@media (max-width: 760px) {
+  .tournament-detail .tournament-detail-hero { padding: .7rem; gap: .6rem !important; }
+  .tournament-hero-banner > div { height: auto !important; aspect-ratio: 3.4; }
+  .tournament-hero-columns { gap: .5rem; }
+  .tournament-identity { gap: .45rem; }
+  .tournament-hero-logo > * { width: 3rem !important; height: 3rem !important; }
+  .tournament-hero-logo svg { width: 1.5rem; height: 1.5rem; }
+  .tournament-identity h1 { font-size: 1.2rem !important; margin-bottom: 0 !important; }
+  .tournament-hero-details { font-size: .78rem; }
+  .tournament-title-actions { margin: 0; }
+  .tournament-title-actions button { width: 2rem; height: 2rem; }
+  .tournament-title-progress { margin: 0; }
+  .tournament-headline-stats { gap: .35rem; }
+  .tournament-headline-stats > div {
+    display: flex; align-items: baseline; gap: .35rem; min-width: 0;
+    padding: .25rem .45rem; border-radius: .4rem;
+  }
+  .tournament-headline-stats strong { font-size: .9rem; }
+  .tournament-headline-stats span { font-size: .68rem; }
+}
