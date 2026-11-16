@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 
-export function TournamentAdmins({ tournamentId }) {
+export function TournamentAdmins({ tournamentId, onAdminsChanged }) {
   const [open, setOpen] = useState(false);
   const [admins, setAdmins] = useState([]);
   const [identifier, setIdentifier] = useState('');
@@ -19,6 +19,7 @@ export function TournamentAdmins({ tournamentId }) {
       if (action === 'lookup') setCandidate(result);
       else {
         setAdmins(result);
+        onAdminsChanged?.(result);
         if (action === 'grant') {
           setIdentifier('');
           setCandidate(null);

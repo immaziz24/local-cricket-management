@@ -58,6 +58,7 @@ export function TournamentDetailsView(props) {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deleteError, setDeleteError] = useState('');
   const [deleting, setDeleting] = useState(false);
+  const [adminAccess, setAdminAccess] = useState(null);
   const [isOrganiser, setIsOrganiser] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -71,6 +72,7 @@ export function TournamentDetailsView(props) {
     let isMounted = true;
     async function loadData() {
       setLoading(true);
+      setAdminAccess(null);
       setError(null);
       try {
         const [trnList, targetTrn, trnMatches] = await Promise.all([
@@ -82,7 +84,10 @@ export function TournamentDetailsView(props) {
         try {
           const regs = await dataService.fetchTournamentRegistrations(tournamentId);
           approvedTeams = (regs?.teams || []).filter((t) => t.status === 'approved');
-          if (isMounted) setIsOrganiser(!!regs?.is_organiser);
+          if (isMounted) {
+            setIsOrganiser(!!regs?.is_organiser);
+            setAdminAccess(regs?.admin_access ?? null);
+          }
         } catch {
           approvedTeams = [];
         }
@@ -328,6 +333,12 @@ export function TournamentDetailsView(props) {
               <progress aria-label="Matches played" value={matchesDone} max={matchesTotal || 1} />
             </div>
             <span>{currentUser?.id && tournament.owner_id === currentUser.id ? 'Created by me' : 'Created by ' + (tournament.tournament_creator_name || 'an unavailable account')}</span>
+            {adminAccess?.admins?.length > 0 && (
+              <span>Admin access given to: <strong>{adminAccess.admins.map(admin => admin.name).join(', ')}</strong></span>
+            )}
+            {adminAccess?.granted_by && (
+              <span>Admin access given by: <strong>{adminAccess.granted_by}</strong></span>
+            )}
 
             <div style={{
               display: 'flex',
@@ -357,7 +368,7 @@ export function TournamentDetailsView(props) {
           </div>
           </div>
           {isOrganiser && <Button size="sm" onClick={() => { setEdit(true); window.scrollTo(0, 0); }}>Edit tournament</Button>}
-          {currentUser?.id && currentUser.id === tournament.owner_id && <TournamentAdmins key={tournament.id} tournamentId={tournament.id} />}
+          {currentUser?.id && currentUser.id === tournament.owner_id && <TournamentAdmins key={tournament.id} tournamentId={tournament.id} onAdminsChanged={admins => setAdminAccess({ admins })} />}
           {currentUser?.id && currentUser.id === tournament.owner_id && <Button type="button" variant="outline" size="sm" onClick={() => onNavigate('create-tournament', tournament)}>Create next season</Button>}
           {deleteError && <p role="alert">{deleteError}</p>}
           {currentUser?.id && currentUser.id === tournament.owner_id && (
