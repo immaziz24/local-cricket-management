@@ -483,3 +483,5 @@
 - 2026-11-16: Player addition and Playing XI (#59, #72) are now available together during match setup.
 
 - 2026-11-16: Live scoring (#7-19) now opens a compact mobile view for authorised scorers.
+
+- 2026-11-16: Plain extras and dot balls save directly during scoring.

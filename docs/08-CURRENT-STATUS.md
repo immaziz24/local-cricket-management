@@ -271,3 +271,5 @@
 - 2026-11-16: Team owners can add squad players from pre-match lineup setup. Owner browser check pending.
 
 - 2026-11-16: Added compact mobile live scoring view. Owner Android check pending.
+
+- 2026-11-16: Wagon wheel only opens when the scorer taps a positive run value. Owner Android check pending.
