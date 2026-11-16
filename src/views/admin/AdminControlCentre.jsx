@@ -202,7 +202,9 @@ export function AdminControlCentre({ currentUser, onNavigate }) {
               {res[k].map((x) => (
                 <button key={x.id} type="button" style={{ ...row, borderColor: open?.item?.id === x.id ? '#059669' : '#e2e8f0' }} onClick={() => { setOpen({ kind: k, item: x }); window.scrollTo({ top: 0, behavior: 'smooth' }); }}>
                   <span style={{ minWidth: 0 }}><strong>{x.name || x.title}</strong>{(x.roles || []).length ? <span style={{ fontSize: '0.68rem', color: '#7c3aed', fontWeight: 800 }}> {x.roles.join(', ').replace(/_/g, '-').toUpperCase()}</span> : null}
-                    <br /><span style={{ fontSize: '0.75rem', color: '#64748b' }}>{sub(k, x)}</span></span>
+                    <br /><span style={{ fontSize: '0.75rem', color: '#64748b' }}>{sub(k, x)}{k === 'users' && currentUser?.role === 'Super-Admin' && (
+                      <> · Last active {x.last_active_at ? new Date(x.last_active_at).toLocaleString() : 'not yet recorded'}</>
+                    )}</span></span>
                   <span style={{ fontSize: '0.75rem', color: '#2563eb', flexShrink: 0 }}>{k === 'matches' ? 'Fix scores' : 'Edit'}</span>
                 </button>
               ))}

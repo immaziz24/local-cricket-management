@@ -51,6 +51,27 @@ export function App() {
   const [selectedQuizId, setSelectedQuizId] = useState(null);
   const [selectedAuctionId, setSelectedAuctionId] = useState(null);
   const [liveCount, setLiveCount] = useState(0);
+  const activityUserId = currentUser?.id;
+  useEffect(() => {
+    if (!activityUserId) return;
+    let interacted = true;
+    const markInteraction = () => { interacted = true; };
+    const report = () => {
+      if (!interacted || document.visibilityState !== 'visible') return;
+      interacted = false;
+      void dataService.recordUserActivity().catch(() => {});
+    };
+    report();
+    const timer = window.setInterval(report, 60000);
+    window.addEventListener('pointerdown', markInteraction);
+    window.addEventListener('keydown', markInteraction);
+    return () => {
+      window.clearInterval(timer);
+      window.removeEventListener('pointerdown', markInteraction);
+      window.removeEventListener('keydown', markInteraction);
+    };
+  }, [activityUserId]);
+
   const isSuperAdmin = currentUser?.role === 'Super-Admin';
   const isAdmin = isSuperAdmin || currentUser?.role === 'Admin';
 

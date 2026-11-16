@@ -177,6 +177,10 @@ export const dataService = {
   // ==========================================
   // Feature #257: Super-Admin Dashboard
   // ==========================================
+  async recordUserActivity() {
+    if (isSupabaseConfigured) await supabaseClient.recordUserActivity();
+  },
+
   async fetchSuperAdminMetrics() {
     const res = await adminProvider.getSuperAdminMetrics();
     if (res.error) throw new Error(res.error);

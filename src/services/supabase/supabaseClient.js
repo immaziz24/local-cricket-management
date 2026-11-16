@@ -1905,6 +1905,10 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async recordUserActivity() {
+    return supabase.rpc('record_user_activity');
+  },
+
   async adminSearch(query, kind) {
     const { data, error } = await supabase.rpc('admin_search', { p_query: query || '', p_kind: kind || 'all' });
     if (error) return { data: null, error: friendlyError(error, 'admin') };

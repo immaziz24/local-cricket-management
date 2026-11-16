@@ -29,6 +29,12 @@ export function SuperAdminDashboardView() {
 
   useEffect(() => {
     loadMetrics();
+    const timer = window.setInterval(() => {
+      dataService.fetchSuperAdminMetrics()
+        .then(data => setMetrics(previous => previous ? { ...previous, online_users: data.online_users } : previous))
+        .catch(() => {});
+    }, 60000);
+    return () => window.clearInterval(timer);
   }, []);
 
   const loadMetrics = async () => {
@@ -168,6 +174,11 @@ export function SuperAdminDashboardView() {
           </Button>
         </div>
       </div>
+
+      <Card title="Users online">
+        <strong>{metrics?.online_users ?? 0}</strong>
+        <p>Signed-in users active in the past 5 minutes.</p>
+      </Card>
 
       {/* Global Broadcast Alert if Active */}
       {metrics?.broadcast_banner && (
