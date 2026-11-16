@@ -103,3 +103,44 @@
   .main-wrapper > main:has(.fixture-screen) { width: 100%; max-width: none; padding: 0; }
   .fixture-screen { min-height: 100dvh; border-radius: 0; }
 }
+
+.match-summary-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.match-summary-table + .match-summary-table {
+  margin-top: 0.75rem;
+}
+
+.match-summary-table thead {
+  background: #eef4f6;
+  color: #475569;
+}
+
+.match-summary-table th,
+.match-summary-table td {
+  padding: 0.65rem 0.45rem;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: right;
+}
+
+.match-summary-table th:first-child,
+.match-summary-table td:first-child {
+  text-align: left;
+}
+
+.match-summary-innings {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.match-summary-innings li {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  padding: 0.55rem 0;
+}

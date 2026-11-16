@@ -5,7 +5,7 @@ import { dismissalText, oversText } from './ScoringPanel.jsx';
 import { WagonWheel } from './WagonWheel.jsx';
 
 /**
- * #21 Full batting scorecard, #22 full bowling scorecard, #23 summary – international-style layout:
+ * #21 Full batting scorecard, #22 full bowling scorecard, #23 summary - international-style layout:
  * innings tabs, coloured innings bar, batting with dismissals, extras, total, yet to bat,
  * fall of wickets, bowling, partnerships and each batter's wagon wheel.
  */
@@ -53,7 +53,7 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
   }, [st]);
 
   if (err) return <div style={{ color: '#b91c1c', fontSize: '0.88rem' }}>{err}</div>;
-  if (!st) return <div style={{ color: '#94a3b8', fontSize: '0.88rem' }}>Loading scorecard…</div>;
+  if (!st) return <div style={{ color: '#94a3b8', fontSize: '0.88rem' }}>Loading scorecard.</div>;
   if (!inns.length) return <div style={{ padding: '1rem', backgroundColor: '#fff', borderRadius: '0.8rem', color: '#94a3b8' }}>The scorecard appears after the first ball.</div>;
 
   const inn = inns[sel ?? inns.length - 1] || inns[inns.length - 1];
@@ -106,15 +106,15 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
                     </strong>
                     <div className="scorecard-dismissal">{p.out ? dismissalText(p.out) : p.at_crease && st.status !== 'completed' ? 'batting' : 'not out'}</div>
                   </td>
-                  <td style={{ ...td, fontWeight: 800 }}>{p.runs}</td><td style={td}>{p.balls}</td><td style={td}>{p.fours}</td><td style={td}>{p.sixes}</td><td style={td}>{sr(p.runs, p.balls)}</td><td style={td}>{p.minutes ?? '–'}</td>
+                  <td style={{ ...td, fontWeight: 800 }}>{p.runs}</td><td style={td}>{p.balls}</td><td style={td}>{p.fours}</td><td style={td}>{p.sixes}</td><td style={td}>{sr(p.runs, p.balls)}</td><td style={td}>{p.minutes ?? '-'}</td>
                   <td style={td}>
                     <button type="button" className="scorecard-wheel" title="Wagon wheel" aria-label="Wagon wheel" aria-expanded={wheelFor === p.player_id}
-                      onClick={() => setWheelFor(wheelFor === p.player_id ? null : p.player_id)}>◔</button>
+                      onClick={() => setWheelFor(wheelFor === p.player_id ? null : p.player_id)}>?</button>
                   </td>
                 </tr>
                 {wheelFor === p.player_id && (
                   <tr><td colSpan={8} style={{ padding: '0.6rem', borderBottom: '1px solid #eef2f7' }}>
-                    <WagonWheel matchId={matchId} inningsNo={inn.innings_no} batterId={p.player_id} title={`${p.name} – ${p.runs} (${p.balls})`} refreshKey={refreshKey} />
+                    <WagonWheel matchId={matchId} inningsNo={inn.innings_no} batterId={p.player_id} title={`${p.name} - ${p.runs} (${p.balls})`} refreshKey={refreshKey} />
                   </td></tr>
                 )}
               </React.Fragment>
@@ -139,13 +139,10 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
 
       {inn.fall_of_wickets.length > 0 && (
         <div className="scorecard-section">
-          <div style={sec}>Fall of wickets</div>
-          <table style={{ width: '100%', borderCollapse: 'collapse' }}>
-            <thead><tr><th style={{ ...th, textAlign: 'left' }}>Batter</th><th style={th}>Score</th><th style={th}>Over</th></tr></thead>
-            <tbody>{inn.fall_of_wickets.map((f) => (
-              <tr key={f.wicket}><td style={{ ...td, textAlign: 'left', color: '#1d4ed8' }}>{f.name}</td><td style={td}>{f.runs}-{f.wicket}</td><td style={td}>{f.over}</td></tr>
-            ))}</tbody>
-          </table>
+          <p style={{ margin: 0, padding: '0.75rem', lineHeight: 1.6, color: '#475569' }}>
+            <strong style={{ color: '#0f172a' }}>Fall of wickets: </strong>
+            {inn.fall_of_wickets.map((f) => `${f.runs}-${f.wicket} (${f.name}, ${f.over} ov)`).join(', ')}
+          </p>
         </div>
       )}
 
@@ -170,7 +167,7 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
           <table style={{ width: '100%', borderCollapse: 'collapse' }}>
             <thead><tr><th style={{ ...th, textAlign: 'left' }}>Wicket</th><th style={{ ...th, textAlign: 'left' }}>Batters</th><th style={th}>Runs</th><th style={th}>Balls</th></tr></thead>
             <tbody>{pships.map((p) => (
-              <tr key={p.wicket}><td style={{ ...td, textAlign: 'left' }}>{p.wicket}</td><td style={{ ...td, textAlign: 'left' }}>{p.batters || '–'}</td><td style={{ ...td, fontWeight: 700 }}>{p.runs}</td><td style={td}>{p.balls}</td></tr>
+              <tr key={p.wicket}><td style={{ ...td, textAlign: 'left' }}>{p.wicket}</td><td style={{ ...td, textAlign: 'left' }}>{p.batters || '-'}</td><td style={{ ...td, fontWeight: 700 }}>{p.runs}</td><td style={td}>{p.balls}</td></tr>
             ))}</tbody>
           </table>
         </div>

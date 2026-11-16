@@ -32,7 +32,7 @@ import { SponsorStrip, AdSlot } from '../brand/brandShared.jsx';
 
 /**
  * Match page: details, #3 Playing XI, #4 substitutes, #5 toss winner, #6 bat or bowl.
- * Scoring (#7–#19), commentary (#20), scorecards (#21–#23), pause/resume (#24–#25),
+ * Scoring (#7-#19), commentary (#20), scorecards (#21-#23), pause/resume (#24-#25),
  * share link (#28), instant live updates (#29) and scoring history (#30).
  */
 
@@ -71,14 +71,14 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
   };
   const completed = data?.match?.status === 'completed';
   useEffect(() => {
-    if (!completed) return;
+    if (!completed && data?.match?.status !== 'abandoned') return;
     let active = true;
     dataService.fetchMatchAnalysis(matchId).then((analysis) => {
       if (!active) return;
       setAnalysis(analysis);
     }).catch(() => { if (active) setAnalysis(null); });
     return () => { active = false; };
-  }, [completed, matchId, refreshKey]);
+  }, [completed, data?.match?.status, matchId, refreshKey]);
 
   useEffect(() => { load(); }, [matchId]);
   useEffect(() => {
@@ -89,7 +89,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
   useEffect(() => dataService.subscribeToMatch(matchId, () => { load(); setRefreshKey((k) => k + 1); }), [matchId]);
 
   if (error) return <Card><div style={{ color: '#b91c1c', display: 'flex', gap: '0.4rem', alignItems: 'center' }}><AlertCircle size={16} /> {error}</div></Card>;
-  if (!data) return <div style={{ color: '#94a3b8' }}>Loading match…</div>;
+  if (!data) return <div style={{ color: '#94a3b8' }}>Loading match.</div>;
 
   const m = data.match;
   const staff = data.can_manage || data.can_score;
@@ -115,7 +115,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
     const sa = scoreLine(m.team_a_runs, m.team_a_wickets, m.team_a_balls);
     const sb = scoreLine(m.team_b_runs, m.team_b_wickets, m.team_b_balls);
     const head = `${a?.name || 'TBD'}${sa ? ` ${sa}` : ''} vs ${b?.name || 'TBD'}${sb ? ` ${sb}` : ''}`;
-    const tail = m.result_summary ? ` – ${m.result_summary}` : m.status === 'live' ? ' – LIVE' : '';
+    const tail = m.result_summary ? ` - ${m.result_summary}` : m.status === 'live' ? ' - LIVE' : '';
     return `${head}${tail}\n${shareUrl}`;
   };
   const copyLink = async () => {
@@ -179,7 +179,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       || m.stage?.replaceAll('_', ' ') || (m.match_no ? `Match ${m.match_no}` : 'Upcoming match');
     const back = () => onNavigate(data.tournament ? 'tournament-details' : 'matches', data.tournament?.id);
     const details = [
-      ['Tournament', data.tournament?.id ? <button type="button" className="fixture-tournament" onClick={back}>{data.tournament.name}<span aria-hidden="true">›</span></button> : data.tournament?.name],
+      ['Tournament', data.tournament?.id ? <button type="button" className="fixture-tournament" onClick={back}>{data.tournament.name}<span aria-hidden="true">></span></button> : data.tournament?.name],
       ['Round', round],
       ['Match type', ({ box_cricket: 'Box cricket', two_innings: 'Two innings', limited_overs: 'Limited overs' })[m.match_type || data.tournament?.match_type]],
       ['Overs', overs],
@@ -218,11 +218,11 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
             <>
               <h2>Match details</h2>
               <dl className="fixture-info">
-                {details.map(([title, value]) => <div key={title}><dt>{title}</dt><dd>{value || '—'}</dd></div>)}
+                {details.map(([title, value]) => <div key={title}><dt>{title}</dt><dd>{value || '-'}</dd></div>)}
               </dl>
               <h2>Match banner</h2>
               <div className="fixture-banner">
-                <span>{data.tournament?.name || 'Cricnotch'}{m.match_no ? ` · Match ${m.match_no}` : ''}</span>
+                <span>{data.tournament?.name || 'Cricnotch'}{m.match_no ? ` � Match ${m.match_no}` : ''}</span>
                 <strong>{a?.name || 'TBD'} <small>vs</small> {b?.name || 'TBD'}</strong>
                 <span>{label}</span>
               </div>
@@ -244,7 +244,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       <section className="match-hero">
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '0.5rem', flexWrap: 'wrap' }}>
             <span style={{ fontSize: '0.8rem', color: '#b6ccda', display: 'inline-flex', gap: '0.3rem', alignItems: 'center' }}>
-              {data.tournament ? <><Trophy size={13} /> {data.tournament.name}{m.match_no ? ` · Match ${m.match_no}` : ''}</> : (m.title || 'Friendly match')}
+              {data.tournament ? <><Trophy size={13} /> {data.tournament.name}{m.match_no ? ` � Match ${m.match_no}` : ''}</> : (m.title || 'Friendly match')}
             </span>
             <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
               <Badge variant={variant}>{label}</Badge>
@@ -254,12 +254,12 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
           <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0, 1fr) auto minmax(0, 1fr)', alignItems: 'start', gap: '0.75rem', textAlign: 'center' }}>
             <div>
               <div style={{ fontSize: '1.15rem', fontWeight: 800, overflowWrap: 'anywhere' }}>{a?.name || 'TBD'}</div>
-              <div style={{ fontSize: '1.05rem', color: '#e0edf3' }}>{scoreLine(m.team_a_runs, m.team_a_wickets, m.team_a_balls) || (m.status === 'live' ? 'Yet to bat' : '—')}</div>
+              <div style={{ fontSize: '1.05rem', color: '#e0edf3' }}>{scoreLine(m.team_a_runs, m.team_a_wickets, m.team_a_balls) || (m.status === 'live' ? 'Yet to bat' : '-')}</div>
             </div>
             <div style={{ color: '#94a3b8', fontWeight: 700 }}>vs</div>
             <div>
               <div style={{ fontSize: '1.15rem', fontWeight: 800, overflowWrap: 'anywhere' }}>{b?.name || 'TBD'}</div>
-              <div style={{ fontSize: '1.05rem', color: '#e0edf3' }}>{scoreLine(m.team_b_runs, m.team_b_wickets, m.team_b_balls) || (m.status === 'live' ? 'Yet to bat' : '—')}</div>
+              <div style={{ fontSize: '1.05rem', color: '#e0edf3' }}>{scoreLine(m.team_b_runs, m.team_b_wickets, m.team_b_balls) || (m.status === 'live' ? 'Yet to bat' : '-')}</div>
             </div>
           </div>
           {m.result_summary && <div style={{ textAlign: 'center', fontWeight: 800, color: '#84f2ba' }}>{m.result_summary}</div>}
@@ -269,7 +269,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
             </div>
           )}
           <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', justifyContent: 'center', fontSize: '0.8rem', color: '#b6ccda' }}>
-            <span>{m.match_type === 'two_innings' ? 'Two innings' : `${overs || '?'} overs`}{m.match_type === 'box_cricket' ? ' · box cricket' : ''}</span>
+            <span>{m.match_type === 'two_innings' ? 'Two innings' : `${overs || '?'} overs`}{m.match_type === 'box_cricket' ? ' � box cricket' : ''}</span>
             <span>{perSide} a side</span>
             {ball && <span>{ball} ball</span>}
             {m.scheduled_at && <span style={{ display: 'inline-flex', gap: '0.2rem', alignItems: 'center' }}><Clock size={12} /> {when(m.scheduled_at)}</span>}
@@ -297,7 +297,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
         <Button variant="secondary" size="sm" onClick={copyLink} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}><Copy size={14} /> {copied ? 'Copied!' : 'Copy link'}</Button>
         {data.can_score && m.status === 'live' && (
           <span style={{ display: 'inline-flex', gap: '0.35rem', alignItems: 'center', marginLeft: 'auto' }}>
-            {!m.paused_at && <input value={pauseReason} onChange={(e) => setPauseReason(e.target.value)} placeholder="Reason (rain, break…)" style={{ padding: '0.35rem 0.5rem', border: '1px solid #cbd5e1', borderRadius: '0.4rem', fontSize: '0.8rem', width: 160 }} />}
+            {!m.paused_at && <input value={pauseReason} onChange={(e) => setPauseReason(e.target.value)} placeholder="Reason (rain, break.)" style={{ padding: '0.35rem 0.5rem', border: '1px solid #cbd5e1', borderRadius: '0.4rem', fontSize: '0.8rem', width: 160 }} />}
             <Button variant="secondary" size="sm" disabled={busy} onClick={togglePause} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
               {m.paused_at ? <><PlayCircle size={14} /> Resume play</> : <><PauseCircle size={14} /> Pause</>}
             </Button>
@@ -337,7 +337,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       {/* Tabs once the match has started */}
       {m.status !== 'scheduled' && (
         <nav className="match-tabs" aria-label="Match sections">
-          {[['live', m.status === 'live' ? 'Live' : 'Summary'], ['scorecard', 'Scorecard'], ['commentary', 'Commentary'], ['over', 'Over'], ['analysis', 'Analysis'], ['lineups', 'Playing XI'], ['matchday', 'Match day'], ['officials', 'Ground & officials'], ['rules', 'Rules'], ['media', 'Video & media'], ['news', 'Previews & reports'], ['reports', 'Reports'], ['history', 'History']].filter(([v]) => staff || ['live', 'scorecard', 'commentary', 'over', 'analysis', 'lineups'].includes(v)).map(([v, l]) => (
+          {[['live', m.status === 'live' ? 'Live' : 'Summary'], ['scorecard', 'Scorecard'], ...(completed && data.can_score ? [['scoring', 'Scoring tools']] : []), ['commentary', 'Commentary'], ['over', 'Over'], ['analysis', 'Analysis'], ['lineups', 'Playing XI'], ['matchday', 'Match day'], ['officials', 'Ground & officials'], ['rules', 'Rules'], ['media', 'Video & media'], ['news', 'Previews & reports'], ['reports', 'Reports'], ['history', 'History']].filter(([v]) => staff || ['live', 'scorecard', 'commentary', 'over', 'analysis', 'lineups'].includes(v)).map(([v, l]) => (
             <button key={v} type="button" aria-pressed={tab === v} onClick={() => setTab(v)}
               style={{ padding: '0.55rem 1rem', border: 'none', borderBottom: `3px solid ${tab === v ? '#059669' : 'transparent'}`, background: 'none', cursor: 'pointer', fontWeight: 700, fontSize: '0.9rem', color: tab === v ? '#065f46' : '#64748b' }}>
               {l}
@@ -382,7 +382,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
               </div>
             )}
             <div>
-              <Button variant="primary" disabled={busy || !toss.winner || !toss.decision} onClick={startMatch}>{busy ? 'Starting…' : 'Start match'}</Button>
+              <Button variant="primary" disabled={busy || !toss.winner || !toss.decision} onClick={startMatch}>{busy ? 'Starting.' : 'Start match'}</Button>
               <span style={{ marginLeft: '0.6rem', fontSize: '0.75rem', color: '#64748b' }}>Both Playing XIs must be picked first.</span>
             </div>
           </div>
@@ -406,24 +406,42 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       )}
       {staff && m.status === 'scheduled' && <LiveStreamPanel matchId={m.id} matchStatus={m.status} />}
       {staff && m.status === 'scheduled' && <MatchShareCards matchId={m.id} refreshKey={refreshKey} />}
-      {staff && m.status === 'scheduled' && <ArticleFeed title="Match previews" filter={{ match_id: m.id }} writeKinds={['preview']} defaults={{ match_id: m.id }} onNavigate={onNavigate} limit={6} emptyText="No preview yet – write one." />}
+      {staff && m.status === 'scheduled' && <ArticleFeed title="Match previews" filter={{ match_id: m.id }} writeKinds={['preview']} defaults={{ match_id: m.id }} onNavigate={onNavigate} limit={6} emptyText="No preview yet - write one." />}
 
-      {/* Ball-by-ball scoring and scorecard (#7–#19) */}
-      {m.status !== 'scheduled' && tab === 'live' && (staff || !completed) && <ScoringPanel matchId={m.id} mode="live" refreshKey={refreshKey} onChanged={() => load()} />}
-      {!staff && completed && tab === 'live' && (
+      {/* Ball-by-ball scoring and scorecard (#7-#19) */}
+      {(m.status === 'live' && tab === 'live' || completed && data.can_score && tab === 'scoring') && <ScoringPanel matchId={m.id} mode="live" refreshKey={refreshKey} onChanged={() => load()} />}
+      {m.status !== 'scheduled' && m.status !== 'live' && tab === 'live' && (
         <>
           <Card title="Best performances">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(min(100%, 15rem), 1fr))', gap: '1rem' }}>
-              {[['Batters', batters, (p) => `${p.runs} runs (${p.balls} balls)`],
-                ['Bowlers', bowlers, (p) => `${p.wickets}/${p.runs_conceded}`]].map(([title, entries, figures]) => (
-                <div key={title}>
-                  <h4>{title}</h4>
-                  {entries.length ? <ol>{entries.map((p) => <li key={p.player_id}>{p.name} · {figures(p)}</li>)}</ol> : <p>No recorded performances.</p>}
-                </div>
-              ))}
-            </div>
+            {[
+              ['Batters', batters, ['R', 'B', 'SR'], (p) => [p.runs, p.balls, p.balls ? (100 * p.runs / p.balls).toFixed(2) : '-']],
+              ['Bowlers', bowlers, ['R', 'W'], (p) => [p.runs_conceded, p.wickets]]
+            ].map(([title, entries, columns, figures]) => (
+              <table key={title} className="match-summary-table">
+                <thead><tr><th scope="col">{title}</th>{columns.map((column) => <th key={column} scope="col">{column}</th>)}</tr></thead>
+                <tbody>
+                  {entries.map((player) => (
+                    <tr key={player.player_id}><th scope="row">{player.name}</th>
+                      {figures(player).map((value, index) => <td key={columns[index]}>{value}</td>)}
+                    </tr>
+                  ))}
+                  {!entries.length && <tr><td colSpan={columns.length + 1}>No recorded performances.</td></tr>}
+                </tbody>
+              </table>
+            ))}
           </Card>
-          <FullScorecard matchId={m.id} refreshKey={refreshKey} onNavigate={onNavigate} />
+          {!!analysis?.innings?.length && (
+            <Card title="Innings summary">
+              <ul className="match-summary-innings">
+                {analysis.innings.map((innings) => (
+                  <li key={innings.innings_no}>
+                    <strong>{innings.team} � Innings {innings.innings_no}</strong>
+                    <span>{innings.runs}/{innings.wickets} ({Math.floor(innings.legal_balls / 6)}.{innings.legal_balls % 6} ov)</span>
+                  </li>
+                ))}
+              </ul>
+            </Card>
+          )}
         </>
       )}
       {m.status !== 'scheduled' && tab === 'scorecard' && <FullScorecard matchId={m.id} refreshKey={refreshKey} onNavigate={onNavigate} />}
@@ -439,7 +457,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       {m.status !== 'scheduled' && tab === 'media' && <HighlightsPanel matchId={m.id} refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'media' && <MediaGallery scope="match" scopeId={m.id} kinds={['photo', 'video']} title="Match photos & videos" subtitle="Photo gallery and video uploads" refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'media' && <MatchShareCards matchId={m.id} refreshKey={refreshKey} />}
-      {m.status !== 'scheduled' && tab === 'news' && <ArticleFeed title="Match previews & reports" subtitle="Write a report – it starts from the scorecard" filter={{ match_id: m.id }} writeKinds={['match_report', 'preview']} defaults={{ match_id: m.id, kind: 'match_report' }} onNavigate={onNavigate} limit={12} emptyText="No report yet – be the first to write one." />}
+      {m.status !== 'scheduled' && tab === 'news' && <ArticleFeed title="Match previews & reports" subtitle="Write a report - it starts from the scorecard" filter={{ match_id: m.id }} writeKinds={['match_report', 'preview']} defaults={{ match_id: m.id, kind: 'match_report' }} onNavigate={onNavigate} limit={12} emptyText="No report yet - be the first to write one." />}
     </div>
   );
 }
