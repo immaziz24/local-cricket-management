@@ -255,3 +255,5 @@
 - 2026-11-16: Added a responsive tournament standings layout with all statistics visible at narrow widths. Owner mobile check pending.
 
 - 2026-11-16: Qualification indicators and knockout seeding now wait for league/group results. Live check pending.
+
+- 2026-11-16: Reordered tournament navigation tabs. Owner browser check pending.

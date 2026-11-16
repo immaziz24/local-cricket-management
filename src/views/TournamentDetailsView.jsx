@@ -248,7 +248,7 @@ export function TournamentDetailsView(props) {
             >
               {allTournaments.map((t) => (
                 <option key={t.id} value={t.id}>
-                  {t.code} — {t.name}
+                  {t.code} - {t.name}
                 </option>
               ))}
             </select>
@@ -429,33 +429,37 @@ export function TournamentDetailsView(props) {
           className="tournament-match-tab" onClick={() => setActiveTab('matches')}>
           Matches
         </button>
-        {[['stats', 'Stats'], ['leaderboard', 'Leaderboard'], ['heroes', 'Heroes'], ['mvp', 'MVP']].map(([value, label]) => (
-          <button type="button" key={value} className="tournament-match-tab"
-            aria-pressed={activeTab === value} onClick={() => setActiveTab(value)}>
-            {label}
-          </button>
-        ))}
+        <button type="button" className="tournament-match-tab"
+          aria-pressed={activeTab === 'leaderboard'} onClick={() => setActiveTab('leaderboard')}>
+          Leaderboard
+        </button>
         <button
           type="button"
-          onClick={() => setActiveTab('overview')}
+          onClick={() => setActiveTab('standings')}
           style={{
             padding: '0.65rem 1.25rem',
             fontSize: '0.88rem',
             fontWeight: 700,
             border: 'none',
-            borderBottom: activeTab === 'overview' ? '3px solid var(--color-primary)' : '3px solid transparent',
+            borderBottom: activeTab === 'standings' ? '3px solid var(--color-primary)' : '3px solid transparent',
             backgroundColor: 'transparent',
-            color: activeTab === 'overview' ? 'var(--color-primary-dark)' : 'var(--color-text-muted)',
+            color: activeTab === 'standings' ? 'var(--color-primary-dark)' : 'var(--color-text-muted)',
             cursor: 'pointer',
             display: 'flex',
             alignItems: 'center',
             gap: '0.45rem'
           }}
         >
-          <Layers size={15} />
-          <span>About & Rules</span>
+          <Trophy size={15} />
+          <span>Points Table & Knockouts</span>
         </button>
 
+        {[['stats', 'Stats'], ['mvp', 'MVP'], ['heroes', 'Heroes']].map(([value, label]) => (
+          <button type="button" key={value} className="tournament-match-tab"
+            aria-pressed={activeTab === value} onClick={() => setActiveTab(value)}>
+            {label}
+          </button>
+        ))}
         <button
           type="button"
           onClick={() => setActiveTab('teams')}
@@ -479,6 +483,27 @@ export function TournamentDetailsView(props) {
 
         <button
           type="button"
+          onClick={() => setActiveTab('overview')}
+          style={{
+            padding: '0.65rem 1.25rem',
+            fontSize: '0.88rem',
+            fontWeight: 700,
+            border: 'none',
+            borderBottom: activeTab === 'overview' ? '3px solid var(--color-primary)' : '3px solid transparent',
+            backgroundColor: 'transparent',
+            color: activeTab === 'overview' ? 'var(--color-primary-dark)' : 'var(--color-text-muted)',
+            cursor: 'pointer',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '0.45rem'
+          }}
+        >
+          <Layers size={15} />
+          <span>About & Rules</span>
+        </button>
+
+        <button
+          type="button"
           onClick={() => setActiveTab('fixtures')}
           style={{
             padding: '0.65rem 1.25rem',
@@ -496,27 +521,6 @@ export function TournamentDetailsView(props) {
         >
           <Activity size={15} />
           <span>Fixtures ({matches.length})</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab('standings')}
-          style={{
-            padding: '0.65rem 1.25rem',
-            fontSize: '0.88rem',
-            fontWeight: 700,
-            border: 'none',
-            borderBottom: activeTab === 'standings' ? '3px solid var(--color-primary)' : '3px solid transparent',
-            backgroundColor: 'transparent',
-            color: activeTab === 'standings' ? 'var(--color-primary-dark)' : 'var(--color-text-muted)',
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: '0.45rem'
-          }}
-        >
-          <Trophy size={15} />
-          <span>Points Table & Knockouts</span>
         </button>
 
         <button
@@ -654,17 +658,17 @@ export function TournamentDetailsView(props) {
             <div style={{ display: 'flex', flexDirection: 'column', marginTop: '0.25rem' }}>
               {[
                 ['Match type', tournament.match_type === 'box_cricket' ? 'Box cricket' : tournament.match_type === 'two_innings' ? 'Two innings' : 'Limited overs'],
-                ['Overs per innings', tournament.match_type === 'two_innings' ? '—' : (tournament.overs_per_innings || 'Not set')],
+                ['Overs per innings', tournament.match_type === 'two_innings' ? '-' : (tournament.overs_per_innings || 'Not set')],
                 ['Players a side', tournament.players_per_side || 11],
                 ['Ball', tournament.ball_type || 'Not set'],
                 ['Pitch', tournament.pitch_type || 'Not set'],
                 ['Category', tournament.category || 'Open'],
                 ['Ground', tournament.venue],
-                ['City', tournament.city || '—'],
+                ['City', tournament.city || '-'],
                 ['Dates', `${tournament.start_date} to ${tournament.end_date}`],
-                ['Organiser', tournament.organizer_name || '—'],
-                ['Entry fee', tournament.entry_fee || '—'],
-                ['Prizes', tournament.prize_pool || '—']
+                ['Organiser', tournament.organizer_name || '-'],
+                ['Entry fee', tournament.entry_fee || '-'],
+                ['Prizes', tournament.prize_pool || '-']
               ].map(([k, v]) => (
                 <div key={k} style={{ display: 'flex', justifyContent: 'space-between', gap: '1rem', padding: '0.55rem 0', borderBottom: '1px solid var(--color-border)' }}>
                   <span style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem' }}>{k}</span>
@@ -711,7 +715,7 @@ export function TournamentDetailsView(props) {
         </div>
       )}
 
-      {/* TAB 2: TEAMS — registration (#40) and approval (#41) */}
+      {/* TAB 2: TEAMS - registration (#40) and approval (#41) */}
       {activeTab === 'teams' && isOrganiser && tournament.registration_open && (
         <QrCard url={new URL(`?tournament=${encodeURIComponent(tournament.id)}#tab=teams`, window.location.href).href}
           title="Team registration" subtitle="Scan to open the Teams tab and register your team." />
@@ -728,12 +732,12 @@ export function TournamentDetailsView(props) {
         />
       )}
 
-      {/* TAB 3: FIXTURES, SCHEDULE & CALENDAR (#42–#52) */}
+      {/* TAB 3: FIXTURES, SCHEDULE & CALENDAR (#42-#52) */}
       {activeTab === 'fixtures' && (
         <FixturesPanel tournament={tournament} isOrganiser={isOrganiser} onNavigate={onNavigate} onChanged={(m) => setMatches(m)} />
       )}
 
-      {/* TAB 6: WEBSITE, QR, SPONSORS, ADVERTS, CAMPAIGNS, AWARDS, CERTIFICATES, MERCHANDISE (#189–#199) */}
+      {/* TAB 6: WEBSITE, QR, SPONSORS, ADVERTS, CAMPAIGNS, AWARDS, CERTIFICATES, MERCHANDISE (#189-#199) */}
       {activeTab === 'promotion' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <SiteSettingsCard tournament={tournament} isOrganiser={isOrganiser} onNavigate={onNavigate} />
@@ -745,7 +749,7 @@ export function TournamentDetailsView(props) {
         </div>
       )}
 
-      {/* #225–#227 generators with this tournament's teams filled in */}
+      {/* #225-#227 generators with this tournament's teams filled in */}
       {activeTab === 'generators' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           <AuctionsHome currentUser={currentUser} onNavigate={onNavigate} tournamentId={tournament.id} canCreate={isOrganiser} />
@@ -755,23 +759,23 @@ export function TournamentDetailsView(props) {
         </div>
       )}
 
-      {/* NEWS: announcements, previews, reports and stories about this tournament (#200–#205) */}
+      {/* NEWS: announcements, previews, reports and stories about this tournament (#200-#205) */}
       {activeTab === 'news' && /^[0-9a-f-]{36}$/i.test(tournament.id) && (
         <ArticleFeed title="Tournament news" subtitle={isOrganiser ? 'Post announcements for teams and fans. Match previews and reports appear here too.' : 'Announcements, match previews, reports and stories'}
           filter={{ tournament_id: tournament.id }} limit={24} currentUser={currentUser} onNavigate={onNavigate}
           writeKinds={isOrganiser ? ['announcement', 'news', 'story'] : ['news', 'story']} defaults={{ tournament_id: tournament.id }}
-          emptyText={isOrganiser ? 'No news yet – post the first announcement.' : 'No news yet.'} />
+          emptyText={isOrganiser ? 'No news yet - post the first announcement.' : 'No news yet.'} />
       )}
 
       {/* TAB 5: PHOTOS, VIDEOS, POSTER, PROMO VIDEO (#183, #185, #186) */}
       {activeTab === 'media' && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <MediaGallery scope="tournament" scopeId={tournament.id} kinds={['photo', 'video']} title="Tournament photos & videos" subtitle="Photo gallery – the organiser and owners of teams in this tournament can add" />
+          <MediaGallery scope="tournament" scopeId={tournament.id} kinds={['photo', 'video']} title="Tournament photos & videos" subtitle="Photo gallery - the organiser and owners of teams in this tournament can add" />
           <TournamentPromoStudio tournament={tournament} />
         </div>
       )}
 
-      {/* TAB 4: POINTS TABLE, NRR, QUALIFICATION, KNOCKOUTS, WINNER (#53–#58) */}
+      {/* TAB 4: POINTS TABLE, NRR, QUALIFICATION, KNOCKOUTS, WINNER (#53-#58) */}
       {activeTab === 'standings' && (
         <StandingsPanel
           tournament={tournament}
