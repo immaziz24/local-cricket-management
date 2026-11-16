@@ -1,6 +1,3 @@
-Warning: truncated output (original token count: 15402)
-Total output lines: 463
-
 # Progress Tracker: Cricnotch
 
 > **Last Updated:** 2026-11-13
@@ -209,7 +206,48 @@ Total output lines: 463
 **Category E – Cricket laws, playing conditions and rules**
 
 | # | Feature | Status | Notes |
-…1402 tokens truncated… |
+| :---: | :--- | :---: | :--- |
+| 103 | MCC Laws of Cricket reference library | 🟩 | **connected 2026-11-10** – Laws & Rules page: link to the official MCC Laws + own plain-language guides |
+| 104 | ICC playing conditions reference library | 🟩 | **connected 2026-11-10** – Laws & Rules page: link to ICC playing conditions |
+| 105 | Match-specific rule configuration | 🟩 | **connected 2026-11-10** – tournament default rules + per-match changes until the match starts; frozen when the match goes live |
+| 106 | Batting and innings rules | 🟩 | **connected 2026-11-10** – retire-at runs (scorer warned), batting notes; overs/players a side from match setup |
+| 107 | Bowling restrictions | 🟩 | **connected 2026-11-10** – bowling notes; no two overs in a row (already enforced) |
+| 108 | Maximum overs per bowler | 🟩 | **connected 2026-11-10** – max overs per bowler – enforced when picking the bowler |
+| 109 | Wide-ball rules | 🟩 | **connected 2026-11-10** – wide runs 0/1/2 – used by scoring |
+| 110 | No-ball rules | 🟩 | **connected 2026-11-10** – no-ball runs 0/1/2 – used by scoring |
+| 111 | Free-hit rules | 🟩 | **connected 2026-11-10** – free hit after a no-ball (continues after wide/no-ball) – only run-out allowed; FREE HIT banner |
+| 112 | LBW applicability | 🟩 | **connected 2026-11-10** – LBW on/off – LBW hidden and refused when off |
+| 113 | Dismissal rules | 🟩 | **connected 2026-11-10** – dismissal guide (10 ways out, which are possible on a no-ball/free hit); scoring offers only valid dismissals |
+| 114 | Byes and leg-byes | 🟩 | **connected 2026-11-10** – byes / leg-byes on/off – buttons hidden and refused when off |
+| 115 | Dead-ball rules | 🟩 | **connected 2026-11-10** – dead-ball guide; logged as a Decision report |
+| 116 | Overthrow rules | 🟩 | **connected 2026-11-10** – overthrow guide (enter total runs for the ball) |
+| 117 | Short-run rules | 🟩 | **connected 2026-11-10** – short-run guide; logged as a Decision report |
+| 118 | Boundary rules | 🟩 | **connected 2026-11-10** – boundary size + boundary rules notes |
+| 119 | Powerplay configuration | 🟩 | **connected 2026-11-10** – powerplay overs – Powerplay banner while scoring |
+| 120 | Follow-on rules | 🟩 | **connected 2026-11-10** – Enforce follow-on button (two-innings matches, start of innings 3); lead set in Playing conditions (default 75) |
+| 121 | Super Over rules | 🟩 | **connected 2026-11-10** – Start Super Over after a tie (1 over, 1–3 wickets); repeat if tied; Super Over runs excluded from totals, NRR and stats |
+| 122 | DLS reference and calculation support | 🟩 | **connected 2026-11-10** – revised-target helper: average run-rate method + resources (DLS-style) method using official table values |
+| 123 | Penalty-run rules | 🟩 | **connected 2026-11-10** – scorer awards penalty runs to batting/fielding side (pending until a side bats); kept on undo; logged |
+| 124 | Time-wasting regulations | 🟩 | **connected 2026-11-10** – time-wasting guide; warnings via Incident/Disciplinary reports |
+| 125 | Umpire signals and decisions | 🟩 | **connected 2026-11-10** – umpire signals described in words |
+| 126 | Match decision log | 🟩 | **connected 2026-11-10** – match Reports tab: decision log (public); penalty runs and Super Overs logged automatically |
+| 127 | Incident reports | 🟩 | **connected 2026-11-10** – incident reports (officials, organiser, team owners can see); open/close with note |
+| 128 | Disciplinary reports | 🟩 | **connected 2026-11-10** – disciplinary reports with warning/suspension/referred; team owner, organiser and player notified |
+| 129 | Ball type configuration | 🟩 | **connected 2026-11-10** – ball type from match/tournament setup shown with the rules |
+| 130 | Pitch and ground conditions | 🟩 | **connected 2026-11-10** – pitch type + ground notes |
+| 131 | Fielding restrictions | 🟩 | **connected 2026-11-10** – fielders outside the circle (powerplay / after) – shown while scoring |
+| 132 | Local tournament playing conditions | 🟩 | **connected 2026-11-10** – free-text local rules (batting, bowling, boundary, fielding, ground, substitutes, other) **updated 2026-11-12** – new match form asks the main rules (bowler overs, wide/no-ball runs, free hit) with presets and optional rules (LBW, byes, powerplay, retire, boundary, local rules). |
+| 133 | Rules for substitutions and replacements | 🟩 | **connected 2026-11-10** – max substitutes shown; substitute rules notes; in-match replacements (#74) |
+| 134 | Match-specific rule publishing and version history | 🟩 | **connected 2026-11-10** – Save & publish creates a new version with a change note; version history; approved teams notified |
+
+**Category L – Cricket calculators and tools**
+
+| # | Feature | Status | Notes |
+| :---: | :--- | :---: | :--- |
+| 216 | Run-rate calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – run rate |
+| 217 | Required run-rate calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – required run rate, runs/balls needed |
+| 218 | Batting strike-rate calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – batting strike rate |
+| 219 | Batting average calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – batting average |
 | 220 | Bowling economy calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – bowling economy |
 | 221 | Bowling average calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – bowling average + bowling strike rate |
 | 222 | Net Run Rate calculator | 🟩 | **built 2026-11-10** – Cricket Tools page (runs in the browser, nothing saved, no database needed) – multi-match NRR, all-out counts full quota |
