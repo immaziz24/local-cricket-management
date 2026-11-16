@@ -473,3 +473,5 @@
 - 2026-11-16: Tournament statistics (#57) now show top performances, boundary scoring and selectable rankings.
 
 - 2026-11-16: Refined mobile points table (#53-55) to one row per team with all columns.
+
+- 2026-11-16: Points table (#53) includes expandable team match lists with result links.

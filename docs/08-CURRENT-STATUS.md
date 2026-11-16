@@ -261,3 +261,5 @@
 - 2026-11-16: Expanded tournament Stats using existing ball-by-ball totals and ranking data. Owner browser check pending.
 
 - 2026-11-16: Mobile standings now use a compact single-line table. Owner browser check pending.
+
+- 2026-11-16: Points table now expands team fixtures and links to Match Centre. Owner browser check pending.

@@ -13,7 +13,7 @@
   }
 
   .standings-table th,
-  .standings-table td {
+  .standings-table tbody td:not(.standings-match-cell) {
     padding: 0.5rem 0 !important;
     font-size: clamp(8px, 3.2cqi, 12px) !important;
     white-space: nowrap;
@@ -36,8 +36,8 @@
     width: 13%;
   }
 
-  .standings-table th:nth-child(n + 10) {
-    width: 16%;
+  .standings-table th:last-child {
+    width: 10%;
   }
 
   .standings-team {
@@ -57,8 +57,59 @@
     font-size: inherit !important;
     padding: 1px 2px !important;
   }
+}
 
-  .standings-over-unit {
-    display: none;
-  }
+
+.standings-table thead {
+  background: #e8f5f1;
+}
+
+.standings-expand,
+.standings-match-cell button {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  color: #065f46;
+  cursor: pointer;
+}
+
+.standings-expand {
+  display: inline-grid;
+  place-items: center;
+  width: 100%;
+  min-height: 32px;
+  padding: 0;
+}
+
+.standings-expand[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+
+.standings-match-cell ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: #f5f8fa;
+}
+
+.standings-match-cell li + li {
+  border-top: 1px solid #e2e8f0;
+}
+
+.standings-match-cell button {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  width: 100%;
+  gap: 0.35rem 0.75rem;
+  text-align: left;
+  padding: 0.7rem;
+  font: inherit;
+  font-size: 0.82rem;
+}
+
+.standings-match-cell small {
+  display: block;
+  color: #475569;
 }

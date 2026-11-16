@@ -4,7 +4,7 @@ import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
-import { Trophy, Medal, GitBranch, Settings2, AlertCircle, CheckCircle } from 'lucide-react';
+import { ChevronDown, Trophy, Medal, GitBranch, Settings2, AlertCircle, CheckCircle } from 'lucide-react';
 import { LeaderboardsPanel } from '../stats/LeaderboardsPanel.jsx';
 import { scheduleFixtures } from './fixtureGenerator.js';
 import { scoreLine } from './MatchResultForm.jsx';
@@ -17,14 +17,6 @@ import { scoreLine } from './MatchResultForm.jsx';
 const KO_STAGES = ['knockout', 'quarter_final', 'semi_final', 'final'];
 const STAGE_LABEL = { knockout: 'Knockout', quarter_final: 'Quarter-finals', semi_final: 'Semi-finals', final: 'Final' };
 const field = { padding: '0.45rem 0.55rem', border: '1px solid #cbd5e1', borderRadius: '0.45rem', fontSize: '0.82rem' };
-function compactStandingsScore(runs, balls) {
-  const score = scoreLine(runs, null, balls)?.replace('/0', '') || '-';
-  const unit = ' ov)';
-  return score.endsWith(unit)
-    ? <>{score.slice(0, -unit.length)}<span className="standings-over-unit"> ov</span>)</>
-    : score;
-}
-
 const th = { textAlign: 'center', padding: '0.45rem 0.35rem', fontSize: '0.72rem', color: '#64748b', fontWeight: 700, borderBottom: '1px solid #e2e8f0' };
 const td = { textAlign: 'center', padding: '0.5rem 0.35rem', fontSize: '0.82rem', borderBottom: '1px solid #f1f5f9' };
 
@@ -145,6 +137,7 @@ function Notice({ msg }) {
 }
 
 export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, onNavigate }) {
+  const [expandedTeam, setExpandedTeam] = useState(null);
   const [table, setTable] = useState([]);
   const [matches, setMatches] = useState([]);
   const [teams, setTeams] = useState([]);
@@ -239,25 +232,69 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, o
                   <tr role='row'>
                     <th role='columnheader' scope='col' style={th}>#</th><th role='columnheader' scope='col' style={{ ...th, textAlign: 'left' }}>Team</th>
                     <th role='columnheader' scope='col' style={th}>P</th><th role='columnheader' scope='col' style={th}>W</th><th role='columnheader' scope='col' style={th}>L</th><th role='columnheader' scope='col' style={th}>T</th><th role='columnheader' scope='col' style={th}>NR</th>
-                    <th role='columnheader' scope='col' style={th}>Pts</th><th role='columnheader' scope='col' style={th}>NRR</th><th role='columnheader' scope='col' style={th}>For</th><th role='columnheader' scope='col' style={th}>Against</th>
+                    <th role='columnheader' scope='col' style={th}>Pts</th><th role='columnheader' scope='col' style={th}>NRR</th><th scope='col' aria-label='Team matches' style={th} />
                   </tr>
                 </thead>
                 <tbody role='rowgroup'>
-                  {rows.map((r) => (
-                    <tr role='row' key={r.team_id} style={{ backgroundColor: r.qualified ? '#f0fdf4' : 'transparent' }}>
-                      <td role='cell' data-stat='Rank' style={td}>{r.rank_no}</td>
-                      <td role='cell' data-stat='Team' style={{ ...td, textAlign: 'left', fontWeight: 700 }}>
-                        <div className="standings-team">
-                          <span className="standings-team-name" title={r.team_name}>{r.team_name}</span> {r.qualified && <Badge variant="success">Q</Badge>}
-                        </div>
-                      </td>
-                      <td role='cell' data-stat='P' style={td}>{r.played}</td><td role='cell' data-stat='W' style={td}>{r.won}</td><td role='cell' data-stat='L' style={td}>{r.lost}</td><td role='cell' data-stat='T' style={td}>{r.tied}</td><td role='cell' data-stat='NR' style={td}>{r.no_result}</td>
-                      <td role='cell' data-stat='Pts' style={{ ...td, fontWeight: 800 }}>{r.points}</td>
-                      <td role='cell' data-stat='NRR' style={{ ...td, color: Number(r.nrr) > 0 ? '#047857' : Number(r.nrr) < 0 ? '#b91c1c' : '#334155' }}>{fmtNrr(r.nrr)}</td>
-                      <td role='cell' data-stat='For' style={{ ...td, fontSize: '0.75rem', color: '#64748b' }}>{compactStandingsScore(r.runs_for, r.balls_faced)}</td>
-                      <td role='cell' data-stat='Against' style={{ ...td, fontSize: '0.75rem', color: '#64748b' }}>{compactStandingsScore(r.runs_against, r.balls_bowled)}</td>
-                    </tr>
-                  ))}
+                  {rows.map((r) => {
+                    const rowKey = `${tournament.id}-${r.team_id}`;
+                    const expanded = expandedTeam === rowKey;
+                    const teamMatches = expanded ? matches.filter((m) => m.team_a_id === r.team_id || m.team_b_id === r.team_id) : [];
+                    return (
+                    <React.Fragment key={r.team_id}>
+                      <tr role='row' key={r.team_id} style={{ backgroundColor: r.qualified ? '#f0fdf4' : 'transparent' }}>
+                        <td role='cell' data-stat='Rank' style={td}>{r.rank_no}</td>
+                        <td role='cell' data-stat='Team' style={{ ...td, textAlign: 'left', fontWeight: 700 }}>
+                          <div className="standings-team">
+                            <span className="standings-team-name" title={r.team_name}>{r.team_name}</span> {r.qualified && <Badge variant="success">Q</Badge>}
+                          </div>
+                        </td>
+                        <td role='cell' data-stat='P' style={td}>{r.played}</td><td role='cell' data-stat='W' style={td}>{r.won}</td><td role='cell' data-stat='L' style={td}>{r.lost}</td><td role='cell' data-stat='T' style={td}>{r.tied}</td><td role='cell' data-stat='NR' style={td}>{r.no_result}</td>
+                        <td role='cell' data-stat='Pts' style={{ ...td, fontWeight: 800 }}>{r.points}</td>
+                        <td role='cell' data-stat='NRR' style={{ ...td, color: Number(r.nrr) > 0 ? '#047857' : Number(r.nrr) < 0 ? '#b91c1c' : '#334155' }}>{fmtNrr(r.nrr)}</td>
+                        <td style={td}>
+                          <button type="button" className="standings-expand" aria-expanded={expanded}
+                            aria-label={`${expanded ? 'Hide' : 'Show'} matches for ${r.team_name}`}
+                            onClick={() => setExpandedTeam(expanded ? null : rowKey)}>
+                            <ChevronDown size={16} aria-hidden="true" />
+                          </button>
+                        </td>
+                      </tr>
+                      {expanded && (
+                        <tr>
+                          <td colSpan={10} className="standings-match-cell">
+                            <ul aria-label={`Matches for ${r.team_name}`}>
+                              {teamMatches.map((match) => {
+                                const isHome = match.team_a_id === r.team_id;
+                                const opponent = isHome ? match.team_b : match.team_a;
+                                const opponentId = isHome ? match.team_b_id : match.team_a_id;
+                                const liveScore = [
+                                  scoreLine(match.team_a_runs, match.team_a_wickets, match.team_a_balls),
+                                  scoreLine(match.team_b_runs, match.team_b_wickets, match.team_b_balls)
+                                ].filter(Boolean).join(' vs ');
+                                const status = match.result_summary || (
+                                  match.status === 'live' ? `Live${liveScore ? ` � ${liveScore}` : ''}`
+                                    : ({ completed: 'Completed', abandoned: 'Abandoned', cancelled: 'Cancelled' }[match.status] || 'Upcoming')
+                                );
+                                return (
+                                  <li key={match.id}>
+                                    <button type="button" onClick={() => onNavigate('match-centre', match.id)}>
+                                      <span><strong>vs {opponent?.name || nameOf(opponentId)}</strong>
+                                        {match.scheduled_at && <small>{new Date(match.scheduled_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</small>}
+                                      </span>
+                                      <span>{status}</span>
+                                    </button>
+                                  </li>
+                                );
+                              })}
+                              {teamMatches.length === 0 && <li>No fixtures yet.</li>}
+                            </ul>
+                          </td>
+                        </tr>
+                      )}
+                      </React.Fragment>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
