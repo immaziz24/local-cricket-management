@@ -471,3 +471,5 @@
 - 2026-11-16: Tournament details navigation reordered. Owner browser check pending.
 
 - 2026-11-16: Tournament statistics (#57) now show top performances, boundary scoring and selectable rankings.
+
+- 2026-11-16: Refined mobile points table (#53-55) to one row per team with all columns.

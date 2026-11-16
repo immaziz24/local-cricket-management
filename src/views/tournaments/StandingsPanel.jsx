@@ -17,6 +17,14 @@ import { scoreLine } from './MatchResultForm.jsx';
 const KO_STAGES = ['knockout', 'quarter_final', 'semi_final', 'final'];
 const STAGE_LABEL = { knockout: 'Knockout', quarter_final: 'Quarter-finals', semi_final: 'Semi-finals', final: 'Final' };
 const field = { padding: '0.45rem 0.55rem', border: '1px solid #cbd5e1', borderRadius: '0.45rem', fontSize: '0.82rem' };
+function compactStandingsScore(runs, balls) {
+  const score = scoreLine(runs, null, balls)?.replace('/0', '') || '-';
+  const unit = ' ov)';
+  return score.endsWith(unit)
+    ? <>{score.slice(0, -unit.length)}<span className="standings-over-unit"> ov</span>)</>
+    : score;
+}
+
 const th = { textAlign: 'center', padding: '0.45rem 0.35rem', fontSize: '0.72rem', color: '#64748b', fontWeight: 700, borderBottom: '1px solid #e2e8f0' };
 const td = { textAlign: 'center', padding: '0.5rem 0.35rem', fontSize: '0.82rem', borderBottom: '1px solid #f1f5f9' };
 
@@ -239,13 +247,15 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, o
                     <tr role='row' key={r.team_id} style={{ backgroundColor: r.qualified ? '#f0fdf4' : 'transparent' }}>
                       <td role='cell' data-stat='Rank' style={td}>{r.rank_no}</td>
                       <td role='cell' data-stat='Team' style={{ ...td, textAlign: 'left', fontWeight: 700 }}>
-                        {r.team_name} {r.qualified && <Badge variant="success">Q</Badge>}
+                        <div className="standings-team">
+                          <span className="standings-team-name" title={r.team_name}>{r.team_name}</span> {r.qualified && <Badge variant="success">Q</Badge>}
+                        </div>
                       </td>
                       <td role='cell' data-stat='P' style={td}>{r.played}</td><td role='cell' data-stat='W' style={td}>{r.won}</td><td role='cell' data-stat='L' style={td}>{r.lost}</td><td role='cell' data-stat='T' style={td}>{r.tied}</td><td role='cell' data-stat='NR' style={td}>{r.no_result}</td>
                       <td role='cell' data-stat='Pts' style={{ ...td, fontWeight: 800 }}>{r.points}</td>
                       <td role='cell' data-stat='NRR' style={{ ...td, color: Number(r.nrr) > 0 ? '#047857' : Number(r.nrr) < 0 ? '#b91c1c' : '#334155' }}>{fmtNrr(r.nrr)}</td>
-                      <td role='cell' data-stat='For' style={{ ...td, fontSize: '0.75rem', color: '#64748b' }}>{scoreLine(r.runs_for, null, r.balls_faced)?.replace('/0', '') || '-'}</td>
-                      <td role='cell' data-stat='Against' style={{ ...td, fontSize: '0.75rem', color: '#64748b' }}>{scoreLine(r.runs_against, null, r.balls_bowled)?.replace('/0', '') || '-'}</td>
+                      <td role='cell' data-stat='For' style={{ ...td, fontSize: '0.75rem', color: '#64748b' }}>{compactStandingsScore(r.runs_for, r.balls_faced)}</td>
+                      <td role='cell' data-stat='Against' style={{ ...td, fontSize: '0.75rem', color: '#64748b' }}>{compactStandingsScore(r.runs_against, r.balls_bowled)}</td>
                     </tr>
                   ))}
                 </tbody>

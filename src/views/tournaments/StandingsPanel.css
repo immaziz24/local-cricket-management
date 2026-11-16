@@ -8,50 +8,57 @@
 }
 
 @container (max-width: 560px) {
-  .standings-table,
-  .standings-table tbody {
-    display: block;
+  .standings-table {
+    table-layout: fixed;
   }
 
-  .standings-table thead {
-    position: absolute;
-    width: 1px;
-    height: 1px;
+  .standings-table th,
+  .standings-table td {
+    padding: 0.5rem 0 !important;
+    font-size: clamp(8px, 3.2cqi, 12px) !important;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .standings-table th:first-child {
+    width: 5%;
+  }
+
+  .standings-table th:nth-child(n + 3):nth-child(-n + 7) {
+    width: 5%;
+  }
+
+  .standings-table th:nth-child(8) {
+    width: 7%;
+  }
+
+  .standings-table th:nth-child(9) {
+    width: 13%;
+  }
+
+  .standings-table th:nth-child(n + 10) {
+    width: 16%;
+  }
+
+  .standings-team {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    padding-right: 2px;
+  }
+
+  .standings-team-name {
     overflow: hidden;
-    clip-path: inset(50%);
+    text-overflow: ellipsis;
   }
 
-  .standings-table tbody tr {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    border-bottom: 1px solid #e2e8f0;
-    padding: 0.4rem 0;
+  .standings-team > :not(.standings-team-name) {
+    flex-shrink: 0;
+    font-size: inherit !important;
+    padding: 1px 2px !important;
   }
 
-  .standings-table tbody td {
-    border: 0 !important;
-    padding: 0.35rem 0.15rem !important;
-    overflow-wrap: anywhere;
-  }
-
-  .standings-table td[data-stat='Team'] {
-    grid-column: span 3;
-  }
-
-  .standings-table td[data-stat='For'],
-  .standings-table td[data-stat='Against'] {
-    grid-column: span 2;
-  }
-
-  .standings-table td[data-stat='Rank']::before {
-    content: '#';
-  }
-
-  .standings-table td:nth-child(n + 3)::before {
-    content: attr(data-stat);
-    display: block;
-    color: #475569;
-    font-size: 0.7rem;
-    font-weight: 600;
+  .standings-over-unit {
+    display: none;
   }
 }
