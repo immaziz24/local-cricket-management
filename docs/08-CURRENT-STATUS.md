@@ -269,3 +269,5 @@
 - 2026-11-16: Shrunk tournament hero on mobile. Owner browser check pending.
 
 - 2026-11-16: Team owners can add squad players from pre-match lineup setup. Owner browser check pending.
+
+- 2026-11-16: Added compact mobile live scoring view. Owner Android check pending.

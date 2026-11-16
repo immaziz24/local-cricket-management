@@ -144,3 +144,38 @@
   gap: 0.4rem;
   padding: 0.55rem 0;
 }
+
+.scoring-focus-toolbar { display: none; }
+
+@media (max-width: 700px) {
+  body:has(.scoring-panel-focused) { overflow: hidden; }
+  .scoring-panel-focused {
+    position: fixed;
+    z-index: 1000;
+    inset: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    padding: max(.5rem, env(safe-area-inset-top)) .55rem max(.5rem, env(safe-area-inset-bottom));
+    background: #f4f7fa;
+    gap: .45rem !important;
+  }
+
+  .scoring-focus-toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .5rem;
+    padding-inline: .25rem;
+  }
+
+  .scoring-panel-focused > .card { padding: .55rem .65rem; }
+  .scoring-panel-focused .scoring-current-score > div,
+  .scoring-panel-focused .scoring-pad > div { gap: .35rem !important; }
+  .scoring-panel-focused .match-live-table th,
+  .scoring-panel-focused .match-live-table td { padding: .18rem .2rem !important; font-size: .72rem; }
+  .scoring-panel-focused .scoring-yet-to-bat,
+  .scoring-panel-focused .scoring-pad-hint { display: none; }
+  .scoring-panel-focused .scoring-pad button { padding-block: .35rem !important; min-height: 36px; }
+  .scoring-panel-focused .scoring-run-buttons { gap: .3rem !important; }
+  .scoring-panel-focused .scoring-run-buttons button { min-height: 44px; }
+}

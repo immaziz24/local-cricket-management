@@ -8,7 +8,7 @@ import { makeCommentary } from './commentary.js';
 import { loadQueue, saveQueue, loadCachedState, saveCachedState, newClientId, isNetworkError, applyQueue } from './offlineScoring.js';
 
 /**
- * Ball-by-ball scoring (#7–#19): runs, extras, wickets, automatic strike change, end of over,
+ * Ball-by-ball scoring (#7-#19): runs, extras, wickets, automatic strike change, end of over,
  * bowler changes, innings changeover, target, result, undo, end innings, abandon.
  * Spectators see the same live score (instant updates).
  * #26 #27 Offline: without internet, balls are queued on this device, the screen keeps updating,
@@ -75,7 +75,7 @@ function BallEditor({ b, rules, busy, onSave, onCancel }) {
   const chip = (on) => ({ minWidth: 38, padding: '0.4rem 0.55rem', borderRadius: 8, fontWeight: 800, cursor: 'pointer', border: `2px solid ${on ? '#16a34a' : '#cbd5e1'}`, backgroundColor: on ? '#dcfce7' : '#fff' });
   return (
     <div style={{ border: '2px solid #f59e0b', backgroundColor: '#fffbeb', borderRadius: '0.6rem', padding: '0.65rem', display: 'flex', flexDirection: 'column', gap: '0.5rem', margin: '0.2rem 0 0.4rem' }}>
-      <strong style={{ fontSize: '0.84rem' }}>Correct ball {b.over} – {b.bowler} to {b.batter}</strong>
+      <strong style={{ fontSize: '0.84rem' }}>Correct ball {b.over} - {b.bowler} to {b.batter}</strong>
       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         {choices.map(([v, l]) => <button key={v || 'bat'} type="button" style={chip(extra === v)} onClick={() => { setExtra(v); if (v === 'bye' || v === 'leg_bye') setRan((x) => Math.max(1, x)); }}>{l}</button>)}
       </div>
@@ -121,6 +121,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   const [wheelOn, setWheelOn] = useState(() => { try { return localStorage.getItem('lcm-wagon') !== 'off'; } catch { return true; } });
   const [pick, setPick] = useState({ striker: '', non_striker: '', bowler: '' });
   const [comment, setComment] = useState('');
+  const [focused, setFocused] = useState(true);
   const [menu, setMenu] = useState(false);
   const [abandonReason, setAbandonReason] = useState('');
   const [pen, setPen] = useState({ to: 'batting', runs: 5, reason: '' }); // #123 penalty runs
@@ -220,7 +221,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
     finally { setBusy(false); }
   };
 
-  if (!st) return err ? <div style={{ color: '#b91c1c' }}>{err}</div> : <div style={{ color: '#94a3b8' }}>Loading score…</div>;
+  if (!st) return err ? <div style={{ color: '#b91c1c' }}>{err}</div> : <div style={{ color: '#94a3b8' }}>Loading score.</div>;
 
   const cur = st.current;
   const curInn = cur ? st.innings.find((x) => x.id === cur.innings_id) : null;
@@ -293,7 +294,15 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   const bowlers = cur ? cur.bowling_side : [];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+    <div className={mode === 'live' && scoring && focused ? 'scoring-panel-focused' : undefined} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {mode === 'live' && scoring && (
+        <div className="scoring-focus-toolbar">
+          <strong>Live scoring</strong>
+          <Button type="button" size="sm" variant="outline" onClick={() => setFocused(!focused)}>
+            {focused ? 'Match page' : 'Focus scoring'}
+          </Button>
+        </div>
+      )}
       {err && <div style={{ padding: '0.6rem 0.85rem', borderRadius: '0.5rem', backgroundColor: '#fef2f2', color: '#b91c1c', fontSize: '0.85rem', display: 'flex', gap: '0.4rem', alignItems: 'center' }}><AlertCircle size={15} /> {err}</div>}
 
       {/* #26 #27 offline status */}
@@ -302,7 +311,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                       backgroundColor: syncError ? '#fef2f2' : '#fffbeb', border: `1px solid ${syncError ? '#fecaca' : '#fde68a'}`, color: syncError ? '#b91c1c' : '#92400e' }}>
           {online ? <RefreshCw size={15} /> : <WifiOff size={15} />}
           <span style={{ flex: 1 }}>
-            {!online ? 'No internet – keep scoring. ' : syncing ? 'Uploading… ' : ''}
+            {!online ? 'No internet - keep scoring. ' : syncing ? 'Uploading. ' : ''}
             {queue.length > 0 ? `${queue.length} action${queue.length === 1 ? '' : 's'} saved on this device, waiting to upload.` : !online ? 'Nothing waiting.' : ''}
             {syncError ? ` ${syncError}` : ''}
           </span>
@@ -320,22 +329,22 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
 
       {/* Scoreboard */}
       {mode === 'live' && curInn && (
-        <Card>
+        <Card className="scoring-current-score">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexWrap: 'wrap', gap: '0.5rem' }}>
               <div>
-                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{curInn.batting_team.name} · {curInn.is_super_over ? <strong style={{ color: '#7c3aed' }}>SUPER OVER</strong> : `innings ${curInn.innings_no}`}</div>
+                <div style={{ fontSize: '0.8rem', color: '#64748b' }}>{curInn.batting_team.name} � {curInn.is_super_over ? <strong style={{ color: '#7c3aed' }}>SUPER OVER</strong> : `innings ${curInn.innings_no}`}</div>
                 <div style={{ fontSize: '2rem', fontWeight: 900, lineHeight: 1.1 }}>{cur.runs}/{cur.wickets} <span style={{ fontSize: '1rem', fontWeight: 600, color: '#475569' }}>({oversText(cur.legal_balls)}{st.overs_limit ? ` / ${st.overs_limit}` : ''} ov)</span></div>
               </div>
               <div style={{ textAlign: 'right', fontSize: '0.82rem', color: '#334155' }}>
-                <div>CRR {crr}{rrr ? ` · RRR ${rrr}` : ''}</div>
+                <div>CRR {crr}{rrr ? ` � RRR ${rrr}` : ''}</div>
                 {cur.target && cur.status === 'in_progress' && <div style={{ fontWeight: 800, color: '#b45309' }}>Need {cur.runs_needed} from {cur.balls_left ?? '?'} balls</div>}
                 {cur.target && <div>Target {cur.target}</div>}
               </div>
             </div>
             {st.status === 'live' && cur.status === 'in_progress' && (
               <>
-                {/* Batters at the crease – full details */}
+                {/* Batters at the crease - full details */}
                 <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', overflowX: 'auto' }}>
                   <table className="match-live-table">
                     <thead>
@@ -358,7 +367,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                   </table>
                 </div>
 
-                {/* Bowling – current bowler and the bowler of the last over, full details */}
+                {/* Bowling - current bowler and the bowler of the last over, full details */}
                 <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', overflowX: 'auto' }}>
                   <table className="match-live-table">
                     <thead>
@@ -383,7 +392,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                   </table>
                   <div style={{ display: 'flex', gap: '0.25rem', padding: '0.45rem 0.6rem', flexWrap: 'wrap', alignItems: 'center', borderTop: '1px solid #f1f5f9' }}>
                     <span style={{ fontSize: '0.75rem', color: '#64748b', marginRight: '0.3rem' }}>{cur.bowler_id ? 'This over' : 'Last over'}:</span>
-                    {cur.this_over.length === 0 ? <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>—</span> : cur.this_over.map((b, k) => <BallChip key={k} b={b} />)}
+                    {cur.this_over.length === 0 ? <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>-</span> : cur.this_over.map((b, k) => <BallChip key={k} b={b} />)}
                     {cur.this_over.length > 0 && <span style={{ fontSize: '0.78rem', color: '#334155', marginLeft: '0.3rem', fontWeight: 700 }}>= {cur.this_over.reduce((t, b) => t + b.runs + b.extra_runs, 0)} runs</span>}
                   </div>
                 </div>
@@ -394,14 +403,14 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
                 )}
                 {(freeHit || powerplay || mustRetire.length > 0) && (
                   <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-                    {freeHit && <span style={{ padding: '0.3rem 0.7rem', borderRadius: '999px', backgroundColor: '#dc2626', color: '#fff', fontWeight: 900, fontSize: '0.8rem' }}>FREE HIT – only a run out counts</span>}
-                    {powerplay && <span style={{ padding: '0.3rem 0.7rem', borderRadius: '999px', backgroundColor: '#2563eb', color: '#fff', fontWeight: 800, fontSize: '0.78rem' }}>Powerplay (overs 1–{rules.powerplay_overs}) · max {rules.fielders_outside_powerplay} fielders outside the circle</span>}
-                    {mustRetire.map((p) => <span key={p.player_id} style={{ padding: '0.3rem 0.7rem', borderRadius: '999px', backgroundColor: '#fef3c7', color: '#92400e', fontWeight: 700, fontSize: '0.78rem' }}>{p.name} reached {rules.retire_at} – must retire (Wicket → Retired out)</span>)}
+                    {freeHit && <span style={{ padding: '0.3rem 0.7rem', borderRadius: '999px', backgroundColor: '#dc2626', color: '#fff', fontWeight: 900, fontSize: '0.8rem' }}>FREE HIT - only a run out counts</span>}
+                    {powerplay && <span style={{ padding: '0.3rem 0.7rem', borderRadius: '999px', backgroundColor: '#2563eb', color: '#fff', fontWeight: 800, fontSize: '0.78rem' }}>Powerplay (overs 1-{rules.powerplay_overs}) � max {rules.fielders_outside_powerplay} fielders outside the circle</span>}
+                    {mustRetire.map((p) => <span key={p.player_id} style={{ padding: '0.3rem 0.7rem', borderRadius: '999px', backgroundColor: '#fef3c7', color: '#92400e', fontWeight: 700, fontSize: '0.78rem' }}>{p.name} reached {rules.retire_at} - must retire (Wicket  Retired out)</span>)}
                   </div>
                 )}
                 <div style={{ display: 'flex', gap: '1rem', flexWrap: 'wrap', fontSize: '0.8rem', color: '#475569' }}>
                   {cur.partnership && <span>Partnership: <strong>{cur.partnership.runs}</strong> ({cur.partnership.balls} balls)</span>}
-                  {cur.yet_to_bat?.length > 0 && <span>Yet to bat: {cur.yet_to_bat.join(', ')}</span>}
+                  {cur.yet_to_bat?.length > 0 && <span className="scoring-yet-to-bat">Yet to bat: {cur.yet_to_bat.join(', ')}</span>}
                 </div>
               </>
             )}
@@ -450,9 +459,9 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
         </Card>
       )}
 
-      {/* Scoring pad (#7–#11) */}
+      {/* Scoring pad (#7-#11) */}
       {mode === 'live' && scoring && cur && cur.status === 'in_progress' && !needPick && (
-        <Card>
+        <Card className="scoring-pad">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
               {extraButtons.map(([v, l]) => (
@@ -465,10 +474,10 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
             <div style={{ fontSize: '0.78rem', color: '#64748b' }}>
               {extra === 'wide' ? `Wide: ${rules.wide_runs ?? 1} run${(rules.wide_runs ?? 1) === 1 ? ' is' : 's are'} added. Tap 0 for a plain wide, or the number of runs the batters ran.`
                 : extra === 'no_ball' ? `No ball: ${rules.no_ball_runs ?? 1} run${(rules.no_ball_runs ?? 1) === 1 ? ' is' : 's are'} added${rules.free_hit !== false ? ' and the next ball is a free hit' : ''}. Tap the runs hit off the bat (4 / 6 for a boundary).`
-                : extra ? 'Tap how many runs were run.' : 'Tap the runs scored off this ball.'}
+                : extra ? 'Tap how many runs were run.' : <span className="scoring-pad-hint">Tap the runs scored off this ball.</span>}
             </div>
             {shot && <WagonWheelPicker runs={shot.runs} busy={busy} leftHanded={/left/i.test(cur.batting_side?.find((x) => x.player_id === cur.striker_id)?.batting_style || '')} onPick={(d) => sendNow(shot.runs, d)} onSkip={() => sendNow(shot.runs, null)} onCancel={() => setShot(null)} onChangeRuns={(r) => setShot({ runs: r })} />}
-            {!shot && <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
+            {!shot && <div className="scoring-run-buttons" style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '0.5rem' }}>
               {[0, 1, 2, 3, 4, 6, 5, 7].map((r) => (
                 <button key={r} type="button" disabled={busy} onClick={() => send(r)}
                   style={{ padding: '0.9rem 0', fontSize: '1.3rem', fontWeight: 900, borderRadius: '0.6rem', cursor: 'pointer', border: '1px solid #cbd5e1',
@@ -524,7 +533,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
               </div>
             )}
 
-            <input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Commentary is written automatically – add your own note here (optional)" style={{ ...field, width: '100%', boxSizing: 'border-box' }} />
+            <input value={comment} onChange={(e) => setComment(e.target.value)} placeholder="Commentary is written automatically - add your own note here (optional)" style={{ ...field, width: '100%', boxSizing: 'border-box' }} />
 
             <div>
               <button type="button" onClick={() => setMenu(!menu)} style={{ background: 'none', border: 'none', color: '#64748b', cursor: 'pointer', fontSize: '0.8rem', padding: 0 }}>{menu ? 'Hide more options' : 'More options (penalty runs, end innings, abandon)'}</button>
@@ -560,7 +569,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
 
       {/* #121 Super Over after a tie */}
       {mode === 'live' && st.can_score && st.status === 'completed' && st.result_type === 'tie' && st.match_type !== 'two_innings' && st.innings.length > 0 && (
-        <Card title="Match tied – play a Super Over?">
+        <Card title="Match tied - play a Super Over?">
           <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.85rem' }}>
             <span>One over each. {st.innings[st.innings.length - 1].batting_team.name} (batted last) bat first.</span>
             <label>Wickets <select value={soWickets} onChange={(e) => setSoWickets(Number(e.target.value))} style={field}>{[1, 2, 3].map((n) => <option key={n} value={n}>{n}</option>)}</select></label>
@@ -680,7 +689,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
               </table>
               <div style={{ fontSize: '0.78rem', color: '#475569', margin: '0.3rem 0' }}>
                 Extras {inn.extras} (wd {inn.extras_detail.wides}, nb {inn.extras_detail.no_balls}, b {inn.extras_detail.byes}, lb {inn.extras_detail.leg_byes}{inn.penalty_runs ? `, pen ${inn.penalty_runs}` : ''})
-                {inn.fall_of_wickets.length > 0 && <> · Fall of wickets: {inn.fall_of_wickets.map((f) => `${f.runs}-${f.wicket} (${f.name}, ${f.over})`).join(', ')}</>}
+                {inn.fall_of_wickets.length > 0 && <> � Fall of wickets: {inn.fall_of_wickets.map((f) => `${f.runs}-${f.wicket} (${f.name}, ${f.over})`).join(', ')}</>}
               </div>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.82rem', marginTop: '0.3rem' }}>
                 <thead><tr style={{ color: '#64748b', textAlign: 'right' }}><th style={{ textAlign: 'left' }}>Bowler</th><th>O</th><th>M</th><th>R</th><th>W</th><th>Wd</th><th>Nb</th><th>Econ</th></tr></thead>

@@ -481,3 +481,5 @@
 - 2026-11-16: Compact mobile tournament header. Owner browser check pending.
 
 - 2026-11-16: Player addition and Playing XI (#59, #72) are now available together during match setup.
+
+- 2026-11-16: Live scoring (#7-19) now opens a compact mobile view for authorised scorers.
