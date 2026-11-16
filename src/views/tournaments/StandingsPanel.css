@@ -1,0 +1,57 @@
+.standings-table-container {
+  container-type: inline-size;
+}
+
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+@container (max-width: 560px) {
+  .standings-table,
+  .standings-table tbody {
+    display: block;
+  }
+
+  .standings-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .standings-table tbody tr {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border-bottom: 1px solid #e2e8f0;
+    padding: 0.4rem 0;
+  }
+
+  .standings-table tbody td {
+    border: 0 !important;
+    padding: 0.35rem 0.15rem !important;
+    overflow-wrap: anywhere;
+  }
+
+  .standings-table td[data-stat='Team'] {
+    grid-column: span 3;
+  }
+
+  .standings-table td[data-stat='For'],
+  .standings-table td[data-stat='Against'] {
+    grid-column: span 2;
+  }
+
+  .standings-table td[data-stat='Rank']::before {
+    content: '#';
+  }
+
+  .standings-table td:nth-child(n + 3)::before {
+    content: attr(data-stat);
+    display: block;
+    color: #475569;
+    font-size: 0.7rem;
+    font-weight: 600;
+  }
+}

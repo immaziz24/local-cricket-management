@@ -7,39 +7,39 @@
 
 | Item | Status |
 | :--- | :--- |
-| Plan | ✅ Complete: 310 features, A–Q, 6 phases (`01-MASTER-BLUEPRINT.md`) |
+| Plan | ? Complete: 310 features, A-Q, 6 phases (`01-MASTER-BLUEPRINT.md`) |
 | Frontend app | React 18 + Vite, runs locally at `http://localhost:5173` (`npm run dev`) |
-| Database | 🟩 Supabase project **Local Cricket Management** (`cwdkvjweuyvednvoyaum`, region us-east-1, free plan). Phase 1 tables, security rules and sign-up trigger are live. |
-| Real login | 🟩 Register (#254) and login/logout (#255) tested by the owner. 🟨 Password recovery (#256): code verified, new-password login to be confirmed. |
-| Super-Admin | 🟩 #257 dashboard on real data; owner's account has the **super_admin** role. |
-| Admin | 🟨 #258 Admin dashboard connected (members, sign-ups, verification/report queues). Awaiting owner check. |
-| Phase 2: tournaments | 🟨 #31–56, #58: double elimination; logo and banner; result entry, points table, NRR, qualification, knockout bracket, winner;  groups, formats, automatic/manual fixtures, scheduling, rescheduling, calendar; and create tournament (creator = Organiser), details, team registration + organiser approval/rejection with notifications. Awaiting owner check. |
-| Phase 3: statistics | 🟩 #79–102 + #57, #77, #78: everything worked out from scored balls. Statistics page (site leaderboards, compare players, compare teams + head-to-head), career stats/awards/form chart on player profile, team record on team page, Analysis tab in each match (worm, runs per over, partnerships, Player of the Match – automatic, scorer can change), leaderboards in tournament Points Table tab. |
-| Phase 3: playing conditions | 🟩 Tournament default rules + per-match rules (wide/no-ball runs, free hit, LBW on/off, byes/leg-byes, max overs per bowler, retire-at, powerplay, fielding limits, boundary, written local rules), version history with change notes, teams notified. Frozen when the match starts; the scoring screen follows them (free-hit/powerplay banners, bowler quota, LBW/leg-bye hidden when off). |
-| Phase 3: laws & match reports | 🟩 Laws & Rules page (own summaries + MCC/ICC links, dismissals, dead ball, overthrows, short runs, boundaries, follow-on, Super Over, penalty runs, time-wasting, umpire signals, revised-target helper). Super Over after a tie; penalty runs; follow-on; match Reports tab (decision log public; incident and disciplinary private, with notifications). |
-| Phase 3: cricket tools | 🟩 Cricket Tools page (#216–232): run rate, required rate, strike rate, averages, economy, NRR, rain target, toss, team generator, Playing XI generator, fixture generator, points table, budget, prizes, auction, ground size. Runs in the browser; generators can load a squad from my teams. |
-| Phase 4: officials | 🟩 Umpires & Scorers page (sign up, find by city/free date, my schedule, earnings, public profile with performance). Match page Officials: invite/accept/decline/cancel, accepted scorer gets scoring rights for that match, umpires can file reports, payments, ratings, disputes. |
-| Phase 4: grounds | 🟩 Grounds page (register, search by city/facility, my bookings, requests at my grounds). Ground page: profile, photos, map + directions, pitch, boundary, facilities, charges, weekly calendar with booking requests/confirm/block/paid, pitch-preparation records, inspections, match history + stats. Match page: link match to a ground. |
-| Phase 4: punctuality | 🟩 Match day tab: readiness checklist, team check-in, player attendance, automatic delay + proposed penalty, approve/reject/waive/appeal/fine. One method per match in Playing conditions (overs cut, fielding restriction, penalty runs) with rates, grace, approver, repeat threshold. Effects applied only after approval (overs cut on the late team's innings, runs to opponent, fielding banner for scorer). Team punctuality + player fines on team page; Late-arrival rules page rewritten with real data + calculator. |
-| Phase 5: community | 🟩 Community page (#160–176): directory of academies, coaching, shops, nets, clubs, commentators, organisers; marketplace to sell or rent kit; find teams/players/tournaments/grounds/officials; community board; private enquiries with replies. |
-| Phase 5: live & media | 🟩 (live streaming #177/#178 switched off by owner – "coming soon", admins only) Match → Video & media tab: YouTube/Facebook live stream link, score overlay for streaming apps, automatic highlights + clips, match photos/videos, result & scorecard pictures. Tournament → Photos & Media: gallery, poster, 12-s promo video. Player profile: video profile + player card. Live & Media page. Videos bucket: 20 MB per clip, 10 uploads per person (free plan has 1 GB storage). |
-| Website layout (not a blueprint feature) | 🟩 Visitors: top menu (Home, Matches, Tournaments, Players, Community, More), search with "Near me" (location asked only when tapped, 30 km), Log in / Register, visitor home page, footer (Explore, For organisers, Help, Legal) + About, Contact, FAQ, Privacy, Terms, Community Guidelines, Refund pages. Members: grouped sidebar, Create menu, notifications, profile menu, My cricket home, Settings, Admin panel (admins only). Feature numbers and developer badges removed from all pages. Contact details: fill `src/config/site.js` (empty values are hidden). |
-| Phase 5: branding & sponsors | 🟩 Tournament → Sponsors & promotion tab: tournament website (?t=CODE) + QR, sponsors (invite/offer/accept, logos, banners, report), adverts, campaigns, awards + certificates (?verify=CODE), merchandise shop. Sponsors page in More menu. Admin panel → Adverts & campaigns. Player profile → Trophy cabinet. |
-| Phase 5: news & learning | 🟩 News page (local news, announcements, previews, reports, interviews, stories, academy and community updates; filters, search, like, share, report). Learn page (coaching, guides, equipment, rules, umpiring, scoring; levels) + quizzes with leaderboard. Tournament → News tab (organiser announcements), match → Previews & reports (auto-draft from scorecard), player profile → Interviews & stories, Community listing → Updates. Admin panel → Reported articles. 13 starter articles + 3 quizzes by the Local Cricket Coaching Desk. |
-| Owner requests 2026-11-12 | 🟩 Admin panel → Control centre (find and fix users, teams, matches, tournaments, any ball). Sign-up 6-digit email code. Cricbuzz-style scorecard + wagon wheel. Match rules asked when creating a match. Generators on Matches page, match Playing XI and tournament Generators tab. Saved player auction board (Cricket tools → Player auction, ?auction=ID). Team creator not auto-added to squad. **Owner must set Supabase Auth → URL configuration: Site URL https://localcricket.plateria.in, redirect URLs https://localcricket.plateria.in/** and http://localhost:5173/**; and add {{ .Token }} to the Confirm signup email template.** |
-| Phase 2: players & teams | 🟨 #59–76: playing XI, substitutes and in-match replacements per match, player transfers between teams (#72–75); player ID, photo, DOB/age, contact privacy, team logo, team history, public player profile (#60–62, #66, #67, #69, #76) added on top of My Teams page, create team, add players by mobile number (or by name if not registered — they claim it later by registering with that number), captain / vice-captain / icon player. Awaiting owner check. |
-| Security & operations | 🟨 #267 audit log, #268 backup download, #269 privacy + my-data download + sign out everywhere, #270 notification inbox + send-to-all. Awaiting owner check. |
-| Reports & suspension | 🟨 #266 report a member, admin suspend/lift, notifications, audit log. Awaiting owner check. |
-| Verification | 🟨 #265 optional badges (person / umpire / scorer): request + admin review, notifications, audit log. Awaiting owner check. |
-| Roles | 🟨 #259–264 follow the **open-platform rule** (blueprint 6a): everyone is a Player automatically; organiser/owner/captain/scorer/umpire are earned per tournament/team/match; only Admins are appointed by hand. Awaiting owner check. |
-| Other data | 🟨 Everything else (admin screens, tournaments, matches, dashboard numbers) still uses mock data from `src/services/mock/`. |
-| Live website | ⬜ Not deployed. Temporary domain: https://localcricket.plateria.in/ (Hostinger Business) |
+| Database | ?? Supabase project **Local Cricket Management** (`cwdkvjweuyvednvoyaum`, region us-east-1, free plan). Phase 1 tables, security rules and sign-up trigger are live. |
+| Real login | ?? Register (#254) and login/logout (#255) tested by the owner. ?? Password recovery (#256): code verified, new-password login to be confirmed. |
+| Super-Admin | ?? #257 dashboard on real data; owner's account has the **super_admin** role. |
+| Admin | ?? #258 Admin dashboard connected (members, sign-ups, verification/report queues). Awaiting owner check. |
+| Phase 2: tournaments | ?? #31-56, #58: double elimination; logo and banner; result entry, points table, NRR, qualification, knockout bracket, winner;  groups, formats, automatic/manual fixtures, scheduling, rescheduling, calendar; and create tournament (creator = Organiser), details, team registration + organiser approval/rejection with notifications. Awaiting owner check. |
+| Phase 3: statistics | ?? #79-102 + #57, #77, #78: everything worked out from scored balls. Statistics page (site leaderboards, compare players, compare teams + head-to-head), career stats/awards/form chart on player profile, team record on team page, Analysis tab in each match (worm, runs per over, partnerships, Player of the Match - automatic, scorer can change), leaderboards in tournament Points Table tab. |
+| Phase 3: playing conditions | ?? Tournament default rules + per-match rules (wide/no-ball runs, free hit, LBW on/off, byes/leg-byes, max overs per bowler, retire-at, powerplay, fielding limits, boundary, written local rules), version history with change notes, teams notified. Frozen when the match starts; the scoring screen follows them (free-hit/powerplay banners, bowler quota, LBW/leg-bye hidden when off). |
+| Phase 3: laws & match reports | ?? Laws & Rules page (own summaries + MCC/ICC links, dismissals, dead ball, overthrows, short runs, boundaries, follow-on, Super Over, penalty runs, time-wasting, umpire signals, revised-target helper). Super Over after a tie; penalty runs; follow-on; match Reports tab (decision log public; incident and disciplinary private, with notifications). |
+| Phase 3: cricket tools | ?? Cricket Tools page (#216-232): run rate, required rate, strike rate, averages, economy, NRR, rain target, toss, team generator, Playing XI generator, fixture generator, points table, budget, prizes, auction, ground size. Runs in the browser; generators can load a squad from my teams. |
+| Phase 4: officials | ?? Umpires & Scorers page (sign up, find by city/free date, my schedule, earnings, public profile with performance). Match page Officials: invite/accept/decline/cancel, accepted scorer gets scoring rights for that match, umpires can file reports, payments, ratings, disputes. |
+| Phase 4: grounds | ?? Grounds page (register, search by city/facility, my bookings, requests at my grounds). Ground page: profile, photos, map + directions, pitch, boundary, facilities, charges, weekly calendar with booking requests/confirm/block/paid, pitch-preparation records, inspections, match history + stats. Match page: link match to a ground. |
+| Phase 4: punctuality | ?? Match day tab: readiness checklist, team check-in, player attendance, automatic delay + proposed penalty, approve/reject/waive/appeal/fine. One method per match in Playing conditions (overs cut, fielding restriction, penalty runs) with rates, grace, approver, repeat threshold. Effects applied only after approval (overs cut on the late team's innings, runs to opponent, fielding banner for scorer). Team punctuality + player fines on team page; Late-arrival rules page rewritten with real data + calculator. |
+| Phase 5: community | ?? Community page (#160-176): directory of academies, coaching, shops, nets, clubs, commentators, organisers; marketplace to sell or rent kit; find teams/players/tournaments/grounds/officials; community board; private enquiries with replies. |
+| Phase 5: live & media | ?? (live streaming #177/#178 switched off by owner - "coming soon", admins only) Match  Video & media tab: YouTube/Facebook live stream link, score overlay for streaming apps, automatic highlights + clips, match photos/videos, result & scorecard pictures. Tournament  Photos & Media: gallery, poster, 12-s promo video. Player profile: video profile + player card. Live & Media page. Videos bucket: 20 MB per clip, 10 uploads per person (free plan has 1 GB storage). |
+| Website layout (not a blueprint feature) | ?? Visitors: top menu (Home, Matches, Tournaments, Players, Community, More), search with "Near me" (location asked only when tapped, 30 km), Log in / Register, visitor home page, footer (Explore, For organisers, Help, Legal) + About, Contact, FAQ, Privacy, Terms, Community Guidelines, Refund pages. Members: grouped sidebar, Create menu, notifications, profile menu, My cricket home, Settings, Admin panel (admins only). Feature numbers and developer badges removed from all pages. Contact details: fill `src/config/site.js` (empty values are hidden). |
+| Phase 5: branding & sponsors | ?? Tournament  Sponsors & promotion tab: tournament website (?t=CODE) + QR, sponsors (invite/offer/accept, logos, banners, report), adverts, campaigns, awards + certificates (?verify=CODE), merchandise shop. Sponsors page in More menu. Admin panel  Adverts & campaigns. Player profile  Trophy cabinet. |
+| Phase 5: news & learning | ?? News page (local news, announcements, previews, reports, interviews, stories, academy and community updates; filters, search, like, share, report). Learn page (coaching, guides, equipment, rules, umpiring, scoring; levels) + quizzes with leaderboard. Tournament  News tab (organiser announcements), match  Previews & reports (auto-draft from scorecard), player profile  Interviews & stories, Community listing  Updates. Admin panel  Reported articles. 13 starter articles + 3 quizzes by the Local Cricket Coaching Desk. |
+| Owner requests 2026-11-12 | ?? Admin panel  Control centre (find and fix users, teams, matches, tournaments, any ball). Sign-up 6-digit email code. Cricbuzz-style scorecard + wagon wheel. Match rules asked when creating a match. Generators on Matches page, match Playing XI and tournament Generators tab. Saved player auction board (Cricket tools  Player auction, ?auction=ID). Team creator not auto-added to squad. **Owner must set Supabase Auth  URL configuration: Site URL https://localcricket.plateria.in, redirect URLs https://localcricket.plateria.in/** and http://localhost:5173/**; and add {{ .Token }} to the Confirm signup email template.** |
+| Phase 2: players & teams | ?? #59-76: playing XI, substitutes and in-match replacements per match, player transfers between teams (#72-75); player ID, photo, DOB/age, contact privacy, team logo, team history, public player profile (#60-62, #66, #67, #69, #76) added on top of My Teams page, create team, add players by mobile number (or by name if not registered - they claim it later by registering with that number), captain / vice-captain / icon player. Awaiting owner check. |
+| Security & operations | ?? #267 audit log, #268 backup download, #269 privacy + my-data download + sign out everywhere, #270 notification inbox + send-to-all. Awaiting owner check. |
+| Reports & suspension | ?? #266 report a member, admin suspend/lift, notifications, audit log. Awaiting owner check. |
+| Verification | ?? #265 optional badges (person / umpire / scorer): request + admin review, notifications, audit log. Awaiting owner check. |
+| Roles | ?? #259-264 follow the **open-platform rule** (blueprint 6a): everyone is a Player automatically; organiser/owner/captain/scorer/umpire are earned per tournament/team/match; only Admins are appointed by hand. Awaiting owner check. |
+| Other data | ?? Everything else (admin screens, tournaments, matches, dashboard numbers) still uses mock data from `src/services/mock/`. |
+| Live website | ? Not deployed. Temporary domain: https://localcricket.plateria.in/ (Hostinger Business) |
 | GitHub | https://github.com/immaziz24/local-cricket-management |
 
 ## 2. How the code is wired
 
 - Screens call only `src/services/dataService.js`.
-- `dataService.js` sends **auth** calls (#254–256) to `src/services/supabase/supabaseClient.js` when `.env` contains `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`; otherwise everything falls back to the mock client.
+- `dataService.js` sends **auth** calls (#254-256) to `src/services/supabase/supabaseClient.js` when `.env` contains `VITE_SUPABASE_URL` and `VITE_SUPABASE_PUBLISHABLE_KEY`; otherwise everything falls back to the mock client.
 - `.env` is ignored by git. `.env.example` shows the format. Only the publishable key is used in the frontend.
 - Login and password recovery currently work **by email only**. Mobile-number login needs SMS (paid) and comes later.
 
@@ -104,16 +104,16 @@
 
 ## 4. Next steps (in order)
 
-0. **Phase 6 in progress:** #233–236 are owner-verified. All 17 Category M articles #237–253 are published in Supabase and ready for browser checks. Categories O and P are next.
+0. **Phase 6 in progress:** #233-236 are owner-verified. All 17 Category M articles #237-253 are published in Supabase and ready for browser checks. Categories O and P are next.
 
    **Remaining order:** Category M (21 features), then O (13) and P (15). Phase 5 (Categories H, I, J, K) done 2026-11-11.
-1. **Owner check of #265** (Category N → User Governance → Verification): request a badge, approve it. Push to GitHub (today's work is not on GitHub yet).
-2. **Phase 3:** Category A (live scoring #1–30) complete. **Category D statistics (#79–102) complete** on the real database, together with Phase 2 #57, #77, #78 (Statistics page, player profile stats, team record, match Analysis tab, tournament leaderboards, automatic Player of the Match). **Category E batch 1 – playing conditions (#105–112, #114, #118, #119, #129–134) complete; scoring follows them.** **Category E batch 2 complete** (laws reference, Super Over, follow-on, penalty runs, DLS helper, match reports). **Category L calculators (#216–232) built – Phase 3 complete.** **Phase 4 started – Category F officials (#135–146) complete.** **Category G grounds (#147–159) complete.** **Category Q (#299–310) complete – Phase 4 complete.** **Next: Phase 5** (community and media).
-3. **Phase 2** in number order: #31 Create a tournament (connect to database), #32 Tournament name and branding, #33, …
+1. **Owner check of #265** (Category N  User Governance  Verification): request a badge, approve it. Push to GitHub (today's work is not on GitHub yet).
+2. **Phase 3:** Category A (live scoring #1-30) complete. **Category D statistics (#79-102) complete** on the real database, together with Phase 2 #57, #77, #78 (Statistics page, player profile stats, team record, match Analysis tab, tournament leaderboards, automatic Player of the Match). **Category E batch 1 - playing conditions (#105-112, #114, #118, #119, #129-134) complete; scoring follows them.** **Category E batch 2 complete** (laws reference, Super Over, follow-on, penalty runs, DLS helper, match reports). **Category L calculators (#216-232) built - Phase 3 complete.** **Phase 4 started - Category F officials (#135-146) complete.** **Category G grounds (#147-159) complete.** **Category Q (#299-310) complete - Phase 4 complete.** **Next: Phase 5** (community and media).
+3. **Phase 2** in number order: #31 Create a tournament (connect to database), #32 Tournament name and branding, #33, .
 
 ## 5. Known issues
 
-- **Live test site:** https://localcricket.plateria.in (Hostinger, built from GitHub `main`; every push re-deploys automatically). Build settings: Node 22, Vite, `npm run build`, output `dist`. Hostinger holds VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY as build variables. Supabase Auth → URL Configuration must list this address for sign-up / password-reset links.
+- **Live test site:** https://localcricket.plateria.in (Hostinger, built from GitHub `main`; every push re-deploys automatically). Build settings: Node 22, Vite, `npm run build`, output `dist`. Hostinger holds VITE_SUPABASE_URL and VITE_SUPABASE_PUBLISHABLE_KEY as build variables. Supabase Auth  URL Configuration must list this address for sign-up / password-reset links.
 
 - Offline scoring: the page itself opens offline only on the published site (service worker is off while developing). End innings / abandon / undo of uploaded balls need internet.
 
@@ -122,35 +122,35 @@
 - The Tournament Details page was labelled "#32". It is a supporting screen; #32 in the master list is "Tournament name and branding". UI labels will be corrected when Phase 2 work resumes.
 - Dashboard statistics (4 tournaments, 32 teams, 520 players, 2 live matches) are fake sample data.
 - Maintenance mode currently shows a notice to everyone; it does not yet block any actions. Blocking will be added as write features become real.
-- Recovery codes are 8 digits (Supabase default). Can be set to 6 in Supabase → Authentication → Sign In / Providers → Email.
+- Recovery codes are 8 digits (Supabase default). Can be set to 6 in Supabase  Authentication  Sign In / Providers  Email.
 - Supabase's built-in email service is limited to a few emails per hour. Before launch, connect a real email provider (SMTP) in Supabase.
 - Database region is us-east-1 (USA). Fine for development; consider moving closer to India (Mumbai) before launch.
 - Confirmation and recovery emails come from "Supabase Auth". Connect our own email provider so they come from "Local Cricket" before launch.
 
-## 6. Test checklist for #254–256
+## 6. Test checklist for #254-256
 
 1. `npm install` (adds `@supabase/supabase-js`), then `npm run dev`.
-2. **Register** with a real email and a 10-digit mobile number → success message says a confirmation link was sent.
+2. **Register** with a real email and a 10-digit mobile number  success message says a confirmation link was sent.
 3. Open the email and click the confirmation link.
-4. **Login** with that email and password → profile card shows your name. Refresh the page and open Login again → you are still signed in.
-5. **Logout** → signed out.
-6. **Register again** with the same email → error "already exists". With a different email but the same mobile → error "mobile number already exists".
-7. **One-time setup for the code:** Supabase dashboard → Authentication → Emails → **Reset Password** template → add the line `Your code is: {{ .Token }}` → Save.
-8. **Password recovery**: enter your email → a 6-digit code arrives by email → enter it → set a new password → log in with the new password.
+4. **Login** with that email and password  profile card shows your name. Refresh the page and open Login again  you are still signed in.
+5. **Logout**  signed out.
+6. **Register again** with the same email  error "already exists". With a different email but the same mobile  error "mobile number already exists".
+7. **One-time setup for the code:** Supabase dashboard  Authentication  Emails  **Reset Password** template  add the line `Your code is: {{ .Token }}`  Save.
+8. **Password recovery**: enter your email  a 6-digit code arrives by email  enter it  set a new password  log in with the new password.
 
 ## 7. Session log
 
 | Date | Who | What |
 | :--- | :--- | :--- |
-| 2026-11-13 | Codex | Phase 6 #233: prepared the Learn → Rules article using the October 2026 ICC conditions. Owner ran the migration and verified the article in the browser. |
+| 2026-11-13 | Codex | Phase 6 #233: prepared the Learn  Rules article using the October 2026 ICC conditions. Owner ran the migration and verified the article in the browser. |
 | 2026-11-13 | Codex | Phase 6 #234: prepared the Men's ODI rules article. Owner ran the migration and verified the article in the browser. |
 | 2026-11-13 | Codex | Phase 6 #235: ran the Men's Test rules migration and confirmed the article is published in Supabase. Owner verified in the browser. |
 | 2026-11-13 | Codex | Phase 6 #236: published the Women's T20 International rules article in Supabase. Owner confirmed the article works. |
-| 2026-11-13 | Codex | Owner requested batching. Published and confirmed all 17 remaining Category M reference articles (#237–253) in Supabase. Owner browser checks pending. |
+| 2026-11-13 | Codex | Owner requested batching. Published and confirmed all 17 remaining Category M reference articles (#237-253) in Supabase. Owner browser checks pending. |
 | 2026-11-13 | Codex | #291: added sharing to the main tournament page. Existing match sharing uses the same direct-link approach. Owner browser check and Android integration pending. |
 | 2026-11-13 | Codex | #271: added the default free membership to signed-in Settings. Owner browser check pending. |
 | 2026-11-13 | Codex | Owner reconfirmed batching. Updated the project instructions to group related features and browser checks. |
-| 2026-11-13 | Codex | #282–283: connected the admin revenue dashboard and member payment history. Applied migration and checked empty reports in Supabase. Payment capture integration and owner browser checks pending. |
+| 2026-11-13 | Codex | #282-283: connected the admin revenue dashboard and member payment history. Applied migration and checked empty reports in Supabase. Payment capture integration and owner browser checks pending. |
 | 2026-11-13 | Codex | Started Android groundwork with a standalone web app manifest and existing logo. Android SDK, package and device test pending. |
 | 2026-11-13 | Codex | Added the Android project and built a debug APK against the live website. The connected tablet rejected USB installation with INSTALL_FAILED_USER_RESTRICTED. Device checks pending. |
 | 2026-11-13 | Codex | Installed and launched Android test build v0.2.0 on the tablet. Added Matches, Tournaments and Account navigation with system bar spacing. Role flow checks pending. |
@@ -169,17 +169,17 @@
 | 2026-11-13 | Codex | Added tournament registration QR links, Android Home navigation and Android file picker support. Build and tablet installation passed. QR and file-selection checks pending. |
 | 2026-11-13 | Codex | Installed Android v0.7.0 with a Score shortcut and the Android share sheet for match and tournament links. Flow checks pending. |
 | 2026-11-13 | Codex | Installed Android v0.8.0 with Play and Organise menus for #284 and #286. Owner flow checks pending. |
-| 2026-11-13 | Codex | #288–289: cached the match centre for offline reopening and retried pending scoring when the app returns to the foreground. Tablet checks and closed-app sync pending. |
-| 2026-11-13 | Codex | #295–296: added Bengali and Hindi Android navigation labels. Built and installed on the tablet. Website translations and owner checks pending. |
+| 2026-11-13 | Codex | #288-289: cached the match centre for offline reopening and retried pending scoring when the app returns to the foreground. Tablet checks and closed-app sync pending. |
+| 2026-11-13 | Codex | #295-296: added Bengali and Hindi Android navigation labels. Built and installed on the tablet. Website translations and owner checks pending. |
 | 2026-11-13 | Codex | Extended Bengali and Hindi labels to the signed-in desktop and mobile web menus. Page translations and owner checks pending. |
-| 2026-11-13 | Codex | Added Settings → Language for English, Bengali and Hindi signed-in menus. Preference is saved locally. |
+| 2026-11-13 | Codex | Added Settings  Language for English, Bengali and Hindi signed-in menus. Preference is saved locally. |
 | 2026-11-13 | Codex | Added a shared header clock showing device-local weekday, date and time with seconds. |
 | 2026-11-13 | Codex | #293: added direct camera capture to the Android image chooser. Camera upload check pending. |
 | 2026-11-13 | Codex | #277: added browser receipts for captured payments. Invoices, gateway integration and live payment checks pending. |
 | 2026-11-13 | Codex | Added the Cricnotch Safari home-screen icon and a shared menu language list. Native iOS and additional languages remain pending. |
 | 2026-11-13 | Codex | #298: added Marathi and Tamil to signed-in menus. Full page translations and owner check pending. |
 | 2026-11-13 | Codex | #278: deployed refund requests and added an admin review list. Gateway refunds and owner checks pending. |
-| 2026-11-13 | Codex | #272–273: deployed the paid-plan catalogue and added it to Membership settings. Pricing, checkout and activation pending. |
+| 2026-11-13 | Codex | #272-273: deployed the paid-plan catalogue and added it to Membership settings. Pricing, checkout and activation pending. |
 | 2026-11-13 | Codex | #274: wrote test-mode Razorpay payment link creation using server-side offer prices. Deployment, capture verification and UI pending. |
 | 2026-11-13 | Codex | #274: deployed test checkout and connected it to paid plans. Test credentials, active offers and payment verification pending. |
 | 2026-11-13 | Codex | #274: deployed signed Razorpay test payment verification and duplicate-safe payment recording. Test configuration and end-to-end check pending. |
@@ -195,44 +195,44 @@
 | 2026-11-13 | Codex | Added scorecard batting minutes and live striker mark, restored the wagon-wheel icon, and removed phone side gutters. |
 | 2026-11-13 | Codex | Corrected scorecard innings order and missing batter names. Moved the wagon wheel after batting minutes. |
 | 2026-11-13 | Codex | Fixed player profile name contrast and moved the player card to the top. Installed Android v0.9.2 with last-page restoration. |
-| 2026-11-05 → 11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
+| 2026-11-05  11-10 | ChatGPT + Antigravity | Blueprint PDF; Phase 1 screens; #31 screen; tournament details page; Supabase project and first two migrations |
 | 2026-11-10 | Claude | Took over. Full 310-feature list added to docs; tracker rewritten with honest statuses; CLAUDE.md added |
-| 2026-11-11 | Claude | Phase 4 – Category Q punctuality (12 features) – Phase 4 complete |
-| 2026-11-11 | Claude | Phase 5 – Category H community & marketplace (17 features) |
-| 2026-11-11 | Claude | Phase 5 – Category I live streaming & media (12 features); owner set live streaming to "coming soon" |
+| 2026-11-11 | Claude | Phase 4 - Category Q punctuality (12 features) - Phase 4 complete |
+| 2026-11-11 | Claude | Phase 5 - Category H community & marketplace (17 features) |
+| 2026-11-11 | Claude | Phase 5 - Category I live streaming & media (12 features); owner set live streaming to "coming soon" |
 | 2026-11-11 | Claude | Website layout: premium header with search + Near me (30 km), visitor and member layouts, home pages, footer and info pages, contact messages; feature numbers removed from pages |
-| 2026-11-11 | Claude | Phase 5 – Category J branding, sponsorship & promotion (11 features) |
-| 2026-11-11 | Claude | Phase 5 – Category K news & learning (16 features): News and Learn pages, articles, quizzes, starter content – Phase 5 complete |
-| 2026-11-12 | Claude | Owner requests (3): every page keeps its address (refresh / Back stay on the page, ?page=…&id=…), new-version Refresh banner, scorer Edit ball, auction in four steps with player number / ID search and team result cards |
+| 2026-11-11 | Claude | Phase 5 - Category J branding, sponsorship & promotion (11 features) |
+| 2026-11-11 | Claude | Phase 5 - Category K news & learning (16 features): News and Learn pages, articles, quizzes, starter content - Phase 5 complete |
+| 2026-11-12 | Claude | Owner requests (3): every page keeps its address (refresh / Back stay on the page, ?page=.&id=.), new-version Refresh banner, scorer Edit ball, auction in four steps with player number / ID search and team result cards |
 | 2026-11-12 | Claude | Owner requests (2): automatic 25+ word commentary for every ball, Undo also between overs / at innings break, wagon wheel pop-up with cancel and change-runs, full auction player details and team rows |
 | 2026-11-12 | Claude | Owner requests: admin Control centre (fix any user/match/ball), sign-up email code, international scorecard + wagon wheel, match rules on creation, generators in matches/tournaments, saved auction board, no auto squad for team creator |
-| 2026-11-11 | Claude | Phase 4 – Category G grounds (13 features): register, photos, map, pitch/boundary/facilities, booking + calendar + prices, pitch records, inspections, match history |
-| 2026-11-10 | Claude | Phase 4 – Category F officials (12 features): sign-up, search, invitations, scoring rights, availability, schedule, payments, ratings, disputes, history |
-| 2026-11-10 | Claude | Category L: Cricket Tools page (17 calculators/generators) – Phase 3 complete |
-| 2026-11-10 | Claude | Category E batch 2 (15 features): Laws & Rules page, Super Over, penalty runs, follow-on, DLS helper, match Reports tab – Category E complete |
-| 2026-11-10 | Claude | Category E batch 1: playing conditions (17 features) – rules editor, versions, enforced in ball-by-ball scoring |
-| 2026-11-10 | Claude | Category D statistics #79–102 + #57, #77, #78 (Statistics page, MVP points, Player of the Match, comparisons, charts, match analysis). Fixed player profile error for players without an account |
+| 2026-11-11 | Claude | Phase 4 - Category G grounds (13 features): register, photos, map, pitch/boundary/facilities, booking + calendar + prices, pitch records, inspections, match history |
+| 2026-11-10 | Claude | Phase 4 - Category F officials (12 features): sign-up, search, invitations, scoring rights, availability, schedule, payments, ratings, disputes, history |
+| 2026-11-10 | Claude | Category L: Cricket Tools page (17 calculators/generators) - Phase 3 complete |
+| 2026-11-10 | Claude | Category E batch 2 (15 features): Laws & Rules page, Super Over, penalty runs, follow-on, DLS helper, match Reports tab - Category E complete |
+| 2026-11-10 | Claude | Category E batch 1: playing conditions (17 features) - rules editor, versions, enforced in ball-by-ball scoring |
+| 2026-11-10 | Claude | Category D statistics #79-102 + #57, #77, #78 (Statistics page, MVP points, Player of the Match, comparisons, charts, match analysis). Fixed player profile error for players without an account |
 | 2026-11-10 | Claude | Deployed to https://localcricket.plateria.in via Hostinger Git auto-deploy (owner connected GitHub) |
-| 2026-11-10 | Claude | Offline scoring + auto sync (#26–27); live tab shows full batter/bowler tables; fixed a stale-file copy to the laptop |
-| 2026-11-10 | Claude | Pause/resume, continue scoring, share link (?match=), Realtime live updates (tested), History tab (#24, #25, #28–30) |
+| 2026-11-10 | Claude | Offline scoring + auto sync (#26-27); live tab shows full batter/bowler tables; fixed a stale-file copy to the laptop |
+| 2026-11-10 | Claude | Pause/resume, continue scoring, share link (?match=), Realtime live updates (tested), History tab (#24, #25, #28-30) |
 | 2026-11-10 | Claude | Commentary tab, scorecard M (minutes) column, partnership, yet to bat, match summary; owner scored a real match |
-| 2026-11-10 | Claude | Fixed blank Tournaments page (missing icon import). Ball-by-ball scoring #7–19 with scorecard |
-| 2026-11-10 | Claude | Phase 3 start: real Matches page, start a match, Playing XI, toss (#1–6); real live-match count |
+| 2026-11-10 | Claude | Fixed blank Tournaments page (missing icon import). Ball-by-ball scoring #7-19 with scorecard |
+| 2026-11-10 | Claude | Phase 3 start: real Matches page, start a match, Playing XI, toss (#1-6); real live-match count |
 | 2026-11-10 | Claude | Local-cricket rework after owner feedback: new Create Tournament form (overs number, ball/pitch/category, players a side), organiser adds or creates teams, honest tournament summary |
-| 2026-11-10 | Claude | Playing XI, substitutes, replacements, transfers (#72–75) |
+| 2026-11-10 | Claude | Playing XI, substitutes, replacements, transfers (#72-75) |
 | 2026-11-10 | Claude | Double elimination (#46); tracker summary tables refreshed |
 | 2026-11-10 | Claude | Tournament logo, banner and colour (#33) |
-| 2026-11-10 | Claude | Results entry, points table, NRR, qualification, knockout bracket, winner (#53–56, #58) |
+| 2026-11-10 | Claude | Results entry, points table, NRR, qualification, knockout bracket, winner (#53-56, #58) |
 | 2026-11-10 | Claude | Groups, formats, automatic fixtures, scheduling, rescheduling, calendar |
 | 2026-11-10 | Claude | Tournaments on real database: create, team registration, approval |
 | 2026-11-10 | Claude | Fixed empty squad bug (hidden column); added Edit player. Owner checked teams, squad, captain/VC/icon, edit |
 | 2026-11-10 | Claude | Player ID, photos, logos, DOB/age, contact privacy, player profile page, team history |
 | 2026-11-10 | Claude | Phase 2 started: players & teams with add-by-mobile (CricHeroes-style) |
-| 2026-11-10 | Claude | #267–270 on real data — all 17 Phase 1 features connected |
+| 2026-11-10 | Claude | #267-270 on real data - all 17 Phase 1 features connected |
 | 2026-11-10 | Claude | #266 Reporting and suspension on real data |
 | 2026-11-10 | Claude | #265 User verification on real data |
 | 2026-11-10 | Claude | Owner confirmed open-platform rule; roles reworked: auto Player, admins-only appointment; rule added to blueprint 6a and CLAUDE.md |
-| 2026-11-10 | Claude | #259–264 roles: permissions stored in database, give/remove roles, lock-out protection |
+| 2026-11-10 | Claude | #259-264 roles: permissions stored in database, give/remove roles, lock-out protection |
 | 2026-11-10 | Claude | #258 Admin dashboard on real data; hub page shows real per-feature status |
 | 2026-11-10 | Claude | #257 Super-Admin dashboard on real data; owner granted super_admin role; site-wide announcement + maintenance banner |
 | 2026-11-10 | Claude | Header shows signed-in user + Sign Out; sidebar shows database status. Owner tested register + login successfully |
@@ -240,7 +240,7 @@
 
 - 2026-11-14: Released profile editing separately. Email-code sign-in and registration await custom SMTP.
 
-- 2026-11-14: Added the shared player profile editor to Settings & Privacy → Account. Owner save and upload checks pending.
+- 2026-11-14: Added the shared player profile editor to Settings & Privacy  Account. Owner save and upload checks pending.
 
 - 2026-11-14: Applied the missing owner-scoped storage SELECT policy for profile photo uploads. Owner upload check pending.
 
@@ -251,3 +251,5 @@
 - **2026-11-16:** Added Tournament admins to the tournament page. The creator confirms a registered account by mobile number and can revoke access. The database migration enables scoped access to fixtures, tournament teams, match setup and scoring. Owner browser check pending.
 
 - 2026-11-16: Applied tournament media Storage policy for logo and banner uploads. Live policy verified. Owner upload check pending.
+
+- 2026-11-16: Added a responsive tournament standings layout with all statistics visible at narrow widths. Owner mobile check pending.

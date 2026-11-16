@@ -1,3 +1,4 @@
+import './StandingsPanel.css';
 import React, { useState, useEffect } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
@@ -222,28 +223,28 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, o
       {showTable && groups.map(([gid, gname]) => {
         const rows = table.filter((r) => (r.group_id || 'all') === gid);
         return (
-          <Card key={gid} title={gname} subtitle={`Top ${tournament.qualify_per_group ?? 2} qualify · Win ${tournament.points_win ?? 2} pts, tie ${tournament.points_tie ?? 1}, no result ${tournament.points_no_result ?? 1}`}>
-            <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', minWidth: 520 }}>
-                <thead>
-                  <tr>
-                    <th style={th}>#</th><th style={{ ...th, textAlign: 'left' }}>Team</th>
-                    <th style={th}>P</th><th style={th}>W</th><th style={th}>L</th><th style={th}>T</th><th style={th}>NR</th>
-                    <th style={th}>Pts</th><th style={th}>NRR</th><th style={th}>For</th><th style={th}>Against</th>
+          <Card key={gid} title={gname} subtitle={`Top ${tournament.qualify_per_group ?? 2} qualify � Win ${tournament.points_win ?? 2} pts, tie ${tournament.points_tie ?? 1}, no result ${tournament.points_no_result ?? 1}`}>
+            <div className='standings-table-container'>
+              <table className='standings-table' role='table' aria-label={gname}>
+                <thead role='rowgroup'>
+                  <tr role='row'>
+                    <th role='columnheader' scope='col' style={th}>#</th><th role='columnheader' scope='col' style={{ ...th, textAlign: 'left' }}>Team</th>
+                    <th role='columnheader' scope='col' style={th}>P</th><th role='columnheader' scope='col' style={th}>W</th><th role='columnheader' scope='col' style={th}>L</th><th role='columnheader' scope='col' style={th}>T</th><th role='columnheader' scope='col' style={th}>NR</th>
+                    <th role='columnheader' scope='col' style={th}>Pts</th><th role='columnheader' scope='col' style={th}>NRR</th><th role='columnheader' scope='col' style={th}>For</th><th role='columnheader' scope='col' style={th}>Against</th>
                   </tr>
                 </thead>
-                <tbody>
+                <tbody role='rowgroup'>
                   {rows.map((r) => (
-                    <tr key={r.team_id} style={{ backgroundColor: r.qualified ? '#f0fdf4' : 'transparent' }}>
-                      <td style={td}>{r.rank_no}</td>
-                      <td style={{ ...td, textAlign: 'left', fontWeight: 700 }}>
+                    <tr role='row' key={r.team_id} style={{ backgroundColor: r.qualified ? '#f0fdf4' : 'transparent' }}>
+                      <td role='cell' data-stat='Rank' style={td}>{r.rank_no}</td>
+                      <td role='cell' data-stat='Team' style={{ ...td, textAlign: 'left', fontWeight: 700 }}>
                         {r.team_name} {r.qualified && <Badge variant="success">Q</Badge>}
                       </td>
-                      <td style={td}>{r.played}</td><td style={td}>{r.won}</td><td style={td}>{r.lost}</td><td style={td}>{r.tied}</td><td style={td}>{r.no_result}</td>
-                      <td style={{ ...td, fontWeight: 800 }}>{r.points}</td>
-                      <td style={{ ...td, color: Number(r.nrr) > 0 ? '#047857' : Number(r.nrr) < 0 ? '#b91c1c' : '#334155' }}>{fmtNrr(r.nrr)}</td>
-                      <td style={{ ...td, fontSize: '0.75rem', color: '#64748b' }}>{scoreLine(r.runs_for, null, r.balls_faced)?.replace('/0', '') || '-'}</td>
-                      <td style={{ ...td, fontSize: '0.75rem', color: '#64748b' }}>{scoreLine(r.runs_against, null, r.balls_bowled)?.replace('/0', '') || '-'}</td>
+                      <td role='cell' data-stat='P' style={td}>{r.played}</td><td role='cell' data-stat='W' style={td}>{r.won}</td><td role='cell' data-stat='L' style={td}>{r.lost}</td><td role='cell' data-stat='T' style={td}>{r.tied}</td><td role='cell' data-stat='NR' style={td}>{r.no_result}</td>
+                      <td role='cell' data-stat='Pts' style={{ ...td, fontWeight: 800 }}>{r.points}</td>
+                      <td role='cell' data-stat='NRR' style={{ ...td, color: Number(r.nrr) > 0 ? '#047857' : Number(r.nrr) < 0 ? '#b91c1c' : '#334155' }}>{fmtNrr(r.nrr)}</td>
+                      <td role='cell' data-stat='For' style={{ ...td, fontSize: '0.75rem', color: '#64748b' }}>{scoreLine(r.runs_for, null, r.balls_faced)?.replace('/0', '') || '-'}</td>
+                      <td role='cell' data-stat='Against' style={{ ...td, fontSize: '0.75rem', color: '#64748b' }}>{scoreLine(r.runs_against, null, r.balls_bowled)?.replace('/0', '') || '-'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -273,7 +274,7 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, o
               }).map(({ br, rn, ms }) => {
                 return (
                   <div key={`${br}-${rn}`} style={{ minWidth: 220, display: 'flex', flexDirection: 'column', gap: '0.5rem', justifyContent: 'space-around' }}>
-                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', display: 'flex', gap: '0.3rem', alignItems: 'center' }}><GitBranch size={13} /> {br ? `${BRACKET_LABEL[br]}${br === 'grand_final' ? '' : ` · round ${rn}`}` : (STAGE_LABEL[ms[0]?.stage] || 'Round')} </div>
+                    <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#64748b', display: 'flex', gap: '0.3rem', alignItems: 'center' }}><GitBranch size={13} /> {br ? `${BRACKET_LABEL[br]}${br === 'grand_final' ? '' : ` � round ${rn}`}` : (STAGE_LABEL[ms[0]?.stage] || 'Round')} </div>
                     {ms.map((m) => (
                       <div key={m.id} style={{ border: '1px solid #e2e8f0', borderRadius: '0.5rem', overflow: 'hidden', fontSize: '0.82rem' }}>
                         {[['a', m.team_a], ['b', m.team_b]].map(([side, t]) => (
