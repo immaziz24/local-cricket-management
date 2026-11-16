@@ -5,7 +5,7 @@ import { dataService } from '../../services/dataService.js';
 export function TournamentAdmins({ tournamentId }) {
   const [open, setOpen] = useState(false);
   const [admins, setAdmins] = useState([]);
-  const [mobile, setMobile] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [candidate, setCandidate] = useState(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -15,12 +15,12 @@ export function TournamentAdmins({ tournamentId }) {
     setError('');
     if (action === 'lookup') setCandidate(null);
     try {
-      const result = await dataService.manageTournamentAdmins(tournamentId, action, mobile, userId);
+      const result = await dataService.manageTournamentAdmins(tournamentId, action, identifier.trim(), userId);
       if (action === 'lookup') setCandidate(result);
       else {
         setAdmins(result);
         if (action === 'grant') {
-          setMobile('');
+          setIdentifier('');
           setCandidate(null);
         }
       }
@@ -40,9 +40,9 @@ export function TournamentAdmins({ tournamentId }) {
       {open && <div>
         <form onSubmit={event => { event.preventDefault(); run('lookup'); }}>
           <label>
-            Registered mobile number{' '}
-            <input type="tel" autoComplete="off" required disabled={busy} value={mobile}
-              onChange={event => { setMobile(event.target.value); setCandidate(null); }} />
+            Registered mobile number or email{' '}
+            <input type="text" autoComplete="off" autoCapitalize="none" spellCheck={false} required disabled={busy} value={identifier}
+              onChange={event => { setIdentifier(event.target.value); setCandidate(null); }} />
           </label>{' '}
           <Button type="submit" size="sm" disabled={busy}>Find account</Button>
         </form>

@@ -418,9 +418,9 @@ export const dataService = {
     return res.data;
   },
 
-  async manageTournamentAdmins(tournamentId, action, mobile, userId) {
+  async manageTournamentAdmins(tournamentId, action, identifier, userId) {
     requireDatabase();
-    const res = await supabaseClient.manageTournamentAdmins({ tournamentId, action, mobile, userId });
+    const res = await supabaseClient.manageTournamentAdmins({ tournamentId, action, identifier, userId });
     if (res.error) throw new Error(res.error);
     return res.data;
   },

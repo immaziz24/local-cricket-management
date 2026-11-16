@@ -2158,9 +2158,9 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
-  async manageTournamentAdmins({ tournamentId, action, mobile, userId }) {
+  async manageTournamentAdmins({ tournamentId, action, identifier, userId }) {
     const { data, error } = await supabase.rpc('manage_tournament_admins', {
-      p_tournament_id: tournamentId, p_action: action, p_mobile: mobile || null, p_user_id: userId || null,
+      p_tournament_id: tournamentId, p_action: action, p_mobile: identifier || null, p_user_id: userId || null,
     });
     return { data, error: error ? friendlyError(error, 'tournament admins') : null };
   },
