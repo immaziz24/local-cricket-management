@@ -36,3 +36,7 @@ service-role*
 serviceAccountKey*.json
 
 .vite
+
+# Local Android build outputs
+/android/.gradle-rotation/
+/android/app/build-old/

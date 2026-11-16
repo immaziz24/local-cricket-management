@@ -461,3 +461,5 @@
 | 298 | Multi-language expansion | 🟨 | Marathi and Tamil added to signed-in web menus. Page translations and owner check pending. |
 
 **Tournament admin delegation (2026-11-16)** — Implemented owner-only assignment by registered mobile number and revocation. Delegated access covers tournament management and match scoring for that tournament. Live owner browser check pending.
+
+- 2026-11-16: #33 tournament branding upload policy applied in production. Awaiting owner browser verification.

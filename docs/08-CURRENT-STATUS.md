@@ -249,3 +249,5 @@
 - 2026-11-14: Redesigned the player profile editor header and added name capitalization on display and save. Owner browser checks pending.
 
 - **2026-11-16:** Added Tournament admins to the tournament page. The creator confirms a registered account by mobile number and can revoke access. The database migration enables scoped access to fixtures, tournament teams, match setup and scoring. Owner browser check pending.
+
+- 2026-11-16: Applied tournament media Storage policy for logo and banner uploads. Live policy verified. Owner upload check pending.
