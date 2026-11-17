@@ -12,6 +12,7 @@ const FILTERS = [
   ['upcoming', 'Upcoming'],
   ['finished', 'Finished'],
   ['mine', 'My tournaments'],
+  ['series', 'Series'],
   ['all', 'All'],
 ];
 
@@ -42,6 +43,7 @@ export function TournamentsView(props) {
   const filter = selectedFilter === 'mine' && !currentUser ? defaultFilter : selectedFilter ?? defaultFilter;
   const visibleTournaments = tournaments.filter((t) => {
     switch (filter) {
+      case 'series': return t.category === 'Series';
       case 'live': return t.status === 'ongoing';
       case 'upcoming': return ['registration', 'upcoming'].includes(t.status);
       case 'finished': return t.status === 'completed';
@@ -143,7 +145,7 @@ export function TournamentsView(props) {
                     {trn.name}
                   </h3>
                   <div style={{ fontSize: '0.78rem', color: 'var(--color-primary-dark)', fontWeight: 600, marginTop: '0.2rem' }}>
-                    {trn.format} {trn.ball_type ? '• ' + trn.ball_type : ''}
+                    {trn.format} {trn.ball_type ? ' ' + trn.ball_type : ''}
                   </div>
                 </div>
                 </div>

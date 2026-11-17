@@ -5,8 +5,8 @@ import { dataService } from '../services/dataService.js';
 import { Trophy, CheckCircle2, AlertCircle, ArrowLeft, Users, MapPin } from 'lucide-react';
 
 /**
- * #31 Create a tournament — built for local / grassroots cricket (reference: CricHeroes).
- * Overs are just a number (4, 6, 8, 10 …), ball type is tennis / tape / leather, plus pitch type,
+ * #31 Create a tournament - built for local / grassroots cricket (reference: CricHeroes).
+ * Overs are just a number (4, 6, 8, 10 .), ball type is tennis / tape / leather, plus pitch type,
  * category and players a side. Teams are added afterwards on the tournament page.
  */
 
@@ -19,7 +19,7 @@ const MATCH_TYPES = [
 ];
 const BALL_TYPES = ['Tennis', 'Tape ball', 'Leather (red)', 'Leather (white)', 'Rubber', 'Other'];
 const PITCH_TYPES = ['Rough / mud', 'Cement', 'Matting', 'Turf', 'Astroturf'];
-const CATEGORIES = ['Open', 'Village / community', 'Corporate', 'School', 'College', 'Under-14', 'Under-16', 'Under-19', 'Women', 'Veterans', 'Other'];
+const CATEGORIES = ['Open', 'Series', 'Village / community', 'Corporate', 'School', 'College', 'Under-14', 'Under-16', 'Under-19', 'Women', 'Veterans', 'Other'];
 const PENALTIES = [
   { value: 'none', label: 'No late-arrival penalty' },
   { value: 'overs_deduction', label: 'Overs cut (e.g. 1 over per 10 minutes late)' },
@@ -67,7 +67,7 @@ const suggestCode = (name, startDate, season) => {
 
 export function CreateTournamentView(props) {
   const { onNavigate = () => {}, previousTournament = null, editingTournament = null, onSaved, onCancel } = props || {};
-  const [f, setF] = useState(() => editingTournament ? Object.fromEntries(Object.entries(INITIAL).map(([key, value]) => [key, editingTournament[key] ?? (key === 'overs_per_innings' ? 10 : value)])) : previousTournament ? { ...INITIAL, name: previousTournament.name, venue: previousTournament.venue, city: previousTournament.city || '', season_number: Math.min(999, (previousTournament.season_number || 1) + 1), code: suggestCode(previousTournament.name, '', (previousTournament.season_number || 1) + 1) } : INITIAL);
+  const [f, setF] = useState(() => editingTournament ? Object.fromEntries(Object.entries(INITIAL).map(([key, value]) => [key, editingTournament[key] ?? (key === 'overs_per_innings' ? 10 : value)])) : previousTournament?.newSeries ? { ...INITIAL, category: 'Series', teams_count: 2 } : previousTournament ? { ...INITIAL, name: previousTournament.name, category: previousTournament.category === 'Series' ? 'Series' : INITIAL.category, teams_count: previousTournament.category === 'Series' ? 2 : INITIAL.teams_count, venue: previousTournament.venue, city: previousTournament.city || '', season_number: Math.min(999, (previousTournament.season_number || 1) + 1), code: suggestCode(previousTournament.name, '', (previousTournament.season_number || 1) + 1) } : INITIAL);
   const [codeTouched, setCodeTouched] = useState(!!editingTournament);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -77,6 +77,7 @@ export function CreateTournamentView(props) {
   const set = (k, v) => {
     setF((prev) => {
       const next = { ...prev, [k]: v };
+      if (k === 'category' && v === 'Series') next.teams_count = 2;
       if (!codeTouched && ['name', 'start_date'].includes(k)) next.code = suggestCode(next.name, next.start_date, next.season_number);
       if (k === 'match_type' && v === 'box_cricket' && prev.players_per_side === 11) { next.players_per_side = 8; next.overs_per_innings = 5; }
       return next;
@@ -88,13 +89,14 @@ export function CreateTournamentView(props) {
   const validate = () => {
     const e = {};
     if (f.name.trim().length < 3) e.name = 'At least 3 characters.';
-    if (!/^[A-Z0-9][A-Z0-9-]{1,15}$/.test(f.code)) e.code = '2–16 letters, numbers or dashes.';
+    if (!/^[A-Z0-9][A-Z0-9-]{1,15}$/.test(f.code)) e.code = '2-16 letters, numbers or dashes.';
     if (f.venue.trim().length < 3) e.venue = 'Enter the ground name.';
     if (!f.start_date) e.start_date = 'Required.';
     if (!f.end_date) e.end_date = 'Required.';
     if (f.start_date && f.end_date && f.end_date < f.start_date) e.end_date = 'Cannot be before the start date.';
     const tc = Number(f.teams_count);
-    if (!tc || tc < 2 || tc > 64) e.teams_count = 'Between 2 and 64.';
+    if (f.category === 'Series' && tc !== 2) e.teams_count = 'A head-to-head series needs exactly 2 teams.';
+    else if (!tc || tc < 2 || tc > 64) e.teams_count = 'Between 2 and 64.';
     if (f.match_type !== 'two_innings') {
       const ov = Number(f.overs_per_innings);
       if (!ov || ov < 1 || ov > 100) e.overs_per_innings = 'Between 1 and 100.';
@@ -137,7 +139,7 @@ export function CreateTournamentView(props) {
             <CheckCircle2 size={48} color="#059669" />
             <h2 style={{ margin: 0 }}>{created.name} is created</h2>
             <p style={{ margin: 0, color: '#475569' }}>
-              {created.format} · {created.ball_type || 'Ball not set'} · {created.players_per_side} a side · {created.venue}
+              {created.format} � {created.ball_type || 'Ball not set'} � {created.players_per_side} a side � {created.venue}
             </p>
             <p style={{ margin: 0, color: '#475569', fontSize: '0.9rem' }}>
               Next: open the tournament, go to <strong>Teams</strong> and add the teams. Then make the fixtures.
@@ -202,7 +204,7 @@ export function CreateTournamentView(props) {
           </div>
           <div>
             <label style={labelStyle}><Users size={13} /> Number of teams *</label>
-            <input type="number" min={2} max={64} style={box('teams_count')} value={f.teams_count} onChange={(e) => set('teams_count', e.target.value)} placeholder="e.g. 8" />
+            <input type="number" min={2} max={64} style={box('teams_count')} value={f.teams_count} disabled={f.category === 'Series'} onChange={(e) => set('teams_count', e.target.value)} placeholder="e.g. 8" />
             <div style={hint}>The most teams that can take part. You can change it later.</div>
             {err('teams_count')}
           </div>
@@ -259,11 +261,11 @@ export function CreateTournamentView(props) {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(260px, 1fr))', gap: '1rem' }}>
           <div>
             <label style={labelStyle}>Entry fee per team</label>
-            <input style={input} value={f.entry_fee} onChange={(e) => set('entry_fee', e.target.value)} placeholder="e.g. ₹1,500" />
+            <input style={input} value={f.entry_fee} onChange={(e) => set('entry_fee', e.target.value)} placeholder="e.g. ?1,500" />
           </div>
           <div>
             <label style={labelStyle}>Prizes</label>
-            <input style={input} value={f.prize_pool} onChange={(e) => set('prize_pool', e.target.value)} placeholder="e.g. ₹11,000 + trophy" />
+            <input style={input} value={f.prize_pool} onChange={(e) => set('prize_pool', e.target.value)} placeholder="e.g. ?11,000 + trophy" />
           </div>
           <div>
             <label style={labelStyle}>Late-arrival rule</label>
@@ -295,10 +297,10 @@ export function CreateTournamentView(props) {
       )}
       <div style={{ display: 'flex', gap: '0.6rem', justifyContent: 'flex-end', alignItems: 'center', flexWrap: 'wrap' }}>
         <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'inline-flex', gap: '0.3rem', alignItems: 'center' }}>
-          <MapPin size={13} /> {f.match_type === 'two_innings' ? 'Two innings' : `${f.overs_per_innings || '?'} overs`} · {f.players_per_side} a side · {f.ball_type}
+          <MapPin size={13} /> {f.match_type === 'two_innings' ? 'Two innings' : `${f.overs_per_innings || '?'} overs`} � {f.players_per_side} a side � {f.ball_type}
         </span>
         <Button type="button" variant="secondary" onClick={onCancel || (() => onNavigate('tournaments'))}>Cancel</Button>
-        <Button type="submit" variant="primary" disabled={submitting}>{submitting ? 'Creating…' : 'Create tournament'}</Button>
+        <Button type="submit" variant="primary" disabled={submitting}>{submitting ? 'Creating.' : f.category === 'Series' ? 'Create series' : 'Create tournament'}</Button>
       </div>
     </form>
   );

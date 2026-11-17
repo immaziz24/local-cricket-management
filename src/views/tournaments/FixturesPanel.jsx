@@ -10,7 +10,7 @@ import { MatchResultForm, scoreLine } from './MatchResultForm.jsx';
 import { LineupPanel } from './LineupPanel.jsx';
 
 /**
- * #42 Groups, #43–#47 formats, #48 automatic fixtures, #49 manual fixture,
+ * #42 Groups, #43-#47 formats, #48 automatic fixtures, #49 manual fixture,
  * #50 scheduling, #51 rescheduling, #52 tournament calendar.
  */
 
@@ -47,6 +47,8 @@ function Notice({ msg }) {
 }
 
 export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }) {
+  const isSeries = tournament.category === 'Series';
+  const [seriesLength, setSeriesLength] = useState('3');
   const [matches, setMatches] = useState([]);
   const [structure, setStructure] = useState({ groups: [], teams: [] });
   const [format, setFormat] = useState(tournament.structure || 'league');
@@ -55,7 +57,7 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }
   const [manual, setManual] = useState({ teamA: '', teamB: '', at: '', venue: '', stage: 'league' });
   const [resched, setResched] = useState(null); // { id, at, venue, reason }
   const [resultFor, setResultFor] = useState(null); // match id with the result form open
-  const [lineupFor, setLineupFor] = useState(null); // match id with the lineups open (#72–#74)
+  const [lineupFor, setLineupFor] = useState(null); // match id with the lineups open (#72-#74)
   const finished = tournament.status === 'completed' || tournament.status === 'cancelled';
   const [msg, setMsg] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -86,7 +88,16 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }
 
   const buildFixtures = () => {
     let list = [];
-    if (format === 'knockout' || format === 'double_elimination') {
+    if (isSeries) {
+      const count = Number(seriesLength);
+      if (teams.length !== 2) throw new Error('Approve exactly two teams for the series.');
+      if (!Number.isInteger(count) || count < 2 || count > 15) throw new Error('Choose between 2 and 15 matches.');
+      list = Array.from({ length: count }, (_, i) => ({
+        stage: 'league',
+        team_a_id: teams[i % 2].id,
+        team_b_id: teams[1 - i % 2].id
+      }));
+    } else if (format === 'knockout' || format === 'double_elimination') {
       const { fixtures, byes } = knockoutFirstRound(shuffle(teams.map((t) => t.id)));
       list = format === 'double_elimination' ? fixtures.map((f) => ({ ...f, bracket: 'winners' })) : fixtures;
       if (byes.length) setMsg({ ok: true, text: `${teamName(byes[0])} gets a bye into the next round.` });
@@ -110,7 +121,7 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }
       : `Create ${fixtures.length} fixtures?`;
     if (!window.confirm(msgText)) return;
     run(async () => {
-      await dataService.setTournamentStructure(tournament.id, format);
+      await dataService.setTournamentStructure(tournament.id, isSeries ? 'league' : format);
       return dataService.saveGeneratedFixtures(tournament.id, fixtures, true);
     }, (r) => `${r.matches} fixtures created and scheduled.`);
   };
@@ -135,7 +146,12 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }
             <p style={{ margin: 0, fontSize: '0.85rem', color: '#64748b' }}>Approve at least 2 teams in the <strong>Teams</strong> tab first ({teams.length} approved).</p>
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-              {/* Format */}
+              {isSeries ? (
+                <label style={{ fontSize: '0.85rem' }}>
+                  Series matches{' '}
+                  <input type="number" min={2} max={15} value={seriesLength} onChange={(e) => setSeriesLength(e.target.value)} style={field} />
+                </label>
+              ) : (
               <div>
                 <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>1. Format</div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(210px, 1fr))', gap: '0.4rem' }}>
@@ -147,8 +163,9 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }
                 </div>
               </div>
 
+              )}
               {/* Groups (#42) */}
-              {format === 'groups_knockout' && (
+              {!isSeries && format === 'groups_knockout' && (
                 <div>
                   <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>2. Groups</div>
                   <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -180,7 +197,7 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }
               )}
 
               {/* Automatic fixtures (#48, #50) */}
-              {format !== 'custom' && (
+              {(isSeries || format !== 'custom') && (
                 <div>
                   <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>{format === 'groups_knockout' ? '3' : '2'}. Schedule & generate</div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.5rem' }}>
@@ -194,14 +211,14 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }
                       <input type="number" min={1} max={8} value={opts.perDay} onChange={(e) => setOpts({ ...opts, perDay: e.target.value })} style={{ ...field, width: '100%', boxSizing: 'border-box' }} />
                     </label>
                     <label style={{ fontSize: '0.75rem', color: '#64748b' }}>Hours between matches
-                      <input type="number" min={1} max={12} step={0.5} value={opts.gapMinutes / 60} onChange={(e) => setOpts({ ...opts, gapMinutes: Math.round(Number(e.target.value) * 60) })} style={{ ...field, width: '100%', boxSizing: 'border-box' }} />
+                      <input type="number" min={1} max={12} step={0.5} value={opts.gapMinutes / 60} onChange={(e) => setOpts({ ...opts, gapMinutes: Math.round(Number(e.target.value) * 60)})} style={{ ...field, width: '100%', boxSizing: 'border-box' }} />
                     </label>
                   </div>
                   <div style={{ marginTop: '0.6rem' }}>
                     <Button variant="primary" disabled={busy || played} onClick={generate} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
                       <Wand2 size={14} /> Generate fixtures automatically
                     </Button>
-                    {played && <span style={{ marginLeft: '0.6rem', fontSize: '0.75rem', color: '#94a3b8' }}>Matches have started — add or reschedule matches individually.</span>}
+                    {played && <span style={{ marginLeft: '0.6rem', fontSize: '0.75rem', color: '#94a3b8' }}>Matches have started - add or reschedule matches individually.</span>}
                   </div>
                 </div>
               )}
@@ -218,12 +235,12 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }
                     <option value="">Team B (or TBD)</option>
                     {teams.map((t) => <option key={t.id} value={t.id}>{t.name}</option>)}
                   </select>
-                  <select value={manual.stage} onChange={(e) => setManual({ ...manual, stage: e.target.value })} style={field}>
+                  <select disabled={isSeries} value={isSeries ? "league" : manual.stage} onChange={(e) => setManual({ ...manual, stage: e.target.value })} style={field}>
                     {Object.entries(STAGE_LABEL).map(([v, l]) => <option key={v} value={v}>{l}</option>)}
                   </select>
                   <input type="datetime-local" value={manual.at} onChange={(e) => setManual({ ...manual, at: e.target.value })} style={field} />
                   <input value={manual.venue} onChange={(e) => setManual({ ...manual, venue: e.target.value })} placeholder={`Ground (default: ${tournament.venue})`} style={field} />
-                  <Button variant="secondary" disabled={busy} onClick={() => run(() => dataService.createMatch({ tournamentId: tournament.id, teamA: manual.teamA, teamB: manual.teamB, scheduledAt: fromLocalInput(manual.at), venue: manual.venue, stage: manual.stage }), 'Match added.').then(() => setManual({ teamA: '', teamB: '', at: '', venue: '', stage: manual.stage }))} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
+                  <Button variant="secondary" disabled={busy} onClick={() => run(() => dataService.createMatch({ tournamentId: tournament.id, teamA: manual.teamA, teamB: manual.teamB, scheduledAt: fromLocalInput(manual.at), venue: manual.venue, stage: isSeries ? 'league' : manual.stage }), 'Match added.').then(() => setManual({ teamA: '', teamB: '', at: '', venue: '', stage: manual.stage }))} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.3rem' }}>
                     <Plus size={14} /> Add match
                   </Button>
                 </div>
@@ -234,9 +251,9 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }
       )}
 
       {/* Calendar (#52) */}
-      <Card title={`Fixtures & calendar · ${matches.length} matches`}>
+      <Card title={`Fixtures & calendar � ${matches.length} matches`}>
         {matches.length === 0 ? (
-          <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>No fixtures yet{isOrganiser ? ' — generate them above.' : '. The organiser will publish the schedule soon.'}</p>
+          <p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>No fixtures yet{isOrganiser ? ' - generate them above.' : '. The organiser will publish the schedule soon.'}</p>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {days.map((d) => (

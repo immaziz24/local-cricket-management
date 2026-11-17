@@ -68,6 +68,7 @@ export function MatchesView({ onNavigate = () => {}, currentUser }) {
         <Button variant="secondary" onClick={() => setShowGen(!showGen)} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
           <Shuffle size={16} /> {showGen ? 'Hide generators' : 'Team / XI / toss generators'}
         </Button>
+        {currentUser && <Button variant="secondary" onClick={() => onNavigate('create-tournament', { newSeries: true })}>Create series</Button>}
         {currentUser ? (
           <Button variant="primary" onClick={() => setShowNew(!showNew)} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
             <PlusCircle size={16} /> {showNew ? 'Close' : 'Start a match'}
@@ -78,7 +79,7 @@ export function MatchesView({ onNavigate = () => {}, currentUser }) {
         </div>
       </div>
 
-      {/* #224–#226 generators for a quick match: split players into teams, suggest a Playing XI, toss */}
+      {/* #224-#226 generators for a quick match: split players into teams, suggest a Playing XI, toss */}
       {showGen && (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1rem' }}>
           <TeamGenerator />
@@ -114,7 +115,7 @@ export function MatchesView({ onNavigate = () => {}, currentUser }) {
       {error && <div style={{ color: '#b91c1c', fontSize: '0.85rem', display: 'flex', gap: '0.4rem', alignItems: 'center' }}><AlertCircle size={15} /> {error}</div>}
 
       {loading ? (
-        <div style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Loading matches…</div>
+        <div style={{ color: '#94a3b8', fontSize: '0.9rem' }}>Loading matches.</div>
       ) : list.length === 0 ? (
         <Card>
           <p style={{ margin: 0, color: '#64748b', fontSize: '0.9rem' }}>

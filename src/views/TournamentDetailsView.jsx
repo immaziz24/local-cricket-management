@@ -176,6 +176,12 @@ export function TournamentDetailsView(props) {
     );
   }
 
+  const isSeries = tournament.category === 'Series';
+  const seriesResults = isSeries ? teams.map((team) => ({
+    name: team.name,
+    wins: matches.filter((match) => match.status === 'completed' && match.winner_team_id === (team.team_id || team.id)).length
+  })).sort((a, b) => b.wins - a.wins) : [];
+  const seriesFinished = matches.length > 0 && matches.every((match) => ['completed', 'abandoned', 'cancelled'].includes(match.status));
   const matchesTotal = Math.max(matches.length, tournament.matches_total || 0);
   const matchesDone = tournament.matches_completed || 0;
 
@@ -418,6 +424,17 @@ export function TournamentDetailsView(props) {
         </div>}
       </Card>
 
+      {isSeries && seriesResults.length === 2 && (
+        <Card title="Series score" subtitle={seriesResults.map((team) => team.name).join(' vs ')}>
+          <strong>
+            {seriesResults[0].wins === seriesResults[1].wins
+              ? (seriesFinished ? 'Series drawn' : 'Series level')
+              : `${seriesResults[0].name} ${seriesFinished ? 'won the series' : 'lead the series'}`}
+            {' '}{seriesResults[0].wins}-{seriesResults[1].wins}
+          </strong>
+        </Card>
+      )}
+
       {/* Navigation Sub-Tabs */}
       <div className="tournament-section-nav" style={{
         display: 'flex',
@@ -433,7 +450,7 @@ export function TournamentDetailsView(props) {
           aria-pressed={activeTab === 'leaderboard'} onClick={() => setActiveTab('leaderboard')}>
           Leaderboard
         </button>
-        <button
+        {!isSeries && <button
           type="button"
           onClick={() => setActiveTab('standings')}
           style={{
@@ -452,7 +469,7 @@ export function TournamentDetailsView(props) {
         >
           <Trophy size={15} />
           <span>Points Table & Knockouts</span>
-        </button>
+        </button>}
 
         {[['stats', 'Stats'], ['mvp', 'MVP'], ['heroes', 'Heroes']].map(([value, label]) => (
           <button type="button" key={value} className="tournament-match-tab"
@@ -630,7 +647,7 @@ export function TournamentDetailsView(props) {
                 <button type="button" className="tournament-score-card" key={match.id}
                   onClick={() => onNavigate('match-centre', match.id)}>
                   <span className="tournament-score-row">
-                    <span>{match.stage || (match.match_no ? `Match ${match.match_no}` : 'Tournament match')}</span>
+                    <span>{(!isSeries && match.stage) || (match.match_no ? `Match ${match.match_no}` : 'Tournament match')}</span>
                     <Badge variant={match.status === 'live' ? 'danger' : 'upcoming'}>{match.status}</Badge>
                   </span>
                   {match.scheduled_at && <small>{new Date(match.scheduled_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short', timeZone: 'Asia/Kolkata' })}</small>}
@@ -776,7 +793,7 @@ export function TournamentDetailsView(props) {
       )}
 
       {/* TAB 4: POINTS TABLE, NRR, QUALIFICATION, KNOCKOUTS, WINNER (#53-#58) */}
-      {activeTab === 'standings' && (
+      {!isSeries && activeTab === 'standings' && (
         <StandingsPanel
           tournament={tournament}
           isOrganiser={isOrganiser}
