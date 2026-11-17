@@ -68,7 +68,7 @@ export function MatchesView({ onNavigate = () => {}, currentUser }) {
         <Button variant="secondary" onClick={() => setShowGen(!showGen)} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
           <Shuffle size={16} /> {showGen ? 'Hide generators' : 'Team / XI / toss generators'}
         </Button>
-        {currentUser && <Button variant="secondary" onClick={() => onNavigate('create-tournament', { newSeries: true })}>Create series</Button>}
+        {currentUser && <Button variant="secondary" onClick={() => onNavigate('create-series')}>Create series</Button>}
         {currentUser ? (
           <Button variant="primary" onClick={() => setShowNew(!showNew)} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}>
             <PlusCircle size={16} /> {showNew ? 'Close' : 'Start a match'}
