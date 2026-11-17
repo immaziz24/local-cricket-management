@@ -6,8 +6,8 @@ import { SITE } from '../../config/site.js';
 
 /**
  * Site header.
- *  - Visitors: logo · main menu · search (with Near me) · live pill · Login · Register
- *  - Members:  menu button (mobile) · search · live pill · + Create · notifications · profile menu
+ *  - Visitors: logo � main menu � search (with Near me) � live pill � Login � Register
+ *  - Members:  menu button (mobile) � search � live pill � + Create � notifications � profile menu
  */
 export const PUBLIC_NAV = [
   ['dashboard', 'Home'],
@@ -140,6 +140,7 @@ export function SiteHeader({ currentUser, isAdmin, liveMatchCount = 0, activeTab
             <>
               <Dropdown buttonClass="hdr-create" label={<span className="hdr-create-label">Create</span>} icon={<Plus size={16} />}>
                 <button type="button" className="hdr-menu-item" onClick={() => go('matches')}><span style={{ fontWeight: 700, display: 'flex', gap: 6, alignItems: 'center' }}><Activity size={14} /> New match</span><span className="hdr-menu-hint">Score a friendly or practice match</span></button>
+                <button type="button" className="hdr-menu-item" onClick={() => go('create-series')}><span style={{ fontWeight: 700, display: 'flex', gap: 6, alignItems: 'center' }}><Trophy size={14} /> New series</span><span className="hdr-menu-hint">Schedule multiple matches between two teams</span></button>
                 <button type="button" className="hdr-menu-item" onClick={() => go('create-tournament')}><span style={{ fontWeight: 700, display: 'flex', gap: 6, alignItems: 'center' }}><Trophy size={14} /> New tournament</span><span className="hdr-menu-hint">League or knockout with fixtures</span></button>
                 <button type="button" className="hdr-menu-item" onClick={() => go('teams')}><span style={{ fontWeight: 700, display: 'flex', gap: 6, alignItems: 'center' }}><Users size={14} /> New team</span><span className="hdr-menu-hint">Add your squad by mobile number</span></button>
                 <button type="button" className="hdr-menu-item" onClick={() => go('grounds')}><span style={{ fontWeight: 700, display: 'flex', gap: 6, alignItems: 'center' }}><Landmark size={14} /> List a ground</span><span className="hdr-menu-hint">Take bookings for your ground</span></button>
@@ -161,7 +162,7 @@ export function SiteHeader({ currentUser, isAdmin, liveMatchCount = 0, activeTab
           ) : (
             <>
               <button type="button" className="hdr-btn-ghost" onClick={() => go('login')}>Log in</button>
-              <button type="button" className="hdr-btn-primary" onClick={() => go('register')}>Register<span className="hdr-btn-free"> – it's free</span></button>
+              <button type="button" className="hdr-btn-primary" onClick={() => go('register')}>Register<span className="hdr-btn-free"> - it's free</span></button>
             </>
           )}
         </div>

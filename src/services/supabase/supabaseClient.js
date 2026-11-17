@@ -12,16 +12,16 @@ import { createClient } from '@supabase/supabase-js';
  *   #256 Password recovery (emailed verification code)
  *   #257 Super-admin dashboard (metrics, maintenance mode, platform broadcast)
  *   #258 Admin dashboard (members, verification and report queues)
- *   #259–#264 Role permissions and role assignment
+ *   #259-#264 Role permissions and role assignment
  *   #265 User verification (badge requests and admin review)
  *   #266 User reporting and suspension
- *   #267–#270 Audit logs, backup export, privacy, notifications
+ *   #267-#270 Audit logs, backup export, privacy, notifications
  *   Phase 2 Category C: players and teams (add by mobile, unregistered players, captain/vice/icon)
  *   Phase 2 Category B: tournaments (create, details, team registration and approval)
  *
  * Configuration comes from .env (never commit real secrets):
  *   VITE_SUPABASE_URL
- *   VITE_SUPABASE_PUBLISHABLE_KEY   (publishable/anon key only — never the service-role key)
+ *   VITE_SUPABASE_PUBLISHABLE_KEY   (publishable/anon key only - never the service-role key)
  */
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
@@ -348,7 +348,7 @@ export const supabaseClient = {
   },
 
   // ==========================================
-  // Features #259–#264: Role permissions and role assignment
+  // Features #259-#264: Role permissions and role assignment
   // ==========================================
   async getRolePermissions(role) {
     const { data, error } = await supabase
@@ -483,7 +483,7 @@ export const supabaseClient = {
   },
 
   // ==========================================
-  // Features #267–#270: Security & operations
+  // Features #267-#270: Security & operations
   // ==========================================
   async listAuditLogs({ search, limit } = {}) {
     const { data, error } = await supabase.rpc('list_audit_logs', { p_search: search || null, p_limit: limit || 200 });
@@ -582,7 +582,7 @@ export const supabaseClient = {
   },
 
   // ==========================================
-  // Phase 2 – Category C: players and teams
+  // Phase 2 - Category C: players and teams
   // ==========================================
   async getMyPlayer() {
     const { data, error } = await supabase.rpc('get_my_player_profile');
@@ -775,7 +775,7 @@ export const supabaseClient = {
   },
 
   // ==========================================
-  // Phase 2 – Category B: tournaments
+  // Phase 2 - Category B: tournaments
   // ==========================================
   async getTournaments() {
     const { data, error } = await supabase.from('tournaments').select('*, tournament_creator_name').order('start_date', { ascending: false }).limit(200);
@@ -893,7 +893,7 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
-  // #7–#19 ball-by-ball scoring
+  // #7-#19 ball-by-ball scoring
   // #24 #25 pause / resume, #30 history, #29 realtime
   async pauseMatch(matchId, reason) {
     const { data, error } = await supabase.rpc('pause_match', { p_match_id: matchId, p_reason: reason || null });
@@ -1330,7 +1330,7 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
-  // #160–#165 photos for listings and marketplace items
+  // #160-#165 photos for listings and marketplace items
   async setListingPhoto({ listingId, file }) {
     const up = await this.uploadImage('listings', listingId, file);
     if (up.error) return up;
@@ -1347,7 +1347,7 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
-  // ---------- Category I: media (#177–#188) ----------
+  // ---------- Category I: media (#177-#188) ----------
   async addMedia(p) {
     const { data, error } = await supabase.rpc('add_media', { p });
     if (error) return { data: null, error: friendlyError(error, 'media') };
@@ -1468,7 +1468,7 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
-  // ---------- Category J: branding, sponsorship and promotion (#189–#199) ----------
+  // ---------- Category J: branding, sponsorship and promotion (#189-#199) ----------
   async saveTournamentSite(tournamentId, p) {
     const { data, error } = await supabase.rpc('save_tournament_site', { p_tournament_id: tournamentId, p });
     if (error) return { data: null, error: friendlyError(error, 'tournament website') };
@@ -2051,7 +2051,7 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
-  // #1–#6 matches: create, list, match centre, toss and start
+  // #1-#6 matches: create, list, match centre, toss and start
   async listMatches(filter = 'all', limit = 50) {
     const { data, error } = await supabase.rpc('list_matches', { p_filter: filter, p_limit: limit });
     if (error) return { data: null, error: friendlyError(error, 'matches') };
@@ -2151,7 +2151,10 @@ export const supabaseClient = {
   },
 
   async createTournament(tournamentData) {
-    const { data, error } = await supabase.rpc('create_tournament', { p: tournamentData });
+    const { series_match_count, ...details } = tournamentData;
+    const { data, error } = details.category === 'Series' && series_match_count != null
+      ? await supabase.rpc('create_cricket_series', { p: details, p_match_count: series_match_count })
+      : await supabase.rpc('create_tournament', { p: details });
     if (error) return { data: null, error: friendlyError(error, 'create tournament') };
     return { data, error: null };
   },

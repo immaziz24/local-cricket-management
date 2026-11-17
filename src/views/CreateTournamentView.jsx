@@ -70,6 +70,7 @@ export function CreateTournamentView(props) {
   const [f, setF] = useState(() => editingTournament ? Object.fromEntries(Object.entries(INITIAL).map(([key, value]) => [key, editingTournament[key] ?? (key === 'overs_per_innings' ? 10 : value)])) : createSeries ? { ...INITIAL, category: 'Series', teams_count: 2 } : previousTournament ? { ...INITIAL, name: previousTournament.name, category: previousTournament.category === 'Series' ? 'Series' : INITIAL.category, teams_count: previousTournament.category === 'Series' ? 2 : INITIAL.teams_count, venue: previousTournament.venue, city: previousTournament.city || '', season_number: Math.min(999, (previousTournament.season_number || 1) + 1), code: suggestCode(previousTournament.name, '', (previousTournament.season_number || 1) + 1) } : INITIAL);
   const isSeries = f.category === 'Series';
   const eventName = isSeries ? 'series' : 'tournament';
+  const [seriesMatchCount, setSeriesMatchCount] = useState('3');
   const [codeTouched, setCodeTouched] = useState(!!editingTournament);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
@@ -96,6 +97,9 @@ export function CreateTournamentView(props) {
     if (!f.start_date) e.start_date = 'Required.';
     if (!f.end_date) e.end_date = 'Required.';
     if (f.start_date && f.end_date && f.end_date < f.start_date) e.end_date = 'Cannot be before the start date.';
+    if (isSeries && !editingTournament && (!Number.isInteger(Number(seriesMatchCount)) || Number(seriesMatchCount) < 2 || Number(seriesMatchCount) > 15)) {
+      e.series_match_count = 'Choose between 2 and 15 matches.';
+    }
     const tc = Number(f.teams_count);
     if (f.category === 'Series' && tc !== 2) e.teams_count = 'A head-to-head series needs exactly 2 teams.';
     else if (!tc || tc < 2 || tc > 64) e.teams_count = 'Between 2 and 64.';
@@ -124,7 +128,7 @@ export function CreateTournamentView(props) {
         await dataService.updateTournament(editingTournament.id, payload);
         await onSaved();
       } else {
-        setCreated(await dataService.createTournament(payload));
+        setCreated(await dataService.createTournament(isSeries ? { ...payload, series_match_count: Number(seriesMatchCount) } : payload));
       }
     } catch (err) {
       setSubmitError(err.message || `Could not save the ${eventName}.`);
@@ -148,7 +152,7 @@ export function CreateTournamentView(props) {
             </p>
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', justifyContent: 'center' }}>
               <Button variant="primary" onClick={() => onNavigate('tournament-details', created.id, 'teams')}>Open {eventName} &amp; add teams</Button>
-              <Button variant="secondary" onClick={() => { setCreated(null); setF(createSeries ? { ...INITIAL, category: 'Series', teams_count: 2 } : INITIAL); setCodeTouched(false);  }}>Create another</Button>
+              <Button variant="secondary" onClick={() => { setCreated(null); setF(createSeries ? { ...INITIAL, category: 'Series', teams_count: 2 } : INITIAL); setSeriesMatchCount('3'); setCodeTouched(false);  }}>Create another</Button>
             </div>
           </div>
         </Card>
@@ -204,6 +208,15 @@ export function CreateTournamentView(props) {
             <input type="date" style={box('end_date')} value={f.end_date} min={f.start_date || undefined} onChange={(e) => set('end_date', e.target.value)} />
             {err('end_date')}
           </div>
+          {isSeries && !editingTournament && (
+            <div>
+              <label style={labelStyle} htmlFor="series-match-count">Number of matches *</label>
+              <input id="series-match-count" type="number" min={2} max={15} required value={seriesMatchCount}
+                style={box('series_match_count')} onChange={(e) => setSeriesMatchCount(e.target.value)} />
+              <div style={hint}>The fixture generator uses this number once both teams are added.</div>
+              {err('series_match_count')}
+            </div>
+          )}
           <div>
             <label style={labelStyle}><Users size={13} /> Number of teams *</label>
             <input type="number" min={2} max={64} style={box('teams_count')} value={f.teams_count} disabled={f.category === 'Series'} onChange={(e) => set('teams_count', e.target.value)} placeholder="e.g. 8" />

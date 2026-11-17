@@ -48,7 +48,7 @@ function Notice({ msg }) {
 
 export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }) {
   const isSeries = tournament.category === 'Series';
-  const [seriesLength, setSeriesLength] = useState('3');
+  const [seriesLength, setSeriesLength] = useState(() => String(tournament.series_match_count ?? 3));
   const [matches, setMatches] = useState([]);
   const [structure, setStructure] = useState({ groups: [], teams: [] });
   const [format, setFormat] = useState(tournament.structure || 'league');
