@@ -168,7 +168,7 @@ export function App() {
 
   // Browser tab title for each page
   useEffect(() => {
-    const names = { dashboard: currentUser ? 'My cricket' : 'Live scores, tournaments & teams', matches: 'Matches', 'match-centre': 'Match', tournaments: 'Tournaments', 'tournament-details': 'Tournament',
+    const names = { dashboard: currentUser ? 'My cricket' : 'Live scores, tournaments & teams', matches: 'Matches', 'match-centre': 'Match', tournaments: 'Tournaments', series: 'Series', 'tournament-details': 'Tournament',
       stats: 'Players & stats', community: 'Community', media: 'Live & Media', grounds: 'Grounds', officials: 'Umpires & scorers', laws: 'Laws & Rules', tools: 'Cricket tools',
       teams: 'My teams', sponsors: 'Sponsors', sponsor: 'Sponsor', verify: 'Check a certificate', login: 'Log in', register: 'Register', about: 'About us', contact: 'Contact us', privacy: 'Privacy Policy', terms: 'Terms of Use', faq: 'FAQ', settings: 'Settings', admin: 'Admin panel', news: 'Cricket news', learn: 'Learn cricket', article: 'Article', quiz: 'Quiz', auction: 'Player auction' };
     document.title = `${names[activeTab] || 'Cricnotch'} � Cricnotch`;
@@ -292,7 +292,7 @@ export function App() {
         <OfficialProfileView key={selectedOfficialId} userId={selectedOfficialId} onNavigate={handleNavigate} />
       )}
 
-      {activeTab === 'tournaments' && <TournamentsView currentUser={currentUser} onNavigate={handleNavigate} />}
+      {['tournaments', 'series'].includes(activeTab) && <TournamentsView key={activeTab} seriesOnly={activeTab === 'series'} currentUser={currentUser} onNavigate={handleNavigate} />}
 
       {activeTab === 'tournament-details' && (
         <TournamentDetailsView

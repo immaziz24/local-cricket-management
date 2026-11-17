@@ -13,6 +13,7 @@ export const PUBLIC_NAV = [
   ['dashboard', 'Home'],
   ['matches', 'Matches'],
   ['tournaments', 'Tournaments'],
+  ['series', 'Series'],
   ['stats', 'Players'],
   ['community', 'Community']
 ];

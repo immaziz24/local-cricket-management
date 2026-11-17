@@ -12,12 +12,11 @@ const FILTERS = [
   ['upcoming', 'Upcoming'],
   ['finished', 'Finished'],
   ['mine', 'My tournaments'],
-  ['series', 'Series'],
   ['all', 'All'],
 ];
 
 export function TournamentsView(props) {
-  const { currentUser, onNavigate = () => {} } = props || {};
+  const { currentUser, seriesOnly = false, onNavigate = () => {} } = props || {};
   const [tournaments, setTournaments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [selectedFilter, setFilter] = useState(null);
@@ -28,7 +27,15 @@ export function TournamentsView(props) {
     async function loadTournaments() {
       try {
         const data = await dataService.fetchTournaments();
-        if (isMounted) setTournaments(data || []);
+        const events = (data || []).filter((event) => (event.category === 'Series') === seriesOnly);
+        const items = seriesOnly ? await Promise.all(events.map(async (event) => {
+          const matches = await dataService.fetchTournamentMatches(event.id);
+          const seriesStatus = matches.some((match) => match.status === 'live') ? 'live'
+            : matches.length > 0 && matches.every((match) => ['completed', 'abandoned', 'cancelled'].includes(match.status)) ? 'finished'
+            : 'upcoming';
+          return { ...event, seriesStatus };
+        })) : events;
+        if (isMounted) setTournaments(items);
       } catch (err) {
         if (isMounted) setError(err.message || 'Could not load tournaments.');
       } finally {
@@ -37,13 +44,13 @@ export function TournamentsView(props) {
     }
     loadTournaments();
     return () => { isMounted = false; };
-  }, []);
+  }, [seriesOnly]);
 
-  const defaultFilter = tournaments.some((t) => t.status === 'ongoing') ? 'live' : 'upcoming';
+  const defaultFilter = tournaments.some((t) => seriesOnly ? t.seriesStatus === 'live' : t.status === 'ongoing') ? 'live' : 'upcoming';
   const filter = selectedFilter === 'mine' && !currentUser ? defaultFilter : selectedFilter ?? defaultFilter;
   const visibleTournaments = tournaments.filter((t) => {
+    if (seriesOnly) return t.seriesStatus === filter;
     switch (filter) {
-      case 'series': return t.category === 'Series';
       case 'live': return t.status === 'ongoing';
       case 'upcoming': return ['registration', 'upcoming'].includes(t.status);
       case 'finished': return t.status === 'completed';
@@ -70,34 +77,34 @@ export function TournamentsView(props) {
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
             <span style={{ fontSize: '0.75rem', color: 'var(--color-text-muted)', fontWeight: 600 }}>
-              Tournament Registries & Fixtures
+              {seriesOnly ? 'Head-to-head cricket' : 'Tournament Registries & Fixtures'}
             </span>
           </div>
           <h1 style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--color-text-main)', margin: '0 0 0.25rem 0' }}>
-            Tournament Registries
+            {seriesOnly ? 'Series' : 'Tournament Registries'}
           </h1>
           <p style={{ color: 'var(--color-text-muted)', fontSize: '0.85rem', margin: 0 }}>
-            Registered tournaments, playing formats, fixture progress, and venues
+            {seriesOnly ? 'Browse live series, upcoming fixtures, and completed results.' : 'Registered tournaments, playing formats, fixture progress, and venues'}
           </p>
         </div>
 
         <Button
           variant="primary"
           icon={PlusCircle}
-          onClick={() => onNavigate && onNavigate('create-tournament')}
+          onClick={() => onNavigate(seriesOnly ? (currentUser ? 'create-series' : 'login') : 'create-tournament')}
           style={{ backgroundColor: '#059669' }}
         >
-          Create Tournament
+          {seriesOnly ? (currentUser ? 'Create series' : 'Sign in to create a series') : 'Create Tournament'}
         </Button>
       </div>
 
       <div role="group" aria-label="Filter tournaments" style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-        {FILTERS.filter(([value]) => value !== 'mine' || currentUser).map(([value, label]) => (
+        {FILTERS.filter(([value]) => seriesOnly ? ['live', 'upcoming', 'finished'].includes(value) : value !== 'mine' || currentUser).map(([value, label]) => (
           <button key={value} type="button" aria-pressed={filter === value} onClick={() => setFilter(value)}
             style={{ padding: '0.4rem 0.9rem', borderRadius: '999px', fontSize: '0.85rem', cursor: 'pointer',
               fontWeight: filter === value ? 700 : 500, border: '1px solid ' + (filter === value ? '#0f172a' : '#cbd5e1'),
               backgroundColor: filter === value ? '#0f172a' : '#fff', color: filter === value ? '#fff' : '#334155' }}>
-            {label}
+            {seriesOnly && value === 'finished' ? 'Completed' : label}
           </button>
         ))}
       </div>
@@ -105,7 +112,7 @@ export function TournamentsView(props) {
       {error ? <p role="alert">{error}</p> : loading ? (
         <LoadingSpinner message="Fetching tournament registries..." />
       ) : visibleTournaments.length === 0 ? (
-        <p role="status">No tournaments in this view.</p>
+        <p role="status">{seriesOnly ? 'No ' + (filter === 'finished' ? 'completed' : filter) + ' series yet.' : 'No tournaments in this view.'}</p>
       ) : (
         <div className="grid-cards">
           {visibleTournaments.map((trn) => {
@@ -122,7 +129,7 @@ export function TournamentsView(props) {
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '0.5rem' }}>
                   <Badge variant={trn.status === 'ongoing' ? 'primary' : 'upcoming'}>
-                    {trn.status}
+                    {seriesOnly ? { live: 'Live', upcoming: 'Upcoming', finished: 'Completed' }[trn.seriesStatus] : trn.status}
                   </Badge>
                   <span style={{ fontSize: '0.75rem', fontWeight: 700, color: 'var(--color-text-muted)', fontFamily: 'monospace' }}>
                     {trn.code}
@@ -187,7 +194,7 @@ export function TournamentsView(props) {
                     onClick={() => onNavigate && onNavigate('tournament-details', trn.id)}
                     style={{ width: '100%', marginTop: '0.75rem', justifyContent: 'center' }}
                   >
-                    View Details
+                    {seriesOnly ? 'View series' : 'View Details'}
                   </Button>
                   {currentUser && !['completed', 'cancelled'].includes(trn.status) &&
                     (trn.owner_id === currentUser.id || (trn.registration_open !== false && ['registration', 'upcoming'].includes(trn.status))) && (
