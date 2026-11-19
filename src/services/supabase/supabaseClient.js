@@ -1255,6 +1255,126 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async getMediaPolicy(tournamentId) {
+    const { data, error } = await supabase.rpc('get_media_policy', { p_tournament_id: tournamentId });
+    if (error) return { data: null, error: friendlyError(error, 'media policy') };
+    return { data, error: null };
+  },
+
+  async setMediaPolicy(tournamentId, policy) {
+    const { data, error } = await supabase.rpc('set_media_policy', { p_tournament_id: tournamentId, p: policy });
+    if (error) return { data: null, error: friendlyError(error, 'media policy') };
+    return { data, error: null };
+  },
+
+  async declareMediaRights(mediaId, rights) {
+    const { data, error } = await supabase.rpc('declare_media_rights', { p_media_id: mediaId, p: rights });
+    if (error) return { data: null, error: friendlyError(error, 'media rights') };
+    return { data, error: null };
+  },
+
+  async getMediaRights(mediaId) {
+    const { data, error } = await supabase.rpc('get_media_rights', { p_media_id: mediaId });
+    if (error) return { data: null, error: friendlyError(error, 'media rights') };
+    return { data, error: null };
+  },
+
+  async requestMediaTakedown(mediaId, reason) {
+    const { data, error } = await supabase.rpc('request_media_takedown', { p_media_id: mediaId, p_reason: reason });
+    if (error) return { data: null, error: friendlyError(error, 'removal request') };
+    return { data, error: null };
+  },
+
+  async listMediaTakedowns(scope, scopeId, status = 'open') {
+    const { data, error } = await supabase.rpc('list_media_takedowns', { p_scope: scope, p_scope_id: scopeId, p_status: status });
+    if (error) return { data: null, error: friendlyError(error, 'removal requests') };
+    return { data, error: null };
+  },
+
+  async decideMediaTakedown(id, remove, note) {
+    const { data, error } = await supabase.rpc('decide_media_takedown', { p_id: id, p_remove: !!remove, p_note: note });
+    if (error) return { data: null, error: friendlyError(error, 'removal decision') };
+    return { data, error: null };
+  },
+
+  async setMediaTiming(mediaId, startedAt, delaySeconds = 0) {
+    const { data, error } = await supabase.rpc('set_media_timing', { p_media_id: mediaId, p_started_at: startedAt, p_delay_s: delaySeconds });
+    if (error) return { data: null, error: friendlyError(error, 'video timing') };
+    return { data, error: null };
+  },
+
+  async autoLinkMedia(mediaId) {
+    const { data, error } = await supabase.rpc('auto_link_media', { p_media_id: mediaId });
+    if (error) return { data: null, error: friendlyError(error, 'video links') };
+    return { data, error: null };
+  },
+
+  async linkMediaEvent(mediaId, ballId, offsetSeconds, title = null) {
+    const { data, error } = await supabase.rpc('link_media_event', { p_media_id: mediaId, p_ball_id: ballId, p_offset_s: offsetSeconds, p_title: title });
+    if (error) return { data: null, error: friendlyError(error, 'video link') };
+    return { data, error: null };
+  },
+
+  async unlinkMediaEvent(linkId) {
+    const { data, error } = await supabase.rpc('unlink_media_event', { p_link_id: linkId });
+    if (error) return { data: null, error: friendlyError(error, 'video link') };
+    return { data, error: null };
+  },
+
+  async listMediaEventLinks(mediaId) {
+    const { data, error } = await supabase.rpc('list_media_event_links', { p_media_id: mediaId });
+    if (error) return { data: null, error: friendlyError(error, 'video links') };
+    return { data, error: null };
+  },
+
+  async suggestHighlightClips(matchId, mediaId = null, limit = 8) {
+    const { data, error } = await supabase.rpc('suggest_highlight_clips', { p_match_id: matchId, p_media_id: mediaId, p_limit: limit });
+    if (error) return { data: null, error: friendlyError(error, 'clip suggestions') };
+    return { data, error: null };
+  },
+
+  async acceptClipSuggestion(mediaId, ballId, startSeconds, endSeconds, title = null) {
+    const { data, error } = await supabase.rpc('accept_clip_suggestion', { p_media_id: mediaId, p_ball_id: ballId, p_start_s: startSeconds, p_end_s: endSeconds, p_title: title });
+    if (error) return { data: null, error: friendlyError(error, 'clip') };
+    return { data, error: null };
+  },
+
+  async placementAnalytics(params) {
+    const { data, error } = await supabase.rpc('placement_analytics', { p: params });
+    if (error) return { data: null, error: friendlyError(error, 'placement analytics') };
+    return { data, error: null };
+  },
+
+  async takeSponsorSnapshot(sponsorshipId) {
+    const { data, error } = await supabase.rpc('take_sponsor_snapshot', { p_sponsorship_id: sponsorshipId });
+    if (error) return { data: null, error: friendlyError(error, 'sponsor report') };
+    return { data, error: null };
+  },
+
+  async listSponsorSnapshots(sponsorshipId) {
+    const { data, error } = await supabase.rpc('list_sponsor_snapshots', { p_sponsorship_id: sponsorshipId });
+    if (error) return { data: null, error: friendlyError(error, 'sponsor reports') };
+    return { data, error: null };
+  },
+
+  async getSponsorSnapshot(snapshotId) {
+    const { data, error } = await supabase.rpc('get_sponsor_snapshot', { p_id: snapshotId });
+    if (error) return { data: null, error: friendlyError(error, 'sponsor report') };
+    return { data, error: null };
+  },
+
+  async checkMicrositeSlug(tournamentId, slug) {
+    const { data, error } = await supabase.rpc('check_microsite_slug', { p_tournament_id: tournamentId, p_slug: slug });
+    if (error) return { data: null, error: friendlyError(error, 'microsite name') };
+    return { data, error: null };
+  },
+
+  async saveMicrosite(tournamentId, settings) {
+    const { data, error } = await supabase.rpc('save_microsite', { p_tournament_id: tournamentId, p: settings });
+    if (error) return { data: null, error: friendlyError(error, 'microsite') };
+    return { data, error: null };
+  },
+
   async listScorerHandovers(matchId) {
     const { data, error } = await supabase.rpc('list_scorer_handovers', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'scorer handovers') };

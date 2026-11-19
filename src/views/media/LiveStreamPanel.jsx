@@ -2,9 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
-import { Radio, Copy, Smartphone, Monitor, StopCircle, PlayCircle, Trash2 } from 'lucide-react';
+import { Radio, Smartphone, StopCircle, PlayCircle, Trash2 } from 'lucide-react';
 import { VideoBox } from './MediaGallery.jsx';
-import { detectSource, siteLink } from './mediaUtils.js';
+import { detectSource } from './mediaUtils.js';
+import { OverlayLinks } from './OverlayLinks.jsx';
 
 /**
  * #177 Mobile live streaming, #178 YouTube live integration, #179 live score overlays.
@@ -26,7 +27,6 @@ export function LiveStreamPanel({ matchId, matchStatus }) {
   // Owner decision 2026-11-11: streaming is "coming soon"; only admins see the tools until it is switched on.
   const open = !!data?.streaming_open || !!data?.can_stream;
   const copy = async (key, text) => { try { await navigator.clipboard.writeText(text); setCopied(key); setTimeout(() => setCopied(null), 1800); } catch { window.prompt('Copy this link:', text); } };
-  const overlay = (style) => siteLink(`overlay=${matchId}${style ? `&style=${style}` : ''}`);
   const add = async () => {
     setMsg(null);
     try { await dataService.addMedia({ scope: 'match', scope_id: matchId, kind: 'stream', source: detectSource(f.url), url: f.url.trim(), title: f.title, is_live: true }); setF({ url: '', title: '' }); load(); setMsg({ ok: true, text: 'Stream added. Team owners were notified.' }); }
@@ -68,19 +68,8 @@ export function LiveStreamPanel({ matchId, matchStatus }) {
           )}
           {msg && <div style={{ fontSize: '0.82rem', color: msg.ok ? '#065f46' : '#b91c1c' }}>{msg.text}</div>}
 
-          {/* #179 overlays */}
-          {open && <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.7rem' }}>
-            <strong style={{ fontSize: '0.9rem', display: 'flex', alignItems: 'center', gap: 6 }}><Monitor size={15} /> Live score overlay</strong>
-            <p style={{ margin: '0.25rem 0 0.5rem', fontSize: '0.8rem', color: '#64748b' }}>A see-through score bar that updates by itself every few seconds. Add it as a “web page / browser source” overlay in your streaming app (Larix, Prism Live, StreamYard, OBS).</p>
-            <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap' }}>
-              {[['', 'Score bar (bottom)'], ['box', 'Score box (corner)']].map(([st, l]) => (
-                <span key={st || 'bar'} style={{ display: 'inline-flex', gap: '0.3rem' }}>
-                  <Button size="sm" variant="secondary" onClick={() => copy(st || 'bar', overlay(st))} style={{ display: 'inline-flex', gap: 4, alignItems: 'center' }}><Copy size={13} /> {copied === (st || 'bar') ? 'Copied!' : `Copy ${l} link`}</Button>
-                  <a href={overlay(st)} target="_blank" rel="noopener noreferrer" style={{ fontSize: '0.8rem', color: '#2563eb', alignSelf: 'center' }}>preview</a>
-                </span>
-              ))}
-            </div>
-          </div>}
+          {/* #179 / #371 overlays */}
+          {open && <OverlayLinks matchId={matchId} />}
 
           {/* #177 how to go live from a phone */}
           {open && <div>

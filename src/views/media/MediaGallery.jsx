@@ -4,6 +4,8 @@ import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { Image as ImageIcon, Video, Upload, Link2, X, EyeOff, Eye, Trash2, ExternalLink, Scissors } from 'lucide-react';
 import { embedUrl, thumbUrl, detectSource, shrinkImage, fmtBytes } from './mediaUtils.js';
+import { withStart } from './mediaExtras.js';
+import { RightsActions, VideoLinks, useSeek } from './MediaExtras.jsx';
 
 /**
  * #181 match video uploads, #182 player video profiles, #183 tournament photo galleries, #184 match photo galleries,
@@ -13,10 +15,10 @@ import { embedUrl, thumbUrl, detectSource, shrinkImage, fmtBytes } from './media
 const KIND_LABEL = { photo: 'Photos', video: 'Videos', highlight: 'Highlight clips' };
 const inp = { padding: '0.45rem 0.55rem', border: '1px solid #cbd5e1', borderRadius: '0.4rem', fontSize: '0.86rem', width: '100%', boxSizing: 'border-box', backgroundColor: '#fff' };
 
-export function VideoBox({ item, height = 220 }) {
+export function VideoBox({ item, height = 220, seek = null, videoRef = null }) {
   const embed = embedUrl(item);
-  if (item.source === 'upload' && item.url) return <video src={item.url} controls preload="metadata" playsInline style={{ width: '100%', maxHeight: height, borderRadius: '0.5rem', backgroundColor: '#000' }} />;
-  if (embed) return <iframe src={embed} title={item.title || 'Video'} style={{ width: '100%', height, border: 0, borderRadius: '0.5rem', backgroundColor: '#000' }} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen loading="lazy" />;
+  if (item.source === 'upload' && item.url) return <video ref={videoRef} src={item.url} controls preload="metadata" playsInline style={{ width: '100%', maxHeight: height, borderRadius: '0.5rem', backgroundColor: '#000' }} />;
+  if (embed) return <iframe key={seek ? seek.n : 'start'} src={seek && item.source === 'youtube' ? withStart(embed, seek.s) : embed} title={item.title || 'Video'} style={{ width: '100%', height, border: 0, borderRadius: '0.5rem', backgroundColor: '#000' }} allow="autoplay; encrypted-media; picture-in-picture; fullscreen" allowFullScreen loading="lazy" />;
   return (
     <a href={item.url} target="_blank" rel="noopener noreferrer nofollow" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, height: 120, borderRadius: '0.5rem', backgroundColor: '#0f172a', color: '#fff', textDecoration: 'none', fontWeight: 700 }}>
       <ExternalLink size={16} /> Open on {item.source === 'instagram' ? 'Instagram' : 'the website'}
@@ -86,6 +88,25 @@ function ItemActions({ item, onChanged, onError }) {
 }
 const iconBtn = { background: 'rgba(255,255,255,0.92)', border: '1px solid #e2e8f0', borderRadius: 6, padding: '0.2rem 0.35rem', cursor: 'pointer', display: 'inline-flex' };
 
+function VideoCard({ i, scope, load, setMsg }) {
+  const { seek, jump, ref } = useSeek();
+  return (
+    <div style={{ border: '1px solid #e2e8f0', borderRadius: '0.6rem', padding: '0.5rem', opacity: i.status === 'hidden' ? 0.5 : 1 }}>
+      {i.url ? <VideoBox item={i} height={190} seek={seek} videoRef={ref} /> : <div style={{ height: 120, borderRadius: '0.5rem', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', color: '#94a3b8' }}>Upload not finished – delete and try again</div>}
+      <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'flex-start', marginTop: '0.4rem' }}>
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <div style={{ fontWeight: 700, fontSize: '0.88rem' }}>{i.moment ? <span style={{ color: '#059669' }}>Over {i.moment} · </span> : ''}{i.title || (i.source === 'upload' ? 'Video clip' : 'Video')}</div>
+          {i.caption && <div style={{ fontSize: '0.8rem', color: '#475569' }}>{i.caption}</div>}
+          <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>by {i.uploader || '—'} · {new Date(i.created_at).toLocaleDateString('en-IN')}{i.file_bytes ? ` · ${fmtBytes(i.file_bytes)}` : ''}{i.status === 'hidden' ? ' · hidden' : ''}</div>
+        </div>
+        <ItemActions item={i} onChanged={load} onError={setMsg} />
+      </div>
+      <RightsActions item={i} onChanged={load} />
+      {scope === 'match' && i.url && i.status === 'visible' && ['video', 'highlight', 'stream'].includes(i.kind) && <VideoLinks item={i} onSeek={jump} />}
+    </div>
+  );
+}
+
 export function MediaGallery({ scope, scopeId, kinds = ['photo', 'video'], title, subtitle, refreshKey, emptyText }) {
   const [kind, setKind] = useState(kinds[0]);
   const [data, setData] = useState(null);
@@ -114,29 +135,18 @@ export function MediaGallery({ scope, scopeId, kinds = ['photo', 'video'], title
       ) : kind === 'photo' ? (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: '0.5rem' }}>
           {items.map((i) => (
-            <div key={i.id} style={{ position: 'relative', opacity: i.status === 'hidden' ? 0.45 : 1 }}>
+            <div key={i.id} style={{ position: 'relative', opacity: i.status !== 'visible' ? 0.45 : 1 }}>
               {i.url ? <button type="button" onClick={() => setOpen(photos.indexOf(i))} style={{ padding: 0, border: 'none', cursor: 'zoom-in', display: 'block', width: '100%' }}>
                 <img src={i.url} alt={i.caption || i.title || 'Photo'} loading="lazy" style={{ width: '100%', aspectRatio: '1', objectFit: 'cover', borderRadius: '0.5rem', display: 'block' }} />
               </button> : <div style={{ aspectRatio: '1', borderRadius: '0.5rem', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.75rem', color: '#94a3b8' }}>Upload not finished</div>}
               <div style={{ position: 'absolute', top: 4, right: 4 }}><ItemActions item={i} onChanged={load} onError={setMsg} /></div>
+              <div style={{ marginTop: 2 }}><RightsActions item={i} onChanged={load} /></div>
             </div>
           ))}
         </div>
       ) : (
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '0.8rem' }}>
-          {items.map((i) => (
-            <div key={i.id} style={{ border: '1px solid #e2e8f0', borderRadius: '0.6rem', padding: '0.5rem', opacity: i.status === 'hidden' ? 0.5 : 1 }}>
-              {i.url ? <VideoBox item={i} height={190} /> : <div style={{ height: 120, borderRadius: '0.5rem', backgroundColor: '#f1f5f9', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.8rem', color: '#94a3b8' }}>Upload not finished – delete and try again</div>}
-              <div style={{ display: 'flex', gap: '0.4rem', alignItems: 'flex-start', marginTop: '0.4rem' }}>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.88rem' }}>{i.moment ? <span style={{ color: '#059669' }}>Over {i.moment} · </span> : ''}{i.title || (i.source === 'upload' ? 'Video clip' : 'Video')}</div>
-                  {i.caption && <div style={{ fontSize: '0.8rem', color: '#475569' }}>{i.caption}</div>}
-                  <div style={{ fontSize: '0.72rem', color: '#94a3b8' }}>by {i.uploader || '—'} · {new Date(i.created_at).toLocaleDateString('en-IN')}{i.file_bytes ? ` · ${fmtBytes(i.file_bytes)}` : ''}{i.status === 'hidden' ? ' · hidden' : ''}</div>
-                </div>
-                <ItemActions item={i} onChanged={load} onError={setMsg} />
-              </div>
-            </div>
-          ))}
+          {items.map((i) => <VideoCard key={i.id} i={i} scope={scope} load={load} setMsg={setMsg} />)}
         </div>
       )}
       {open !== null && photos[open] && (

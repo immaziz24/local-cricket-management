@@ -2,15 +2,18 @@ import React, { useEffect, useRef, useState } from 'react';
 import { dataService } from '../../services/dataService.js';
 import { X, Printer } from 'lucide-react';
 import { TIER_LABEL, SLOT_LABEL, money, fmtDate } from './brandShared.jsx';
+import { PlacementAnalyticsCard, SponsorSnapshots } from '../media/MediaExtras.jsx';
 
 /** #199 Tournament report for a sponsor: the cricket played, and where and how often the sponsor was seen. */
 const n = (v) => Number(v || 0).toLocaleString('en-IN');
 
 export function SponsorReport({ sponsorshipId, onClose }) {
-  const [r, setR] = useState(null);
+  const [live, setLive] = useState(null);
+  const [snap, setSnap] = useState(null);
+  const r = snap ? snap.data : live;
   const [err, setErr] = useState(null);
   const box = useRef(null);
-  useEffect(() => { dataService.sponsorReport(sponsorshipId).then(setR).catch((e) => setErr(e.message)); }, [sponsorshipId]);
+  useEffect(() => { dataService.sponsorReport(sponsorshipId).then(setLive).catch((e) => setErr(e.message)); }, [sponsorshipId]);
   const print = () => {
     const w = window.open('', '_blank'); if (!w || !box.current) return;
     w.document.write(`<title>Sponsor report – ${r.sponsorship.sponsor.name}</title><style>body{font-family:system-ui,-apple-system,Segoe UI,sans-serif;color:#0f172a;margin:24px}
@@ -31,6 +34,7 @@ export function SponsorReport({ sponsorshipId, onClose }) {
         {!r && !err && <div style={{ color: '#64748b' }}>Preparing the report…</div>}
         {r && (
           <div ref={box}>
+            {snap && <div style={{ background: '#fffbeb', border: '1px solid #fde68a', borderRadius: 8, padding: '0.4rem 0.6rem', fontSize: '0.82rem', marginBottom: '0.6rem' }}>Saved copy from {new Date(snap.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' })}. <button type="button" onClick={() => setSnap(null)} style={{ background: 'none', border: 'none', color: '#b45309', fontWeight: 700, cursor: 'pointer', padding: 0 }}>Back to the live report</button></div>}
             <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
               {r.sponsorship.sponsor.logo_url && <img src={r.sponsorship.sponsor.logo_url} alt="" style={{ height: 54, maxWidth: 140, objectFit: 'contain' }} />}
               <div>
@@ -79,6 +83,8 @@ export function SponsorReport({ sponsorshipId, onClose }) {
             <p className="muted" style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '1rem' }}>Views and clicks are counted by the Cricnotch website (one view per page visit). Figures are live and keep growing until the tournament ends.</p>
           </div>
         )}
+        {live && !snap && <PlacementAnalyticsCard sponsorId={live.sponsorship.sponsor.id} tournamentId={live.tournament.id} title="Your adverts day by day" />}
+        {live && <SponsorSnapshots sponsorshipId={sponsorshipId} onOpen={(id) => dataService.getSponsorSnapshot(id).then(setSnap).catch((e) => setErr(e.message))} />}
       </div>
     </div>
   );

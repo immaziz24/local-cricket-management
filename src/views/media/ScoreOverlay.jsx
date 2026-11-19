@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { dataService } from '../../services/dataService.js';
+import { overlayOptions } from './mediaExtras.js';
 
 /**
  * #179 Live score overlay – opened as  ?overlay=<match id>  (optional &style=box).
@@ -16,6 +17,7 @@ const ballText = (b) => {
 const ballColour = (b) => (b.wicket ? '#dc2626' : b.runs === 6 ? '#7c3aed' : b.runs === 4 ? '#2563eb' : b.extra ? '#d97706' : '#334155');
 
 export function ScoreOverlay({ matchId, style = 'bar' }) {
+  const opt = overlayOptions(typeof window !== 'undefined' ? window.location.search : '');
   const [centre, setCentre] = useState(null);
   const [live, setLive] = useState(null);
   const [err, setErr] = useState(null);
@@ -58,8 +60,8 @@ export function ScoreOverlay({ matchId, style = 'bar' }) {
 
   if (style === 'box') {
     return (
-      <div style={{ position: 'fixed', top: 16, left: 16, minWidth: 260, fontFamily: font, color: '#fff', borderRadius: 12, overflow: 'hidden', boxShadow: '0 4px 18px rgba(0,0,0,0.45)' }}>
-        <div style={{ background: '#065f46', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
+      <div style={{ position: 'fixed', top: opt.pos === 'bottom' ? 'auto' : 16, bottom: opt.pos === 'bottom' ? 16 : 'auto', left: 16, transform: `scale(${opt.scale})`, transformOrigin: opt.pos === 'bottom' ? 'bottom left' : 'top left', minWidth: 260, fontFamily: font, color: '#fff', borderRadius: 12, overflow: 'hidden', boxShadow: '0 4px 18px rgba(0,0,0,0.45)' }}>
+        <div style={{ background: opt.accent, padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', gap: 12 }}>
           <span style={{ fontWeight: 800, fontSize: 18 }}>{batTeam}</span>
           <span style={{ fontWeight: 900, fontSize: 26 }}>{runs}/{wk} <span style={{ fontSize: 15, fontWeight: 600 }}>({overs(lb)})</span></span>
         </div>
@@ -73,9 +75,9 @@ export function ScoreOverlay({ matchId, style = 'bar' }) {
   }
 
   return (
-    <div style={{ position: 'fixed', left: 0, right: 0, bottom: 18, display: 'flex', justifyContent: 'center', fontFamily: font, pointerEvents: 'none' }}>
+    <div style={{ position: 'fixed', left: 0, right: 0, ...(opt.pos === 'top' ? { top: 18, transformOrigin: 'top center' } : { bottom: 18, transformOrigin: 'bottom center' }), transform: `scale(${opt.scale})`, display: 'flex', justifyContent: 'center', fontFamily: font, pointerEvents: 'none' }}>
       <div style={{ display: 'flex', alignItems: 'stretch', color: '#fff', borderRadius: 10, overflow: 'hidden', boxShadow: '0 4px 18px rgba(0,0,0,0.5)', maxWidth: '96vw' }}>
-        <div style={{ background: '#065f46', padding: '8px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+        <div style={{ background: opt.accent, padding: '8px 16px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
           <span style={{ fontSize: 13, opacity: 0.85 }}>{batTeam} v {bowlTeam}</span>
           <span style={{ fontWeight: 900, fontSize: 28, lineHeight: 1.05 }}>{runs}-{wk} <span style={{ fontSize: 16, fontWeight: 600 }}>{overs(lb)} ov</span></span>
         </div>

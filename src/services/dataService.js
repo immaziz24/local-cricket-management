@@ -941,6 +941,146 @@ export const dataService = {
     return res.data;
   },
 
+  async getMediaPolicy(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.getMediaPolicy(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setMediaPolicy(tournamentId, policy) {
+    requireDatabase();
+    const res = await supabaseClient.setMediaPolicy(tournamentId, policy);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async declareMediaRights(mediaId, rights) {
+    requireDatabase();
+    const res = await supabaseClient.declareMediaRights(mediaId, rights);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getMediaRights(mediaId) {
+    requireDatabase();
+    const res = await supabaseClient.getMediaRights(mediaId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async requestMediaTakedown(mediaId, reason) {
+    requireDatabase();
+    const res = await supabaseClient.requestMediaTakedown(mediaId, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listMediaTakedowns(scope, scopeId, status = 'open') {
+    requireDatabase();
+    const res = await supabaseClient.listMediaTakedowns(scope, scopeId, status);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async decideMediaTakedown(id, remove, note) {
+    requireDatabase();
+    const res = await supabaseClient.decideMediaTakedown(id, remove, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setMediaTiming(mediaId, startedAt, delaySeconds = 0) {
+    requireDatabase();
+    const res = await supabaseClient.setMediaTiming(mediaId, startedAt, delaySeconds);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async autoLinkMedia(mediaId) {
+    requireDatabase();
+    const res = await supabaseClient.autoLinkMedia(mediaId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async linkMediaEvent(mediaId, ballId, offsetSeconds, title = null) {
+    requireDatabase();
+    const res = await supabaseClient.linkMediaEvent(mediaId, ballId, offsetSeconds, title);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async unlinkMediaEvent(linkId) {
+    requireDatabase();
+    const res = await supabaseClient.unlinkMediaEvent(linkId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listMediaEventLinks(mediaId) {
+    requireDatabase();
+    const res = await supabaseClient.listMediaEventLinks(mediaId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async suggestHighlightClips(matchId, mediaId = null, limit = 8) {
+    requireDatabase();
+    const res = await supabaseClient.suggestHighlightClips(matchId, mediaId, limit);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async acceptClipSuggestion(mediaId, ballId, startSeconds, endSeconds, title = null) {
+    requireDatabase();
+    const res = await supabaseClient.acceptClipSuggestion(mediaId, ballId, startSeconds, endSeconds, title);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async placementAnalytics(params) {
+    requireDatabase();
+    const res = await supabaseClient.placementAnalytics(params);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async takeSponsorSnapshot(sponsorshipId) {
+    requireDatabase();
+    const res = await supabaseClient.takeSponsorSnapshot(sponsorshipId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listSponsorSnapshots(sponsorshipId) {
+    requireDatabase();
+    const res = await supabaseClient.listSponsorSnapshots(sponsorshipId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getSponsorSnapshot(snapshotId) {
+    requireDatabase();
+    const res = await supabaseClient.getSponsorSnapshot(snapshotId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async checkMicrositeSlug(tournamentId, slug) {
+    requireDatabase();
+    const res = await supabaseClient.checkMicrositeSlug(tournamentId, slug);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveMicrosite(tournamentId, settings) {
+    requireDatabase();
+    const res = await supabaseClient.saveMicrosite(tournamentId, settings);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchScorerHandovers(matchId) {
     requireDatabase();
     const res = await supabaseClient.listScorerHandovers(matchId);

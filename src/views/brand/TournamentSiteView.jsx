@@ -5,6 +5,9 @@ import { THEMES, fmtDate, siteUrl, money, AdSlot, SponsorStrip, QrCard, trackOnc
 import { TrophyTile } from './AwardsPanel.jsx';
 import { MerchPanel } from './MerchPanel.jsx';
 import { MediaGallery } from '../media/MediaGallery.jsx';
+import { MediaPolicyCard, TakedownQueue, PlacementAnalyticsCard } from '../media/MediaExtras.jsx';
+import { brandGradient } from '../media/mediaExtras.js';
+import { MicrositeSettings } from './MicrositeSettings.jsx';
 
 /** #189 Tournament website – one shareable page per tournament: ?t=CODE (also reached by its QR code, #190). */
 const ALL = ['fixtures', 'results', 'points', 'stats', 'teams', 'sponsors', 'awards', 'gallery', 'merch'];
@@ -45,6 +48,7 @@ export function TournamentSiteView({ refCode, currentUser, onNavigate }) {
   const [awards, setAwards] = useState([]);
   const [qr, setQr] = useState(false);
   const [merchCount, setMerchCount] = useState(0);
+  const [reload, setReload] = useState(0);
   useEffect(() => {
     setD(undefined);
     dataService.getTournamentSite(refCode).then((r) => {
@@ -58,16 +62,18 @@ export function TournamentSiteView({ refCode, currentUser, onNavigate }) {
       dataService.listAwards(id).then((a) => setAwards(a?.items || [])).catch(() => {});
       dataService.listMerch(id).then((m) => setMerchCount((m?.items || []).length)).catch(() => {});
     }).catch(() => setD(null));
-  }, [refCode]);
-  useEffect(() => { if (d?.tournament) document.title = `${d.tournament.name} · Cricnotch`; }, [d]);
+  }, [refCode, reload]);
+  useEffect(() => { if (d?.tournament) document.title = d.microsite?.standalone ? d.tournament.name : `${d.tournament.name} · Cricnotch`; }, [d]);
 
   if (d === undefined) return <div style={{ padding: '4rem 1rem', textAlign: 'center', color: '#64748b' }}>Loading tournament…</div>;
   if (d === null) return <div style={{ padding: '4rem 1rem', textAlign: 'center' }}><h2>Tournament not found</h2><p style={{ color: '#64748b' }}>Check the code or link.</p><button type="button" className="hdr-btn-primary" onClick={() => onNavigate('tournaments')}>See all tournaments</button></div>;
 
   const t = d.tournament; const site = d.site || {};
   const show = (k) => (site.sections || ALL).includes(k);
-  const [c1, c2] = THEMES[site.theme] || [t.banner_color || THEMES.green[0], THEMES.green[1]];
-  const url = siteUrl(`t=${t.code || t.id}`);
+  const ms = d.microsite || {};
+  const [c1, c2] = brandGradient(ms.brand_color, THEMES[site.theme] || [t.banner_color || THEMES.green[0], THEMES.green[1]]);
+  const heroImg = ms.hero_url || t.banner_url;
+  const url = siteUrl(`t=${t.microsite_slug || t.code || t.id}`);
   const live = matches.filter((m) => m.status === 'live' || m.status === 'paused');
   const upcoming = matches.filter((m) => m.status === 'scheduled');
   const results = matches.filter((m) => m.status === 'completed').reverse();
@@ -80,7 +86,7 @@ export function TournamentSiteView({ refCode, currentUser, onNavigate }) {
   return (
     <div style={{ background: '#f8fafc', minHeight: '100%' }}>
       {/* hero */}
-      <header style={{ background: t.banner_url ? `linear-gradient(135deg, ${c1}ee, ${c2}cc), center/cover url(${t.banner_url})` : `linear-gradient(135deg, ${c1}, ${c2})`, color: '#fff', padding: '3rem 1rem 2.4rem' }}>
+      <header style={{ background: heroImg ? `linear-gradient(135deg, ${c1}ee, ${c2}cc), center/cover url(${heroImg})` : `linear-gradient(135deg, ${c1}, ${c2})`, color: '#fff', padding: '3rem 1rem 2.4rem' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto', display: 'flex', gap: '1.4rem', alignItems: 'center', flexWrap: 'wrap' }}>
           <div style={{ width: 110, height: 110, borderRadius: '1.2rem', background: 'rgba(255,255,255,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', flexShrink: 0 }}>
             {t.logo_url ? <img src={t.logo_url} alt="" style={{ maxWidth: '90%', maxHeight: '90%', objectFit: 'contain' }} /> : <Trophy size={52} />}
@@ -212,6 +218,24 @@ export function TournamentSiteView({ refCode, currentUser, onNavigate }) {
           </div>
         </div>
       </Section>
+
+      {d.is_organiser && (
+        <Section id="organiser-tools" title="Organiser tools (only you can see this)">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+            <MicrositeSettings tournament={t} microsite={ms} onSaved={() => setReload((n) => n + 1)} />
+            <MediaPolicyCard tournamentId={t.id} />
+            <TakedownQueue scope="tournament" scopeId={t.id} />
+            <PlacementAnalyticsCard tournamentId={t.id} title="Sponsor adverts: views and clicks" />
+          </div>
+        </Section>
+      )}
+
+      {(ms.footer || !ms.standalone) && (
+        <footer style={{ padding: '1.4rem 1rem 2rem', textAlign: 'center', fontSize: '0.82rem', color: '#64748b' }}>
+          {ms.footer && <div style={{ marginBottom: 4 }}>{ms.footer}</div>}
+          {!ms.standalone && <div>Fixtures, live scores and results on Cricnotch</div>}
+        </footer>
+      )}
 
       {qr && (
         <div onClick={() => setQr(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(15,23,42,0.6)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem' }}>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { dataService } from '../../services/dataService.js';
 import { MediaGallery } from './MediaGallery.jsx';
+import { ClipSuggestions } from './MediaExtras.jsx';
 
 /**
  * #180 Match highlights: key moments picked automatically from ball-by-ball scoring (wickets, sixes, fours,
@@ -58,6 +59,7 @@ export function HighlightsPanel({ matchId, refreshKey }) {
           </div>
         )}
       </Card>
+      <ClipSuggestions matchId={matchId} refreshKey={refreshKey} />
       <MediaGallery scope="match" scopeId={matchId} kinds={['highlight']} title="Highlight clips" subtitle="Short videos of the best moments – add the over so viewers know when it happened" refreshKey={refreshKey} />
     </>
   );
