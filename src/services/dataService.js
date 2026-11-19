@@ -752,6 +752,41 @@ export const dataService = {
     return res.data;
   },
 
+  async fetchCorrectableBalls(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.listCorrectableBalls(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchBallRevisions(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.listBallRevisions(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async proposeBallCorrection(matchId, ballId, changes, reason) {
+    requireDatabase();
+    const res = await supabaseClient.proposeBallCorrection(matchId, ballId, changes, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async decideBallCorrection(revisionId, approve, note) {
+    requireDatabase();
+    const res = await supabaseClient.decideBallCorrection(revisionId, approve, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async scoringHeartbeat(matchId, deviceId) {
+    requireDatabase();
+    const res = await supabaseClient.scoringHeartbeat(matchId, deviceId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async setScorerPermissions(assignmentId, permissions) {
     requireDatabase();
     const res = await supabaseClient.setScorerPermissions(assignmentId, permissions);

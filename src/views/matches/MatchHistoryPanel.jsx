@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { dataService } from '../../services/dataService.js';
+import { CorrectionsPanel } from './CorrectionsPanel.jsx';
 
 /**
  * #30 Scoring history and audit trail: who scored, every undo, innings ended, pauses,
@@ -21,6 +22,8 @@ const LABEL = {
   MATCH_ABANDONED: (d) => `Match abandoned: ${d.reason || ''}`,
   MATCH_RESULT_RECORDED: (d) => `Result entered by hand: ${d.result || ''}`,
   MATCH_RESULT_CLEARED: () => 'Hand-entered result removed',
+  BALL_ATTRIBUTION_CORRECTED: (d) => `Corrected who played ball ${d.seq ?? ''}${d.reason ? `: ${d.reason}` : ''}`,
+  BALL_CORRECTION_REJECTED: (d) => `Correction for ball ${d.seq ?? ''} rejected`,
   MATCH_RESCHEDULED: (d) => `Rescheduled${d.reason ? ` (${d.reason})` : ''}`
 };
 const time = (iso) => new Date(iso).toLocaleString('en-IN', { day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' });
@@ -46,6 +49,7 @@ export function MatchHistoryPanel({ matchId, refreshKey = 0 }) {
           </div>
         )}
       </Card>
+      <CorrectionsPanel matchId={matchId} refreshKey={refreshKey} />
       <Card title="Match log">
         {h.events.length === 0 ? <span style={{ color: '#94a3b8', fontSize: '0.85rem' }}>Nothing yet.</span> : (
           <div style={{ display: 'flex', flexDirection: 'column' }}>

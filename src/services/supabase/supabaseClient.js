@@ -1093,6 +1093,36 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async listCorrectableBalls(matchId) {
+    const { data, error } = await supabase.rpc('list_correctable_balls', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'balls') };
+    return { data, error: null };
+  },
+
+  async listBallRevisions(matchId) {
+    const { data, error } = await supabase.rpc('list_ball_revisions', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'corrections') };
+    return { data, error: null };
+  },
+
+  async proposeBallCorrection(matchId, ballId, changes, reason) {
+    const { data, error } = await supabase.rpc('propose_ball_correction', { p_match_id: matchId, p_ball_id: ballId, p_changes: changes, p_reason: reason });
+    if (error) return { data: null, error: friendlyError(error, 'correction') };
+    return { data, error: null };
+  },
+
+  async decideBallCorrection(revisionId, approve, note) {
+    const { data, error } = await supabase.rpc('decide_ball_correction', { p_revision_id: revisionId, p_approve: approve, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'correction') };
+    return { data, error: null };
+  },
+
+  async scoringHeartbeat(matchId, deviceId) {
+    const { data, error } = await supabase.rpc('scoring_heartbeat', { p_match_id: matchId, p_device_id: deviceId });
+    if (error) return { data: null, error: friendlyError(error, 'scorer check') };
+    return { data, error: null };
+  },
+
   async setScorerPermissions(assignmentId, permissions) {
     const { data, error } = await supabase.rpc('set_scorer_permissions', { p_assignment_id: assignmentId, p_permissions: permissions || {} });
     if (error) return { data: null, error: friendlyError(error, 'scorer permissions') };

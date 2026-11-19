@@ -4,6 +4,7 @@ import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { Undo2, AlertCircle, Flag, CloudRain, WifiOff, RefreshCw } from 'lucide-react';
 import { WagonWheelPicker } from './WagonWheel.jsx';
+import { ScorerConflictBanner } from './ScorerConflictBanner.jsx';
 import { makeCommentary } from './commentary.js';
 import { validateCrease, replaceBowlerMidOver as checkBowlerReplacement } from './scoringRules.js';
 import { loadQueue, saveQueue, loadCachedState, saveCachedState, newClientId, isNetworkError, applyQueue } from './offlineScoring.js';
@@ -300,6 +301,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
 
   return (
     <div className={mode === 'live' && scoring && focused ? 'scoring-panel-focused' : undefined} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      {mode === 'live' && scoring && <ScorerConflictBanner matchId={matchId} />}
       {mode === 'live' && scoring && (
         <div className="scoring-focus-toolbar">
           <strong>Live scoring</strong>
