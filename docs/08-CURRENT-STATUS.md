@@ -213,6 +213,7 @@
 | 2026-11-10 | Claude | Category E batch 1: playing conditions (17 features) - rules editor, versions, enforced in ball-by-ball scoring |
 | 2026-11-10 | Claude | Category D statistics #79-102 + #57, #77, #78 (Statistics page, MVP points, Player of the Match, comparisons, charts, match analysis). Fixed player profile error for players without an account |
 | 2026-11-10 | Claude | Deployed to https://localcricket.plateria.in via Hostinger Git auto-deploy (owner connected GitHub) |
+| 2026-11-19 | Claude | Batch 1 on the 289 partly-built features: live database brought in line with the repo (seasons, series, editable codes, nearby push queue migrations applied); series early-clinch (#333-337); early Q/E qualification engine (#328); scoring integrity rules (#311-314, #321-323, #382, logic + tests, not on screen yet); commentary 25-word fix (#20); 85 automated rules tests + tests\run-tests.bat |
 | 2026-11-10 | Claude | Offline scoring + auto sync (#26-27); live tab shows full batter/bowler tables; fixed a stale-file copy to the laptop |
 | 2026-11-10 | Claude | Pause/resume, continue scoring, share link (?match=), Realtime live updates (tested), History tab (#24, #25, #28-30) |
 | 2026-11-10 | Claude | Commentary tab, scorecard M (minutes) column, partnership, yet to bat, match summary; owner scored a real match |

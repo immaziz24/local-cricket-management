@@ -101,7 +101,9 @@ export function makeCommentary(b) {
     }
   }
   let text = `${head} ${body}${tail}`.replace(/\s+/g, ' ').trim();
-  if (text.split(' ').length < 25) text += ' The fielders reset and the bowler walks back for the next delivery.';
+  // Every ball gets at least 25 words: add short closing sentences until it does.
+  const fillers = [' The fielders reset and the bowler walks back for the next delivery.', ' The scorers update the book and the crowd settles down again.', ' The umpire checks the ball and play carries on.'];
+  for (const f of fillers) { if (text.split(' ').length >= 25) break; text += f; }
   if (b.note) text += ` ${b.note.trim()}`;
   return text.slice(0, 600);
 }

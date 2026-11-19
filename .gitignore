@@ -40,3 +40,7 @@ serviceAccountKey*.json
 # Local Android build outputs
 /android/.gradle-rotation/
 /android/app/build-old/
+
+# Test output (run-tests.bat)
+tests/test-output.txt
+tests/test-tap.txt

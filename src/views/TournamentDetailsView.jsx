@@ -23,6 +23,7 @@ import { SponsorStrip, AdSlot, trackOnce, QrCard } from './brand/brandShared.jsx
 import { ArticleFeed } from './news/newsShared.jsx';
 import { FixtureTool, XiGenerator, TeamGenerator } from './tools/ToolsView.jsx';
 import { AuctionsHome } from './tools/AuctionBoard.jsx';
+import { seriesStatus } from './tournaments/seriesLogic.js';
 import {
   Shuffle,
   Newspaper,
@@ -181,7 +182,9 @@ export function TournamentDetailsView(props) {
     name: team.name,
     wins: matches.filter((match) => match.status === 'completed' && match.winner_team_id === (team.team_id || team.id)).length
   })).sort((a, b) => b.wins - a.wins) : [];
-  const seriesFinished = matches.length > 0 && matches.every((match) => ['completed', 'abandoned', 'cancelled'].includes(match.status));
+  const seriesInfo = isSeries && teams.length === 2
+    ? seriesStatus({ teams: teams.map((team) => ({ id: team.team_id || team.id, name: team.name })), matches, planned: tournament.series_match_count })
+    : null;
   const matchesTotal = Math.max(matches.length, tournament.matches_total || 0);
   const matchesDone = tournament.matches_completed || 0;
 
@@ -426,12 +429,8 @@ export function TournamentDetailsView(props) {
 
       {isSeries && seriesResults.length === 2 && (
         <Card title="Series score" subtitle={seriesResults.map((team) => team.name).join(' vs ')}>
-          <strong>
-            {seriesResults[0].wins === seriesResults[1].wins
-              ? (seriesFinished ? 'Series drawn' : 'Series level')
-              : `${seriesResults[0].name} ${seriesFinished ? 'won the series' : 'lead the series'}`}
-            {' '}{seriesResults[0].wins}-{seriesResults[1].wins}
-          </strong>
+          <strong>{seriesInfo ? seriesInfo.text : `${seriesResults[0].name} ${seriesResults[0].wins}-${seriesResults[1].wins} ${seriesResults[1].name}`}</strong>
+          {seriesInfo?.note && <p style={{ margin: '0.35rem 0 0', fontSize: '0.8rem', color: '#64748b' }}>{seriesInfo.note}</p>}
         </Card>
       )}
 

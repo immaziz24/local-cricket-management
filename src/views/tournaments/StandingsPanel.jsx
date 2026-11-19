@@ -8,124 +8,22 @@ import { ChevronDown, Trophy, Medal, GitBranch, Settings2, AlertCircle, CheckCir
 import { LeaderboardsPanel } from '../stats/LeaderboardsPanel.jsx';
 import { scheduleFixtures } from './fixtureGenerator.js';
 import { scoreLine } from './MatchResultForm.jsx';
+import { KO_STAGES, nextDoubleEliminationRound, nextKnockoutRound } from './bracketLogic.js';
+import { qualificationStatus } from './qualification.js';
 
 /**
  * #53 Points table, #54 Net Run Rate, #55 Qualification management,
  * #56 Knockout brackets, #46 Double elimination, #58 Tournament completion and winner declaration.
  */
 
-const KO_STAGES = ['knockout', 'quarter_final', 'semi_final', 'final'];
 const STAGE_LABEL = { knockout: 'Knockout', quarter_final: 'Quarter-finals', semi_final: 'Semi-finals', final: 'Final' };
 const field = { padding: '0.45rem 0.55rem', border: '1px solid #cbd5e1', borderRadius: '0.45rem', fontSize: '0.82rem' };
 const th = { textAlign: 'center', padding: '0.45rem 0.35rem', fontSize: '0.72rem', color: '#64748b', fontWeight: 700, borderBottom: '1px solid #e2e8f0' };
 const td = { textAlign: 'center', padding: '0.5rem 0.35rem', fontSize: '0.82rem', borderBottom: '1px solid #f1f5f9' };
 
-const stageFor = (n) => (n <= 2 ? 'final' : n <= 4 ? 'semi_final' : n <= 8 ? 'quarter_final' : 'knockout');
 const fmtNrr = (v) => { const n = Number(v || 0); return `${n > 0 ? '+' : ''}${n.toFixed(3)}`; };
 
 const BRACKET_LABEL = { winners: 'Winners bracket', losers: 'Losers bracket', grand_final: 'Grand final' };
-
-function pairUp(list) {
-  const out = [];
-  const rest = [...list];
-  const bye = rest.length % 2 === 1 ? rest.pop() : null;
-  for (let i = 0; i + 1 < rest.length; i += 2) out.push([rest[i], rest[i + 1]]);
-  return { pairs: out, bye };
-}
-
-/**
- * #46 Double elimination: a team is out after its second defeat.
- * Unbeaten teams play each other (winners bracket), one-defeat teams play each other (losers bracket);
- * the last unbeaten team meets the last one-defeat team in the grand final.
- */
-export function nextDoubleEliminationRound({ teamIds, matches }) {
-  const de = matches.filter((m) => m.bracket);
-  if (de.some((m) => m.status === 'scheduled' || m.status === 'live')) throw new Error('Finish the current round first (enter all results).');
-  if (de.some((m) => m.bracket === 'grand_final' && m.winner_team_id)) throw new Error('The grand final is played. Declare the winner below.');
-  const losses = new Map(teamIds.map((id) => [id, 0]));
-  const lastPlayed = new Map();
-  de.forEach((m) => {
-    if (m.winner_team_id) {
-      const loser = m.winner_team_id === m.team_a_id ? m.team_b_id : m.team_a_id;
-      losses.set(loser, (losses.get(loser) || 0) + 1);
-    }
-    [m.team_a_id, m.team_b_id].forEach((id) => lastPlayed.set(id, Math.max(lastPlayed.get(id) || 0, m.match_no || 0)));
-  });
-  const order = (ids) => [...ids].sort((a, b) => (lastPlayed.get(a) || 0) - (lastPlayed.get(b) || 0));
-  const wb = order(teamIds.filter((id) => (losses.get(id) || 0) === 0));
-  const lb = order(teamIds.filter((id) => (losses.get(id) || 0) === 1));
-  const round = Math.max(0, ...de.map((m) => m.round_no || 0)) + 1;
-
-  if (wb.length === 1 && lb.length === 1) {
-    return { fixtures: [{ team_a_id: wb[0], team_b_id: lb[0], stage: 'final', bracket: 'grand_final', round_no: round }], byes: [], label: 'Grand final', round };
-  }
-  if (wb.length + lb.length < 2) throw new Error('Only one team is left. Declare the winner below.');
-  const fixtures = [];
-  const byes = [];
-  if (wb.length >= 2) {
-    const { pairs, bye } = pairUp(wb);
-    pairs.forEach(([a, b]) => fixtures.push({ team_a_id: a, team_b_id: b, stage: 'knockout', bracket: 'winners', round_no: round }));
-    if (bye) byes.push(bye);
-  }
-  if (lb.length >= 2) {
-    const { pairs, bye } = pairUp(lb);
-    pairs.forEach(([a, b]) => fixtures.push({ team_a_id: a, team_b_id: b, stage: 'knockout', bracket: 'losers', round_no: round }));
-    if (bye) byes.push(bye);
-  }
-  if (fixtures.length === 0) throw new Error('No matches possible yet.');
-  return { fixtures, byes, label: `Round ${round}`, round };
-}
-
-/** Works out the next knockout round (#56). Returns { fixtures, bye, stage, round }. */
-export function nextKnockoutRound({ structure, teamIds, table, matches }) {
-  const ko = matches.filter((m) => KO_STAGES.includes(m.stage));
-  if (ko.some((m) => m.status === 'scheduled' || m.status === 'live')) throw new Error('Finish the current knockout round first (enter all results).');
-  if (structure !== 'knockout' && structure !== 'custom') {
-    const league = matches.filter((m) => m.stage === 'league' || m.stage === 'group');
-    if (league.length === 0) throw new Error('There are no league or group matches yet.');
-    if (league.some((m) => m.status === 'scheduled' || m.status === 'live')) throw new Error('Finish all league / group matches first.');
-  }
-
-  // Who enters the knockouts
-  let seeds;
-  if (structure === 'knockout' || structure === 'custom') {
-    seeds = [...teamIds];
-  } else {
-    const q = table.filter((r) => r.qualified);
-    const maxRank = Math.max(0, ...q.map((r) => r.rank_no));
-    seeds = [];
-    for (let rank = 1; rank <= maxRank; rank++) q.filter((r) => r.rank_no === rank).forEach((r) => seeds.push(r.team_id));
-  }
-  if (seeds.length < 2) throw new Error('At least 2 qualified teams are needed for knockouts.');
-
-  const losers = new Set();
-  [...ko].sort((a, b) => (a.round_no || 0) - (b.round_no || 0) || (a.match_no || 0) - (b.match_no || 0)).forEach((m) => {
-    if (!m.winner_team_id) return;
-    losers.add(m.winner_team_id === m.team_a_id ? m.team_b_id : m.team_a_id);
-  });
-  const alive = seeds.filter((id) => !losers.has(id));
-  if (alive.length < 2) throw new Error('The knockouts are finished. Declare the winner below.');
-
-  const round = Math.max(0, ...ko.map((m) => m.round_no || 0)) + 1;
-  const fixtures = [];
-  let bye = null;
-  if (ko.length === 0 && structure !== 'knockout' && structure !== 'custom') {
-    // First knockout round from the table: best seed meets the lowest (1 v 4, 2 v 3; A1 v B2, B1 v A2)
-    const list = [...alive];
-    if (list.length % 2 === 1) bye = list.shift();
-    for (let i = 0; i < list.length / 2; i++) fixtures.push([list[i], list[list.length - 1 - i]]);
-  } else {
-    // Later rounds: winners in bracket order, teams that had a bye go last
-    const last = round - 1;
-    const lastWinners = ko.filter((m) => (m.round_no || 0) === last && m.winner_team_id)
-      .sort((a, b) => (a.match_no || 0) - (b.match_no || 0)).map((m) => m.winner_team_id).filter((id) => alive.includes(id));
-    const list = [...lastWinners, ...alive.filter((id) => !lastWinners.includes(id))];
-    if (list.length % 2 === 1) bye = list.pop();
-    for (let i = 0; i + 1 < list.length; i += 2) fixtures.push([list[i], list[i + 1]]);
-  }
-  const stage = stageFor(alive.length);
-  return { fixtures: fixtures.map(([a, b]) => ({ team_a_id: a, team_b_id: b, stage, round_no: round })), bye, stage, round };
-}
 
 function Notice({ msg }) {
   if (!msg) return null;
@@ -224,6 +122,16 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, o
       {/* #53 #54 #55 Points table */}
       {showTable && groups.map(([gid, gname]) => {
         const rows = table.filter((r) => (r.group_id || 'all') === gid);
+        // #328 Early qualification: Q / E only when the remaining results cannot change it.
+        const rowIds = new Set(rows.map((r) => r.team_id));
+        const leftToPlay = matches.filter((m) => (m.stage === 'league' || m.stage === 'group')
+          && !['completed', 'abandoned', 'cancelled'].includes(m.status) && rowIds.has(m.team_a_id) && rowIds.has(m.team_b_id));
+        const early = leftToPlay.length > 0 && !rows.some((r) => r.qualified)
+          ? qualificationStatus({
+            rows: rows.map((r) => ({ team_id: r.team_id, points: r.points })), remaining: leftToPlay, spots: tournament.qualify_per_group ?? 2,
+            pointsWin: tournament.points_win ?? 2, pointsTie: tournament.points_tie ?? 1, pointsNoResult: tournament.points_no_result ?? 1
+          })
+          : null;
         return (
           <Card key={gid} title={gname} subtitle={`Top ${tournament.qualify_per_group ?? 2} qualify � Win ${tournament.points_win ?? 2} pts, tie ${tournament.points_tie ?? 1}, no result ${tournament.points_no_result ?? 1}`}>
             <div className='standings-table-container'>
@@ -242,11 +150,11 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, o
                     const teamMatches = expanded ? matches.filter((m) => m.team_a_id === r.team_id || m.team_b_id === r.team_id) : [];
                     return (
                     <React.Fragment key={r.team_id}>
-                      <tr role='row' key={r.team_id} style={{ backgroundColor: r.qualified ? '#f0fdf4' : 'transparent' }}>
+                      <tr role='row' key={r.team_id} style={{ backgroundColor: r.qualified || early?.get(r.team_id) === 'qualified' ? '#f0fdf4' : 'transparent' }}>
                         <td role='cell' data-stat='Rank' style={td}>{r.rank_no}</td>
                         <td role='cell' data-stat='Team' style={{ ...td, textAlign: 'left', fontWeight: 700 }}>
                           <div className="standings-team">
-                            <span className="standings-team-name" title={r.team_name}>{r.team_name}</span> {r.qualified && <Badge variant="success">Q</Badge>}
+                            <span className="standings-team-name" title={r.team_name}>{r.team_name}</span> {(r.qualified || early?.get(r.team_id) === 'qualified') && <Badge variant="success">Q</Badge>}{early?.get(r.team_id) === 'eliminated' && <Badge variant="neutral">E</Badge>}
                           </div>
                         </td>
                         <td role='cell' data-stat='P' style={td}>{r.played}</td><td role='cell' data-stat='W' style={td}>{r.won}</td><td role='cell' data-stat='L' style={td}>{r.lost}</td><td role='cell' data-stat='T' style={td}>{r.tied}</td><td role='cell' data-stat='NR' style={td}>{r.no_result}</td>
@@ -299,7 +207,7 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, o
               </table>
             </div>
             <p style={{ margin: '0.5rem 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>
-              Order: points, then net run rate, then wins. NRR = runs scored per over minus runs given per over; a team bowled out counts its full overs. Walkovers and no-results are left out of NRR. Q = qualified.
+              Order: points, then net run rate, then wins. NRR = runs scored per over minus runs given per over; a team bowled out counts its full overs. Walkovers and no-results are left out of NRR. Q = qualified (shown early only when no remaining result can change it). E = cannot qualify any more.
             </p>
           </Card>
         );
