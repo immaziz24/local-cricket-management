@@ -3,8 +3,10 @@ import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { Star } from 'lucide-react';
-import { WagonWheel } from '../matches/WagonWheel.jsx';
-import { BarChart, WormChart, PlayerName, StatGrid, oversOf, th, td } from './statsUi.jsx';
+import { WagonExplorer } from './WagonExplorer.jsx';
+import { ManhattanChart, WormComparison } from './AnalysisCharts.jsx';
+import { StatsProvenanceCard } from './StatsProvenanceCard.jsx';
+import { BarChart, PlayerName, StatGrid, oversOf, th, td } from './statsUi.jsx';
 
 /**
  * #101 Match analysis (runs per over, worm, partnerships, boundaries),
@@ -61,11 +63,13 @@ export function MatchAnalysisPanel({ matchId, matchStatus, canScore, refreshKey,
         )}
       </Card>
 
-      {inns.length > 0 && (
-        <Card title="Worm" subtitle="Total runs after each over">
-          <WormChart series={inns.map((i, k) => ({ name: `${i.team} (${i.runs}/${i.wickets})`, color: COLORS[k % 4], points: (i.overs || []).map((o) => ({ over: o.over, total: o.total })) }))} />
-        </Card>
-      )}
+      <Card title="Manhattan" subtitle="Runs in every over, both innings side by side">
+        <ManhattanChart innings={inns} />
+      </Card>
+
+      <Card title="Worm comparison" subtitle="Both innings on one graph — drag the slider to compare after any over">
+        <WormComparison innings={inns} />
+      </Card>
 
       {inns.map((i, k) => (
         <Card key={i.innings_no} title={`${i.team} – ${i.runs}/${i.wickets} (${oversOf(i.legal_balls)} ov)`} subtitle={`Innings ${i.innings_no}`}>
@@ -78,7 +82,7 @@ export function MatchAnalysisPanel({ matchId, matchStatus, canScore, refreshKey,
               ['Dot balls', i.boundaries?.dots]
             ]} />
           </div>
-          <div style={{ marginTop: '0.8rem' }}><WagonWheel matchId={matchId} inningsNo={i.innings_no} title="Wagon wheel" refreshKey={refreshKey} /></div>
+          <div style={{ marginTop: '0.8rem' }}><WagonExplorer matchId={matchId} inningsNo={i.innings_no} players={players} refreshKey={refreshKey} /></div>
           {(i.partnerships || []).length > 0 && (
             <div style={{ marginTop: '0.8rem', overflowX: 'auto' }}>
               <div style={{ fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '0.3rem' }}>Partnerships</div>
@@ -92,6 +96,8 @@ export function MatchAnalysisPanel({ matchId, matchStatus, canScore, refreshKey,
           )}
         </Card>
       ))}
+
+      <StatsProvenanceCard matchId={matchId} refreshKey={refreshKey} onRefreshed={load} />
 
       <Card title="Top performers" subtitle="MVP points in this match">
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>

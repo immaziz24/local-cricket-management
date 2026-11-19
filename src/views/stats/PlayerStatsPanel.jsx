@@ -3,6 +3,7 @@ import { Card } from '../../components/common/Card.jsx';
 import { dataService } from '../../services/dataService.js';
 import { Award, Trophy, Star, Medal } from 'lucide-react';
 import { StatGrid, BarChart, fmt, oversOf, th, td } from './statsUi.jsx';
+import { CareerFormCard } from './CareerFormCard.jsx';
 
 /**
  * #77 Player career statistics, #78 awards and achievements,
@@ -78,6 +79,8 @@ export function PlayerStatsPanel({ playerId, onNavigate }) {
       <Card title="Form" subtitle="Runs in recent matches (red dots = wickets taken)">
         <BarChart bars={recent.map((m, i) => ({ label: `M${matches.length - recent.length + i + 1}`, value: m.runs, mark: m.wickets }))} />
       </Card>
+
+      <CareerFormCard matches={matches} />
 
       <Card title={`Match by match (${matches.length})`}>
         <div style={{ overflowX: 'auto' }}>

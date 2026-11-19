@@ -80,6 +80,11 @@ export function WagonWheel({ matchId, inningsNo = null, batterId = null, title, 
   const [shots, setShots] = useState(null);
   useEffect(() => { dataService.getWagonWheel(matchId, inningsNo, batterId).then((r) => setShots(r || [])).catch(() => setShots([])); }, [matchId, inningsNo, batterId, refreshKey]);
   if (!shots) return <div style={{ fontSize: '0.8rem', color: '#94a3b8' }}>Loading wagon wheel…</div>;
+  return <WagonChart shots={shots} title={title} />;
+}
+
+/** The chart itself, drawn from a list of shots (used by the wagon-wheel explorer too). */
+export function WagonChart({ shots, title }) {
   const count = (fn) => shots.filter(fn).length;
   const sum = shots.reduce((a, s) => a + (s.runs || 0), 0);
   return (

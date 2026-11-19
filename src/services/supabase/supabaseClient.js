@@ -1093,6 +1093,18 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async getBoundaryTracker(tournamentId, limit) {
+    const { data, error } = await supabase.rpc('get_boundary_tracker', { p_tournament_id: tournamentId || null, p_limit: limit || 10 });
+    if (error) return { data: null, error: friendlyError(error, 'boundary tracker') };
+    return { data, error: null };
+  },
+
+  async getStatsReconciliation(matchId) {
+    const { data, error } = await supabase.rpc('stats_reconciliation', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'statistics check') };
+    return { data, error: null };
+  },
+
   async listCorrectableBalls(matchId) {
     const { data, error } = await supabase.rpc('list_correctable_balls', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'balls') };

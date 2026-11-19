@@ -752,6 +752,20 @@ export const dataService = {
     return res.data;
   },
 
+  async fetchBoundaryTracker(tournamentId, limit) {
+    requireDatabase();
+    const res = await supabaseClient.getBoundaryTracker(tournamentId, limit);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchStatsReconciliation(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getStatsReconciliation(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchCorrectableBalls(matchId) {
     requireDatabase();
     const res = await supabaseClient.listCorrectableBalls(matchId);

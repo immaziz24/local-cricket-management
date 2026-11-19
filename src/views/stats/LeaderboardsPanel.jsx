@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { dataService } from '../../services/dataService.js';
 import { PlayerName, StatGrid, th, td } from './statsUi.jsx';
+import { BoundaryTrackerCard } from './BoundaryTrackerCard.jsx';
 
 /**
  * #57 / #102 Tournament (or whole-site) leaderboards and statistics, #97 MVP.
@@ -79,6 +80,7 @@ export function LeaderboardsPanel({ tournamentId = null, onNavigate, title = 'Le
   const rows = data[board] || [];
 
   return (
+    <>
     <Card title={title} subtitle="From ball-by-ball scored matches">
       <StatGrid items={[['Matches', t.matches], [mode === 'stats' ? 'Batter runs' : 'Runs', t.runs], ['Wickets', t.wickets], ['Fours', t.fours], ['Sixes', t.sixes]]} columns={5} />
       <div style={{ display: 'flex', gap: '0.35rem', flexWrap: 'wrap', margin: '0.9rem 0 0.6rem' }}>
@@ -116,6 +118,8 @@ export function LeaderboardsPanel({ tournamentId = null, onNavigate, title = 'Le
       )}
       {board === 'mvp' && <p style={{ margin: '0.4rem 0 0', fontSize: '0.7rem', color: '#94a3b8' }}>MVP points: 1 per run, +1 per four, +2 per six, +8 for 50, +24 for 100; 25 per wicket, 8 per maiden, 1 per dot ball; 8 per catch, 12 per stumping, 10 per run-out.</p>}
     </Card>
+    {['leaderboard', 'stats'].includes(mode) && <BoundaryTrackerCard tournamentId={tournamentId} onNavigate={onNavigate} />}
+    </>
   );
 }
 
