@@ -10,6 +10,11 @@ import { scheduleFixtures } from './fixtureGenerator.js';
 import { scoreLine } from './MatchResultForm.jsx';
 import { KO_STAGES, nextDoubleEliminationRound, nextKnockoutRound } from './bracketLogic.js';
 import { qualificationStatus } from './qualification.js';
+import { applyTiebreakers } from './standingsRank.js';
+import { ScenarioCard } from './ScenarioCard.jsx';
+
+const TB_LABEL = { wins: 'Most wins', nrr: 'Net run rate', head_to_head: 'Head-to-head', fewer_losses: 'Fewer losses', name: 'Team name (A to Z)' };
+const TB_DEFAULT = ['nrr', 'wins'];
 
 /**
  * #53 Points table, #54 Net Run Rate, #55 Qualification management,
@@ -44,6 +49,7 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, o
   const [rules, setRules] = useState({});
   const [ko, setKo] = useState({ startDate: tournament.end_date, firstTime: '09:00', perDay: 2, gapMinutes: 240 });
   const [finish, setFinish] = useState({ winner: '', runnerUp: '' });
+  const [tbOrder, setTbOrder] = useState(null); // #327 editing copy
   const finished = tournament.status === 'completed';
 
   const load = async () => {
@@ -81,6 +87,8 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, o
   const groups = [...new Map(table.map((r) => [r.group_id || 'all', r.group_name || (structure === 'groups_knockout' ? 'Not in a group' : 'League table')])).entries()];
   const koMatches = matches.filter((m) => KO_STAGES.includes(m.stage) || m.stage === 'third_place');
 
+  const rankedTable = groups.flatMap(([gid]) => applyTiebreakers(table.filter((r) => (r.group_id || 'all') === gid), tournament.tiebreak_order, matches, tournament.qualify_per_group ?? 2));
+
   const createNextRound = () => {
     if (structure === 'double_elimination') {
       let de;
@@ -94,7 +102,7 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, o
       return;
     }
     let plan;
-    try { plan = nextKnockoutRound({ structure, teamIds: teams.map((t) => t.id), table, matches }); }
+    try { plan = nextKnockoutRound({ structure, teamIds: teams.map((t) => t.id), table: rankedTable, matches }); }
     catch (err) { setMsg({ ok: false, text: err.message }); return; }
     if (plan.fixtures.length === 0) { setMsg({ ok: false, text: 'Nothing to create.' }); return; }
     const lines = plan.fixtures.map((f) => `${nameOf(f.team_a_id)} vs ${nameOf(f.team_b_id)}`).join('\n');
@@ -121,7 +129,7 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, o
 
       {/* #53 #54 #55 Points table */}
       {showTable && groups.map(([gid, gname]) => {
-        const rows = table.filter((r) => (r.group_id || 'all') === gid);
+        const rows = applyTiebreakers(table.filter((r) => (r.group_id || 'all') === gid), tournament.tiebreak_order, matches, tournament.qualify_per_group ?? 2);
         // #328 Early qualification: Q / E only when the remaining results cannot change it.
         const rowIds = new Set(rows.map((r) => r.team_id));
         const leftToPlay = matches.filter((m) => (m.stage === 'league' || m.stage === 'group')
@@ -207,13 +215,48 @@ export function StandingsPanel({ tournament, isOrganiser, onTournamentChanged, o
               </table>
             </div>
             <p style={{ margin: '0.5rem 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>
-              Order: points, then net run rate, then wins. NRR = runs scored per over minus runs given per over; a team bowled out counts its full overs. Walkovers and no-results are left out of NRR. Q = qualified (shown early only when no remaining result can change it). E = cannot qualify any more.
+              Order: points, then net run rate, then wins. NRR = runs scored per over minus runs given per over; a team bowled out counts its full overs. Walkovers and no-results are left out of NRR. Q = qualified (shown early only when no remaining result can change it). E = cannot qualify any more.{tournament.tiebreak_order?.length ? ` Tiebreakers after points: ${tournament.tiebreak_order.map((k) => TB_LABEL[k]).join(', then ')}.` : ''}
             </p>
+            <ScenarioCard rows={rows} remaining={leftToPlay} spots={tournament.qualify_per_group ?? 2} pointsWin={tournament.points_win ?? 2} pointsTie={tournament.points_tie ?? 1} nameOf={nameOf} />
           </Card>
         );
       })}
       {showTable && table.length === 0 && (
         <Card title="Points table"><p style={{ margin: 0, fontSize: '0.85rem', color: '#94a3b8' }}>No approved teams yet.</p></Card>
+      )}
+
+      {/* #327 Tiebreakers (organiser) */}
+      {showTable && isOrganiser && !finished && (
+        <Card title="Tiebreakers" subtitle="What decides teams that are level on points">
+          {tbOrder === null ? (
+            <div style={{ display: 'flex', gap: '0.6rem', alignItems: 'center', flexWrap: 'wrap', fontSize: '0.85rem', color: '#475569' }}>
+              <span>{(tournament.tiebreak_order?.length ? tournament.tiebreak_order : TB_DEFAULT).map((k) => TB_LABEL[k]).join(', then ')}</span>
+              <Button size="sm" variant="secondary" onClick={() => setTbOrder([...(tournament.tiebreak_order?.length ? tournament.tiebreak_order : TB_DEFAULT)])}>Change</Button>
+            </div>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+              {tbOrder.map((k, i) => (
+                <div key={k} style={{ display: 'flex', gap: '0.4rem', alignItems: 'center', fontSize: '0.85rem' }}>
+                  <span style={{ width: 20, color: '#94a3b8' }}>{i + 1}.</span><span style={{ flex: 1 }}>{TB_LABEL[k]}</span>
+                  <button type="button" disabled={i === 0} aria-label="Move up" onClick={() => { const a = [...tbOrder]; [a[i - 1], a[i]] = [a[i], a[i - 1]]; setTbOrder(a); }}>↑</button>
+                  <button type="button" disabled={i === tbOrder.length - 1} aria-label="Move down" onClick={() => { const a = [...tbOrder]; [a[i + 1], a[i]] = [a[i], a[i + 1]]; setTbOrder(a); }}>↓</button>
+                  <button type="button" aria-label={`Remove ${TB_LABEL[k]}`} onClick={() => setTbOrder(tbOrder.filter((x) => x !== k))}>✕</button>
+                </div>
+              ))}
+              {Object.keys(TB_LABEL).filter((k) => !tbOrder.includes(k)).length > 0 && (
+                <select value="" onChange={(e) => e.target.value && setTbOrder([...tbOrder, e.target.value])} style={field} aria-label="Add a rule">
+                  <option value="">+ Add a rule</option>
+                  {Object.keys(TB_LABEL).filter((k) => !tbOrder.includes(k)).map((k) => <option key={k} value={k}>{TB_LABEL[k]}</option>)}
+                </select>
+              )}
+              <div style={{ display: 'flex', gap: '0.4rem' }}>
+                <Button size="sm" variant="primary" disabled={busy} onClick={() => run(() => dataService.setTournamentTiebreakers(tournament.id, tbOrder), 'Tiebreakers saved.', true).then(() => setTbOrder(null))}>Save</Button>
+                <Button size="sm" variant="secondary" onClick={() => setTbOrder(null)}>Cancel</Button>
+              </div>
+              <span style={{ fontSize: '0.72rem', color: '#94a3b8' }}>Points always come first. Head-to-head only looks at matches between the teams that are level.</span>
+            </div>
+          )}
+        </Card>
       )}
 
       {/* #56 Knockout bracket */}

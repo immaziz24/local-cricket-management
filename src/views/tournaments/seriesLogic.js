@@ -50,3 +50,14 @@ export function seriesStatus({ teams, matches = [], planned = 0 }) {
       : null
   };
 }
+
+/**
+ * #335 #336 Closing a series once it is decided (e.g. 2-0 in a 3-match series).
+ * Returns what to do: who won, who lost, and which unplayed matches are no longer needed. null if not closable.
+ */
+export function seriesCloseOut(info, matches = []) {
+  if (!info || !info.decided || !info.winnerId) return null;
+  const loserId = Object.keys(info.wins).find((id) => id !== info.winnerId) || null;
+  const unneeded = matches.filter((m) => m.status === 'scheduled').map((m) => m.id);
+  return { winnerId: info.winnerId, runnerUpId: loserId, unneededMatchIds: unneeded };
+}

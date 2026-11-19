@@ -24,7 +24,8 @@ import { SponsorStrip, AdSlot, trackOnce, QrCard } from './brand/brandShared.jsx
 import { ArticleFeed } from './news/newsShared.jsx';
 import { FixtureTool, XiGenerator, TeamGenerator } from './tools/ToolsView.jsx';
 import { AuctionsHome } from './tools/AuctionBoard.jsx';
-import { seriesStatus } from './tournaments/seriesLogic.js';
+import { seriesStatus, seriesCloseOut } from './tournaments/seriesLogic.js';
+import { registrationTracker } from './tournaments/registrationTracker.js';
 import {
   Shuffle,
   Newspaper,
@@ -62,6 +63,8 @@ export function TournamentDetailsView(props) {
   const [deleting, setDeleting] = useState(false);
   const [adminAccess, setAdminAccess] = useState(null);
   const [isOrganiser, setIsOrganiser] = useState(false);
+  const [registrations, setRegistrations] = useState([]);
+  const [closing, setClosing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState(() =>
@@ -83,8 +86,10 @@ export function TournamentDetailsView(props) {
           dataService.fetchTournamentMatches(tournamentId)
         ]);
         let approvedTeams = [];
+        let allRegs = [];
         try {
           const regs = await dataService.fetchTournamentRegistrations(tournamentId);
+          allRegs = regs?.teams || [];
           approvedTeams = (regs?.teams || []).filter((t) => t.status === 'approved');
           if (isMounted) {
             setIsOrganiser(!!regs?.is_organiser);
@@ -99,6 +104,7 @@ export function TournamentDetailsView(props) {
           setTournament(targetTrn);
           setMatches(trnMatches || []);
           setTeams(approvedTeams);
+          setRegistrations(allRegs);
         }
       } catch (err) {
         if (isMounted) {
@@ -432,8 +438,44 @@ export function TournamentDetailsView(props) {
         <Card title="Series score" subtitle={seriesResults.map((team) => team.name).join(' vs ')}>
           <strong>{seriesInfo ? seriesInfo.text : `${seriesResults[0].name} ${seriesResults[0].wins}-${seriesResults[1].wins} ${seriesResults[1].name}`}</strong>
           {seriesInfo?.note && <p style={{ margin: '0.35rem 0 0', fontSize: '0.8rem', color: '#64748b' }}>{seriesInfo.note}</p>}
+          {isOrganiser && tournament.status !== 'completed' && seriesCloseOut(seriesInfo, matches) && (() => {
+            const plan = seriesCloseOut(seriesInfo, matches);
+            const winnerName = (teams.find((t) => (t.team_id || t.id) === plan.winnerId) || {}).name;
+            return (
+              <div style={{ marginTop: '0.6rem' }}>
+                <Button size="sm" variant="primary" disabled={closing} onClick={async () => {
+                  const extra = plan.unneededMatchIds.length ? ` ${plan.unneededMatchIds.length} unplayed match${plan.unneededMatchIds.length === 1 ? '' : 'es'} will be removed.` : '';
+                  if (!window.confirm(`Finish the series with ${winnerName} as winner?${extra} Results can no longer be changed afterwards.`)) return;
+                  setClosing(true);
+                  try {
+                    for (const id of plan.unneededMatchIds) await dataService.deleteMatch(id);
+                    await dataService.completeTournament(tournament.id, plan.winnerId, plan.runnerUpId);
+                    setTournament(await dataService.fetchTournamentById(tournament.id));
+                    setMatches(await dataService.fetchTournamentMatches(tournament.id));
+                  } catch (err) { window.alert(err.message || 'Could not finish the series.'); }
+                  finally { setClosing(false); }
+                }}>Finish series{plan.unneededMatchIds.length ? ' and remove unplayed matches' : ''}</Button>
+              </div>
+            );
+          })()}
         </Card>
       )}
+
+      {/* #334 Registration status tracker (public) */}
+      {!isSeries && (() => {
+        const reg = registrationTracker(tournament, registrations);
+        if (!reg.open && reg.approved === 0 && registrations.length === 0) return null;
+        const color = { open: '#047857', almost: '#b45309', full: '#b91c1c', closed: '#64748b' }[reg.tone];
+        return (
+          <Card title="Registration">
+            <strong style={{ color }}>{reg.label}</strong>
+            <p style={{ margin: '0.3rem 0 0', fontSize: '0.82rem', color: '#475569' }}>
+              {reg.approved} team{reg.approved === 1 ? '' : 's'} approved{reg.capacity ? ` of ${reg.capacity}` : ''}{isOrganiser ? ` · ${reg.pending} waiting for your approval${reg.rejected ? ` · ${reg.rejected} rejected` : ''}` : ''}
+            </p>
+            {reg.percent !== null && <div style={{ marginTop: '0.4rem', height: 8, borderRadius: 4, backgroundColor: '#e2e8f0', overflow: 'hidden' }} role="progressbar" aria-valuenow={reg.percent} aria-valuemin={0} aria-valuemax={100}><div style={{ width: `${reg.percent}%`, height: '100%', backgroundColor: color }} /></div>}
+          </Card>
+        );
+      })()}
 
       {/* Navigation Sub-Tabs */}
       <div className="tournament-section-nav" style={{

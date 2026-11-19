@@ -717,6 +717,13 @@ export const dataService = {
     return res.data;
   },
 
+  async setTournamentTiebreakers(tournamentId, order) {
+    requireDatabase();
+    const res = await supabaseClient.setTournamentTiebreakers(tournamentId, order);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async setScorerPermissions(assignmentId, permissions) {
     requireDatabase();
     const res = await supabaseClient.setScorerPermissions(assignmentId, permissions);

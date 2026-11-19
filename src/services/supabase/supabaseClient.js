@@ -1063,6 +1063,12 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async setTournamentTiebreakers(tournamentId, order) {
+    const { data, error } = await supabase.rpc('set_tournament_tiebreakers', { p_tournament_id: tournamentId, p_order: order || [] });
+    if (error) return { data: null, error: friendlyError(error, 'tiebreakers') };
+    return { data, error: null };
+  },
+
   async setScorerPermissions(assignmentId, permissions) {
     const { data, error } = await supabase.rpc('set_scorer_permissions', { p_assignment_id: assignmentId, p_permissions: permissions || {} });
     if (error) return { data: null, error: friendlyError(error, 'scorer permissions') };
