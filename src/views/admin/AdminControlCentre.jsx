@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
+import { DuplicatePlayersCard } from './DuplicatePlayersCard.jsx';
 import { Search, User, Users, Activity, Trophy, Trash2, Save, ExternalLink, X, ShieldCheck } from 'lucide-react';
 
 /**
@@ -195,6 +196,7 @@ export function AdminControlCentre({ currentUser, onNavigate }) {
         {err && <div style={{ color: '#b91c1c', fontSize: '0.84rem', marginTop: 8 }}>{err}</div>}
       </Card>
       {editor && <Card>{editor}</Card>}
+      <DuplicatePlayersCard onNavigate={onNavigate} />
       {res && lists.filter(([k]) => res[k]).map(([k, l, Icon]) => (
         <Card key={k} title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}><Icon size={16} /> {l} ({res[k].length}{res[k].length === 40 ? '+' : ''})</span>}>
           {res[k].length === 0 ? <span style={{ fontSize: '0.84rem', color: '#94a3b8' }}>None found.</span> : (

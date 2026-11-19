@@ -1063,6 +1063,30 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async getPlayerTeamHistory(playerId) {
+    const { data, error } = await supabase.rpc('get_player_team_history', { p_player_id: playerId });
+    if (error) return { data: null, error: friendlyError(error, 'team history') };
+    return { data: data || [], error: null };
+  },
+
+  async setMembershipDates(historyId, joined, left) {
+    const { data, error } = await supabase.rpc('set_membership_dates', { p_history_id: historyId, p_joined: joined, p_left: left });
+    if (error) return { data: null, error: friendlyError(error, 'team history') };
+    return { data: data || [], error: null };
+  },
+
+  async findDuplicatePlayers() {
+    const { data, error } = await supabase.rpc('find_duplicate_players', { p_limit: 100 });
+    if (error) return { data: null, error: friendlyError(error, 'duplicate players') };
+    return { data: data || [], error: null };
+  },
+
+  async mergePlayers(keepId, mergeId, reason) {
+    const { data, error } = await supabase.rpc('merge_players', { p_keep: keepId, p_merge: mergeId, p_reason: reason || null });
+    if (error) return { data: null, error: friendlyError(error, 'merging players') };
+    return { data, error: null };
+  },
+
   async setTournamentTiebreakers(tournamentId, order) {
     const { data, error } = await supabase.rpc('set_tournament_tiebreakers', { p_tournament_id: tournamentId, p_order: order || [] });
     if (error) return { data: null, error: friendlyError(error, 'tiebreakers') };

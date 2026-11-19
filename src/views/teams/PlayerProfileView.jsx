@@ -10,6 +10,7 @@ import { PlayerStatsPanel } from '../stats/PlayerStatsPanel.jsx';
 import { MediaGallery } from '../media/MediaGallery.jsx';
 import { PlayerShareCard } from '../media/ShareStudio.jsx';
 import { PlayerAwardsCard } from '../brand/AwardsPanel.jsx';
+import { TeamHistoryCard } from './TeamHistoryCard.jsx';
 import { ArticleFeed } from '../news/newsShared.jsx';
 
 /**
@@ -139,6 +140,8 @@ export function PlayerProfileView({ playerId, onNavigate }) {
           </div>
         )}
       </Card>
+
+      <TeamHistoryCard playerId={playerId} onNavigate={onNavigate} />
 
       {/* #77 career statistics, #78 awards, Category D */}
       <PlayerStatsPanel playerId={playerId} onNavigate={onNavigate} />

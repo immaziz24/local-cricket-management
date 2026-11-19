@@ -717,6 +717,34 @@ export const dataService = {
     return res.data;
   },
 
+  async fetchPlayerTeamHistory(playerId) {
+    requireDatabase();
+    const res = await supabaseClient.getPlayerTeamHistory(playerId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setMembershipDates(historyId, joined, left) {
+    requireDatabase();
+    const res = await supabaseClient.setMembershipDates(historyId, joined, left);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async findDuplicatePlayers() {
+    requireDatabase();
+    const res = await supabaseClient.findDuplicatePlayers();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async mergePlayers(keepId, mergeId, reason) {
+    requireDatabase();
+    const res = await supabaseClient.mergePlayers(keepId, mergeId, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async setTournamentTiebreakers(tournamentId, order) {
     requireDatabase();
     const res = await supabaseClient.setTournamentTiebreakers(tournamentId, order);
