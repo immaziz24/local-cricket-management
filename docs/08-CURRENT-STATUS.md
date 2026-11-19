@@ -276,3 +276,5 @@
 - 2026-11-16: Wagon wheel only opens when the scorer taps a positive run value. Owner Android check pending.
 
 - 2026-11-19 (batch 2): bowler mid-over replacement (migration 20261119120000, applied live), scoring-screen correction panel, fall-of-wickets timeline, tests 90/90. Next: owner browser checks, then remaining gaps (exact DLS tables, multi-device conflicts, the not-started features).
+
+- 2026-11-19 (batch 3): Fixtures tab now warns about schedule clashes (#331 team or ground booked twice) and short rest (#332, minimum-rest box). New tested logic, not yet shown on screen: scenario simulator (#329), configurable tiebreakers incl. head-to-head (#327), powerplay and death-over analysis (#351, #352). Tests 98. Owner check pending: Fixtures tab clash warning.

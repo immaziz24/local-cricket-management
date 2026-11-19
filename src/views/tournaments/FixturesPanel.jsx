@@ -8,6 +8,7 @@ import { CalendarDays, Wand2, Plus, Trash2, Clock, MapPin, AlertCircle, CheckCir
 import { roundRobin, knockoutFirstRound, scheduleFixtures, shuffle, interleave } from './fixtureGenerator.js';
 import { MatchResultForm, scoreLine } from './MatchResultForm.jsx';
 import { LineupPanel } from './LineupPanel.jsx';
+import { fixtureConflicts } from './fixtureConflicts.js';
 
 /**
  * #42 Groups, #43-#47 formats, #48 automatic fixtures, #49 manual fixture,
@@ -130,9 +131,24 @@ export function FixturesPanel({ tournament, isOrganiser, onChanged, onNavigate }
   const byDay = matches.reduce((acc, m) => { const k = dayKey(m.scheduled_at); (acc[k] = acc[k] || []).push(m); return acc; }, {});
   const days = Object.keys(byDay).sort((a, b) => (a === 'unscheduled' ? 1 : b === 'unscheduled' ? -1 : a.localeCompare(b)));
 
+  const [minRest, setMinRest] = useState(0);
+  const conflicts = fixtureConflicts(matches, { minRestHours: minRest });
+
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
       <Notice msg={msg} />
+      {/* #331 #332 clashes and rest between matches */}
+      {isOrganiser && matches.length > 1 && (
+        <details open={conflicts.length > 0}>
+          <summary style={{ color: conflicts.length ? '#b45309' : '#166534', fontWeight: 700 }}>{conflicts.length ? `${conflicts.length} schedule clash${conflicts.length === 1 ? '' : 'es'} to fix` : 'No schedule clashes'}</summary>
+          <label style={{ display: 'block', fontSize: '0.8rem', color: '#475569', margin: '0.4rem 0' }}>Minimum rest for a team between matches (hours, 0 = off){' '}
+            <input type="number" min="0" max="96" value={minRest} onChange={(e) => setMinRest(Math.max(0, Number(e.target.value) || 0))} style={{ ...field, width: '5rem' }} />
+          </label>
+          <ul style={{ margin: 0, paddingLeft: '1.1rem', fontSize: '0.82rem', color: '#92400e', lineHeight: 1.6 }}>
+            {conflicts.map((x, i) => <li key={`${x.type}-${i}`}>{x.text}</li>)}
+          </ul>
+        </details>
+      )}
       {matches.length > 0 && (
         <details>
           <summary>Download tournament fixtures</summary>
