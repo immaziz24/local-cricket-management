@@ -1375,6 +1375,36 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async draftMatchRecap(matchId) {
+    const { data, error } = await supabase.rpc('draft_match_recap', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'match recap') };
+    return { data, error: null };
+  },
+
+  async editMatchRecap(recapId, title, summary, body) {
+    const { data, error } = await supabase.rpc('edit_match_recap', { p_recap_id: recapId, p_title: title, p_summary: summary, p_body: body });
+    if (error) return { data: null, error: friendlyError(error, 'match recap') };
+    return { data, error: null };
+  },
+
+  async approveMatchRecap(recapId) {
+    const { data, error } = await supabase.rpc('approve_match_recap', { p_recap_id: recapId });
+    if (error) return { data: null, error: friendlyError(error, 'match recap') };
+    return { data, error: null };
+  },
+
+  async rejectMatchRecap(recapId, reason) {
+    const { data, error } = await supabase.rpc('reject_match_recap', { p_recap_id: recapId, p_reason: reason });
+    if (error) return { data: null, error: friendlyError(error, 'match recap') };
+    return { data, error: null };
+  },
+
+  async listMatchRecaps(matchId) {
+    const { data, error } = await supabase.rpc('list_match_recaps', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'match recap') };
+    return { data: data || [], error: null };
+  },
+
   async listScorerHandovers(matchId) {
     const { data, error } = await supabase.rpc('list_scorer_handovers', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'scorer handovers') };

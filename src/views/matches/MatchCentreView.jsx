@@ -5,6 +5,7 @@ import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { ArticleFeed } from '../news/newsShared.jsx';
+import { MatchRecapPanel } from '../news/MatchRecapPanel.jsx';
 import { ArrowLeft, Coins, MapPin, Clock, Trophy, AlertCircle, CheckCircle, Share2, Copy, PauseCircle, PlayCircle } from 'lucide-react';
 import { LineupPanel } from '../tournaments/LineupPanel.jsx';
 import { ScoringPanel } from './ScoringPanel.jsx';
@@ -460,6 +461,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       {m.status !== 'scheduled' && tab === 'media' && <HighlightsPanel matchId={m.id} refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'media' && <MediaGallery scope="match" scopeId={m.id} kinds={['photo', 'video']} title="Match photos & videos" subtitle="Photo gallery and video uploads" refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'media' && <MatchShareCards matchId={m.id} refreshKey={refreshKey} />}
+      {m.status === 'completed' && tab === 'news' && staff && <MatchRecapPanel matchId={m.id} />}
       {m.status !== 'scheduled' && tab === 'news' && <ArticleFeed title="Match previews & reports" subtitle="Write a report - it starts from the scorecard" filter={{ match_id: m.id }} writeKinds={['match_report', 'preview']} defaults={{ match_id: m.id, kind: 'match_report' }} onNavigate={onNavigate} limit={12} emptyText="No report yet - be the first to write one." />}
     </div>
   );

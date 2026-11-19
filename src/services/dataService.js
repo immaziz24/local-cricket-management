@@ -1081,6 +1081,41 @@ export const dataService = {
     return res.data;
   },
 
+  async draftMatchRecap(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.draftMatchRecap(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async editMatchRecap(recapId, title, summary, body) {
+    requireDatabase();
+    const res = await supabaseClient.editMatchRecap(recapId, title, summary, body);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async approveMatchRecap(recapId) {
+    requireDatabase();
+    const res = await supabaseClient.approveMatchRecap(recapId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async rejectMatchRecap(recapId, reason) {
+    requireDatabase();
+    const res = await supabaseClient.rejectMatchRecap(recapId, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listMatchRecaps(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.listMatchRecaps(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchScorerHandovers(matchId) {
     requireDatabase();
     const res = await supabaseClient.listScorerHandovers(matchId);
