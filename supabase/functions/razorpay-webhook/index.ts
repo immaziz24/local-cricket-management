@@ -42,9 +42,10 @@ Deno.serve(async (request) => {
     }
 
     const client = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
+    // Batch 16: the offer id is passed on so the plan is switched on and an invoice is issued.
     const { error } = await client.rpc("record_razorpay_test_payment", {
       p_payer: payer, p_payment: paymentId, p_description: String(link.description || "Paid plan").slice(0, 100),
-      p_amount: payment.amount, p_captured_at: new Date(event.created_at * 1000).toISOString(),
+      p_amount: payment.amount, p_captured_at: new Date(event.created_at * 1000).toISOString(), p_offer: offerId,
     });
     return new Response(null, { status: error ? 500 : 204 });
   } catch {

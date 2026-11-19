@@ -1405,6 +1405,42 @@ export const supabaseClient = {
     return { data: data || [], error: null };
   },
 
+  async getMyMembership() {
+    const { data, error } = await supabase.rpc('get_my_membership', {  });
+    if (error) return { data: null, error: friendlyError(error, 'membership') };
+    return { data, error: null };
+  },
+
+  async getMyInvoice(paymentId) {
+    const { data, error } = await supabase.rpc('get_my_invoice', { p_payment_id: paymentId });
+    if (error) return { data: null, error: friendlyError(error, 'invoice') };
+    return { data, error: null };
+  },
+
+  async getInvoiceSettings() {
+    const { data, error } = await supabase.rpc('get_invoice_settings', {  });
+    if (error) return { data: null, error: friendlyError(error, 'invoice settings') };
+    return { data, error: null };
+  },
+
+  async setInvoiceSettings(settings) {
+    const { data, error } = await supabase.rpc('set_invoice_settings', { p: settings });
+    if (error) return { data: null, error: friendlyError(error, 'invoice settings') };
+    return { data, error: null };
+  },
+
+  async decidePaymentRefund(paymentId, approve, amountPaise, note, gatewayRef) {
+    const { data, error } = await supabase.rpc('decide_payment_refund', { p_payment_id: paymentId, p_approve: approve, p_amount_paise: amountPaise, p_note: note, p_gateway_ref: gatewayRef || null });
+    if (error) return { data: null, error: friendlyError(error, 'refund') };
+    return { data, error: null };
+  },
+
+  async getPlayerAchievements(playerId) {
+    const { data, error } = await supabase.rpc('get_player_achievements', { p_player_id: playerId });
+    if (error) return { data: null, error: friendlyError(error, 'achievements') };
+    return { data, error: null };
+  },
+
   async listScorerHandovers(matchId) {
     const { data, error } = await supabase.rpc('list_scorer_handovers', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'scorer handovers') };

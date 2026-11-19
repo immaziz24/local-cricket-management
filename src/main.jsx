@@ -3,6 +3,11 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { ScoreOverlay } from './views/media/ScoreOverlay.jsx';
 import './index.css';
+import { startAccess } from './views/settings/accessibility.js';
+import { listenForInstall } from './views/settings/installApp.js';
+
+listenForInstall(); // #394 remember the browser's install offer
+startAccess(); // #396 apply saved accessibility and low-data choices before the first screen
 
 // #179 Live score overlay for streaming apps: ?overlay=<match id>[&style=box] shows only the score.
 const q = new URLSearchParams(window.location.search);

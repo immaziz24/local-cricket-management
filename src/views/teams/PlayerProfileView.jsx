@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { AchievementCards } from './AchievementCards.jsx';
 import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
@@ -146,6 +147,7 @@ export function PlayerProfileView({ playerId, onNavigate }) {
       {/* #77 career statistics, #78 awards, Category D */}
       <PlayerStatsPanel playerId={playerId} onNavigate={onNavigate} />
       <PlayerAwardsCard playerId={playerId} onNavigate={onNavigate} />
+      <AchievementCards playerId={playerId} />
 
       {/* #182 player video profile, #187 player card */}
       <MediaGallery scope="player" scopeId={playerId} kinds={['video']} title="Video profile" subtitle="Batting, bowling and fielding clips – added by the player or their team owner" />

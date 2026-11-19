@@ -337,3 +337,12 @@ a {
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+/* #396 Accessibility and low-data choices (set from Settings > Language) */
+html[data-large-text="1"] { font-size: 120%; }
+html[data-contrast="1"] body { background: #fff !important; color: #000 !important; }
+html[data-contrast="1"] a { color: #0000b8 !important; text-decoration: underline !important; }
+html[data-contrast="1"] button, html[data-contrast="1"] input, html[data-contrast="1"] select, html[data-contrast="1"] textarea { border: 2px solid #000 !important; }
+html[data-contrast="1"] :focus-visible { outline: 3px solid #000 !important; outline-offset: 2px; }
+html[data-reduce-motion="1"] *, html[data-reduce-motion="1"] *::before, html[data-reduce-motion="1"] *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+img[data-lowdata], iframe[data-lowdata] { min-height: 2.5rem; min-width: 2.5rem; background: #e2e8f0; outline: 1px dashed #94a3b8; cursor: pointer; }

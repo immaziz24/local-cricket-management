@@ -1116,6 +1116,48 @@ export const dataService = {
     return res.data;
   },
 
+  async getMyMembership() {
+    requireDatabase();
+    const res = await supabaseClient.getMyMembership();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getMyInvoice(paymentId) {
+    requireDatabase();
+    const res = await supabaseClient.getMyInvoice(paymentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getInvoiceSettings() {
+    requireDatabase();
+    const res = await supabaseClient.getInvoiceSettings();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setInvoiceSettings(settings) {
+    requireDatabase();
+    const res = await supabaseClient.setInvoiceSettings(settings);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async decidePaymentRefund(paymentId, approve, amountPaise, note, gatewayRef) {
+    requireDatabase();
+    const res = await supabaseClient.decidePaymentRefund(paymentId, approve, amountPaise, note, gatewayRef);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getPlayerAchievements(playerId) {
+    requireDatabase();
+    const res = await supabaseClient.getPlayerAchievements(playerId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchScorerHandovers(matchId) {
     requireDatabase();
     const res = await supabaseClient.listScorerHandovers(matchId);

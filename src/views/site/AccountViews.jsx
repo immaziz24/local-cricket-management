@@ -17,6 +17,10 @@ import { ReportedArticlesPanel } from '../news/NewsLearnViews.jsx';
 import { AdminControlCentre } from '../admin/AdminControlCentre.jsx';
 import { downloadBlob } from '../media/mediaUtils.js';
 import { menuLanguages } from '../../components/layout/navItems.js';
+import { MembershipCard, InvoicePanel, RefundDecisionRow, RevenueBreakdown, InvoiceSettingsCard } from './PaymentsExtras.jsx';
+import { refundStatusLabel, canRequestRefund } from './paymentsRules.js';
+import { AccessibilityCard } from '../settings/AccessibilityCard.jsx';
+import { InstallAppCard } from '../settings/InstallAppCard.jsx';
 
 /** Settings & Privacy (every member) and Admin Panel (Admin / Super-Admin). */
 function Tabs({ tabs, tab, setTab }) {
@@ -105,6 +109,8 @@ function PaymentReport({ revenue = false }) {
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
   const [refunds, setRefunds] = useState([]);
+  const [invoiceFor, setInvoiceFor] = useState(null);
+  const [tick, setTick] = useState(0);
 
   const requestRefund = async (id) => {
     const reason = window.prompt('Why are you requesting a refund?');
@@ -127,27 +133,31 @@ function PaymentReport({ revenue = false }) {
       .then(result => { if (active) setRefunds(result); })
       .catch(err => { if (active) setNotice(err.message); });
     return () => { active = false; };
-  }, [revenue]);
+  }, [revenue, tick]);
 
   return (
     <section className="info-box">
       <h2>{revenue ? 'Revenue dashboard' : 'Payment history'}</h2>
       {error ? <p role="alert">{error}</p> : !data ? <p role="status">Loading…</p> : revenue ? (
-        <dl>
-          <dt>Captured payments</dt><dd>{data.payment_count}</dd>
-          <dt>Gross collections</dt><dd>{inr.format(data.captured_paise / 100)}</dd>
-          <dt>Refunds</dt><dd>{inr.format(data.refunded_paise / 100)}</dd>
-          <dt>Collections after refunds</dt><dd>{inr.format((data.captured_paise - data.refunded_paise) / 100)}</dd>
-        </dl>
+        <>
+          <dl>
+            <dt>Captured payments</dt><dd>{data.payment_count}</dd>
+            <dt>Gross collections</dt><dd>{inr.format(data.captured_paise / 100)}</dd>
+            <dt>Refunds</dt><dd>{inr.format(data.refunded_paise / 100)}</dd>
+            <dt>Collections after refunds</dt><dd>{inr.format((data.captured_paise - data.refunded_paise) / 100)}</dd>
+          </dl>
+          <RevenueBreakdown data={data} />
+        </>
       ) : data.length === 0 ? <p>No payments recorded yet.</p> : (
         <ul aria-label="Most recent 100 payments">
           {data.map(payment => (
             <li key={payment.id}>
               <strong>{payment.description}</strong> · {inr.format(payment.amount_paise / 100)}
               {' · '}{new Date(payment.captured_at).toLocaleDateString('en-IN')}
-              {payment.refunded_paise > 0 && <> · Refunded {inr.format(payment.refunded_paise / 100)}</>}
+              {payment.invoice_no && <> · Invoice {payment.invoice_no} (<button type="button" className="home-link" onClick={() => setInvoiceFor(payment.id)}>view</button>)</>}
+              {refundStatusLabel(payment) && <> · {refundStatusLabel(payment)}</>}
               {' · '}<button type="button" className="home-link" onClick={() => downloadReceipt(payment)}>Download receipt</button>
-              {payment.refunded_paise < payment.amount_paise && (
+              {canRequestRefund(payment) && (
                 <> · <button type="button" className="home-link" onClick={() => requestRefund(payment.id)}>Request refund</button></>
               )}
             </li>
@@ -158,10 +168,12 @@ function PaymentReport({ revenue = false }) {
         <>
           <h3>Refund requests</h3>
           {refunds.length ? <ul>{refunds.map(refund => (
-            <li key={refund.payment_id}><strong>{refund.description}</strong> · {refund.reason}</li>
+            <RefundDecisionRow key={refund.payment_id} refund={refund} onDone={() => setTick(t => t + 1)} />
           ))}</ul> : <p>No open requests.</p>}
+          <InvoiceSettingsCard />
         </>
       )}
+      {invoiceFor && <InvoicePanel paymentId={invoiceFor} onClose={() => setInvoiceFor(null)} />}
       {notice && <p role="status">{notice}</p>}
     </section>
   );
@@ -216,6 +228,7 @@ export function SettingsView({ currentUser, onNavigate, language, onLanguageChan
           </label>
         </section>
       )}
+      {tab === 'language' && <><InstallAppCard /><AccessibilityCard /></>}
       {tab === 'account' && (
         <section className="info-box">
           <h2>Account</h2>
@@ -235,6 +248,7 @@ export function SettingsView({ currentUser, onNavigate, language, onLanguageChan
       {tab === 'report' && <UserReportingSuspensionView />}
       {tab === 'membership' && (
         <React.Fragment key={currentUser.id}>
+          <MembershipCard />
           <MembershipOffers />
           <PaymentReport />
         </React.Fragment>

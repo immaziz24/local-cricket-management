@@ -10,6 +10,7 @@ import { BowlerEligibilityCard } from './BowlerEligibilityCard.jsx';
 import { makeCommentary } from './commentary.js';
 import { validateCrease, replaceBowlerMidOver as checkBowlerReplacement } from './scoringRules.js';
 import { loadQueue, saveQueue, loadCachedState, saveCachedState, newClientId, isNetworkError, applyQueue } from './offlineScoring.js';
+import { markOf, saveMark, loadMark, clearMark, describeConflict, queueCopyText } from './syncConflicts.js';
 
 /**
  * Ball-by-ball scoring (#7-#19): runs, extras, wickets, automatic strike change, end of over,
@@ -110,12 +111,17 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   const [online, setOnline] = useState(typeof navigator === 'undefined' ? true : navigator.onLine);
   const [syncing, setSyncing] = useState(false);
   const [syncError, setSyncError] = useState(null);
+  const [conflict, setConflict] = useState(null); // #392 why the server refused an offline ball, and what the scorer can do
   const queueRef = useRef(queue);
   const syncingRef = useRef(false);
   const [rs, setRs] = useState(() => { try { return JSON.parse(localStorage.getItem(`lcm-rules-${matchId}`) || 'null'); } catch { return null; } }); // playing conditions in force
   const st = useMemo(() => applyQueue(base, queue, rs?.rules), [base, queue, rs]);
   const setSt = (s) => { setBase(s); if (s) saveCachedState(matchId, s); };
-  const updateQueue = (q) => { queueRef.current = q; setQueue(q); saveQueue(matchId, q); };
+  const updateQueue = (q) => {
+    if (q.length && !queueRef.current.length && base) saveMark(matchId, markOf(base)); // #392 remember the score when we went offline
+    if (!q.length) { clearMark(matchId); setConflict(null); }
+    queueRef.current = q; setQueue(q); saveQueue(matchId, q);
+  };
   const [err, setErr] = useState(null);
   const [busy, setBusy] = useState(false);
   const [extra, setExtra] = useState(null); // wide | no_ball | bye | leg_bye
@@ -163,7 +169,10 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
             ? await dataService.recordBall(matchId, first.payload)
             : await dataService.setInningsPlayers(matchId, first.payload);
         } catch (e) {
-          if (!isNetworkError(e)) setSyncError(`Could not upload ${first.kind === 'ball' ? 'a ball' : 'a player change'}: ${e.message}`);
+          if (!isNetworkError(e)) {
+            setSyncError(`Could not upload ${first.kind === 'ball' ? 'a ball' : 'a player change'}: ${e.message}`);
+            dataService.fetchLiveState(matchId).then((srv) => setConflict(describeConflict(first, e.message, loadMark(matchId), srv, queueRef.current))).catch(() => {});
+          }
           break;
         }
         updateQueue(rest);
@@ -328,6 +337,20 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
           {syncError && queue.length > 0 && (
             <Button variant="secondary" size="sm" onClick={() => window.confirm(`Delete the ${queue.length} unsent action(s) on this device?`) && (updateQueue([]), setSyncError(null), load())}>Discard unsent</Button>
           )}
+        </div>
+      )}
+      {mode === 'live' && conflict && queue.length > 0 && (
+        <div role="alert" style={{ padding: '0.75rem 0.9rem', borderRadius: '0.5rem', fontSize: '0.85rem', backgroundColor: '#fff7ed', border: '1px solid #fdba74', color: '#7c2d12' }}>
+          <strong>These balls could not be uploaded.</strong> {conflict.why}
+          <div style={{ marginTop: 4 }}>First one stopped: {conflict.failed || 'an action'}{conflict.serverMessage ? ` – "${conflict.serverMessage}"` : ''}. {conflict.heldCount} action{conflict.heldCount === 1 ? '' : 's'} still saved on this device.</div>
+          <div style={{ marginTop: 8, display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            {conflict.options.includes('retry') && <Button variant="secondary" size="sm" onClick={() => { setSyncError(null); setConflict(null); flush(); }}>Try again</Button>}
+            <Button variant="secondary" size="sm" onClick={() => {
+              const url = URL.createObjectURL(new Blob([queueCopyText(matchId, queueRef.current)], { type: 'text/plain;charset=utf-8' }));
+              const a = document.createElement('a'); a.href = url; a.download = `unsent-balls-${matchId}.txt`; document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+            }}>Save a copy of my unsent balls</Button>
+            <Button variant="secondary" size="sm" onClick={() => window.confirm(`Throw away the ${queue.length} unsent action(s) and show the server score? Save a copy first if you may need them.`) && (updateQueue([]), setSyncError(null), load())}>Discard and use server score</Button>
+          </div>
         </div>
       )}
       {mode === 'live' && st?.current?._endedOffline && queue.length > 0 && (
