@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
+import { AssignmentResponse } from './AssignmentResponse.jsx';
+import { OfficialAcceptancesCard, ScorerHandoverPanel } from './OfficialsExtras.jsx';
 import { Flag, UserPlus, X, Scale, Star } from 'lucide-react';
 import { Stars } from './OfficialsView.jsx';
 import { SCORER_PERMISSIONS, effectivePermissions, toSaved, permissionSummary } from './scorerPermissions.js';
@@ -63,10 +65,7 @@ export function MatchOfficialsPanel({ match, onNavigate }) {
                     {!over && (d.can_manage || o.is_me) && ['invited', 'accepted'].includes(o.status) && (
                       <button title="Cancel" onClick={() => window.confirm(o.is_me ? 'Withdraw from this match?' : `Cancel ${o.name} as ${ROLE[o.role].toLowerCase()}?`) && run(() => dataService.cancelOfficial(o.id))} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#94a3b8' }}><X size={15} /></button>
                     )}
-                    {o.is_me && o.status === 'invited' && <>
-                      <Button size="sm" variant="primary" onClick={() => run(() => dataService.respondOfficialInvite(o.id, true))}>Accept</Button>
-                      <Button size="sm" variant="secondary" onClick={() => run(() => dataService.respondOfficialInvite(o.id, false))}>Decline</Button>
-                    </>}
+                    {o.is_me && o.status === 'invited' && <AssignmentResponse onRespond={(accept, reason) => run(() => dataService.respondOfficialInvite(o.id, accept, reason))} />}
                   </div>
                   {o.role === 'scorer' && o.permissions && perm?.id !== o.id && <div style={{ marginTop: '0.3rem', fontSize: '0.75rem', color: '#b45309' }}>{permissionSummary(o.permissions)}</div>}
                   {perm?.id === o.id && (
@@ -178,6 +177,8 @@ export function MatchOfficialsPanel({ match, onNavigate }) {
           )}
         </Card>
       )}
+      <OfficialAcceptancesCard matchId={match.id} refreshKey={d.officials.map((o) => `${o.id}${o.status}`).join(',')} />
+      <ScorerHandoverPanel matchId={match.id} matchStatus={match.status} refreshKey={d.officials.map((o) => `${o.id}${o.status}`).join(',')} />
     </>
   );
 }

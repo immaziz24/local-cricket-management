@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
+import { AssignmentResponse } from './AssignmentResponse.jsx';
 import { Flag, Search, UserCheck, CalendarDays, Star, CheckCircle, AlertCircle, ArrowLeft, ShieldCheck } from 'lucide-react';
 
 /**
@@ -136,10 +137,7 @@ function MySchedule({ data, reload, onNavigate }) {
         {a.result && <div style={{ fontSize: '0.75rem', color: '#065f46' }}>{a.result}</div>}
       </div>
       {a.fee != null && <span style={{ fontSize: '0.8rem', color: a.paid ? '#15803d' : '#b45309' }}>{money(a.fee)} {a.paid ? 'paid' : 'unpaid'}</span>}
-      {a.status === 'invited' && <>
-        <Button size="sm" variant="primary" onClick={() => act(() => dataService.respondOfficialInvite(a.id, true))}>Accept</Button>
-        <Button size="sm" variant="secondary" onClick={() => act(() => dataService.respondOfficialInvite(a.id, false))}>Decline</Button>
-      </>}
+      {a.status === 'invited' && <AssignmentResponse onRespond={(accept, reason) => act(() => dataService.respondOfficialInvite(a.id, accept, reason))} />}
       {a.status === 'accepted' && a.match_status === 'scheduled' && <Button size="sm" variant="secondary" onClick={() => window.confirm('Withdraw from this match? The match owner will be told.') && act(() => dataService.cancelOfficial(a.id))}>Withdraw</Button>}
       {a.status === 'declined' && <span style={{ fontSize: '0.75rem', color: '#94a3b8' }}>Declined</span>}
     </div>

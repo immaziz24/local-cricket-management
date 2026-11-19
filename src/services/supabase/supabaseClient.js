@@ -1045,8 +1045,8 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
-  async respondOfficialInvite(assignmentId, accept) {
-    const { data, error } = await supabase.rpc('respond_official_invite', { p_assignment_id: assignmentId, p_accept: !!accept });
+  async respondOfficialInvite(assignmentId, accept, reason) {
+    const { data, error } = await supabase.rpc('respond_official_invite', { p_assignment_id: assignmentId, p_accept: !!accept, p_reason: reason || null });
     if (error) return { data: null, error: friendlyError(error, 'officials') };
     return { data, error: null };
   },
@@ -1126,6 +1126,84 @@ export const supabaseClient = {
   async validateBallSequence(matchId) {
     const { data, error } = await supabase.rpc('validate_ball_sequence', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'ball check') };
+    return { data, error: null };
+  },
+
+  async listOfficialAcceptances(matchId) {
+    const { data, error } = await supabase.rpc('list_official_acceptances', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'assignments') };
+    return { data, error: null };
+  },
+
+  async remindOfficial(assignmentId) {
+    const { data, error } = await supabase.rpc('remind_official', { p_assignment_id: assignmentId });
+    if (error) return { data: null, error: friendlyError(error, 'reminder') };
+    return { data, error: null };
+  },
+
+  async listScorerHandovers(matchId) {
+    const { data, error } = await supabase.rpc('list_scorer_handovers', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'scorer handovers') };
+    return { data, error: null };
+  },
+
+  async requestScorerHandover(matchId, toUser, reason, fromUser) {
+    const { data, error } = await supabase.rpc('request_scorer_handover', { p_match_id: matchId, p_to_user: toUser, p_reason: reason, p_from_user: fromUser || null });
+    if (error) return { data: null, error: friendlyError(error, 'scorer handover') };
+    return { data, error: null };
+  },
+
+  async decideScorerHandover(handoverId, authorise, note) {
+    const { data, error } = await supabase.rpc('decide_scorer_handover', { p_handover_id: handoverId, p_authorise: !!authorise, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'scorer handover') };
+    return { data, error: null };
+  },
+
+  async respondScorerHandover(handoverId, accept) {
+    const { data, error } = await supabase.rpc('respond_scorer_handover', { p_handover_id: handoverId, p_accept: !!accept });
+    if (error) return { data: null, error: friendlyError(error, 'scorer handover') };
+    return { data, error: null };
+  },
+
+  async cancelScorerHandover(handoverId) {
+    const { data, error } = await supabase.rpc('cancel_scorer_handover', { p_handover_id: handoverId });
+    if (error) return { data: null, error: friendlyError(error, 'scorer handover') };
+    return { data, error: null };
+  },
+
+  async checkGroundConflicts(groundId, startsAt, endsAt) {
+    const { data, error } = await supabase.rpc('check_ground_conflicts', { p_ground_id: groundId, p_starts: startsAt, p_ends: endsAt });
+    if (error) return { data: null, error: friendlyError(error, 'ground check') };
+    return { data, error: null };
+  },
+
+  async listGroundConflicts(groundId) {
+    const { data, error } = await supabase.rpc('list_ground_conflicts', { p_ground_id: groundId });
+    if (error) return { data: null, error: friendlyError(error, 'ground conflicts') };
+    return { data, error: null };
+  },
+
+  async checkMatchGroundConflict(matchId) {
+    const { data, error } = await supabase.rpc('check_match_ground_conflict', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'ground check') };
+    return { data, error: null };
+  },
+
+  async getChecklistTemplate() {
+    const { data, error } = await supabase.rpc('get_inspection_checklist_template');
+    if (error) return { data: null, error: friendlyError(error, 'checklist') };
+    return { data, error: null };
+  },
+
+  async addGroundChecklistInspection(groundId, report) {
+    const { data, error } = await supabase.rpc('add_ground_checklist_inspection', { p_ground_id: groundId, p: report });
+    if (error) return { data: null, error: friendlyError(error, 'inspection') };
+    return { data, error: null };
+  },
+
+  async listGroundInspections(groundId) {
+    const { data, error } = await supabase.rpc('list_ground_inspections', { p_ground_id: groundId });
+    if (error) return { data: null, error: friendlyError(error, 'inspections') };
     return { data, error: null };
   },
 

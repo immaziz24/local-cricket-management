@@ -3,6 +3,8 @@ import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { ArrowLeft, MapPin, Phone, Pencil, Camera, Trash2, Star, ChevronLeft, ChevronRight, ClipboardCheck, Sprout, History, ExternalLink } from 'lucide-react';
+import { GroundConflictsPanel } from './GroundConflictsPanel.jsx';
+import { GroundChecklistPanel } from './GroundChecklistPanel.jsx';
 import { GroundForm, FACILITIES, PITCH_TYPES, money, slotTime, inp, lbl } from './groundShared.jsx';
 
 /**
@@ -215,6 +217,7 @@ export function GroundDetailView({ groundId, currentUser, onNavigate }) {
       </Card>
 
       <Calendar groundId={g.id} isOwner={own} signedIn={!!currentUser} ground={g} onChanged={load} />
+      <GroundConflictsPanel groundId={g.id} isOwner={own} signedIn={!!currentUser} />
 
       {/* #157 pitch preparation */}
       <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><Sprout size={16} /> Pitch preparation</span>}
@@ -291,6 +294,8 @@ export function GroundDetailView({ groundId, currentUser, onNavigate }) {
           </div>
         )}
       </Card>
+
+      <GroundChecklistPanel groundId={g.id} isOwner={own} signedIn={!!currentUser} history={d.history || []} onChanged={load} />
 
       {/* #159 match history */}
       <Card title={<span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem' }}><History size={16} /> Match history</span>}>

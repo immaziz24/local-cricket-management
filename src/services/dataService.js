@@ -696,9 +696,9 @@ export const dataService = {
     return res.data;
   },
 
-  async respondOfficialInvite(assignmentId, accept) {
+  async respondOfficialInvite(assignmentId, accept, reason) {
     requireDatabase();
-    const res = await supabaseClient.respondOfficialInvite(assignmentId, accept);
+    const res = await supabaseClient.respondOfficialInvite(assignmentId, accept, reason);
     if (res.error) throw new Error(res.error);
     return res.data;
   },
@@ -790,6 +790,97 @@ export const dataService = {
   async fetchBallSequenceCheck(matchId) {
     requireDatabase();
     const res = await supabaseClient.validateBallSequence(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchOfficialAcceptances(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.listOfficialAcceptances(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async remindOfficial(assignmentId) {
+    requireDatabase();
+    const res = await supabaseClient.remindOfficial(assignmentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchScorerHandovers(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.listScorerHandovers(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async requestScorerHandover(matchId, toUser, reason, fromUser) {
+    requireDatabase();
+    const res = await supabaseClient.requestScorerHandover(matchId, toUser, reason, fromUser);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async decideScorerHandover(handoverId, authorise, note) {
+    requireDatabase();
+    const res = await supabaseClient.decideScorerHandover(handoverId, authorise, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async respondScorerHandover(handoverId, accept) {
+    requireDatabase();
+    const res = await supabaseClient.respondScorerHandover(handoverId, accept);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async cancelScorerHandover(handoverId) {
+    requireDatabase();
+    const res = await supabaseClient.cancelScorerHandover(handoverId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async checkGroundConflicts(groundId, startsAt, endsAt) {
+    requireDatabase();
+    const res = await supabaseClient.checkGroundConflicts(groundId, startsAt, endsAt);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchGroundConflicts(groundId) {
+    requireDatabase();
+    const res = await supabaseClient.listGroundConflicts(groundId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async checkMatchGroundConflict(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.checkMatchGroundConflict(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchChecklistTemplate() {
+    requireDatabase();
+    const res = await supabaseClient.getChecklistTemplate();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async addGroundChecklistInspection(groundId, report) {
+    requireDatabase();
+    const res = await supabaseClient.addGroundChecklistInspection(groundId, report);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchGroundInspections(groundId) {
+    requireDatabase();
+    const res = await supabaseClient.listGroundInspections(groundId);
     if (res.error) throw new Error(res.error);
     return res.data;
   },
