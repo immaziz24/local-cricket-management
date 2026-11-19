@@ -759,6 +759,41 @@ export const dataService = {
     return res.data;
   },
 
+  async fetchRuleOverrides(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.listRuleOverrides(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async requestRuleOverride(matchId, changes, reason) {
+    requireDatabase();
+    const res = await supabaseClient.requestRuleOverride(matchId, changes, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async decideRuleOverride(requestId, approve, note) {
+    requireDatabase();
+    const res = await supabaseClient.decideRuleOverride(requestId, approve, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchBowlerEligibility(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getBowlerEligibility(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchBallSequenceCheck(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.validateBallSequence(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchStatsReconciliation(matchId) {
     requireDatabase();
     const res = await supabaseClient.getStatsReconciliation(matchId);

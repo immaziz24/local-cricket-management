@@ -19,6 +19,7 @@ import { CommentaryPanel } from './CommentaryPanel.jsx';
 import { MatchHistoryPanel } from './MatchHistoryPanel.jsx';
 import { MatchAnalysisPanel } from '../stats/MatchAnalysisPanel.jsx';
 import { PlayingConditionsPanel } from '../rules/PlayingConditionsPanel.jsx';
+import { RuleOverridesPanel } from '../rules/RuleOverridesPanel.jsx';
 import { MatchReportsPanel } from './MatchReportsPanel.jsx';
 import { MatchOfficialsPanel } from '../officials/MatchOfficialsPanel.jsx';
 import { MatchGroundCard } from '../grounds/MatchGroundCard.jsx';
@@ -396,6 +397,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
           Set late-arrival rule
         </Button>
       )}
+      {staff && m.status === 'scheduled' && <RuleOverridesPanel matchId={m.id} refreshKey={refreshKey} />}
       {staff && m.status === 'scheduled' && <MatchPunctualityPanel matchId={m.id} refreshKey={refreshKey} />}
       {staff && m.status === 'scheduled' && <MatchGroundCard match={m} groundName={data.ground_name} canManage={data.can_manage} onNavigate={onNavigate} onChanged={load} />}
       {staff && m.status === 'scheduled' && <MatchOfficialsPanel match={m} onNavigate={onNavigate} />}
@@ -448,6 +450,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
       {m.status !== 'scheduled' && ['commentary', 'over'].includes(tab) && <CommentaryPanel key={tab} byOver={tab === 'over'} matchId={m.id} live={m.status === 'live'} refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'analysis' && <MatchAnalysisPanel matchId={m.id} matchStatus={m.status} canScore={data.can_score} refreshKey={refreshKey} onNavigate={onNavigate} />}
       {m.status !== 'scheduled' && tab === 'rules' && <PlayingConditionsPanel matchId={m.id} />}
+      {m.status !== 'scheduled' && tab === 'rules' && <RuleOverridesPanel matchId={m.id} refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'matchday' && <MatchPunctualityPanel matchId={m.id} refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'officials' && <MatchGroundCard match={m} groundName={data.ground_name} canManage={data.can_manage} onNavigate={onNavigate} onChanged={load} />}
       {m.status !== 'scheduled' && tab === 'officials' && <MatchOfficialsPanel match={m} onNavigate={onNavigate} />}

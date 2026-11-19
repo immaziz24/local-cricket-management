@@ -1099,6 +1099,36 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async listRuleOverrides(matchId) {
+    const { data, error } = await supabase.rpc('list_rule_overrides', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'rule changes') };
+    return { data, error: null };
+  },
+
+  async requestRuleOverride(matchId, changes, reason) {
+    const { data, error } = await supabase.rpc('request_rule_override', { p_match_id: matchId, p_changes: changes, p_reason: reason });
+    if (error) return { data: null, error: friendlyError(error, 'rule change request') };
+    return { data, error: null };
+  },
+
+  async decideRuleOverride(requestId, approve, note) {
+    const { data, error } = await supabase.rpc('decide_rule_override', { p_request_id: requestId, p_approve: approve, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'rule change decision') };
+    return { data, error: null };
+  },
+
+  async getBowlerEligibility(matchId) {
+    const { data, error } = await supabase.rpc('get_bowler_eligibility', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'bowler list') };
+    return { data, error: null };
+  },
+
+  async validateBallSequence(matchId) {
+    const { data, error } = await supabase.rpc('validate_ball_sequence', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'ball check') };
+    return { data, error: null };
+  },
+
   async getStatsReconciliation(matchId) {
     const { data, error } = await supabase.rpc('stats_reconciliation', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'statistics check') };

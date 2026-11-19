@@ -6,6 +6,7 @@ import { Star } from 'lucide-react';
 import { WagonExplorer } from './WagonExplorer.jsx';
 import { ManhattanChart, WormComparison } from './AnalysisCharts.jsx';
 import { StatsProvenanceCard } from './StatsProvenanceCard.jsx';
+import { BallSequenceCard } from './BallSequenceCard.jsx';
 import { BarChart, PlayerName, StatGrid, oversOf, th, td } from './statsUi.jsx';
 
 /**
@@ -98,6 +99,7 @@ export function MatchAnalysisPanel({ matchId, matchStatus, canScore, refreshKey,
       ))}
 
       <StatsProvenanceCard matchId={matchId} refreshKey={refreshKey} onRefreshed={load} />
+      <BallSequenceCard matchId={matchId} refreshKey={refreshKey} />
 
       <Card title="Top performers" subtitle="MVP points in this match">
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>
