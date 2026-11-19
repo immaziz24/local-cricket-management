@@ -3,6 +3,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { dataService } from '../../services/dataService.js';
 import { dismissalText, oversText } from './ScoringPanel.jsx';
 import { WagonWheel } from './WagonWheel.jsx';
+import { FowTimeline } from './FowTimeline.jsx';
 
 /**
  * #21 Full batting scorecard, #22 full bowling scorecard, #23 summary - international-style layout:
@@ -145,6 +146,7 @@ export function FullScorecard({ matchId, refreshKey = 0, onNavigate }) {
           </p>
         </div>
       )}
+      {inn.fall_of_wickets.length > 0 && <FowTimeline fow={inn.fall_of_wickets} totalBalls={inn.legal_balls} oversLimit={inn.overs_limit} />}
 
       <div className="scorecard-section">
         <table style={{ width: '100%', borderCollapse: 'collapse' }}>

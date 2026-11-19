@@ -14,6 +14,7 @@ const LABEL = {
   MATCH_STARTED: (d) => `Toss done, match started (chose to ${d.decision || '?'})`,
   BALL_UNDONE: (d) => `Undid ball ${d.seq ?? ''} of innings ${d.innings ?? ''}${d.wicket ? ` (wicket: ${String(d.wicket).replace('_', ' ')})` : d.runs !== undefined ? ` (${d.runs} run${d.runs === 1 ? '' : 's'})` : ''}`,
   INNINGS_ENDED: (d) => `Innings ${d.innings ?? ''} ended by hand (${d.reason || 'closed'})`,
+  BOWLER_REPLACED_MID_OVER: (d) => `Bowler replaced mid-over${d.over != null ? ` (over ${Number(d.over) + 1}, after ${d.legal_balls_before ?? 0} ball${d.legal_balls_before === 1 ? '' : 's'})` : ''}${d.reason ? `: ${d.reason}` : ''}`,
   MATCH_PAUSED: (d) => `Play stopped: ${d.reason || ''}`,
   MATCH_RESUMED: (d) => `Play resumed${d.paused_minutes ? ` after ${d.paused_minutes} min` : ''}`,
   MATCH_COMPLETED: (d) => `Match finished: ${d.result || ''}`,

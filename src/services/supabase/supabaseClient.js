@@ -2027,6 +2027,20 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async replaceBowlerMidOver(matchId, { replacement, reason }) {
+    const { data, error } = await supabase.rpc('replace_bowler_mid_over', { p_match_id: matchId, p_replacement: replacement, p_reason: reason });
+    if (error) return { data: null, error: friendlyError(error, 'players') };
+    return { data, error: null };
+  },
+
+  async getBowlerReplacements(matchId) {
+    const { data, error } = await supabase.from('bowler_replacements')
+      .select('innings_id, over_no, original_id, replacement_id, legal_balls_before, reason, created_at')
+      .eq('match_id', matchId).order('created_at', { ascending: true });
+    if (error) return { data: [], error: friendlyError(error, 'players') };
+    return { data: data || [], error: null };
+  },
+
   async recordBall(matchId, ball) {
     const { data, error } = await supabase.rpc('record_ball', { p_match_id: matchId, p: ball });
     if (error) return { data: null, error: friendlyError(error, 'ball') };

@@ -1787,6 +1787,19 @@ export const dataService = {
     return res.data;
   },
 
+  async replaceBowlerMidOver(matchId, input) {
+    requireDatabase();
+    const res = await supabaseClient.replaceBowlerMidOver(matchId, input || {});
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchBowlerReplacements(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getBowlerReplacements(matchId);
+    return res.data || [];
+  },
+
   async recordBall(matchId, ball) {
     requireDatabase();
     const res = await supabaseClient.recordBall(matchId, ball);

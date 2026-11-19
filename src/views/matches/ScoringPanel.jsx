@@ -5,6 +5,7 @@ import { dataService } from '../../services/dataService.js';
 import { Undo2, AlertCircle, Flag, CloudRain, WifiOff, RefreshCw } from 'lucide-react';
 import { WagonWheelPicker } from './WagonWheel.jsx';
 import { makeCommentary } from './commentary.js';
+import { validateCrease, replaceBowlerMidOver as checkBowlerReplacement } from './scoringRules.js';
 import { loadQueue, saveQueue, loadCachedState, saveCachedState, newClientId, isNetworkError, applyQueue } from './offlineScoring.js';
 
 /**
@@ -120,6 +121,8 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   const [editSeq, setEditSeq] = useState(null); // ball being corrected
   const [wheelOn, setWheelOn] = useState(() => { try { return localStorage.getItem('lcm-wagon') !== 'off'; } catch { return true; } });
   const [pick, setPick] = useState({ striker: '', non_striker: '', bowler: '' });
+  const [replacements, setReplacements] = useState([]); // bowlers replaced mid-over (#321-#323)
+  const [fix, setFix] = useState({ striker: '', non_striker: '', bowler: '', repl: '', reason: '' }); // corrections (#311-#314)
   const [comment, setComment] = useState('');
   const [focused, setFocused] = useState(true);
   const [menu, setMenu] = useState(false);
@@ -132,6 +135,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
     try {
       let s = await dataService.fetchLiveState(matchId);
       dataService.fetchScoringRules(matchId).then((r) => { setRs(r); try { localStorage.setItem(`lcm-rules-${matchId}`, JSON.stringify(r)); } catch { /* storage full or blocked */ } }).catch(() => {});
+      dataService.fetchBowlerReplacements(matchId).then(setReplacements).catch(() => {});
       // scorer opens a live match with no innings yet: create innings 1 so the openers can be picked
       if (s.can_score && s.status === 'live' && !s.current) s = await dataService.setInningsPlayers(matchId, {});
       setSt(s); setErr(null); return s;
@@ -284,6 +288,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
   const maxOvers = rules.max_overs_per_bowler || null;
   const bowlerBalls = (id) => curInn?.bowling.find((x) => x.player_id === id)?.legal_balls ?? (rs?.bowler_overs?.[id] || 0);
   const atQuota = (id) => !!maxOvers && bowlerBalls(id) >= maxOvers * 6;
+  const barredIds = replacements.filter((r) => r.innings_id === cur?.innings_id).map((r) => r.original_id);
   const mustRetire = rules.retire_at ? atCrease.filter((p) => p.runs >= rules.retire_at) : [];
   const extraButtons = [['wide', 'Wide'], ['no_ball', 'No ball'], ['bye', 'Bye'], ['leg_bye', 'Leg bye']]
     .filter(([v]) => (v !== 'bye' || rules.byes !== false) && (v !== 'leg_bye' || rules.leg_byes !== false));
@@ -443,7 +448,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
               <label style={{ fontSize: '0.75rem', color: '#64748b' }}>Bowler<br />
                 <select value={pick.bowler} onChange={(e) => setPick({ ...pick, bowler: e.target.value })} style={field}>
                   <option value="">Choose</option>
-                  {bowlers.map((p) => <option key={p.player_id} value={p.player_id} disabled={p.player_id === cur?.last_over_bowler_id || atQuota(p.player_id)}>{p.name}{p.player_id === cur?.last_over_bowler_id ? ' (bowled last over)' : atQuota(p.player_id) ? ` (bowled max ${maxOvers} ov)` : maxOvers ? ` (${oversText(bowlerBalls(p.player_id))}/${maxOvers})` : ''}</option>)}
+                  {bowlers.map((p) => <option key={p.player_id} value={p.player_id} disabled={p.player_id === cur?.last_over_bowler_id || atQuota(p.player_id) || barredIds.includes(p.player_id)}>{p.name}{barredIds.includes(p.player_id) ? ' (replaced - cannot bowl again)' : p.player_id === cur?.last_over_bowler_id ? ' (bowled last over)' : atQuota(p.player_id) ? ` (bowled max ${maxOvers} ov)` : maxOvers ? ` (${oversText(bowlerBalls(p.player_id))}/${maxOvers})` : ''}</option>)}
                 </select>
               </label>
             )}
@@ -565,6 +570,83 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
             </div>
           </div>
         </Card>
+      )}
+
+      {/* #311-#314 Correct the batters / bowler, #321-#323 injured bowler replaced mid-over */}
+      {mode === 'live' && scoring && cur && cur.status === 'in_progress' && !needPick && (
+        <details style={{ border: '1px solid #e2e8f0', borderRadius: '0.6rem', padding: '0.6rem 0.8rem', backgroundColor: '#fff' }}>
+          <summary style={{ cursor: 'pointer', fontWeight: 700, fontSize: '0.85rem' }}>Wrong player picked, or bowler hurt?</summary>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.9rem', marginTop: '0.7rem' }}>
+            <div>
+              <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>Correct the batters or the current bowler</div>
+              <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'end' }}>
+                <label style={{ fontSize: '0.72rem', color: '#64748b' }}>Striker<br />
+                  <select value={fix.striker} onChange={(e) => setFix({ ...fix, striker: e.target.value })} style={field}>
+                    <option value="">{nameIn(cur.batting_side, cur.striker_id) || 'No change'} (now)</option>
+                    {cur.batting_side.filter((p) => !p.out && p.player_id !== cur.striker_id && p.player_id !== (fix.non_striker || cur.non_striker_id)).map((p) => <option key={p.player_id} value={p.player_id}>{p.name}</option>)}
+                  </select>
+                </label>
+                <label style={{ fontSize: '0.72rem', color: '#64748b' }}>Non-striker<br />
+                  <select value={fix.non_striker} onChange={(e) => setFix({ ...fix, non_striker: e.target.value })} style={field}>
+                    <option value="">{nameIn(cur.batting_side, cur.non_striker_id) || 'No change'} (now)</option>
+                    {cur.batting_side.filter((p) => !p.out && p.player_id !== cur.non_striker_id && p.player_id !== (fix.striker || cur.striker_id)).map((p) => <option key={p.player_id} value={p.player_id}>{p.name}</option>)}
+                  </select>
+                </label>
+                <label style={{ fontSize: '0.72rem', color: '#64748b' }}>Bowler<br />
+                  <select value={fix.bowler} onChange={(e) => setFix({ ...fix, bowler: e.target.value })} style={field}>
+                    <option value="">{nameIn(bowlers, cur.bowler_id) || 'No change'} (now)</option>
+                    {bowlers.filter((p) => p.player_id !== cur.bowler_id).map((p) => <option key={p.player_id} value={p.player_id} disabled={barredIds.includes(p.player_id) || p.player_id === cur.last_over_bowler_id || atQuota(p.player_id)}>{p.name}{barredIds.includes(p.player_id) ? ' (replaced)' : p.player_id === cur.last_over_bowler_id ? ' (bowled last over)' : atQuota(p.player_id) ? ` (bowled max ${maxOvers} ov)` : ''}</option>)}
+                  </select>
+                </label>
+                <Button variant="secondary" disabled={busy || (!fix.striker && !fix.non_striker && !fix.bowler)} onClick={() => {
+                  const crease = validateCrease({
+                    strikerId: fix.striker || cur.striker_id, nonStrikerId: fix.non_striker || cur.non_striker_id,
+                    outIds: cur.batting_side.filter((p) => p.out).map((p) => p.player_id), battingIds: cur.batting_side.map((p) => p.player_id)
+                  });
+                  if (!crease.ok) { setErr(crease.reason); return; }
+                  act(async () => {
+                    const s = await dataService.setInningsPlayers(matchId, { striker: fix.striker || null, nonStriker: fix.non_striker || null, bowler: fix.bowler || null });
+                    setFix({ ...fix, striker: '', non_striker: '', bowler: '' });
+                    return s;
+                  });
+                }}>Save correction</Button>
+              </div>
+              <p style={{ margin: '0.35rem 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>Changes who is at the crease or bowling now. Balls already scored keep the names they were saved with (use Edit ball for those). Needs internet.</p>
+            </div>
+            {cur.bowler_id && (
+              <div style={{ borderTop: '1px solid #f1f5f9', paddingTop: '0.7rem' }}>
+                <div style={{ fontSize: '0.8rem', fontWeight: 700, color: '#334155', marginBottom: '0.35rem' }}>Bowler hurt: another bowler finishes the over</div>
+                <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'end' }}>
+                  <label style={{ fontSize: '0.72rem', color: '#64748b' }}>Replacement<br />
+                    <select value={fix.repl} onChange={(e) => setFix({ ...fix, repl: e.target.value })} style={field}>
+                      <option value="">Choose</option>
+                      {bowlers.filter((p) => p.player_id !== cur.bowler_id).map((p) => <option key={p.player_id} value={p.player_id} disabled={barredIds.includes(p.player_id) || p.player_id === cur.last_over_bowler_id || atQuota(p.player_id)}>{p.name}{barredIds.includes(p.player_id) ? ' (replaced)' : p.player_id === cur.last_over_bowler_id ? ' (bowled last over)' : atQuota(p.player_id) ? ` (bowled max ${maxOvers} ov)` : ''}</option>)}
+                    </select>
+                  </label>
+                  <label style={{ fontSize: '0.72rem', color: '#64748b' }}>Reason<br />
+                    <input value={fix.reason} maxLength={160} placeholder="Injury, illness..." onChange={(e) => setFix({ ...fix, reason: e.target.value })} style={{ ...field, width: 190 }} />
+                  </label>
+                  <Button variant="secondary" disabled={busy || !fix.repl} onClick={() => {
+                    const check = checkBowlerReplacement({
+                      originalId: cur.bowler_id, replacementId: fix.repl, legalBallsInOver: cur.legal_balls % 6, lastOverBowlerId: cur.last_over_bowler_id,
+                      oversBowled: Object.fromEntries(bowlers.map((p) => [p.player_id, bowlerBalls(p.player_id) / 6])), barred: barredIds,
+                      reason: fix.reason, rules: maxOvers ? { maxOversPerBowler: maxOvers } : {}
+                    });
+                    if (!check.ok) { setErr(check.reason); return; }
+                    if (!window.confirm(`${nameIn(bowlers, cur.bowler_id)} cannot continue. ${nameIn(bowlers, fix.repl)} bowls the remaining ${check.ballsLeftForReplacement} ball${check.ballsLeftForReplacement === 1 ? '' : 's'} of this over.\n\n${nameIn(bowlers, cur.bowler_id)} cannot bowl again in this innings, and ${nameIn(bowlers, fix.repl)} cannot bowl the next over.`)) return;
+                    act(async () => {
+                      const s = await dataService.replaceBowlerMidOver(matchId, { replacement: fix.repl, reason: fix.reason });
+                      setFix({ ...fix, repl: '', reason: '' });
+                      dataService.fetchBowlerReplacements(matchId).then(setReplacements).catch(() => {});
+                      return s;
+                    });
+                  }}>Replace bowler</Button>
+                </div>
+                <p style={{ margin: '0.35rem 0 0', fontSize: '0.72rem', color: '#94a3b8' }}>Balls already bowled stay with the first bowler. The change is saved in the match history. Needs internet.</p>
+              </div>
+            )}
+          </div>
+        </details>
       )}
 
       {/* #121 Super Over after a tie */}

@@ -274,3 +274,5 @@
 - 2026-11-16: Added compact mobile live scoring view. Owner Android check pending.
 
 - 2026-11-16: Wagon wheel only opens when the scorer taps a positive run value. Owner Android check pending.
+
+- 2026-11-19 (batch 2): bowler mid-over replacement (migration 20261119120000, applied live), scoring-screen correction panel, fall-of-wickets timeline, tests 90/90. Next: owner browser checks, then remaining gaps (exact DLS tables, multi-device conflicts, the not-started features).
