@@ -5,6 +5,7 @@ import { dataService } from '../../services/dataService.js';
 import { Undo2, AlertCircle, Flag, CloudRain, WifiOff, RefreshCw } from 'lucide-react';
 import { WagonWheelPicker } from './WagonWheel.jsx';
 import { ScorerConflictBanner } from './ScorerConflictBanner.jsx';
+import { UmpireDecisionBar } from './UmpireDecisionBar.jsx';
 import { makeCommentary } from './commentary.js';
 import { validateCrease, replaceBowlerMidOver as checkBowlerReplacement } from './scoringRules.js';
 import { loadQueue, saveQueue, loadCachedState, saveCachedState, newClientId, isNetworkError, applyQueue } from './offlineScoring.js';
@@ -572,6 +573,11 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
             </div>
           </div>
         </Card>
+      )}
+
+      {/* #115-#117 #124-#126 One-tap umpire decisions */}
+      {mode === 'live' && scoring && curInn && (
+        <UmpireDecisionBar matchId={matchId} teams={[{ id: curInn.batting_team.id, name: curInn.batting_team.name }, { id: curInn.bowling_team.id, name: curInn.bowling_team.name }]} />
       )}
 
       {/* #311-#314 Correct the batters / bowler, #321-#323 injured bowler replaced mid-over */}
