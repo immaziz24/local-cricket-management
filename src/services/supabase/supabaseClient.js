@@ -1063,6 +1063,30 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async setScorerPermissions(assignmentId, permissions) {
+    const { data, error } = await supabase.rpc('set_scorer_permissions', { p_assignment_id: assignmentId, p_permissions: permissions || {} });
+    if (error) return { data: null, error: friendlyError(error, 'scorer permissions') };
+    return { data, error: null };
+  },
+
+  async listScopedAuditLogs(scope, id, limit) {
+    const { data, error } = await supabase.rpc('list_scoped_audit_logs', { p_scope: scope, p_id: id, p_limit: limit || 200 });
+    if (error) return { data: null, error: friendlyError(error, 'activity log') };
+    return { data: data || [], error: null };
+  },
+
+  async listMySessions() {
+    const { data, error } = await supabase.rpc('list_my_sessions');
+    if (error) return { data: null, error: friendlyError(error, 'devices') };
+    return { data: data || [], error: null };
+  },
+
+  async revokeMySession(sessionId) {
+    const { data, error } = await supabase.rpc('revoke_my_session', { p_session_id: sessionId });
+    if (error) return { data: null, error: friendlyError(error, 'devices') };
+    return { data: data || [], error: null };
+  },
+
   async listMatchOfficials(matchId) {
     const { data, error } = await supabase.rpc('list_match_officials', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'officials') };

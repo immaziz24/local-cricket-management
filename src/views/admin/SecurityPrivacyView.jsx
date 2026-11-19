@@ -3,6 +3,7 @@ import { Card } from '../../components/common/Card.jsx';
 import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
+import { SessionsCard } from './SessionsCard.jsx';
 import { Lock, Download, LogOut, Save, CheckCircle, AlertCircle } from 'lucide-react';
 
 /**
@@ -129,6 +130,8 @@ export function SecurityPrivacyView() {
             </p>
             <Button variant="secondary" onClick={downloadMyData} disabled={busy} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem' }}><Download size={14} /> Download my data</Button>
           </Card>
+
+          <SessionsCard />
 
           <Card title="Sessions">
             <p style={{ margin: '0 0 0.75rem', fontSize: '0.85rem', color: '#64748b' }}>

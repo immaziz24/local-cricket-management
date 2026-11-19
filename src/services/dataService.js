@@ -717,6 +717,34 @@ export const dataService = {
     return res.data;
   },
 
+  async setScorerPermissions(assignmentId, permissions) {
+    requireDatabase();
+    const res = await supabaseClient.setScorerPermissions(assignmentId, permissions);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listScopedAuditLogs(scope, id, limit) {
+    requireDatabase();
+    const res = await supabaseClient.listScopedAuditLogs(scope, id, limit);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listMySessions() {
+    requireDatabase();
+    const res = await supabaseClient.listMySessions();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async revokeMySession(sessionId) {
+    requireDatabase();
+    const res = await supabaseClient.revokeMySession(sessionId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async listMatchOfficials(matchId) {
     requireDatabase();
     const res = await supabaseClient.listMatchOfficials(matchId);

@@ -4,6 +4,7 @@ import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { Flag, UserPlus, X, Scale, Star } from 'lucide-react';
 import { Stars } from './OfficialsView.jsx';
+import { SCORER_PERMISSIONS, effectivePermissions, toSaved, permissionSummary } from './scorerPermissions.js';
 
 /**
  * On the match page: #139 official assignments (invite / cancel), #145 payment records,
@@ -19,6 +20,7 @@ export function MatchOfficialsPanel({ match, onNavigate }) {
   const [disp, setDisp] = useState(null);
   const [inv, setInv] = useState(null); // { role, list, fee }
   const [pay, setPay] = useState(null); // { id, fee, paid, note }
+  const [perm, setPerm] = useState(null); // { id, values } #383
   const [rate, setRate] = useState(null); // { id, rating, comment }
   const [newDisp, setNewDisp] = useState(null);
   const [decide, setDecide] = useState(null); // { id, status, resolution }
@@ -55,6 +57,7 @@ export function MatchOfficialsPanel({ match, onNavigate }) {
                     {o.rating != null && <Stars value={o.rating} />}
                     <span style={{ flex: 1 }} />
                     {o.fee != null && <span style={{ fontSize: '0.78rem', color: o.paid ? '#15803d' : '#b45309' }}>₹{Number(o.fee).toLocaleString('en-IN')} {o.paid ? 'paid' : 'unpaid'}</span>}
+                    {d.can_manage && o.status === 'accepted' && o.role === 'scorer' && <Button size="sm" variant="secondary" onClick={() => setPerm({ id: o.id, values: effectivePermissions(o.permissions) })}>Permissions</Button>}
                     {d.can_manage && o.status === 'accepted' && <Button size="sm" variant="secondary" onClick={() => setPay({ id: o.id, fee: o.fee ?? '', paid: !!o.paid, note: o.payment_note || '' })}>Payment</Button>}
                     {d.can_rate && o.status === 'accepted' && !o.is_me && <Button size="sm" variant="secondary" onClick={() => setRate({ id: o.id, rating: o.my_rating || 5, comment: '' })} style={{ display: 'inline-flex', alignItems: 'center', gap: '0.2rem' }}><Star size={12} /> {o.my_rating ? 'Change rating' : 'Rate'}</Button>}
                     {!over && (d.can_manage || o.is_me) && ['invited', 'accepted'].includes(o.status) && (
@@ -65,6 +68,19 @@ export function MatchOfficialsPanel({ match, onNavigate }) {
                       <Button size="sm" variant="secondary" onClick={() => run(() => dataService.respondOfficialInvite(o.id, false))}>Decline</Button>
                     </>}
                   </div>
+                  {o.role === 'scorer' && o.permissions && perm?.id !== o.id && <div style={{ marginTop: '0.3rem', fontSize: '0.75rem', color: '#b45309' }}>{permissionSummary(o.permissions)}</div>}
+                  {perm?.id === o.id && (
+                    <div style={{ marginTop: '0.5rem', display: 'flex', flexDirection: 'column', gap: '0.3rem' }}>
+                      <span style={{ fontSize: '0.78rem', color: '#64748b' }}>What may {o.name} do in this match? You, the organiser and admins are never limited.</span>
+                      {SCORER_PERMISSIONS.map(([k, label]) => (
+                        <label key={k} style={{ fontSize: '0.82rem' }}><input type="checkbox" checked={perm.values[k]} onChange={(e) => setPerm({ ...perm, values: { ...perm.values, [k]: e.target.checked } })} /> {label}</label>
+                      ))}
+                      <div style={{ display: 'flex', gap: '0.4rem' }}>
+                        <Button size="sm" variant="primary" onClick={() => run(() => dataService.setScorerPermissions(perm.id, toSaved(perm.values) || {}), () => setPerm(null))}>Save</Button>
+                        <Button size="sm" variant="secondary" onClick={() => setPerm(null)}>Cancel</Button>
+                      </div>
+                    </div>
+                  )}
                   {pay?.id === o.id && (
                     <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
                       <input type="number" min="0" placeholder="Fee ₹" value={pay.fee} onChange={(e) => setPay({ ...pay, fee: e.target.value })} style={{ ...inp, width: 100 }} />

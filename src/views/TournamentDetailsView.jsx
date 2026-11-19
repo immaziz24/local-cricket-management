@@ -1,4 +1,5 @@
 import { TournamentAdmins } from './tournaments/TournamentAdmins.jsx';
+import { ScopedAuditLog } from './admin/ScopedAuditLog.jsx';
 import { LeaderboardsPanel } from './stats/LeaderboardsPanel.jsx';
 import { CreateTournamentView } from './CreateTournamentView.jsx';
 import './tournaments/TournamentDetails.css';
@@ -722,6 +723,8 @@ export function TournamentDetailsView(props) {
           )}
         </div>
       )}
+
+      {isOrganiser && activeTab === 'overview' && <ScopedAuditLog scope="tournament" id={tournament.id} />}
 
       {isOrganiser && ['overview', 'teams'].includes(activeTab) && (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
