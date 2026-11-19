@@ -3,6 +3,7 @@ import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { ArticleFeed } from '../news/newsShared.jsx';
+import { RecruitmentBoard, ReportButton } from './CommunityExtras.jsx';
 import { Users2, Store, Search, Megaphone, Mail, Plus, X, MapPin, Phone, Globe, Camera, Trash2, ExternalLink } from 'lucide-react';
 
 /**
@@ -133,7 +134,7 @@ function ListingDetail({ id, signedIn, onClose, onChanged, onNavigate }) {
             </label>
             <Button size="sm" variant="secondary" onClick={async () => { if (!window.confirm('Delete this listing?')) return; try { await dataService.deleteListing(l.id); onChanged(); onClose(); } catch (er) { setMsg(er.message); } }} style={{ display: 'inline-flex', alignItems: 'center', gap: 4, color: '#b91c1c' }}><Trash2 size={13} /> Delete</Button>
           </div>
-        ) : <EnquiryBox targetType="listing" targetId={l.id} signedIn={signedIn} />}
+        ) : <><EnquiryBox targetType="listing" targetId={l.id} signedIn={signedIn} />{signedIn && <div style={{ marginTop: '0.4rem' }}><ReportButton type="listing" id={l.id} /></div>}</>}
         {msg && <div style={{ color: '#b91c1c', fontSize: '0.8rem', marginTop: '0.3rem' }}>{msg}</div>}
       </div>
     </Card>
@@ -418,8 +419,9 @@ function Board({ signedIn }) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
           {list.map((p) => (
             <Card key={p.id}>
-              <div style={{ fontSize: '0.7rem', color: '#7c3aed', fontWeight: 700 }}>{POST_LABEL[p.kind]}{p.city ? ` · ${p.city}` : ''}{p.event_date ? ` · ${new Date(p.event_date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}` : ''}{p.status === 'closed' ? ' · CLOSED' : ''}</div>
+              <div style={{ fontSize: '0.7rem', color: '#7c3aed', fontWeight: 700 }}>{POST_LABEL[p.kind]}{p.city ? ` · ${p.city}` : ''}{p.event_date ? ` · ${new Date(p.event_date).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' })}` : ''}{p.status === 'closed' ? ' · CLOSED' : ''}{p.hidden ? ' · HIDDEN BY ADMIN' : ''}</div>
               <div style={{ fontWeight: 800, fontSize: '1rem' }}>{p.title}</div>
+              {p.hidden && p.hidden_reason && <div style={{ fontSize: '0.78rem', color: '#b91c1c' }}>Hidden: {p.hidden_reason}</div>}
               {p.body && <p style={{ margin: '0.3rem 0 0', fontSize: '0.86rem', whiteSpace: 'pre-wrap' }}>{p.body}</p>}
               <div style={{ fontSize: '0.74rem', color: '#94a3b8', marginTop: '0.3rem' }}>by {p.author}{p.team ? ` (${p.team.name})` : ''} · {new Date(p.created_at).toLocaleDateString('en-IN')}{p.is_mine ? ` · ${p.replies} repl${p.replies === 1 ? 'y' : 'ies'}` : ''}</div>
               <div style={{ marginTop: '0.5rem' }}>
@@ -428,7 +430,7 @@ function Board({ signedIn }) {
                     <Button size="sm" variant="secondary" onClick={async () => { try { await dataService.savePost(p.id, { ...p, team_id: p.team?.id || '', status: p.status === 'open' ? 'closed' : 'open' }); load(); } catch (e) { setMsg(e.message); } }}>{p.status === 'open' ? 'Close' : 'Re-open'}</Button>
                     <Button size="sm" variant="secondary" onClick={async () => { if (!window.confirm('Delete this post?')) return; try { await dataService.deletePost(p.id); load(); } catch (e) { setMsg(e.message); } }} style={{ color: '#b91c1c' }}>Delete</Button>
                   </div>
-                ) : reply === p.id ? <EnquiryBox targetType="post" targetId={p.id} signedIn={signedIn} label="Reply privately" /> : <Button size="sm" variant="secondary" onClick={() => setReply(p.id)}>Reply</Button>}
+                ) : reply === p.id ? <EnquiryBox targetType="post" targetId={p.id} signedIn={signedIn} label="Reply privately" /> : <div style={{ display: 'flex', gap: '0.4rem', flexWrap: 'wrap', alignItems: 'center' }}><Button size="sm" variant="secondary" onClick={() => setReply(p.id)}>Reply</Button>{signedIn && <ReportButton type="post" id={p.id} />}</div>}
               </div>
             </Card>
           ))}
@@ -492,7 +494,7 @@ export function CommunityView({ currentUser, onNavigate }) {
   const [tab, setTab] = useState('directory');
   const [unread, setUnread] = useState(0);
   useEffect(() => { if (currentUser) dataService.myEnquiries().then((d) => setUnread(d.unread || 0)).catch(() => {}); }, [currentUser?.id, tab]);
-  const TABS = [['directory', 'Directory', Users2], ['market', 'Marketplace', Store], ['find', 'Find', Search], ['board', 'Community board', Megaphone],
+  const TABS = [['directory', 'Directory', Users2], ['market', 'Marketplace', Store], ['find', 'Find', Search], ['board', 'Community board', Megaphone], ['recruit', 'Recruit players', Users2],
     ...(currentUser ? [['enquiries', `Enquiries${unread ? ` (${unread})` : ''}`, Mail]] : [])];
   return (
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -511,6 +513,7 @@ export function CommunityView({ currentUser, onNavigate }) {
       {tab === 'market' && <Marketplace signedIn={!!currentUser} />}
       {tab === 'find' && <Find onNavigate={onNavigate} />}
       {tab === 'board' && <Board signedIn={!!currentUser} />}
+      {tab === 'recruit' && <RecruitmentBoard signedIn={!!currentUser} />}
       {tab === 'enquiries' && currentUser && <Enquiries />}
     </div>
   );

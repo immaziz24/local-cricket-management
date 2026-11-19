@@ -4,6 +4,7 @@ import { Badge } from '../../components/common/Badge.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { Flag, Search, Ban, CheckCircle, XCircle, AlertCircle, Unlock } from 'lucide-react';
+import { ModerationQueueCard } from '../community/CommunityExtras.jsx';
 
 /**
  * Feature #266 – User reporting and suspension
@@ -211,6 +212,7 @@ export function UserReportingSuspensionView() {
         </Card>
       ) : (
         <>
+          <ModerationQueueCard />
           <Notice msg={adminMsg} />
 
           {/* Reports queue */}

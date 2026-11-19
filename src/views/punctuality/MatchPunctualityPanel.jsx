@@ -3,6 +3,8 @@ import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { Clock, CheckCircle, Circle, AlertTriangle, UserCheck, Gavel } from 'lucide-react';
+import { PenaltyPreview, PenaltyHistory, ArrivalDisputes } from './LatePenaltyExtras.jsx';
+import { validateRollback } from './latePenaltyExtras.js';
 
 /**
  * Category Q on the match page: #299 check-in, #300 attendance, #301 readiness, #302 delay,
@@ -26,7 +28,7 @@ export function rateText(r) {
   if (r.method === 'penalty_runs') return `${r.runs_per_step} runs to the opponent per ${r.step} minutes late${grace}.`;
   return `1 over with max ${r.field_max_outside} fielders outside the circle per ${r.field_step} minutes late${grace}.`;
 }
-const STATUS = { proposed: ['Waiting for approval', '#b45309'], approved: ['Approved', '#b91c1c'], rejected: ['Rejected', '#64748b'], appealed: ['Appealed', '#7c3aed'], waived: ['Waived', '#15803d'] };
+const STATUS = { proposed: ['Waiting for approval', '#b45309'], approved: ['Approved', '#b91c1c'], rejected: ['Rejected', '#64748b'], appealed: ['Appealed', '#7c3aed'], waived: ['Waived', '#15803d'], rolled_back: ['Rolled back', '#64748b'] };
 const inp = { padding: '0.4rem 0.5rem', border: '1px solid #cbd5e1', borderRadius: '0.4rem', fontSize: '0.84rem' };
 const hhmm = (d) => new Date(d).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' });
 
@@ -37,6 +39,8 @@ export function MatchPunctualityPanel({ matchId, refreshKey }) {
   const [att, setAtt] = useState(null); // team id whose attendance list is open
   const [manual, setManual] = useState(null);
   const [fine, setFine] = useState(null);
+  const [preview, setPreview] = useState(null); // penalty id whose preview is open
+  const [extraKey, setExtraKey] = useState(0);
   const load = () => dataService.getMatchReadiness(matchId).then(setD).catch((e) => setMsg(e.message));
   useEffect(() => { load(); }, [matchId, refreshKey]);
   const run = async (fn, after) => { setMsg(null); try { const r = await fn(); if (r && r.teams) setD(r); else load(); after && after(); } catch (e) { setMsg(e.message); } };
@@ -48,6 +52,13 @@ export function MatchPunctualityPanel({ matchId, refreshKey }) {
     if (action === 'waive') { note = window.prompt('Reason for the exemption (required):', ''); if (!note) return; }
     if (action === 'reject' || action === 'uphold') { note = window.prompt('Note (optional):', ''); if (note === null) return; }
     run(() => dataService.decideLatePenalty(p.id, action, note));
+  };
+  const rollback = (p) => {
+    const reason = window.prompt('Why is this penalty being rolled back? (required, the teams will see it)', '');
+    if (reason === null) return;
+    const bad = validateRollback(reason);
+    if (bad) { setMsg(bad); return; }
+    run(() => dataService.rollbackLatePenalty(p.id, reason));
   };
 
   return (
@@ -138,7 +149,7 @@ export function MatchPunctualityPanel({ matchId, refreshKey }) {
         {d.penalties.length === 0 ? <p style={{ margin: 0, fontSize: '0.84rem', color: '#94a3b8' }}>{d.rules?.method === 'none' ? 'Set a late-arrival method in the Rules tab (playing conditions) before the match.' : 'No penalty. A penalty is proposed automatically when a team checks in late.'}</p> : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             {d.penalties.map((p) => {
-              const [sl, sc] = STATUS[p.status];
+              const [sl, sc] = STATUS[p.status] || [p.status, '#64748b'];
               return (
                 <div key={p.id} style={{ padding: '0.6rem 0.75rem', borderRadius: '0.5rem', border: '1px solid #e2e8f0', backgroundColor: ['approved', 'appealed'].includes(p.status) ? '#fef2f2' : p.status === 'proposed' ? '#fffbeb' : '#f8fafc' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', gap: '0.5rem', flexWrap: 'wrap' }}>
@@ -154,6 +165,8 @@ export function MatchPunctualityPanel({ matchId, refreshKey }) {
                   {p.fine_amount != null && <div style={{ fontSize: '0.8rem', marginTop: '0.2rem' }}>Fine ₹{Number(p.fine_amount).toLocaleString('en-IN')} · {p.fine_paid ? 'paid' : 'unpaid'}</div>}
                   <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.45rem', flexWrap: 'wrap' }}>
                     {d.can_approve && p.status === 'proposed' && !over && <Button size="sm" variant="primary" onClick={() => window.confirm(`Approve: ${penaltyText(p, maxOut)}?`) && decide(p, 'approve')}>Approve</Button>}
+                    {!p.applied && ['proposed', 'approved', 'appealed'].includes(p.status) && !over && <Button size="sm" variant="secondary" onClick={() => setPreview(preview === p.id ? null : p.id)}>{preview === p.id ? 'Hide preview' : 'Preview effect'}</Button>}
+                    {d.can_approve && ['approved', 'appealed'].includes(p.status) && p.applied && !p.fine_paid && !over && <Button size="sm" variant="secondary" onClick={() => rollback(p)}>Roll back</Button>}
                     {d.can_approve && p.status === 'proposed' && <Button size="sm" variant="secondary" onClick={() => decide(p, 'reject')}>Reject</Button>}
                     {d.can_approve && ['proposed', 'approved', 'appealed'].includes(p.status) && <Button size="sm" variant="secondary" onClick={() => decide(p, 'waive')}>{p.status === 'appealed' ? 'Accept appeal (waive)' : 'Exempt / waive'}</Button>}
                     {d.can_approve && p.status === 'appealed' && <Button size="sm" variant="secondary" onClick={() => decide(p, 'uphold')}>Turn down appeal</Button>}
@@ -166,12 +179,22 @@ export function MatchPunctualityPanel({ matchId, refreshKey }) {
                       </>
                     ) : <Button size="sm" variant="secondary" onClick={() => setFine({ id: p.id, amount: p.fine_amount ?? '', paid: !!p.fine_paid })}>{p.fine_amount != null ? 'Edit fine' : 'Add fine'}</Button>)}
                   </div>
+                  {preview === p.id && <PenaltyPreview matchId={matchId} teams={d.teams} penaltyId={p.id} lateTeamId={p.late_team_id} compact />}
                 </div>
               );
             })}
           </div>
         )}
+        {d.rules?.method !== 'none' && (d.can_manage || d.can_approve) && !over && (
+          <details style={{ marginTop: '0.7rem' }}>
+            <summary style={{ cursor: 'pointer', fontSize: '0.82rem', fontWeight: 700, color: '#475569' }}>What if a team is late? (preview only)</summary>
+            <div style={{ marginTop: '0.4rem' }}><PenaltyPreview matchId={matchId} teams={d.teams} /></div>
+          </details>
+        )}
       </Card>
+      <PenaltyHistory matchId={matchId} refreshKey={`${refreshKey}-${extraKey}-${d.penalties.map((p) => p.status + p.minutes_late).join('')}`} />
+      <ArrivalDisputes matchId={matchId} teams={d.teams} arrivals={d.teams.filter((t) => t.arrival).map((t) => ({ team_id: t.team_id, arrived_at: t.arrival.arrived_at }))}
+        refreshKey={`${refreshKey}-${extraKey}`} onChanged={() => { setExtraKey((k) => k + 1); load(); }} />
     </>
   );
 }

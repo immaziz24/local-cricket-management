@@ -1141,6 +1141,120 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async rollbackLatePenalty(penaltyId, reason) {
+    const { data, error } = await supabase.rpc('rollback_late_penalty', { p_penalty_id: penaltyId, p_reason: reason });
+    if (error) return { data: null, error: friendlyError(error, 'penalty rollback') };
+    return { data, error: null };
+  },
+
+  async listLatePenaltyEvents(matchId) {
+    const { data, error } = await supabase.rpc('list_late_penalty_events', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'penalty history') };
+    return { data, error: null };
+  },
+
+  async simulateLatePenalty(matchId, lateTeamId, minutes, penaltyId) {
+    const { data, error } = await supabase.rpc('simulate_late_penalty', { p_match_id: matchId, p_late_team_id: lateTeamId || null, p_minutes: minutes === '' || minutes == null ? null : Number(minutes), p_penalty_id: penaltyId || null });
+    if (error) return { data: null, error: friendlyError(error, 'penalty preview') };
+    return { data, error: null };
+  },
+
+  async listArrivalDisputes(matchId) {
+    const { data, error } = await supabase.rpc('list_arrival_disputes', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'arrival disputes') };
+    return { data, error: null };
+  },
+
+  async openArrivalDispute(matchId, teamId, claimedAt, reason) {
+    const { data, error } = await supabase.rpc('open_arrival_dispute', { p_match_id: matchId, p_team_id: teamId, p_claimed_arrival_at: claimedAt, p_reason: reason });
+    if (error) return { data: null, error: friendlyError(error, 'arrival dispute') };
+    return { data, error: null };
+  },
+
+  async addArrivalEvidence(disputeId, kind, url, statement) {
+    const { data, error } = await supabase.rpc('add_arrival_evidence', { p_dispute_id: disputeId, p_kind: kind, p_url: url || null, p_statement: statement || null });
+    if (error) return { data: null, error: friendlyError(error, 'evidence') };
+    return { data, error: null };
+  },
+
+  async decideArrivalDispute(disputeId, accept, note) {
+    const { data, error } = await supabase.rpc('decide_arrival_dispute', { p_dispute_id: disputeId, p_accept: !!accept, p_note: note });
+    if (error) return { data: null, error: friendlyError(error, 'dispute decision') };
+    return { data, error: null };
+  },
+
+  async withdrawArrivalDispute(disputeId) {
+    const { data, error } = await supabase.rpc('withdraw_arrival_dispute', { p_dispute_id: disputeId });
+    if (error) return { data: null, error: friendlyError(error, 'dispute') };
+    return { data, error: null };
+  },
+
+  async saveRecruitmentPost(postId, p) {
+    const { data, error } = await supabase.rpc('save_recruitment_post', { p_post_id: postId || null, p });
+    if (error) return { data: null, error: friendlyError(error, 'recruitment post') };
+    return { data, error: null };
+  },
+
+  async listRecruitmentPosts(p) {
+    const { data, error } = await supabase.rpc('list_recruitment_posts', { p: p || {} });
+    if (error) return { data: null, error: friendlyError(error, 'recruitment posts') };
+    return { data, error: null };
+  },
+
+  async applyToRecruitment(postId, message, playerId) {
+    const { data, error } = await supabase.rpc('apply_to_recruitment', { p_post_id: postId, p_message: message || null, p_player_id: playerId || null });
+    if (error) return { data: null, error: friendlyError(error, 'application') };
+    return { data, error: null };
+  },
+
+  async listRecruitmentApplications(postId) {
+    const { data, error } = await supabase.rpc('list_recruitment_applications', { p_post_id: postId });
+    if (error) return { data: null, error: friendlyError(error, 'applications') };
+    return { data, error: null };
+  },
+
+  async decideRecruitmentApplication(appId, action, note) {
+    const { data, error } = await supabase.rpc('decide_recruitment_application', { p_app_id: appId, p_action: action, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'application decision') };
+    return { data, error: null };
+  },
+
+  async withdrawRecruitmentApplication(appId) {
+    const { data, error } = await supabase.rpc('withdraw_recruitment_application', { p_app_id: appId });
+    if (error) return { data: null, error: friendlyError(error, 'application') };
+    return { data, error: null };
+  },
+
+  async myRecruitmentApplications() {
+    const { data, error } = await supabase.rpc('my_recruitment_applications', {});
+    if (error) return { data: null, error: friendlyError(error, 'your applications') };
+    return { data, error: null };
+  },
+
+  async reportCommunityItem(type, id, reason, details) {
+    const { data, error } = await supabase.rpc('report_community_item', { p_type: type, p_id: id, p_reason: reason, p_details: details || null });
+    if (error) return { data: null, error: friendlyError(error, 'report') };
+    return { data, error: null };
+  },
+
+  async listModerationQueue(status) {
+    const { data, error } = await supabase.rpc('list_moderation_queue', { p_status: status || 'open' });
+    if (error) return { data: null, error: friendlyError(error, 'moderation queue') };
+    return { data, error: null };
+  },
+
+  async moderationQueueCount() {
+    const { data, error } = await supabase.rpc('moderation_queue_count', {});
+    if (error) return { data: null, error: friendlyError(error, 'moderation queue') };
+    return { data, error: null };
+  },
+
+  async decideModeration(type, id, action, note) {
+    const { data, error } = await supabase.rpc('decide_moderation', { p_type: type, p_id: id, p_action: action, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'moderation decision') };
+    return { data, error: null };
+  },
+
   async listScorerHandovers(matchId) {
     const { data, error } = await supabase.rpc('list_scorer_handovers', { p_match_id: matchId });
     if (error) return { data: null, error: friendlyError(error, 'scorer handovers') };

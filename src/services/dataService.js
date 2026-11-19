@@ -808,6 +808,139 @@ export const dataService = {
     return res.data;
   },
 
+  async rollbackLatePenalty(penaltyId, reason) {
+    requireDatabase();
+    const res = await supabaseClient.rollbackLatePenalty(penaltyId, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listLatePenaltyEvents(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.listLatePenaltyEvents(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async simulateLatePenalty(matchId, lateTeamId, minutes, penaltyId) {
+    requireDatabase();
+    const res = await supabaseClient.simulateLatePenalty(matchId, lateTeamId, minutes, penaltyId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listArrivalDisputes(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.listArrivalDisputes(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async openArrivalDispute(matchId, teamId, claimedAt, reason) {
+    requireDatabase();
+    const res = await supabaseClient.openArrivalDispute(matchId, teamId, claimedAt, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async addArrivalEvidence(disputeId, kind, url, statement) {
+    requireDatabase();
+    const res = await supabaseClient.addArrivalEvidence(disputeId, kind, url, statement);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async decideArrivalDispute(disputeId, accept, note) {
+    requireDatabase();
+    const res = await supabaseClient.decideArrivalDispute(disputeId, accept, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async withdrawArrivalDispute(disputeId) {
+    requireDatabase();
+    const res = await supabaseClient.withdrawArrivalDispute(disputeId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveRecruitmentPost(postId, p) {
+    requireDatabase();
+    const res = await supabaseClient.saveRecruitmentPost(postId, p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listRecruitmentPosts(p) {
+    requireDatabase();
+    const res = await supabaseClient.listRecruitmentPosts(p);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async applyToRecruitment(postId, message, playerId) {
+    requireDatabase();
+    const res = await supabaseClient.applyToRecruitment(postId, message, playerId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listRecruitmentApplications(postId) {
+    requireDatabase();
+    const res = await supabaseClient.listRecruitmentApplications(postId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async decideRecruitmentApplication(appId, action, note) {
+    requireDatabase();
+    const res = await supabaseClient.decideRecruitmentApplication(appId, action, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async withdrawRecruitmentApplication(appId) {
+    requireDatabase();
+    const res = await supabaseClient.withdrawRecruitmentApplication(appId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async myRecruitmentApplications() {
+    requireDatabase();
+    const res = await supabaseClient.myRecruitmentApplications();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async reportCommunityItem(type, id, reason, details) {
+    requireDatabase();
+    const res = await supabaseClient.reportCommunityItem(type, id, reason, details);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listModerationQueue(status) {
+    requireDatabase();
+    const res = await supabaseClient.listModerationQueue(status);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async moderationQueueCount() {
+    requireDatabase();
+    const res = await supabaseClient.moderationQueueCount();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async decideModeration(type, id, action, note) {
+    requireDatabase();
+    const res = await supabaseClient.decideModeration(type, id, action, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchScorerHandovers(matchId) {
     requireDatabase();
     const res = await supabaseClient.listScorerHandovers(matchId);
