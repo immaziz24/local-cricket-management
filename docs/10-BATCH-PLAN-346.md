@@ -98,8 +98,8 @@ How to read the tags: **Check** = built earlier, only needs your browser check. 
 **Category A, Phase 3** (28)
 
 - #1 Create a new cricket match — Check
-- #2 Scope notes and implementation principles [PDF mismatch] — Build
-- #3 Official cricket reference starting points [PDF mismatch] — Build
+- #2 Select participating teams — Check (name per master blueprint; PDF title differs, see decision log)
+- #3 Add playing XI — Check (name per master blueprint; PDF title differs, see decision log)
 - #4 Add substitute players — Check
 - #5 Toss winner selection — Check
 - #6 Toss decision: bat or bowl — Check

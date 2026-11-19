@@ -182,3 +182,5 @@
      - Synchronized `Sidebar.jsx` and `MobileNav.jsx` active tab states when inspecting tournament details.
   4. **Strict Scope Integrity:** Only Feature #32 implemented; Feature #33 and subsequent features remain unstarted.
 - **Consequences:** Feature #32 is fully operational, verified with 44 automated tests and 0 build diagnostics. Phase 1 features and Feature #31 remain 100% operational.
+
+- 2026-11-19: Feature #2 and #3 names. The 400-feature PDF lists #2 as "Scope notes and implementation principles" and #3 as "Official cricket reference starting points"; our master blueprint (`01-MASTER-BLUEPRINT.md`) lists #2 "Select participating teams" and #3 "Add playing XI". Decision: the master blueprint is the source of truth (project rule: numbers and names come only from it). The PDF entries are notes, not features, so they are not tracked as separate features. #2 and #3 are tracked as in the master and need the normal owner check.
