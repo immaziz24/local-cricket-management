@@ -1,10 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { dataService } from '../../services/dataService.js';
 import { overlayOptions } from './mediaExtras.js';
+import { delayFromSearch, pushSnapshot, pickSnapshot } from './streamDelay.js';
 
 /**
  * #179 Live score overlay – opened as  ?overlay=<match id>  (optional &style=box).
  * A transparent page with no menus, refreshed every 5 seconds, for streaming apps (Larix, Prism, StreamYard, OBS).
+ * #372 Stream synchronization delay: the score is shown late by the match's saved delay (or &delay=seconds in the address),
+ * so it appears when the delayed video picture does.
  */
 const overs = (b) => `${Math.floor((b || 0) / 6)}.${(b || 0) % 6}`;
 const ballText = (b) => {
@@ -21,22 +24,35 @@ export function ScoreOverlay({ matchId, style = 'bar' }) {
   const [centre, setCentre] = useState(null);
   const [live, setLive] = useState(null);
   const [err, setErr] = useState(null);
+  const buf = useRef([]);
+  const delayRef = useRef(0);
 
   useEffect(() => {
     document.body.style.background = 'transparent';
     document.documentElement.style.background = 'transparent';
-    let stop = false; let haveCentre = false;
+    let stop = false; let haveCentre = false; let timer = null;
+    const urlDelay = delayFromSearch(typeof window !== 'undefined' ? window.location.search : '');
+    if (urlDelay !== null) delayRef.current = urlDelay;
+    const show = () => { const s = pickSnapshot(buf.current, Date.now(), delayRef.current); if (s) setLive(s); };
     const tick = async () => {
       try {
-        const [c, l] = await Promise.all([haveCentre ? Promise.resolve(null) : dataService.fetchMatchCentre(matchId), dataService.fetchLiveState(matchId)]);
+        const [c, l, d] = await Promise.all([
+          haveCentre ? Promise.resolve(null) : dataService.fetchMatchCentre(matchId),
+          dataService.fetchLiveState(matchId),
+          urlDelay === null ? dataService.fetchStreamDelay(matchId).catch(() => delayRef.current) : Promise.resolve(urlDelay)
+        ]);
         if (stop) return;
         if (c) { setCentre(c); haveCentre = true; }
-        setLive(l); setErr(null);
+        delayRef.current = Number(d) || 0;
+        buf.current = pushSnapshot(buf.current, Date.now(), l);
+        setErr(null); show();
       } catch (e) { if (!stop) setErr(e.message); }
+      // with a delay, look more often so the picture and score line up within about two seconds
+      if (!stop) timer = setTimeout(tick, delayRef.current > 0 ? 2000 : 5000);
     };
     tick();
-    const t = setInterval(tick, 5000);
-    return () => { stop = true; clearInterval(t); };
+    const clock = setInterval(show, 1000);
+    return () => { stop = true; clearTimeout(timer); clearInterval(clock); };
   }, [matchId]);
 
   if (err && !live) return <div style={{ color: '#fff', font: '600 16px system-ui', padding: 10, textShadow: '0 1px 3px #000' }}>Score unavailable: {err}</div>;

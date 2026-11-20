@@ -2912,6 +2912,49 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async setStreamDelay(matchId, seconds) {
+    const { data, error } = await supabase.rpc('set_stream_delay', { p_match_id: matchId, p_seconds: seconds });
+    if (error) return { data: null, error: friendlyError(error, 'stream delay') };
+    return { data, error: null };
+  },
+
+  async getStreamDelay(matchId) {
+    const { data, error } = await supabase.rpc('get_stream_delay', { p_match_id: matchId });
+    if (error) return { data: 0, error: friendlyError(error, 'stream delay') };
+    return { data: Number(data) || 0, error: null };
+  },
+
+  async listTournamentDomains(tournamentId) {
+    const { data, error } = await supabase.rpc('list_tournament_domains', { p_tournament_id: tournamentId });
+    if (error) return { data: null, error: friendlyError(error, 'web addresses') };
+    return { data, error: null };
+  },
+
+  async addTournamentDomain(tournamentId, domain) {
+    const { data, error } = await supabase.rpc('add_tournament_domain', { p_tournament_id: tournamentId, p_domain: domain });
+    if (error) return { data: null, error: friendlyError(error, 'web address') };
+    return { data, error: null };
+  },
+
+  async removeTournamentDomain(id) {
+    const { data, error } = await supabase.rpc('remove_tournament_domain', { p_id: id });
+    if (error) return { data: null, error: friendlyError(error, 'web address') };
+    return { data, error: null };
+  },
+
+  async verifyTournamentDomain(id) {
+    const { data, error } = await supabase.functions.invoke('verify-domain', { body: { id } });
+    if (error) return { data: null, error: 'Could not check the address right now. Try again in a moment.' };
+    if (data && data.error) return { data: null, error: data.error };
+    return { data, error: null };
+  },
+
+  async resolveTournamentDomain(host) {
+    const { data, error } = await supabase.rpc('resolve_tournament_domain', { p_host: host });
+    if (error) return { data: null, error: null };
+    return { data: data || null, error: null };
+  },
+
   async getPitchMap(matchId, inningsNo, bowlerId) {
     const { data, error } = await supabase.rpc('get_pitch_map', { p_match_id: matchId, p_innings_no: inningsNo || null, p_bowler_id: bowlerId || null });
     if (error) return { data: null, error: friendlyError(error, 'pitch map') };

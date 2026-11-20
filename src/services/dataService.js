@@ -1431,6 +1431,53 @@ export const dataService = {
     return res.data;
   },
 
+  async setStreamDelay(matchId, seconds) {
+    requireDatabase();
+    const res = await supabaseClient.setStreamDelay(matchId, seconds);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchStreamDelay(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getStreamDelay(matchId);
+    return res.data || 0;
+  },
+
+  async fetchTournamentDomains(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.listTournamentDomains(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async addTournamentDomain(tournamentId, domain) {
+    requireDatabase();
+    const res = await supabaseClient.addTournamentDomain(tournamentId, domain);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async removeTournamentDomain(id) {
+    requireDatabase();
+    const res = await supabaseClient.removeTournamentDomain(id);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async verifyTournamentDomain(id) {
+    requireDatabase();
+    const res = await supabaseClient.verifyTournamentDomain(id);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async resolveTournamentDomain(host) {
+    requireDatabase();
+    const res = await supabaseClient.resolveTournamentDomain(host);
+    return res.data;
+  },
+
   async fetchPitchMap(matchId, inningsNo, bowlerId) {
     requireDatabase();
     const res = await supabaseClient.getPitchMap(matchId, inningsNo, bowlerId);

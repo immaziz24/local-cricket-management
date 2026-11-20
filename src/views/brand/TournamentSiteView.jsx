@@ -8,6 +8,7 @@ import { MediaGallery } from '../media/MediaGallery.jsx';
 import { MediaPolicyCard, TakedownQueue, PlacementAnalyticsCard } from '../media/MediaExtras.jsx';
 import { brandGradient } from '../media/mediaExtras.js';
 import { MicrositeSettings } from './MicrositeSettings.jsx';
+import { DomainSettings } from './DomainSettings.jsx';
 
 /** #189 Tournament website – one shareable page per tournament: ?t=CODE (also reached by its QR code, #190). */
 const ALL = ['fixtures', 'results', 'points', 'stats', 'teams', 'sponsors', 'awards', 'gallery', 'merch'];
@@ -223,6 +224,7 @@ export function TournamentSiteView({ refCode, currentUser, onNavigate }) {
         <Section id="organiser-tools" title="Organiser tools (only you can see this)">
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             <MicrositeSettings tournament={t} microsite={ms} onSaved={() => setReload((n) => n + 1)} />
+            <DomainSettings tournament={t} />
             <MediaPolicyCard tournamentId={t.id} />
             <TakedownQueue scope="tournament" scopeId={t.id} />
             <PlacementAnalyticsCard tournamentId={t.id} title="Sponsor adverts: views and clicks" />

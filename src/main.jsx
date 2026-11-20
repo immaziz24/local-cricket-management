@@ -2,6 +2,8 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App';
 import { ScoreOverlay } from './views/media/ScoreOverlay.jsx';
+import { dataService } from './services/dataService.js';
+import { isPlatformHost } from './views/brand/domainRules.js';
 import './index.css';
 import { startAccess } from './views/settings/accessibility.js';
 import { listenForInstall } from './views/settings/installApp.js';
@@ -9,17 +11,32 @@ import { listenForInstall } from './views/settings/installApp.js';
 listenForInstall(); // #394 remember the browser's install offer
 startAccess(); // #396 apply saved accessibility and low-data choices before the first screen
 
+// #377 Custom tournament domain: when the site is opened on an address an organiser connected (and proved with DNS),
+// the page opens that tournament's website. Platform addresses, addresses with a query string and every failure skip this.
+async function mapCustomDomain() {
+  try {
+    if (window.location.search) return;
+    const host = window.location.hostname;
+    const extra = String(import.meta.env.VITE_PRIMARY_HOSTS || '').split(',');
+    if (isPlatformHost(host, extra)) return;
+    const r = await dataService.resolveTournamentDomain(host);
+    if (r && r.ref) window.history.replaceState(null, '', `/?t=${encodeURIComponent(r.ref)}`);
+  } catch { /* open the normal site */ }
+}
+
 // #179 Live score overlay for streaming apps: ?overlay=<match id>[&style=box] shows only the score.
 const q = new URLSearchParams(window.location.search);
 const overlayId = q.get('overlay');
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    {overlayId && /^[0-9a-f-]{36}$/i.test(overlayId)
-      ? <ScoreOverlay matchId={overlayId} style={q.get('style') === 'box' ? 'box' : 'bar'} />
-      : <App />}
-  </React.StrictMode>
-)
+mapCustomDomain().finally(() => {
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+      {overlayId && /^[0-9a-f-]{36}$/i.test(overlayId)
+        ? <ScoreOverlay matchId={overlayId} style={q.get('style') === 'box' ? 'box' : 'bar'} />
+        : <App />}
+    </React.StrictMode>
+  );
+});
 
 // #26 Offline support: the published site keeps working without internet (not used while developing).
 if (import.meta.env.PROD && 'serviceWorker' in navigator) {
