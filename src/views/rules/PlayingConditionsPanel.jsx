@@ -1,3 +1,4 @@
+import { injuryRuleText } from './ruleOverrides.js';
 import React, { useEffect, useState } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
@@ -38,6 +39,7 @@ function summaryRows(r, facts) {
     ['Format', [facts?.overs_per_innings && `${facts.overs_per_innings} overs`, facts?.players_per_side && `${facts.players_per_side} a side`,
                 facts?.ball_type && `${facts.ball_type.replace(/_/g, ' ')} ball`, facts?.pitch_type && `${facts.pitch_type.replace(/_/g, ' ')} pitch`].filter(Boolean).join(' · ') || '–'],
     ['Max overs per bowler', r.max_overs_per_bowler ? `${r.max_overs_per_bowler} overs` : 'No limit'],
+    ['Injured bowler replaced mid-over', injuryRuleText(r)],
     ['Batter must retire at', r.retire_at ? `${r.retire_at} runs` : 'No retirement rule'],
     ['Wide', `${r.wide_runs} run${r.wide_runs === 1 ? '' : 's'} + re-bowled`],
     ['No-ball', `${r.no_ball_runs} run${r.no_ball_runs === 1 ? '' : 's'} + re-bowled${r.free_hit ? ', next ball is a free hit' : ''}`],
@@ -122,6 +124,7 @@ export function PlayingConditionsPanel({ tournamentId = null, matchId = null }) 
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(170px, 1fr))', gap: '0.6rem' }}>
               <label style={label}>Max overs per bowler{num('max_overs_per_bowler', 'No limit')}</label>
               <label style={label}>Batter retires at (runs){num('retire_at', 'No rule')}</label>
+              <label style={label}>Mid-over replacements per innings{num('mid_over_injury_max', 'No limit')}</label>
             </div>
           </section>
           <section>
@@ -135,6 +138,7 @@ export function PlayingConditionsPanel({ tournamentId = null, matchId = null }) 
               </label>
             </div>
             <div style={{ display: 'flex', gap: '1.2rem', flexWrap: 'wrap', marginTop: '0.6rem' }}>
+              {toggle('mid_over_injury_replacement', 'Injured bowler can be replaced mid-over')}
               {toggle('free_hit', 'Free hit after a no-ball')}
               {toggle('lbw', 'LBW is used')}
               {toggle('byes', 'Byes allowed')}

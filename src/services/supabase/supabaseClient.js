@@ -1531,6 +1531,66 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async getPhaseAnalysis(matchId) {
+    const { data, error } = await supabase.rpc('get_phase_analysis', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'phases') };
+    return { data, error: null };
+  },
+
+  async listTournamentStages(tournamentId) {
+    const { data, error } = await supabase.rpc('list_tournament_stages', { p_tournament_id: tournamentId });
+    if (error) return { data: null, error: friendlyError(error, 'stages') };
+    return { data, error: null };
+  },
+
+  async saveTournamentStage(tournamentId, stageId, name, sortOrder, dependsOn) {
+    const { data, error } = await supabase.rpc('save_tournament_stage', { p_tournament_id: tournamentId, p_stage_id: stageId || null, p_name: name, p_sort_order: sortOrder ?? null, p_depends_on: dependsOn || null });
+    if (error) return { data: null, error: friendlyError(error, 'stage') };
+    return { data, error: null };
+  },
+
+  async deleteTournamentStage(stageId) {
+    const { data, error } = await supabase.rpc('delete_tournament_stage', { p_stage_id: stageId });
+    if (error) return { data: null, error: friendlyError(error, 'stage') };
+    return { data, error: null };
+  },
+
+  async assignMatchStage(matchId, stageId) {
+    const { data, error } = await supabase.rpc('assign_match_stage', { p_match_id: matchId, p_stage_id: stageId || null });
+    if (error) return { data: null, error: friendlyError(error, 'stage') };
+    return { data, error: null };
+  },
+
+  async freezeTournamentStage(stageId, reason) {
+    const { data, error } = await supabase.rpc('freeze_tournament_stage', { p_stage_id: stageId, p_reason: reason || '' });
+    if (error) return { data: null, error: friendlyError(error, 'stage') };
+    return { data, error: null };
+  },
+
+  async reopenTournamentStage(stageId, reason) {
+    const { data, error } = await supabase.rpc('reopen_tournament_stage', { p_stage_id: stageId, p_reason: reason || '' });
+    if (error) return { data: null, error: friendlyError(error, 'stage') };
+    return { data, error: null };
+  },
+
+  async previewBallCorrection(matchId, ballId, changes) {
+    const { data, error } = await supabase.rpc('preview_ball_correction', { p_match_id: matchId, p_ball_id: ballId, p_changes: changes });
+    if (error) return { data: null, error: friendlyError(error, 'correction') };
+    return { data, error: null };
+  },
+
+  async getMatchPitchOptions(matchId) {
+    const { data, error } = await supabase.rpc('get_match_pitch_options', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'pitch') };
+    return { data, error: null };
+  },
+
+  async setMatchPitch(matchId, pitchNo) {
+    const { data, error } = await supabase.rpc('set_match_pitch', { p_match_id: matchId, p_pitch_no: pitchNo ?? null });
+    if (error) return { data: null, error: friendlyError(error, 'pitch') };
+    return { data, error: null };
+  },
+
   async decideBallCorrection(revisionId, approve, note) {
     const { data, error } = await supabase.rpc('decide_ball_correction', { p_revision_id: revisionId, p_approve: approve, p_note: note || null });
     if (error) return { data: null, error: friendlyError(error, 'correction') };

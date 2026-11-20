@@ -16,6 +16,7 @@ function readCachedMatch(matchId) {
   catch { return null; }
 }
 import { FullScorecard } from './FullScorecard.jsx';
+import { PhaseAnalysisCard } from './PhaseAnalysisCard.jsx';
 import { CommentaryPanel } from './CommentaryPanel.jsx';
 import { MatchHistoryPanel } from './MatchHistoryPanel.jsx';
 import { MatchAnalysisPanel } from '../stats/MatchAnalysisPanel.jsx';
@@ -448,6 +449,7 @@ export function MatchCentreView({ matchId, onNavigate = () => {} }) {
         </>
       )}
       {m.status !== 'scheduled' && tab === 'scorecard' && <FullScorecard matchId={m.id} refreshKey={refreshKey} onNavigate={onNavigate} />}
+      {m.status !== 'scheduled' && tab === 'scorecard' && <PhaseAnalysisCard matchId={m.id} refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && ['commentary', 'over'].includes(tab) && <CommentaryPanel key={tab} byOver={tab === 'over'} matchId={m.id} live={m.status === 'live'} refreshKey={refreshKey} />}
       {m.status !== 'scheduled' && tab === 'analysis' && <MatchAnalysisPanel matchId={m.id} matchStatus={m.status} canScore={data.can_score} refreshKey={refreshKey} onNavigate={onNavigate} />}
       {m.status !== 'scheduled' && tab === 'rules' && <PlayingConditionsPanel matchId={m.id} />}

@@ -3,6 +3,7 @@ import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { fieldsFor, diffChanges, validateCorrection, previewChanges, REVISION_STATUS } from './ballCorrection.js';
+import { previewLinesFromServer, previewNote } from './correctionPreview.js';
 
 /**
  * #315 #316 Correct who batted / bowled a ball, #317 totals recomputed, #318 reason + approval,
@@ -24,6 +25,7 @@ export function CorrectionsPanel({ matchId, refreshKey = 0, onChanged }) {
   const [picks, setPicks] = useState({});
   const [reason, setReason] = useState('');
   const [note, setNote] = useState({});
+  const [srv, setSrv] = useState(null);
 
   const load = useCallback(async () => {
     try {
@@ -34,6 +36,16 @@ export function CorrectionsPanel({ matchId, refreshKey = 0, onChanged }) {
     }
   }, [matchId]);
   useEffect(() => { load(); }, [load, refreshKey]);
+
+  // #324 ask the server what would move before anything is saved
+  useEffect(() => {
+    const b = data && data.balls.find((x) => String(x.id) === String(ballId));
+    const ch = b ? diffChanges(b, picks) : {};
+    if (!b || Object.keys(ch).length === 0) { setSrv(null); return undefined; }
+    let live = true;
+    dataService.previewBallCorrection(matchId, b.id, ch).then((p) => { if (live) setSrv(p); }).catch(() => { if (live) setSrv(null); });
+    return () => { live = false; };
+  }, [ballId, picks, data, matchId]);
 
   if (hidden) return null;
   if (err) return <Card><span style={{ color: '#b91c1c' }}>{err}</span></Card>;
@@ -108,7 +120,8 @@ export function CorrectionsPanel({ matchId, refreshKey = 0, onChanged }) {
             {preview.length > 0 && (
               <div style={{ marginTop: '0.5rem', background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '0.45rem', padding: '0.5rem 0.65rem', fontSize: '0.82rem' }}>
                 <strong>Preview</strong>
-                {preview.map((l, i) => <div key={i}>{l}</div>)}
+                {(srv ? previewLinesFromServer(srv) : preview).map((l, i) => <div key={i}>{l}</div>)}
+                {srv && previewNote(srv) && <div style={{ color: '#64748b', marginTop: '0.25rem' }}>{previewNote(srv)}</div>}
               </div>
             )}
             {problem && preview.length > 0 && <div style={{ color: '#b45309', fontSize: '0.8rem', marginTop: '0.3rem' }}>{problem}</div>}

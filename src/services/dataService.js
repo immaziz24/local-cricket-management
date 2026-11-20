@@ -1263,6 +1263,76 @@ export const dataService = {
     return res.data;
   },
 
+  async fetchPhaseAnalysis(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getPhaseAnalysis(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchTournamentStages(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.listTournamentStages(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveTournamentStage(tournamentId, { id = null, name, sortOrder = null, dependsOn = null }) {
+    requireDatabase();
+    const res = await supabaseClient.saveTournamentStage(tournamentId, id, name, sortOrder, dependsOn);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async deleteTournamentStage(stageId) {
+    requireDatabase();
+    const res = await supabaseClient.deleteTournamentStage(stageId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async assignMatchStage(matchId, stageId) {
+    requireDatabase();
+    const res = await supabaseClient.assignMatchStage(matchId, stageId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async freezeTournamentStage(stageId, reason) {
+    requireDatabase();
+    const res = await supabaseClient.freezeTournamentStage(stageId, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async reopenTournamentStage(stageId, reason) {
+    requireDatabase();
+    const res = await supabaseClient.reopenTournamentStage(stageId, reason);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async previewBallCorrection(matchId, ballId, changes) {
+    requireDatabase();
+    const res = await supabaseClient.previewBallCorrection(matchId, ballId, changes);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchMatchPitchOptions(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getMatchPitchOptions(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setMatchPitch(matchId, pitchNo) {
+    requireDatabase();
+    const res = await supabaseClient.setMatchPitch(matchId, pitchNo);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async decideBallCorrection(revisionId, approve, note) {
     requireDatabase();
     const res = await supabaseClient.decideBallCorrection(revisionId, approve, note);

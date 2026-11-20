@@ -11,6 +11,7 @@ import { LoadingSpinner } from '../components/common/LoadingSpinner.jsx';
 import { dataService } from '../services/dataService.js';
 import { TeamRegistrationPanel } from './tournaments/TeamRegistrationPanel.jsx';
 import { FixturesPanel } from './tournaments/FixturesPanel.jsx';
+import { StagesPanel } from './tournaments/StagesPanel.jsx';
 import { StandingsPanel } from './tournaments/StandingsPanel.jsx';
 import { PlayingConditionsPanel } from './rules/PlayingConditionsPanel.jsx';
 import { BannerStrip, TournamentLogo, BrandingControls } from './tournaments/TournamentBranding.jsx';
@@ -795,7 +796,10 @@ export function TournamentDetailsView(props) {
 
       {/* TAB 3: FIXTURES, SCHEDULE & CALENDAR (#42-#52) */}
       {activeTab === 'fixtures' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         <FixturesPanel tournament={tournament} isOrganiser={isOrganiser} onNavigate={onNavigate} onChanged={(m) => setMatches(m)} />
+          <StagesPanel tournament={tournament} matches={matches} />
+        </div>
       )}
 
       {/* TAB 6: WEBSITE, QR, SPONSORS, ADVERTS, CAMPAIGNS, AWARDS, CERTIFICATES, MERCHANDISE (#189-#199) */}

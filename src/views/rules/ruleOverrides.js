@@ -10,6 +10,8 @@ export const OVERRIDE_FIELDS = [
   { key: 'lbw', label: 'LBW allowed', type: 'bool' },
   { key: 'byes', label: 'Byes allowed', type: 'bool' },
   { key: 'leg_byes', label: 'Leg-byes allowed', type: 'bool' },
+  { key: 'mid_over_injury_replacement', label: 'Replace an injured bowler mid-over', type: 'bool' },
+  { key: 'mid_over_injury_max', label: 'Mid-over replacements per innings', type: 'int', min: 1, max: 10, empty: 'No limit' },
   { key: 'retire_at', label: 'Batter retires at (runs)', type: 'int', min: 1, max: 500, empty: 'Never' },
   { key: 'fielders_outside', label: 'Fielders outside the circle', type: 'int', min: 0, max: 9 },
   { key: 'boundary_size_m', label: 'Boundary size (metres)', type: 'int', min: 20, max: 120, empty: 'Not set' },
@@ -88,4 +90,11 @@ export function groupBallIssues(issues = []) {
     by.get(k).push({ ...i, title: BALL_ISSUE_TITLE[i.code] || i.code });
   }
   return [...by.entries()].sort((a, b) => a[0] - b[0]).map(([innings_no, items]) => ({ innings_no, items }));
+}
+
+/** #357 One line describing the mid-over injury replacement rule. */
+export function injuryRuleText(r = {}) {
+  if (r.mid_over_injury_replacement === false) return 'Not allowed - an injured bowler\'s over cannot be finished by someone else';
+  const cap = r.mid_over_injury_max;
+  return cap ? `Allowed, at most ${cap} per innings` : 'Allowed';
 }

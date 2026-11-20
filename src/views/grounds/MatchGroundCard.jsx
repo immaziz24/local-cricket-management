@@ -4,6 +4,7 @@ import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { MapPin } from 'lucide-react';
 import { MatchGroundConflictAlert } from './MatchGroundConflictAlert.jsx';
+import { MatchPitchPicker } from './MatchPitchCard.jsx';
 
 /** #159 Link a match to a registered ground (match creator / organiser), so it shows in the ground's match history. */
 export function MatchGroundCard({ match, groundName, canManage, onNavigate, onChanged }) {
@@ -45,6 +46,7 @@ export function MatchGroundCard({ match, groundName, canManage, onNavigate, onCh
           </div>
         </div>
       )}
+      {match.ground_id && <MatchPitchPicker matchId={match.id} groundId={match.ground_id} />}
       {match.ground_id && canManage && <MatchGroundConflictAlert matchId={match.id} groundId={match.ground_id} scheduledAt={match.scheduled_at} />}
       {msg && <div style={{ color: '#b91c1c', fontSize: '0.8rem', marginTop: '0.4rem' }}>{msg}</div>}
     </Card>
