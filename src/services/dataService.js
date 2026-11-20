@@ -1270,6 +1270,160 @@ export const dataService = {
     return res.data;
   },
 
+  async fetchTeamInvitations(teamId) {
+    requireDatabase();
+    const res = await supabaseClient.listTeamInvitations(teamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async inviteToTeam(teamId, playerId, message) {
+    requireDatabase();
+    const res = await supabaseClient.inviteToTeam(teamId, playerId, message);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async cancelTeamInvitation(invitationId) {
+    requireDatabase();
+    const res = await supabaseClient.cancelTeamInvitation(invitationId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchMyTeamInvitations() {
+    requireDatabase();
+    const res = await supabaseClient.getMyTeamInvitations();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async respondTeamInvitation(invitationId, accept) {
+    requireDatabase();
+    const res = await supabaseClient.respondTeamInvitation(invitationId, accept);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchSquadEligibility(tournamentId, teamId) {
+    requireDatabase();
+    const res = await supabaseClient.getSquadEligibility(tournamentId, teamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setSquadVerification(tournamentId, teamId, playerId, status, note) {
+    requireDatabase();
+    const res = await supabaseClient.setSquadVerification(tournamentId, teamId, playerId, status, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setMyAvailability(matchId, status, note) {
+    requireDatabase();
+    const res = await supabaseClient.setMyAvailability(matchId, status, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchMatchAvailability(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getMatchAvailability(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchLineupApproval(matchId, teamId) {
+    requireDatabase();
+    const res = await supabaseClient.getLineupApproval(matchId, teamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async requestLineupApproval(matchId, teamId) {
+    requireDatabase();
+    const res = await supabaseClient.requestLineupApproval(matchId, teamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async decideLineupApproval(matchId, teamId, approve, note) {
+    requireDatabase();
+    const res = await supabaseClient.decideLineupApproval(matchId, teamId, approve, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchClub(clubId) {
+    requireDatabase();
+    const res = await supabaseClient.getClub(clubId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchMyClubs() {
+    requireDatabase();
+    const res = await supabaseClient.listMyClubs();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async saveClub(clubId, name, city) {
+    requireDatabase();
+    const res = await supabaseClient.saveClub(clubId, name, city);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async deleteClub(clubId) {
+    requireDatabase();
+    const res = await supabaseClient.deleteClub(clubId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setTeamClub(teamId, clubId, level) {
+    requireDatabase();
+    const res = await supabaseClient.setTeamClub(teamId, clubId, level);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async moveClubPlayer(clubId, playerId, fromTeam, toTeam) {
+    requireDatabase();
+    const res = await supabaseClient.moveClubPlayer(clubId, playerId, fromTeam, toTeam);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchMyChallenges() {
+    requireDatabase();
+    const res = await supabaseClient.listMyChallenges();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async sendMatchChallenge(payload) {
+    requireDatabase();
+    const res = await supabaseClient.sendMatchChallenge(payload);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async respondMatchChallenge(challengeId, accept, note) {
+    requireDatabase();
+    const res = await supabaseClient.respondMatchChallenge(challengeId, accept, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async cancelMatchChallenge(challengeId) {
+    requireDatabase();
+    const res = await supabaseClient.cancelMatchChallenge(challengeId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchTournamentStages(tournamentId) {
     requireDatabase();
     const res = await supabaseClient.listTournamentStages(tournamentId);

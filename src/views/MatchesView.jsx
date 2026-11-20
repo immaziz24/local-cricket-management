@@ -8,6 +8,7 @@ import { NewMatchForm } from './matches/NewMatchForm.jsx';
 import { TeamGenerator, XiGenerator, TossTool } from './tools/ToolsView.jsx';
 import { scoreLine } from './tournaments/MatchResultForm.jsx';
 import { AdSlot } from './brand/brandShared.jsx';
+import { MatchChallenges } from './MatchChallenges.jsx';
 
 /**
  * Matches page (Phase 3): live, upcoming and finished matches from the real database,
@@ -99,6 +100,8 @@ export function MatchesView({ onNavigate = () => {}, currentUser }) {
           ))}
         </div>
       )}
+
+      {currentUser && <MatchChallenges onNavigate={onNavigate} />}
 
       {showNew && <NewMatchForm onCreated={(id) => onNavigate('match-centre', id)} onCancel={() => setShowNew(false)} />}
 

@@ -2774,6 +2774,138 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async listTeamInvitations(teamId) {
+    const { data, error } = await supabase.rpc('list_team_invitations', { p_team_id: teamId });
+    if (error) return { data: null, error: friendlyError(error, 'invitations') };
+    return { data, error: null };
+  },
+
+  async inviteToTeam(teamId, playerId, message) {
+    const { data, error } = await supabase.rpc('invite_player_to_team', { p_team_id: teamId, p_player_id: playerId, p_message: message || null });
+    if (error) return { data: null, error: friendlyError(error, 'invitation') };
+    return { data, error: null };
+  },
+
+  async cancelTeamInvitation(invitationId) {
+    const { data, error } = await supabase.rpc('cancel_team_invitation', { p_invitation_id: invitationId });
+    if (error) return { data: null, error: friendlyError(error, 'invitation') };
+    return { data, error: null };
+  },
+
+  async getMyTeamInvitations() {
+    const { data, error } = await supabase.rpc('my_team_invitations', {});
+    if (error) return { data: null, error: friendlyError(error, 'invitations') };
+    return { data, error: null };
+  },
+
+  async respondTeamInvitation(invitationId, accept) {
+    const { data, error } = await supabase.rpc('respond_team_invitation', { p_invitation_id: invitationId, p_accept: !!accept });
+    if (error) return { data: null, error: friendlyError(error, 'invitation') };
+    return { data, error: null };
+  },
+
+  async getSquadEligibility(tournamentId, teamId) {
+    const { data, error } = await supabase.rpc('get_squad_eligibility', { p_tournament_id: tournamentId, p_team_id: teamId });
+    if (error) return { data: null, error: friendlyError(error, 'squad check') };
+    return { data, error: null };
+  },
+
+  async setSquadVerification(tournamentId, teamId, playerId, status, note) {
+    const { data, error } = await supabase.rpc('set_squad_verification', { p_tournament_id: tournamentId, p_team_id: teamId, p_player_id: playerId, p_status: status, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'squad check') };
+    return { data, error: null };
+  },
+
+  async setMyAvailability(matchId, status, note) {
+    const { data, error } = await supabase.rpc('set_my_availability', { p_match_id: matchId, p_status: status, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'availability') };
+    return { data, error: null };
+  },
+
+  async getMatchAvailability(matchId) {
+    const { data, error } = await supabase.rpc('get_match_availability', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'availability') };
+    return { data, error: null };
+  },
+
+  async getLineupApproval(matchId, teamId) {
+    const { data, error } = await supabase.rpc('get_lineup_approval', { p_match_id: matchId, p_team_id: teamId });
+    if (error) return { data: null, error: friendlyError(error, 'lineup approval') };
+    return { data, error: null };
+  },
+
+  async requestLineupApproval(matchId, teamId) {
+    const { data, error } = await supabase.rpc('request_lineup_approval', { p_match_id: matchId, p_team_id: teamId });
+    if (error) return { data: null, error: friendlyError(error, 'lineup approval') };
+    return { data, error: null };
+  },
+
+  async decideLineupApproval(matchId, teamId, approve, note) {
+    const { data, error } = await supabase.rpc('decide_lineup_approval', { p_match_id: matchId, p_team_id: teamId, p_approve: !!approve, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'lineup approval') };
+    return { data, error: null };
+  },
+
+  async getClub(clubId) {
+    const { data, error } = await supabase.rpc('get_club', { p_club_id: clubId });
+    if (error) return { data: null, error: friendlyError(error, 'club') };
+    return { data, error: null };
+  },
+
+  async listMyClubs() {
+    const { data, error } = await supabase.rpc('list_my_clubs', {});
+    if (error) return { data: null, error: friendlyError(error, 'clubs') };
+    return { data, error: null };
+  },
+
+  async saveClub(clubId, name, city) {
+    const { data, error } = await supabase.rpc('save_club', { p_club_id: clubId || null, p_name: name, p_city: city || null });
+    if (error) return { data: null, error: friendlyError(error, 'club') };
+    return { data, error: null };
+  },
+
+  async deleteClub(clubId) {
+    const { data, error } = await supabase.rpc('delete_club', { p_club_id: clubId });
+    if (error) return { data: null, error: friendlyError(error, 'club') };
+    return { data, error: null };
+  },
+
+  async setTeamClub(teamId, clubId, level) {
+    const { data, error } = await supabase.rpc('set_team_club', { p_team_id: teamId, p_club_id: clubId || null, p_level: level || null });
+    if (error) return { data: null, error: friendlyError(error, 'club') };
+    return { data, error: null };
+  },
+
+  async moveClubPlayer(clubId, playerId, fromTeam, toTeam) {
+    const { data, error } = await supabase.rpc('move_club_player', { p_club_id: clubId, p_player_id: playerId, p_from_team: fromTeam, p_to_team: toTeam });
+    if (error) return { data: null, error: friendlyError(error, 'club') };
+    return { data, error: null };
+  },
+
+  async listMyChallenges() {
+    const { data, error } = await supabase.rpc('list_my_challenges', {});
+    if (error) return { data: null, error: friendlyError(error, 'challenges') };
+    return { data, error: null };
+  },
+
+  async sendMatchChallenge(payload) {
+    const { data, error } = await supabase.rpc('send_match_challenge', { p: payload });
+    if (error) return { data: null, error: friendlyError(error, 'challenge') };
+    return { data, error: null };
+  },
+
+  async respondMatchChallenge(challengeId, accept, note) {
+    const { data, error } = await supabase.rpc('respond_match_challenge', { p_challenge_id: challengeId, p_accept: !!accept, p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'challenge') };
+    return { data, error: null };
+  },
+
+  async cancelMatchChallenge(challengeId) {
+    const { data, error } = await supabase.rpc('cancel_match_challenge', { p_challenge_id: challengeId });
+    if (error) return { data: null, error: friendlyError(error, 'challenge') };
+    return { data, error: null };
+  },
+
   /** Public platform settings: maintenance flag and the active announcement (readable by everyone). */
   async getPlatformSettings() {
     const { data, error } = await supabase

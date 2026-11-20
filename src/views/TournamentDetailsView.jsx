@@ -12,6 +12,7 @@ import { dataService } from '../services/dataService.js';
 import { TeamRegistrationPanel } from './tournaments/TeamRegistrationPanel.jsx';
 import { FixturesPanel } from './tournaments/FixturesPanel.jsx';
 import { StagesPanel } from './tournaments/StagesPanel.jsx';
+import { SquadEligibilityPanel } from './tournaments/SquadEligibilityPanel.jsx';
 import { StandingsPanel } from './tournaments/StandingsPanel.jsx';
 import { PlayingConditionsPanel } from './rules/PlayingConditionsPanel.jsx';
 import { BannerStrip, TournamentLogo, BrandingControls } from './tournaments/TournamentBranding.jsx';
@@ -793,6 +794,8 @@ export function TournamentDetailsView(props) {
           }}
         />
       )}
+
+      {activeTab === 'teams' && teams.length > 0 && <SquadEligibilityPanel tournament={tournament} teams={teams} />}
 
       {/* TAB 3: FIXTURES, SCHEDULE & CALENDAR (#42-#52) */}
       {activeTab === 'fixtures' && (

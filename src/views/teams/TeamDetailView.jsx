@@ -8,6 +8,7 @@ import { ArrowLeft, Search, UserPlus, UserMinus, Crown, Star, Shield, AlertCircl
 import { ROLE_OPTIONS, BATTING_OPTIONS, BOWLING_OPTIONS, labelOf } from './playerOptions.js';
 import { Avatar } from './Avatar.jsx';
 import { TransfersPanel } from './TransfersPanel.jsx';
+import { TeamInvitesPanel } from './TeamInvitesPanel.jsx';
 import { TeamStatsCard } from '../stats/TeamStatsCard.jsx';
 import { TeamPunctualityCard } from '../punctuality/TeamPunctualityCard.jsx';
 
@@ -395,6 +396,9 @@ export function TeamDetailView({ teamId, onNavigate }) {
 
       {/* #308 #310 punctuality + player fines */}
       <TeamPunctualityCard teamId={teamId} squad={squad} onNavigate={onNavigate} />
+
+      {/* #339 Team invitations */}
+      {team.i_own && <TeamInvitesPanel team={team} onChanged={load} />}
 
       {/* Player transfers (#75) */}
       {team.i_own && <TransfersPanel team={team} onChanged={load} />}

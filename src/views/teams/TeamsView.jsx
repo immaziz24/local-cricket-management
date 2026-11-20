@@ -6,6 +6,8 @@ import { dataService } from '../../services/dataService.js';
 import { Users, Plus, ChevronRight, AlertCircle, CheckCircle } from 'lucide-react';
 import { PlayerProfileEditor } from './PlayerProfileEditor.jsx';
 import { Avatar } from './Avatar.jsx';
+import { MyInvitationsCard } from './MyInvitationsCard.jsx';
+import { ClubsCard } from './ClubsCard.jsx';
 
 /**
  * Phase 2 – My Teams
@@ -133,6 +135,10 @@ export function TeamsView({ onNavigate, onProfileSaved }) {
           </div>
         )}
       </Card>
+
+      <MyInvitationsCard onChanged={() => window.location.reload()} />
+
+      <ClubsCard myTeams={teams} onNavigate={onNavigate} />
 
       <PlayerProfileEditor onNavigate={onNavigate} onProfileSaved={onProfileSaved} />
     </div>

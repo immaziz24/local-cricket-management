@@ -4,6 +4,7 @@ import { Badge } from '../../components/common/Badge.jsx';
 import { dataService } from '../../services/dataService.js';
 import { ArrowUp, ArrowDown, Repeat, Users, AlertCircle, CheckCircle } from 'lucide-react';
 import { pickPlayingXI } from '../tools/cricketMath.js';
+import { MatchReadiness } from './MatchReadiness.jsx';
 
 /**
  * #72 Playing XI, #73 Substitutes, #74 Player replacements - per match, per team.
@@ -284,6 +285,7 @@ export function LineupPanel({ match }) {
           <TeamLineup key={t.team_id} match={match} team={t} perSide={data.players_per_side} maxSubs={data.max_substitutes} canAddPlayer={match.status === 'scheduled' && ownedTeams.includes(t.team_id)} onSaved={load} />
         ))}
       </div>
+      {data.teams.length === 2 && <MatchReadiness match={match} teams={data.teams} ownedTeams={ownedTeams} />}
     </div>
   );
 }
