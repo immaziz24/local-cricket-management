@@ -1424,6 +1424,90 @@ export const dataService = {
     return res.data;
   },
 
+  async setLastBallPitch(matchId, x, y) {
+    requireDatabase();
+    const res = await supabaseClient.setLastBallPitch(matchId, x, y);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchPitchMap(matchId, inningsNo, bowlerId) {
+    requireDatabase();
+    const res = await supabaseClient.getPitchMap(matchId, inningsNo, bowlerId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchBatterVsBowler(batterId, bowlerId) {
+    requireDatabase();
+    const res = await supabaseClient.getBatterVsBowler(batterId, bowlerId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchReportEvidence(reportId) {
+    requireDatabase();
+    const res = await supabaseClient.listMatchReportEvidence(reportId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async addReportEvidence(reportId, kind, url, statement) {
+    requireDatabase();
+    const res = await supabaseClient.addMatchReportEvidence(reportId, kind, url, statement);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchTournamentSecurity(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.getTournamentSecurity(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setTwoPersonApproval(tournamentId, on) {
+    requireDatabase();
+    const res = await supabaseClient.setTwoPersonApproval(tournamentId, on);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchSecurityAlerts() {
+    requireDatabase();
+    const res = await supabaseClient.listSecurityAlerts();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async ackSecurityAlerts() {
+    requireDatabase();
+    const res = await supabaseClient.ackSecurityAlerts();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async checkInTeamGeo(matchId, teamId, geo, players, note) {
+    requireDatabase();
+    const res = await supabaseClient.checkInTeamGeo(matchId, teamId, geo, players, note);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async fetchArrivalGeo(matchId) {
+    requireDatabase();
+    const res = await supabaseClient.getArrivalGeo(matchId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async clearArrivalGeo(matchId, teamId) {
+    requireDatabase();
+    const res = await supabaseClient.clearArrivalGeo(matchId, teamId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
   async fetchTournamentStages(tournamentId) {
     requireDatabase();
     const res = await supabaseClient.listTournamentStages(tournamentId);

@@ -20,6 +20,7 @@ import { menuLanguages } from '../../components/layout/navItems.js';
 import { MembershipCard, InvoicePanel, RefundDecisionRow, RevenueBreakdown, InvoiceSettingsCard } from './PaymentsExtras.jsx';
 import { refundStatusLabel, canRequestRefund } from './paymentsRules.js';
 import { AccessibilityCard } from '../settings/AccessibilityCard.jsx';
+import { SecurityAlertsCard } from '../settings/SecurityAlertsCard.jsx';
 import { InstallAppCard } from '../settings/InstallAppCard.jsx';
 
 /** Settings & Privacy (every member) and Admin Panel (Admin / Super-Admin). */
@@ -242,7 +243,7 @@ export function SettingsView({ currentUser, onNavigate, language, onLanguageChan
           <p>Your account includes free membership. You can create teams, tournaments and matches, and score matches you create.</p>
         </section>
       )}
-      {tab === 'privacy' && <SecurityPrivacyView />}
+      {tab === 'privacy' && <><SecurityAlertsCard /><SecurityPrivacyView /></>}
       {tab === 'notifications' && <><NearbyMatchAlerts key={currentUser.id} /><NotificationsManagementView /></>}
       {tab === 'verify' && <UserVerificationView />}
       {tab === 'report' && <UserReportingSuspensionView />}

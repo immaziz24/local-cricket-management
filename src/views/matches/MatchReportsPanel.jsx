@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card } from '../../components/common/Card.jsx';
 import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
+import { ReportEvidence } from './ReportEvidence.jsx';
 import { ClipboardList, AlertTriangle, ShieldAlert, Gavel, CheckCircle, RotateCcw } from 'lucide-react';
 
 /**
@@ -138,6 +139,7 @@ export function MatchReportsPanel({ matchId, refreshKey }) {
                 </div>
                 {r.details && <div style={{ fontSize: '0.82rem', marginTop: '0.25rem', whiteSpace: 'pre-wrap' }}>{r.details}</div>}
                 {r.closing_note && <div style={{ fontSize: '0.78rem', marginTop: '0.25rem', color: '#065f46' }}>Closed: {r.closing_note}</div>}
+                <ReportEvidence reportId={r.id} />
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '0.3rem' }}>
                   <span style={{ fontSize: '0.7rem', color: '#94a3b8' }}>{r.by ? `by ${r.by}` : ''}</span>
                   {d.can_add && r.kind !== 'decision' && (

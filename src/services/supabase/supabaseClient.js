@@ -2906,6 +2906,78 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  async setLastBallPitch(matchId, x, y) {
+    const { data, error } = await supabase.rpc('set_last_ball_pitch', { p_match_id: matchId, p_x: x, p_y: y });
+    if (error) return { data: null, error: friendlyError(error, 'pitch map') };
+    return { data, error: null };
+  },
+
+  async getPitchMap(matchId, inningsNo, bowlerId) {
+    const { data, error } = await supabase.rpc('get_pitch_map', { p_match_id: matchId, p_innings_no: inningsNo || null, p_bowler_id: bowlerId || null });
+    if (error) return { data: null, error: friendlyError(error, 'pitch map') };
+    return { data, error: null };
+  },
+
+  async getBatterVsBowler(batterId, bowlerId) {
+    const { data, error } = await supabase.rpc('get_batter_vs_bowler', { p_batter_id: batterId, p_bowler_id: bowlerId });
+    if (error) return { data: null, error: friendlyError(error, 'head-to-head') };
+    return { data, error: null };
+  },
+
+  async listMatchReportEvidence(reportId) {
+    const { data, error } = await supabase.rpc('list_match_report_evidence', { p_report_id: reportId });
+    if (error) return { data: null, error: friendlyError(error, 'evidence') };
+    return { data, error: null };
+  },
+
+  async addMatchReportEvidence(reportId, kind, url, statement) {
+    const { data, error } = await supabase.rpc('add_match_report_evidence', { p_report_id: reportId, p_kind: kind, p_url: url || null, p_statement: statement || null });
+    if (error) return { data: null, error: friendlyError(error, 'evidence') };
+    return { data, error: null };
+  },
+
+  async getTournamentSecurity(tournamentId) {
+    const { data, error } = await supabase.rpc('get_tournament_security', { p_tournament_id: tournamentId });
+    if (error) return { data: null, error: friendlyError(error, 'approval setting') };
+    return { data, error: null };
+  },
+
+  async setTwoPersonApproval(tournamentId, on) {
+    const { data, error } = await supabase.rpc('set_two_person_approval', { p_tournament_id: tournamentId, p_on: !!on });
+    if (error) return { data: null, error: friendlyError(error, 'approval setting') };
+    return { data, error: null };
+  },
+
+  async listSecurityAlerts() {
+    const { data, error } = await supabase.rpc('list_security_alerts', {});
+    if (error) return { data: null, error: friendlyError(error, 'security alerts') };
+    return { data, error: null };
+  },
+
+  async ackSecurityAlerts() {
+    const { data, error } = await supabase.rpc('ack_security_alerts', {});
+    if (error) return { data: null, error: friendlyError(error, 'security alerts') };
+    return { data, error: null };
+  },
+
+  async checkInTeamGeo(matchId, teamId, geo, players, note) {
+    const { data, error } = await supabase.rpc('check_in_team_geo', { p_match_id: matchId, p_team_id: teamId, p_geo: geo, p_players: players === '' || players == null ? null : Number(players), p_note: note || null });
+    if (error) return { data: null, error: friendlyError(error, 'check-in') };
+    return { data, error: null };
+  },
+
+  async getArrivalGeo(matchId) {
+    const { data, error } = await supabase.rpc('get_arrival_geo', { p_match_id: matchId });
+    if (error) return { data: null, error: friendlyError(error, 'check-in location') };
+    return { data, error: null };
+  },
+
+  async clearArrivalGeo(matchId, teamId) {
+    const { data, error } = await supabase.rpc('clear_arrival_geo', { p_match_id: matchId, p_team_id: teamId });
+    if (error) return { data: null, error: friendlyError(error, 'check-in location') };
+    return { data, error: null };
+  },
+
   /** Public platform settings: maintenance flag and the active announcement (readable by everyone). */
   async getPlatformSettings() {
     const { data, error } = await supabase

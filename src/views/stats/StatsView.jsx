@@ -3,6 +3,7 @@ import { Card } from '../../components/common/Card.jsx';
 import { dataService } from '../../services/dataService.js';
 import { BarChart3, Users, User, X } from 'lucide-react';
 import { LeaderboardsPanel } from './LeaderboardsPanel.jsx';
+import { HeadToHeadCard } from './HeadToHeadCard.jsx';
 import { fmt, oversOf, th, td } from './statsUi.jsx';
 
 /** Statistics page: website leaderboards (#102), player comparison (#98), team comparison / head-to-head (#99). */
@@ -150,6 +151,7 @@ export function StatsView({ onNavigate }) {
       <LeaderboardsPanel onNavigate={onNavigate} title="All matches – leaderboards" />
       <PlayerCompare />
       <TeamCompare />
+      <HeadToHeadCard Picker={Picker} />
     </div>
   );
 }

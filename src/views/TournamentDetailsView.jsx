@@ -13,6 +13,7 @@ import { TeamRegistrationPanel } from './tournaments/TeamRegistrationPanel.jsx';
 import { FixturesPanel } from './tournaments/FixturesPanel.jsx';
 import { StagesPanel } from './tournaments/StagesPanel.jsx';
 import { SquadEligibilityPanel } from './tournaments/SquadEligibilityPanel.jsx';
+import { TwoPersonCard } from './tournaments/TwoPersonCard.jsx';
 import { StandingsPanel } from './tournaments/StandingsPanel.jsx';
 import { PlayingConditionsPanel } from './rules/PlayingConditionsPanel.jsx';
 import { BannerStrip, TournamentLogo, BrandingControls } from './tournaments/TournamentBranding.jsx';
@@ -802,6 +803,7 @@ export function TournamentDetailsView(props) {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         <FixturesPanel tournament={tournament} isOrganiser={isOrganiser} onNavigate={onNavigate} onChanged={(m) => setMatches(m)} />
           <StagesPanel tournament={tournament} matches={matches} />
+          <TwoPersonCard tournament={tournament} />
         </div>
       )}
 

@@ -4,6 +4,7 @@ import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { Undo2, AlertCircle, Flag, CloudRain, WifiOff, RefreshCw } from 'lucide-react';
 import { WagonWheelPicker } from './WagonWheel.jsx';
+import { PitchMapPad } from './PitchMapPad.jsx';
 import { ScorerConflictBanner } from './ScorerConflictBanner.jsx';
 import { UmpireDecisionBar } from './UmpireDecisionBar.jsx';
 import { BowlerEligibilityCard } from './BowlerEligibilityCard.jsx';
@@ -522,6 +523,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
               <input type="checkbox" checked={wheelOn} onChange={(e) => { setWheelOn(e.target.checked); setShot(null); try { localStorage.setItem('lcm-wagon', e.target.checked ? 'on' : 'off'); } catch { /* ignore */ } }} />
               Ask where the ball went (wagon wheel)
             </label>
+            {!shot && queue.length === 0 && <PitchMapPad matchId={matchId} ballKey={`${cur.runs}-${cur.wickets}-${cur.legal_balls}-${cur.this_over.length}`} disabled={busy} />}
             <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
               <button type="button" disabled={busy} onClick={() => setWk(wk ? null : { type: '', out: 'striker', fielder: '', runs: 0 })}
                 style={{ flex: 1, padding: '0.8rem', fontWeight: 900, fontSize: '1rem', borderRadius: '0.6rem', cursor: 'pointer', border: 'none', backgroundColor: '#dc2626', color: '#fff' }}>

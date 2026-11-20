@@ -5,6 +5,7 @@ import { dataService } from '../../services/dataService.js';
 import { Clock, CheckCircle, Circle, AlertTriangle, UserCheck, Gavel } from 'lucide-react';
 import { PenaltyPreview, PenaltyHistory, ArrivalDisputes } from './LatePenaltyExtras.jsx';
 import { validateRollback } from './latePenaltyExtras.js';
+import { ArrivalLocation } from './ArrivalLocation.jsx';
 
 /**
  * Category Q on the match page: #299 check-in, #300 attendance, #301 readiness, #302 delay,
@@ -94,6 +95,7 @@ export function MatchPunctualityPanel({ matchId, refreshKey }) {
                   </div>
                 ) : <div style={{ fontSize: '0.84rem', color: '#94a3b8', marginTop: '0.3rem' }}>Not checked in yet</div>}
                 <div style={{ fontSize: '0.76rem', color: '#64748b', marginTop: '0.2rem' }}>Playing XI: {t.lineup} · present: {t.present}</div>
+                <ArrivalLocation matchId={matchId} team={t} canCheckIn={t.can_check_in} over={over} onChanged={load} />
                 {t.can_check_in && !over && (
                   <div style={{ display: 'flex', gap: '0.35rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
                     <Button size="sm" variant="primary" onClick={() => run(() => dataService.checkInTeam(matchId, t.team_id))}>{a ? 'Check in again (now)' : 'Arrived now'}</Button>
