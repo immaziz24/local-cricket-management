@@ -29,6 +29,7 @@ import { FixtureTool, XiGenerator, TeamGenerator } from './tools/ToolsView.jsx';
 import { AuctionsHome } from './tools/AuctionBoard.jsx';
 import { seriesStatus, seriesCloseOut } from './tournaments/seriesLogic.js';
 import { registrationTracker } from './tournaments/registrationTracker.js';
+import { TournamentMoneyPanel } from './money/MoneyPanels.jsx';
 import {
   Shuffle,
   Newspaper,
@@ -768,6 +769,8 @@ export function TournamentDetailsView(props) {
           )}
         </div>
       )}
+
+      {isOrganiser && ['overview', 'teams'].includes(activeTab) && <TournamentMoneyPanel key={tournament.id} tournament={tournament} onChanged={async () => setTournament(await dataService.fetchTournamentById(tournament.id))} />}
 
       {isOrganiser && activeTab === 'overview' && <ScopedAuditLog scope="tournament" id={tournament.id} />}
 

@@ -5,7 +5,7 @@ Deno.serve(async (request) => {
   const secret = Deno.env.get("RAZORPAY_WEBHOOK_SECRET");
   const keyId = Deno.env.get("RAZORPAY_KEY_ID");
   const apiSecret = Deno.env.get("RAZORPAY_KEY_SECRET");
-  if (!secret || !keyId?.startsWith("rzp_test_") || !apiSecret) return new Response(null, { status: 503 });
+  if (!secret || !(keyId?.startsWith("rzp_test_") || keyId?.startsWith("rzp_live_")) || !apiSecret) return new Response(null, { status: 503 });
 
   const signature = request.headers.get("x-razorpay-signature") || "";
   if (!/^[a-f0-9]{64}$/i.test(signature)) return new Response(null, { status: 401 });
@@ -21,9 +21,17 @@ Deno.serve(async (request) => {
     const link = event.payload?.payment_link?.entity;
     const paymentId = event.payload?.payment?.entity?.id;
     const payer = link?.notes?.payer_id;
+    const purpose = String(link?.notes?.purpose || "membership");
     const offerId = link?.notes?.offer_id;
+    const tournamentId = link?.notes?.tournament_id;
+    const teamId = link?.notes?.team_id;
+    const billId = link?.notes?.bill_id;
     const uuid = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i;
-    if (!uuid.test(payer) || !uuid.test(offerId)) return new Response(null, { status: 204 });
+    const ok = uuid.test(payer) && (
+      (purpose === "membership" && uuid.test(offerId)) ||
+      (purpose === "registration" && uuid.test(tournamentId) && uuid.test(teamId)) ||
+      ((purpose === "sponsorship" || purpose === "ad") && uuid.test(billId)));
+    if (!ok) return new Response(null, { status: 204 });
     if (!/^pay_[a-zA-Z0-9]+$/.test(paymentId) || link.status !== "paid"
         || link.currency !== "INR" || !Number.isSafeInteger(link.amount)
         || link.amount <= 0 || link.amount_paid !== link.amount || !link.order_id) {
@@ -42,10 +50,12 @@ Deno.serve(async (request) => {
     }
 
     const client = createClient(Deno.env.get("SUPABASE_URL")!, Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!);
-    // Batch 16: the offer id is passed on so the plan is switched on and an invoice is issued.
-    const { error } = await client.rpc("record_razorpay_test_payment", {
-      p_payer: payer, p_payment: paymentId, p_description: String(link.description || "Paid plan").slice(0, 100),
-      p_amount: payment.amount, p_captured_at: new Date(event.created_at * 1000).toISOString(), p_offer: offerId,
+    // Batch 21: one recorder for plans, entry fees and bills. Test or live follows the key in use.
+    const { error } = await client.rpc("record_gateway_payment", {
+      p_payer: payer, p_payment: paymentId, p_description: String(link.description || "Payment").slice(0, 100),
+      p_amount: payment.amount, p_captured_at: new Date(event.created_at * 1000).toISOString(), p_purpose: purpose,
+      p_offer: uuid.test(offerId) ? offerId : null, p_tournament: uuid.test(tournamentId) ? tournamentId : null,
+      p_team: uuid.test(teamId) ? teamId : null, p_bill: uuid.test(billId) ? billId : null, p_test: keyId.startsWith("rzp_test_"),
     });
     return new Response(null, { status: error ? 500 : 204 });
   } catch {

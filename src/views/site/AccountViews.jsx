@@ -1,4 +1,6 @@
 import { PlayerProfileEditor } from '../teams/PlayerProfileEditor.jsx';
+import { MyBillsCard, EntitlementsCard } from '../money/MoneyPanels.jsx';
+import { AdminMoneyCard } from '../money/MoneyPanels.jsx';
 import React, { useEffect, useState } from 'react';
 import { Lock, Bell, BadgeCheck, Flag, LayoutDashboard, Mail, Shield, FileText, Database, Megaphone, Users, Newspaper, ShieldCheck } from 'lucide-react';
 import { dataService } from '../../services/dataService.js';
@@ -96,8 +98,8 @@ function MembershipOffers() {
           <ul>{offers.map(offer => <li key={offer.id}>
             {offer.kind === 'premium' ? 'Premium membership' : 'Tournament organiser package'} · {offer.name} · {inr.format(offer.amount_paise / 100)}
             {' · '}{checkout?.offerId === offer.id ? (
-              <a href={checkout.url} target="_blank" rel="noopener noreferrer">Open Razorpay test checkout</a>
-            ) : <button type="button" className="home-link" disabled={busy} onClick={() => startCheckout(offer.id)}>Prepare test checkout</button>}
+              <a href={checkout.url} target="_blank" rel="noopener noreferrer">Open Razorpay checkout</a>
+            ) : <button type="button" className="home-link" disabled={busy} onClick={() => startCheckout(offer.id)}>Buy or renew (prepare checkout)</button>}
           </li>)}</ul>
         )}
       {checkoutError && <p role="alert">{checkoutError}</p>}
@@ -251,6 +253,8 @@ export function SettingsView({ currentUser, onNavigate, language, onLanguageChan
         <React.Fragment key={currentUser.id}>
           <MembershipCard />
           <MembershipOffers />
+          <EntitlementsCard />
+          <MyBillsCard />
           <PaymentReport />
         </React.Fragment>
       )}
@@ -307,7 +311,7 @@ export function AdminPanelView({ currentUser, isAdmin, isSuperAdmin, onNavigate 
       {tab === 'control' && <AdminControlCentre currentUser={currentUser} onNavigate={onNavigate} />}
       {tab === 'overview' && (isSuperAdmin ? <SuperAdminDashboardView /> : <AdminDashboardView />)}
       {tab === 'messages' && <ContactMessagesPanel />}
-      {tab === 'revenue' && <PaymentReport key={currentUser?.id} revenue />}
+      {tab === 'revenue' && <><PaymentReport key={currentUser?.id} revenue /><AdminMoneyCard /></>}
       {tab === 'roles' && <RolePermissionsView onNavigate={onNavigate} />}
       {tab === 'verify' && <UserVerificationView />}
       {tab === 'reports' && <UserReportingSuspensionView />}

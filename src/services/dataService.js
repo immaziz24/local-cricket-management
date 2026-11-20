@@ -2040,6 +2040,135 @@ export const dataService = {
     return res.data;
   },
 
+  // ---------- Batch 21: money ----------
+  async getFeeSettings() {
+    requireDatabase();
+    const res = await supabaseClient.getFeeSettings();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setCommission(bps) {
+    requireDatabase();
+    const res = await supabaseClient.setCommission(bps);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setTournamentEntryFee(tournamentId, rupees) {
+    requireDatabase();
+    const res = await supabaseClient.setTournamentEntryFee(tournamentId, rupees);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listMyBills() {
+    requireDatabase();
+    const res = await supabaseClient.listMyBills();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listTournamentBills(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.listTournamentBills(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async generateSponsorBills(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.generateSponsorBills(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async sendBillReminders() {
+    requireDatabase();
+    const res = await supabaseClient.sendBillReminders();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async sendRenewalReminders() {
+    requireDatabase();
+    const res = await supabaseClient.sendRenewalReminders();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setAdRates(adId, flatPaise, cpmPaise, cpcPaise) {
+    requireDatabase();
+    const res = await supabaseClient.setAdRates(adId, flatPaise, cpmPaise, cpcPaise);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async adRevenueReport(from, to) {
+    requireDatabase();
+    const res = await supabaseClient.adRevenueReport(from, to);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async billAdPlacement(adId, from, to) {
+    requireDatabase();
+    const res = await supabaseClient.billAdPlacement(adId, from, to);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getTournamentSettlement(tournamentId) {
+    requireDatabase();
+    const res = await supabaseClient.getTournamentSettlement(tournamentId);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getPayoutReconciliation() {
+    requireDatabase();
+    const res = await supabaseClient.getPayoutReconciliation();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async recordPayout(tournamentId, amountPaise, reference, note, paidAt) {
+    requireDatabase();
+    const res = await supabaseClient.recordPayout(tournamentId, amountPaise, reference, note, paidAt);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async setPlanLimit(plan, key, value) {
+    requireDatabase();
+    const res = await supabaseClient.setPlanLimit(plan, key, value);
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async listPlanLimits() {
+    requireDatabase();
+    const res = await supabaseClient.listPlanLimits();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async getMyEntitlements() {
+    requireDatabase();
+    const res = await supabaseClient.getMyEntitlements();
+    if (res.error) throw new Error(res.error);
+    return res.data;
+  },
+
+  async createCheckout(body) {
+    requireDatabase();
+    const res = await supabaseClient.createCheckout(body);
+    if (res.error) throw new Error(res.error);
+    const url = new URL(res.data.url);
+    if (url.origin !== 'https://rzp.io' || url.username || url.password) throw new Error('Invalid checkout link.');
+    return url.href;
+  },
+
   async createTestCheckout(offerId) {
     const { data, error } = await supabaseClient.createTestCheckout(offerId);
     if (error) throw new Error(error);

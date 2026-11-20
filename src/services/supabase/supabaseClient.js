@@ -1985,6 +1985,102 @@ export const supabaseClient = {
     return { data, error: null };
   },
 
+  // ---------- Batch 21: money ----------
+  async getFeeSettings() {
+    const { data, error } = await supabase.rpc('get_fee_settings');
+    return { data, error: error ? friendlyError(error, 'fee settings') : null };
+  },
+
+  async setCommission(bps) {
+    const { data, error } = await supabase.rpc('set_commission', { p_bps: bps });
+    return { data, error: error ? friendlyError(error, 'commission') : null };
+  },
+
+  async setTournamentEntryFee(tournamentId, rupees) {
+    const { data, error } = await supabase.rpc('set_tournament_entry_fee', { p_tournament_id: tournamentId, p_rupees: rupees });
+    return { data, error: error ? friendlyError(error, 'entry fee') : null };
+  },
+
+  async listMyBills() {
+    const { data, error } = await supabase.rpc('list_my_bills');
+    return { data, error: error ? friendlyError(error, 'bills') : null };
+  },
+
+  async listTournamentBills(tournamentId) {
+    const { data, error } = await supabase.rpc('list_tournament_bills', { p_tournament_id: tournamentId });
+    return { data, error: error ? friendlyError(error, 'sponsor bills') : null };
+  },
+
+  async generateSponsorBills(tournamentId) {
+    const { data, error } = await supabase.rpc('generate_sponsor_bills', { p_tournament_id: tournamentId });
+    return { data, error: error ? friendlyError(error, 'sponsor bills') : null };
+  },
+
+  async sendBillReminders() {
+    const { data, error } = await supabase.rpc('send_bill_reminders');
+    return { data, error: error ? friendlyError(error, 'reminders') : null };
+  },
+
+  async sendRenewalReminders() {
+    const { data, error } = await supabase.rpc('send_renewal_reminders');
+    return { data, error: error ? friendlyError(error, 'reminders') : null };
+  },
+
+  async setAdRates(adId, flatPaise, cpmPaise, cpcPaise) {
+    const { data, error } = await supabase.rpc('set_ad_rates', { p_ad_id: adId, p_flat_paise: flatPaise, p_cpm_paise: cpmPaise, p_cpc_paise: cpcPaise });
+    return { data, error: error ? friendlyError(error, 'advert rates') : null };
+  },
+
+  async adRevenueReport(from, to) {
+    const { data, error } = await supabase.rpc('ad_revenue_report', { p_from: from, p_to: to });
+    return { data, error: error ? friendlyError(error, 'advert revenue') : null };
+  },
+
+  async billAdPlacement(adId, from, to) {
+    const { data, error } = await supabase.rpc('bill_ad_placement', { p_ad_id: adId, p_from: from, p_to: to });
+    return { data, error: error ? friendlyError(error, 'advert bill') : null };
+  },
+
+  async getTournamentSettlement(tournamentId) {
+    const { data, error } = await supabase.rpc('get_tournament_settlement', { p_tournament_id: tournamentId });
+    return { data, error: error ? friendlyError(error, 'settlement report') : null };
+  },
+
+  async getPayoutReconciliation() {
+    const { data, error } = await supabase.rpc('get_payout_reconciliation');
+    return { data, error: error ? friendlyError(error, 'payout reconciliation') : null };
+  },
+
+  async recordPayout(tournamentId, amountPaise, reference, note, paidAt) {
+    const { data, error } = await supabase.rpc('record_payout', { p_tournament_id: tournamentId, p_amount_paise: amountPaise, p_reference: reference, p_note: note, p_paid_at: paidAt });
+    return { data, error: error ? friendlyError(error, 'payout') : null };
+  },
+
+  async setPlanLimit(plan, key, value) {
+    const { data, error } = await supabase.rpc('set_plan_limit', { p_plan: plan, p_key: key, p_value: value });
+    return { data, error: error ? friendlyError(error, 'plan limit') : null };
+  },
+
+  async listPlanLimits() {
+    const { data, error } = await supabase.rpc('list_plan_limits');
+    return { data, error: error ? friendlyError(error, 'plan limits') : null };
+  },
+
+  async getMyEntitlements() {
+    const { data, error } = await supabase.rpc('get_my_entitlements');
+    return { data, error: error ? friendlyError(error, 'plan limits') : null };
+  },
+
+  async createCheckout(body) {
+    const { data, error } = await supabase.functions.invoke('create-checkout', { body });
+    if (error) {
+      let msg = 'Checkout is unavailable. Please try again later.';
+      try { const j = await error.context?.json?.(); if (j?.error) msg = j.error; } catch { /* keep the default message */ }
+      return { data: null, error: msg };
+    }
+    return { data, error: null };
+  },
+
   async createTestCheckout(offerId) {
     const { data, error } = await supabase.functions.invoke('create-checkout', { body: { offerId } });
     return { data, error: error ? 'Test checkout is unavailable. Please try again later.' : null };

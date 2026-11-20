@@ -5,6 +5,8 @@ import { Button } from '../../components/common/Button.jsx';
 import { dataService } from '../../services/dataService.js';
 import { CheckCircle, XCircle, AlertCircle, Send, LogOut, Search, Plus, UserPlus, Trash2 } from 'lucide-react';
 import { Avatar } from '../teams/Avatar.jsx';
+import { PayEntryFeeButton } from '../money/MoneyPanels.jsx';
+import { teamFeeLabel } from '../money/moneyRules.js';
 
 /**
  * #40 Team registration and #41 Team approval and rejection.
@@ -206,6 +208,10 @@ export function TeamRegistrationPanel({ tournament, onChanged, onTournamentChang
                   <strong style={{ display: 'block', cursor: onNavigate ? 'pointer' : 'default', color: onNavigate ? '#0f172a' : undefined }} onClick={() => onNavigate && onNavigate('team-details', t.team_id)}>{t.name}</strong>
                   <span style={{ fontSize: '0.75rem', color: '#64748b' }}>{t.captain ? `Captain: ${t.captain}` : 'Captain not set'} · {t.squad_size} players</span>
                   <span style={{ display: 'block', marginTop: '0.3rem' }}><Badge variant={STATUS[t.status]?.variant}>{STATUS[t.status]?.label || t.status}</Badge></span>
+                  {tournament.entry_fee_paise > 0 && ['pending', 'approved'].includes(t.status) && (data.is_organiser || t.i_own) && (
+                    <span style={{ display: 'block', fontSize: '0.72rem', color: '#475569', marginTop: '0.2rem' }}>Entry fee: {teamFeeLabel(tournament.entry_fee_paise, t.fee_paid_paise)}
+                      {t.i_own && teamFeeLabel(tournament.entry_fee_paise, t.fee_paid_paise) !== 'Paid' && <> · <PayEntryFeeButton tournament={tournament} team={{ id: t.team_id }} /></>}</span>
+                  )}
                   {t.status === 'rejected' && t.note && <span style={{ display: 'block', fontSize: '0.72rem', color: '#b91c1c', marginTop: '0.2rem' }}>Reason: {t.note}</span>}
                 </span>
                 {t.status === 'approved' && onNavigate && (
