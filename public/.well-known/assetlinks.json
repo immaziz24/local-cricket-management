@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "in.plateria.localcricket",
+      "sha256_cert_fingerprints": [
+        "A4:54:AA:90:40:BF:8C:7F:B1:0E:E5:4D:DD:0D:8B:24:29:5A:32:6C:CB:34:73:50:F2:01:AA:31:4C:0A:AF:D9"
+      ]
+    }
+  }
+]
