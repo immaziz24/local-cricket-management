@@ -35,6 +35,8 @@ public final class MainActivity extends Activity {
     private static final int PICK_FILE = 33;
     private ValueCallback<Uri[]> fileCallback;
     private Uri capturedPhoto;
+    // #289 true while the screen is open, so the background job leaves syncing to the page
+    static volatile boolean foreground;
 
     @Override
     protected void onCreate(Bundle savedState) {
@@ -91,6 +93,7 @@ public final class MainActivity extends Activity {
         website.getSettings().setAllowContentAccess(false);
         website.addJavascriptInterface(new LineupDownloads(), "CricnotchDownloads");
         website.addJavascriptInterface(new LinkSharing(), "CricnotchSharing");
+        website.addJavascriptInterface(new BackgroundSync(), "CricnotchSync");
         website.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
@@ -152,7 +155,15 @@ public final class MainActivity extends Activity {
     }
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        foreground = true;
+    }
+
+    @Override
     protected void onPause() {
+        foreground = false;
+        SyncJobService.schedule(this);
         String page = website.getUrl();
         if (page != null && isCricnotchPage(Uri.parse(page))) {
             getPreferences(MODE_PRIVATE).edit().putString("last_page", page).apply();
@@ -281,6 +292,63 @@ public final class MainActivity extends Activity {
                         .putExtra(Intent.EXTRA_TEXT, link.toString());
                 startActivity(Intent.createChooser(share, title == null ? "Share" : title.substring(0, Math.min(title.length(), 100))));
             });
+        }
+    }
+
+    /** #289 The page copies its waiting scoring actions here so they can be uploaded when the app is closed. */
+    private final class BackgroundSync {
+        @JavascriptInterface
+        public void setPending(String matchId, String json) {
+            if (matchId == null || !matchId.matches("[0-9a-fA-F-]{36}")) return;
+            android.content.SharedPreferences prefs = getSharedPreferences(SyncJobService.PREFS, MODE_PRIVATE);
+            synchronized (SyncJobService.LOCK) {
+                try {
+                    if (json == null || json.isEmpty()) {
+                        prefs.edit().remove("pending_" + matchId).remove("sent_" + matchId).apply();
+                        return;
+                    }
+                    if (json.length() > 1_000_000) return;
+                    org.json.JSONObject pending = new org.json.JSONObject(json);
+                    java.net.URL url = new java.net.URL(pending.getString("url"));
+                    if (!"https".equals(url.getProtocol()) || !SyncJobService.SUPABASE_HOST.equals(url.getHost())) return;
+                    // Leave out what the background job has already uploaded.
+                    java.util.Set<String> sent = new java.util.HashSet<>();
+                    org.json.JSONArray sentList = new org.json.JSONArray(prefs.getString("sent_" + matchId, "[]"));
+                    for (int i = 0; i < sentList.length(); i++) sent.add(sentList.getString(i));
+                    org.json.JSONArray all = pending.getJSONArray("actions");
+                    org.json.JSONArray left = new org.json.JSONArray();
+                    for (int i = 0; i < all.length(); i++) {
+                        if (!sent.contains(all.getJSONObject(i).getString("id"))) left.put(all.getJSONObject(i));
+                    }
+                    if (left.length() == 0) {
+                        prefs.edit().remove("pending_" + matchId).apply();
+                        return;
+                    }
+                    pending.put("actions", left);
+                    prefs.edit().putString("pending_" + matchId, pending.toString()).apply();
+                } catch (Exception ignored) {
+                    // Bad data is ignored; the normal sync on the page still works.
+                }
+            }
+        }
+
+        /** Ids of the actions the background job has uploaded, as {"matchId": ["id", ...]}. */
+        @JavascriptInterface
+        public String takeSent() {
+            android.content.SharedPreferences prefs = getSharedPreferences(SyncJobService.PREFS, MODE_PRIVATE);
+            org.json.JSONObject result = new org.json.JSONObject();
+            synchronized (SyncJobService.LOCK) {
+                try {
+                    for (java.util.Map.Entry<String, ?> entry : prefs.getAll().entrySet()) {
+                        if (entry.getKey().startsWith("sent_")) {
+                            result.put(entry.getKey().substring(5), new org.json.JSONArray((String) entry.getValue()));
+                        }
+                    }
+                } catch (Exception ignored) {
+                    // Nothing to report.
+                }
+            }
+            return result.toString();
         }
     }
 

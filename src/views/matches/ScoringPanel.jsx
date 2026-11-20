@@ -12,6 +12,7 @@ import { makeCommentary } from './commentary.js';
 import { validateCrease, replaceBowlerMidOver as checkBowlerReplacement } from './scoringRules.js';
 import { loadQueue, saveQueue, loadCachedState, saveCachedState, newClientId, isNetworkError, applyQueue } from './offlineScoring.js';
 import { markOf, saveMark, loadMark, clearMark, describeConflict, queueCopyText } from './syncConflicts.js';
+import { mirrorToNative, sentFromNative, pruneQueue } from './backgroundSync.js';
 
 /**
  * Ball-by-ball scoring (#7-#19): runs, extras, wickets, automatic strike change, end of over,
@@ -122,6 +123,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
     if (q.length && !queueRef.current.length && base) saveMark(matchId, markOf(base)); // #392 remember the score when we went offline
     if (!q.length) { clearMark(matchId); setConflict(null); }
     queueRef.current = q; setQueue(q); saveQueue(matchId, q);
+    mirrorToNative(matchId, q, () => dataService.getSyncSession()); // #289 let the Android app finish the upload if it is closed
   };
   const [err, setErr] = useState(null);
   const [busy, setBusy] = useState(false);
@@ -158,6 +160,15 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
 
   // #27 send queued actions in order; stop on a network error (still offline) or a rule error (needs the scorer)
   const flush = async () => {
+    // #289 the Android app may already have uploaded some actions while this screen was closed
+    const sentByApp = sentFromNative(matchId);
+    if (sentByApp.length && queueRef.current.length) {
+      const left = pruneQueue(queueRef.current, sentByApp);
+      if (left.length !== queueRef.current.length) {
+        updateQueue(left);
+        if (!left.length) { setSyncError(null); await load(); onChanged && onChanged(true); return; }
+      }
+    }
     if (syncingRef.current || !queueRef.current.length) return;
     if (typeof navigator !== 'undefined' && navigator.onLine === false) return;
     syncingRef.current = true; setSyncing(true);
@@ -194,7 +205,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
     window.addEventListener('online', on); window.addEventListener('offline', off);
     document.addEventListener('visibilitychange', foreground);
     flush();
-    const id = setInterval(() => { if (queueRef.current.length) flush(); }, 10000);
+    const id = setInterval(() => { if (queueRef.current.length) { flush(); mirrorToNative(matchId, queueRef.current, () => dataService.getSyncSession()); } }, 10000);
     return () => {
       window.removeEventListener('online', on);
       window.removeEventListener('offline', off);
@@ -205,7 +216,7 @@ export function ScoringPanel({ matchId, onChanged, mode = 'live', refreshKey = 0
 
   /** Ball or player change: send now, or keep on the device when there is no internet. */
   const submit = async (kind, payload, after) => {
-    const action = { kind, payload: kind === 'ball' ? { ...payload, client_id: newClientId() } : payload, at: Date.now() };
+    const action = { id: newClientId(), kind, payload: kind === 'ball' ? { ...payload, client_id: newClientId() } : payload, at: Date.now() };
     if (queueRef.current.length || (typeof navigator !== 'undefined' && navigator.onLine === false)) {
       updateQueue([...queueRef.current, action]); after && after(); flush(); return;
     }

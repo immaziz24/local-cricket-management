@@ -2872,6 +2872,12 @@ export const dataService = {
     return res.data || [];
   },
 
+  async getSyncSession() {
+    requireDatabase();
+    const res = await supabaseClient.getSyncSession();
+    return res.data;
+  },
+
   async recordBall(matchId, ball) {
     requireDatabase();
     const res = await supabaseClient.recordBall(matchId, ball);

@@ -2701,6 +2701,11 @@ export const supabaseClient = {
     return { data: data || [], error: null };
   },
 
+  async getSyncSession() {
+    const { data } = await supabase.auth.getSession();
+    return { data: { url: SUPABASE_URL, key: SUPABASE_KEY, token: data?.session?.access_token || null, exp: data?.session?.expires_at || 0 }, error: null };
+  },
+
   async recordBall(matchId, ball) {
     const { data, error } = await supabase.rpc('record_ball', { p_match_id: matchId, p: ball });
     if (error) return { data: null, error: friendlyError(error, 'ball') };
